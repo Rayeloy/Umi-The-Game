@@ -52,13 +52,13 @@ public class PlayerCombat : MonoBehaviour {
 
     private void Update()
     {
-        if (Input.GetButtonDown(myPlayerMovement.contName+ "B"))
+        if (Input.GetButtonDown(myPlayerMovement.contName+ "X"))
         {
             //print(myPlayerMovement.contName);
             StartAttack();
         }
         ProcessAttack();
-        if (Input.GetButtonDown(myPlayerMovement.contName + "X"))
+        if (Input.GetButtonDown(myPlayerMovement.contName + "B"))
         {
             ChangeNextAttackType();
         }
@@ -72,7 +72,7 @@ public class PlayerCombat : MonoBehaviour {
         {
             attackIndex = 0;
         }
-        attackName.text = GameController.instance.allAttacks[attackIndex].attackName;
+        //attackName.text = GameController.instance.allAttacks[attackIndex].attackName;
         chargingTime = GameController.instance.allAttacks[attackIndex].chargingTime;
         startupTime = GameController.instance.allAttacks[attackIndex].startupTime;
         activeTime = GameController.instance.allAttacks[attackIndex].activeTime;

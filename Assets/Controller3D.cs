@@ -99,7 +99,7 @@ public class Controller3D : MonoBehaviour {
         */
         // ---------------------- 3D CAPSULE -------------------
         float directionY = Mathf.Sign(vel.y);
-        float rayLength = Mathf.Abs(vel.y) + skinWidth;
+        float rayLength = Mathf.Abs(vel.y) + skinWidth + 0.3f;
         float radius = 0f;
         //print("----------NEW SET OF RAYS------------");
         for(int i=0;i< verticalCircles; i++)

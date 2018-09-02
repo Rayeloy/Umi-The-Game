@@ -77,31 +77,38 @@ public class CameraControler : MonoBehaviour {
     // Update is called once per frame
     void LateUpdate()
     {
+        float inputX = Input.GetAxis(myPlayerMov.contName + "H2");
+        float inputZ = Input.GetAxis(myPlayerMov.contName + "V2");
+        mouseX = Input.GetAxis("Mouse X");
+        mouseY = Input.GetAxis("Mouse Y");
+        finalInputX = inputX + mouseX;
+        finalInputZ = inputZ + mouseY;
+        Quaternion localRotation = Quaternion.Euler(0, 0, 0);
         switch (camMode)
         {
             case cameraMode.Fixed:
                 yaw += speedH * Input.GetAxis(myPlayerMov.contName + "H2");
                 pitch -= speedV * Input.GetAxis(myPlayerMov.contName + "V2");
+
+                rotX += finalInputZ * rotSpeed * Time.deltaTime;
+                rotX = Mathf.Clamp(rotX, -clampAngle, clampAngle);
+                localRotation = camera1.transform.localRotation;
+                localRotation =Quaternion.Euler(rotX, localRotation.eulerAngles.y, localRotation.eulerAngles.z);
+                camera1.transform.localRotation = localRotation;
                 //reset to 0,0 after some time
                 //Rotate character with mouse X
 
                 //transform.eulerAngles = new Vector3(pitch, , 0.0f);
-                LookAtPlayer();
-                myPlayerMov.RotateCharacter(rotSpeed * Input.GetAxis(myPlayerMov.contName + "H2"));
+                //LookAtPlayer();
+
+                myPlayerMov.RotateCharacter(rotSpeed * finalInputX);
                 break;
             case cameraMode.Free:
-                float inputX = Input.GetAxis(myPlayerMov.contName + "H2");
-                float inputZ = Input.GetAxis(myPlayerMov.contName + "V2");
-                mouseX = Input.GetAxis("Mouse X");
-                mouseY = Input.GetAxis("Mouse Y");
-                finalInputX = inputX + mouseX;
-                finalInputZ = inputZ + mouseY;
-
                 rotY += finalInputX * inputSensitivity * Time.deltaTime;
                 rotX += finalInputZ * inputSensitivity * Time.deltaTime;
 
                 rotX = Mathf.Clamp(rotX, -clampAngle, clampAngle);
-                Quaternion localRotation = Quaternion.Euler(rotX, rotY, 0.0f);
+                localRotation = Quaternion.Euler(rotX, rotY, 0.0f);
                 transform.rotation = localRotation;
                 FreeCameraUpdate();
                 break;
@@ -124,7 +131,7 @@ public class CameraControler : MonoBehaviour {
         //vector to player
         Vector3 camPoint = transform.position;
         Vector3 playerPoint = myPlayerMov.gameObject.transform.position;
-        Vector3 lookPoint = new Vector3(playerPoint.x, playerPoint.y + 1, playerPoint.z);
-        transform.LookAt(playerPoint);
+        //Vector3 lookPoint = new Vector3(playerPoint.x, playerPoint.y + 1, playerPoint.z);
+        //transform.LookAt(playerPoint);
     }
 }
