@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ce7d05d43dd0aa4fb7f72139bf0f199, type: 3}
+  m_Name: Frontal Swipe
+  m_EditorClassIdentifier: 
+  attackName: Frontal Swipe
+  hitboxPrefab: {fileID: 1106858598728734, guid: 0170b6bc00f63cf4c815c19c4e7103f5,
+    type: 2}
+  chargingTime: 0
+  startupTime: 0.4
+  activeTime: 0.5
+  recoveryTime: 0.3
+  knockbackSpeed: 20
+  knockbackType: 0
+  knockbackDirection: {x: 0, y: 0, z: 0}

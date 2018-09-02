@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ce7d05d43dd0aa4fb7f72139bf0f199, type: 3}
+  m_Name: Hook
+  m_EditorClassIdentifier: 
+  attackName: Hook
+  hitboxPrefab: {fileID: 1983535906751356, guid: d3272a77a8bcd01469636bc15120cbfa,
+    type: 2}
+  chargingTime: 0
+  startupTime: 0.5
+  activeTime: 0.5
+  recoveryTime: 0.5
+  knockbackSpeed: 15
+  knockbackType: 1
+  knockbackDirection: {x: 0, y: 0, z: 0}
