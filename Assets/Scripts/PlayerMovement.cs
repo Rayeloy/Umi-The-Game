@@ -23,8 +23,9 @@ public class PlayerMovement : MonoBehaviour
     float currentSpeed = 0;
     bool moving = false;//true if player tries to move with left joystick
     [Header("ACCELERATIONS")]
-    public float accel = 2.0f;
+    public float initialAcc = 2.0f;
     public float breakAcc = -2.0f;
+    public float movingAcc = 2.0f;
     //public float breakAccOnHit = -2.0f;
     float gravity;
     [Header("JUMP")]
@@ -78,7 +79,7 @@ public class PlayerMovement : MonoBehaviour
     void HorizontalMovement()
     {
         CalculateMoveDir();//Movement direction
-        float actAccel = moving && currentSpeed < maxMoveSpeed ? accel : breakAcc;
+        float actAccel = moving && currentSpeed < maxMoveSpeed ? initialAcc : breakAcc;
         float finalMaxMoveSpeed = noInput ? float.MaxValue : maxMoveSpeed;
 
         currentSpeed = currentSpeed + actAccel * Time.deltaTime;
@@ -99,7 +100,7 @@ public class PlayerMovement : MonoBehaviour
             if (moving)//MOVING JOYSTICK
             {
                 objectiveVel = new Vector3(currentMovDir.x, 0, currentMovDir.z);
-                currentVel = currentVel + objectiveVel;
+                currentVel = currentVel + objectiveVel * movingAcc;
                 Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
                 if (horizontalVel.magnitude >= maxMoveSpeed)
                 {
