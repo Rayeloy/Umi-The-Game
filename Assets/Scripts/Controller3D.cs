@@ -44,7 +44,7 @@ public class Controller3D : MonoBehaviour {
             VerticalCollisions(ref vel);
         }
 
-
+        print("VEL = " + vel.normalized);
         transform.Translate(vel);
     }
 

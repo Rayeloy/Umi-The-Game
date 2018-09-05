@@ -25,9 +25,9 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector]
     public bool noInput = false;
-    [Header("SPEED")]
     Vector3 objectiveVel;
     Vector3 currentVel;
+    [Header("SPEED")]
     public float maxMoveSpeed = 10.0f;
     [Tooltip("Maximum speed that you can travel at horizontally when hit by someone")]
     public float maxKnockbackSpeed = 300f;
@@ -102,8 +102,14 @@ public class PlayerMovement : MonoBehaviour
         if (hitRecieved)
         {
             print("HIT: Current Vel = " + currentVel);
+            float theta = facingAngle * Mathf.Deg2Rad;
+            float cs = Mathf.Cos(theta);
+            float sn = Mathf.Sin(theta);
+            float px = knockback.x * cs - knockback.z * sn;
+            float py = knockback.x * sn + knockback.z * cs;
+            knockback = new Vector3(px, knockback.y, py);
             currentVel = currentVel + knockback;
-            print("HIT: knockback = " + knockback + "; Current Vel = " + currentVel);
+            print("HIT: knockback = " + knockback.normalized + "; Current Vel = " + currentVel);
             currentSpeed = currentVel.magnitude;
             currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
             //controlar velocidad máx?
