@@ -7,10 +7,21 @@ public class PlayerMovement : MonoBehaviour
 {
     public CameraControler myCamera;
     public Transform rotateObj;
+    public MeshRenderer Body;
+    public Material teamBlueMat;
+    public Material teamRedMat;
+    PlayerCombat myPlayerCombat;
 
     public GameController.controllerName contName;
+    public Team team = Team.blue;
     [HideInInspector]
     public Controller3D controller;
+
+    public enum Team
+    {
+        red,
+        blue
+    }
 
     [HideInInspector]
     public bool noInput = false;
@@ -38,16 +49,18 @@ public class PlayerMovement : MonoBehaviour
     {
         currentSpeed = 0;
         noInput = false;
+        controller = GetComponent<Controller3D>();
+        myPlayerCombat = GetComponent<PlayerCombat>();
     }
     private void Start()
     {
-        controller = GetComponent<Controller3D>();
         gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
         jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
         print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
+        Body.material = team == Team.blue ? teamBlueMat : teamRedMat;
     }
     int frameCounter = 0;
-    private void Update()
+    public void KonoUpdate()
     {
         if (controller.collisions.above || controller.collisions.below)
         {
@@ -63,6 +76,7 @@ public class PlayerMovement : MonoBehaviour
 
         //print("CurrentVel = " + currentVel);
         controller.Move(currentVel * Time.deltaTime);
+        myPlayerCombat.KonoUpdate();
     }
 
     void VerticalMovement()
@@ -70,7 +84,7 @@ public class PlayerMovement : MonoBehaviour
         currentVel.y += gravity * Time.deltaTime;
         if (Input.GetButtonDown(contName + "A"))
         {
-            print("JUMP");
+            //print("JUMP");
             startJump();
         }
 
@@ -222,17 +236,27 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    [HideInInspector]
     public float maxTimeStun = 0.6f;
     float timeStun = 0;
     bool hitRecieved = false;
     Vector3 knockback;
-    public void StartRecieveHit(Vector3 _knockback)
+    public void StartRecieveHit(Vector3 _knockback, PlayerMovement attacker, float _maxTimeStun)
     {
+        maxTimeStun = _maxTimeStun;
         timeStun = 0;
         noInput = true;
         hitRecieved = true;
         moving = false;
         knockback = _knockback;
+
+        //STEAL FLAG
+        if (haveFlag)
+        {
+            attacker.PickFlag(flag);
+            flag = null;
+            haveFlag = false;
+        }
         print("STUNNED");
     }
     void ProcessStun()
@@ -245,4 +269,51 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    [HideInInspector]
+    public bool haveFlag = false;
+    [HideInInspector]
+    public GameObject flag = null;
+    public void PickFlag(GameObject _flag)
+    {
+        flag = _flag;
+        flag.transform.SetParent(transform);
+        flag.transform.localPosition = new Vector3(0, 0, -1);
+        haveFlag = true;
+    }
+
+    void Die()
+    {
+        if (haveFlag)
+        {
+            GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
+            flag = null;
+            haveFlag = false;
+        }
+        GameController.instance.RespawnPlayer(this);
+    }
+
+    void CheckWinGame(Respawn respawn)
+    {
+        if (haveFlag && team == respawn.team)
+        {
+            GameController.instance.GameOver(team);
+        }
+    }
+
+    private void OnTriggerEnter(Collider col)
+    {
+        switch (col.tag)
+        {
+            case "KillTrigger":
+                Die();
+                break;
+            case "Flag":
+                PickFlag(col.gameObject);
+                break;
+            case "Respawn":
+                print("I'm " + name + " and I touched a respawn");
+                CheckWinGame(col.GetComponent<Respawn>());
+                break;
+        }
+    }
 }

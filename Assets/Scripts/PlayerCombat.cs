@@ -50,9 +50,9 @@ public class PlayerCombat : MonoBehaviour {
         ChangeNextAttackType();
     }
 
-    private void Update()
+    public void KonoUpdate()
     {
-        if (Input.GetButtonDown(myPlayerMovement.contName+ "X"))
+        if (Input.GetButtonDown(myPlayerMovement.contName+ "X") && !myPlayerMovement.noInput)
         {
             //print(myPlayerMovement.contName);
             StartAttack();
@@ -67,29 +67,29 @@ public class PlayerCombat : MonoBehaviour {
 
     void ChangeNextAttackType()
     {
-        attackIndex++;
-        if (attackIndex >= GameController.instance.allAttacks.Length)
-        {
-            attackIndex = 0;
-        }
-        //attackName.text = GameController.instance.allAttacks[attackIndex].attackName;
-        chargingTime = GameController.instance.allAttacks[attackIndex].chargingTime;
-        startupTime = GameController.instance.allAttacks[attackIndex].startupTime;
-        activeTime = GameController.instance.allAttacks[attackIndex].activeTime;
-        recoveryTime = GameController.instance.allAttacks[attackIndex].recoveryTime;
-        knockBackSpeed = GameController.instance.allAttacks[attackIndex].knockbackSpeed;
-        //change hitbox
-        if (hitboxes.childCount > 0)
-        {
-            for(int i = 0; i < hitboxes.childCount; i++)
+            attackIndex++;
+            if (attackIndex >= GameController.instance.allAttacks.Length)
             {
-                Destroy(hitboxes.GetChild(i).gameObject);
+                attackIndex = 0;
             }
-        }
+            attackName.text = GameController.instance.allAttacks[attackIndex].attackName;
+            chargingTime = GameController.instance.allAttacks[attackIndex].chargingTime;
+            startupTime = GameController.instance.allAttacks[attackIndex].startupTime;
+            activeTime = GameController.instance.allAttacks[attackIndex].activeTime;
+            recoveryTime = GameController.instance.allAttacks[attackIndex].recoveryTime;
+            knockBackSpeed = GameController.instance.allAttacks[attackIndex].knockbackSpeed;
+            //change hitbox
+            if (hitboxes.childCount > 0)
+            {
+                for (int i = 0; i < hitboxes.childCount; i++)
+                {
+                    Destroy(hitboxes.GetChild(i).gameObject);
+                }
+            }
 
-        GameObject newHitbox = Instantiate(GameController.instance.allAttacks[attackIndex].hitboxPrefab,hitboxes,false);
-        hitbox = newHitbox.GetComponent<Collider>();
-        hitbox.GetComponent<MeshRenderer>().material = hitboxMats[0];
+            GameObject newHitbox = Instantiate(GameController.instance.allAttacks[attackIndex].hitboxPrefab, hitboxes, false);
+            hitbox = newHitbox.GetComponent<Collider>();
+            hitbox.GetComponent<MeshRenderer>().material = hitboxMats[0];
     }
 
     float attackTime = 0;

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Stage
   - Hitbox
+  - KillTrigger
+  - Flag
   layers:
   - Default
   - TransparentFX
@@ -19,8 +21,8 @@ TagManager:
   - Stage
   - Player
   - Hitbox
-  - 
-  - 
+  - Flag
+  - Respawn
   - 
   - 
   - 
@@ -40,6 +42,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: UI
+    uniqueID: 1215519431
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

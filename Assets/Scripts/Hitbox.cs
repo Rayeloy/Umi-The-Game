@@ -65,7 +65,7 @@ public class Hitbox : MonoBehaviour
                     }
                     print("KNOCKBACK DIR= " + result);
                     result = result * myPlayerCombat.knockBackSpeed;
-                    col.GetComponent<PlayerMovement>().StartRecieveHit(result);
+                    col.GetComponent<PlayerMovement>().StartRecieveHit(result,myPlayerMov,GameController.instance.allAttacks[myPlayerCombat.attackIndex].stunTime);
                 }
             }
         }

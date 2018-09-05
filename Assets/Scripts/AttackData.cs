@@ -21,6 +21,8 @@ public class AttackData : ScriptableObject
     public float startupTime;
     public float activeTime;
     public float recoveryTime;
+    [Tooltip("Time the attacks leaves the target stunned.")]
+    public float stunTime;
     [Tooltip("Limited by maxMoveSpeed.")]
     public float knockbackSpeed;
     [Tooltip("Outwards is the basic one.")]
