@@ -180,7 +180,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1705813512628444}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.55, z: 0}
+  m_LocalPosition: {x: 33.77, y: 25.69, z: -112.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4008034527547972}
@@ -480,17 +480,21 @@ MonoBehaviour:
   contName: 0
   team: 1
   controller: {fileID: 0}
+  moveSt: 1
   noInput: 0
   maxMoveSpeed: 10
   maxKnockbackSpeed: 300
+  boostSpeed: 30
+  boostCD: 3
+  boostDuration: 0.3
   initialAcc: 30
   breakAcc: -30
   movingAcc: 2
-  jumpHeight: 2
+  jumpHeight: 2.5
   jumpApexTime: 0.4
+  currentMovDir: {x: 0, y: 0, z: 0}
   currentFacingDir: {x: 0, y: 0, z: 1}
   facingAngle: 0
-  currentMovDir: {x: 0, y: 0, z: 0}
   maxTimeStun: 1
   haveFlag: 0
   flag: {fileID: 0}
@@ -508,11 +512,11 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 512
-  horizontalRayCount: 4
-  verticalRayCount: 4
   coll: {fileID: 136730111159505118}
   verticalCircles: 3
   verticalRaysPerCircle: 10
+  horizontalRows: 10
+  horizontalRaysPerRow: 20
 --- !u!136 &136730111159505118
 CapsuleCollider:
   m_ObjectHideFlags: 1

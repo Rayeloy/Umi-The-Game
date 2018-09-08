@@ -8,7 +8,7 @@ public class GameController : MonoBehaviour {
 
     public static GameController instance;
     public AttackData[] allAttacks;
-    bool slowmo = false;
+    int slowmo = 0;
     public PlayerMovement[] allPlayers;
     public GameObject[] allCanvas;
     public CameraControler[] allCameraBases;
@@ -77,15 +77,19 @@ public class GameController : MonoBehaviour {
     void Update () {
         if (Input.GetKeyDown(KeyCode.Keypad0))
         {
-            if (!slowmo)
+            if (slowmo==0)
             {
                 Time.timeScale = 0.25f;
-                slowmo = true;
+                slowmo = 1;
             }
-            else
+            else if(slowmo==1)
+            {
+                Time.timeScale = 0.075f;
+                slowmo = 2;
+            }else if (slowmo == 2)
             {
                 Time.timeScale = 1;
-                slowmo = false;
+                slowmo = 0;
             }
         }
         if (playing)

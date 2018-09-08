@@ -89,7 +89,7 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0
+    y: 0.5
     width: 1
     height: 0.5
   near clip plane: 0.3
@@ -131,8 +131,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myPlayerMov: {fileID: 0}
-  camera1: {fileID: 4866120176445652}
-  Player1: {fileID: 0}
+  myCamera: {fileID: 4866120176445652}
+  myPlayer: {fileID: 0}
   camMode: 0
   CameraMoveSpeed: 120
   CameraFollowObj: {fileID: 0}

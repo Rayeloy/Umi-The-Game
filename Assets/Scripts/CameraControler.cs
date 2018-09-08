@@ -53,7 +53,7 @@ public class CameraControler : MonoBehaviour {
         {
             case cameraMode.Fixed:
                 GetComponentInChildren<CameraCollisions>().enabled = false;
-                myCamera.SetParent(myPlayer);
+                myCamera.SetParent(myPlayerMov.rotateObj);
                 myCamera.localPosition = new Vector3(0, 2.91f, -5f);
                 myCamera.localRotation = Quaternion.Euler(0, 0, 0);
                 break;
