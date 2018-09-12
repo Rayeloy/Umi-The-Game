@@ -5,6 +5,7 @@ using UnityEngine;
 public class Controller3D : MonoBehaviour {
 
     public LayerMask collisionMask;
+    public LayerMask collisionMaskAround;
 
     const float skinWidth = .2f;
 
@@ -28,7 +29,7 @@ public class Controller3D : MonoBehaviour {
         collisions.ResetVertical();
         collisions.ResetHorizontal();
 
-        if(vel.x != 0)
+        if (vel.x != 0)
         {
             XCollisions(ref vel);
         }
@@ -42,6 +43,7 @@ public class Controller3D : MonoBehaviour {
         {
             VerticalCollisions(ref vel);
         }
+        
  
         transform.Translate(vel,Space.World);
     }
@@ -101,6 +103,37 @@ public class Controller3D : MonoBehaviour {
             }
         }
     }
+
+
+    public void AroundCollisions()
+    {
+        float rayLength = aroundRaycastsLength + skinWidth;
+        Vector3 center = raycastOrigins.Center;
+        float radius = raycastOrigins.AroundRadius;
+        Vector3 circlesOrigin = raycastOrigins.BottomEnd;
+        Vector3 circleOrigin = circlesOrigin;
+        print("----------NEW SET OF RAYS------------");
+        for (int i = 0; i < aroundCircles; i++)
+        {
+            circleOrigin.y = circlesOrigin.y + (i * aroundCirclesSpacing);
+            print("Circle Origin= " + circleOrigin.ToString("F4"));
+            for(int j = 0; j < aroundRaysPerCircle; j++)
+            {
+                float angle = (j * aroundAngleSpacing) * Mathf.Deg2Rad;
+                float px = center.x + radius * Mathf.Cos(angle);
+                float pz = center.z + radius * Mathf.Sin(angle);
+                Vector3 rayCrossPoint = new Vector3(px, circleOrigin.y, pz);
+                Vector3 finalDir = (rayCrossPoint - center).normalized;
+
+                RaycastHit hit;
+                Debug.DrawRay(center, finalDir * rayLength, Color.red);
+                if (Physics.Raycast(center, finalDir, out hit, rayLength, collisionMaskAround, QueryTriggerInteraction.Ignore))
+                {
+                    collisions.around = true;
+                }
+            }
+        }
+    } 
 
     void HorizontalCollisions(ref Vector3 vel)
     {
@@ -240,6 +273,9 @@ public class Controller3D : MonoBehaviour {
         raycastOrigins.BottomRFCorner = new Vector3(bounds.max.x, bounds.min.y, bounds.max.z);
         raycastOrigins.BottomLBCorner = new Vector3(bounds.min.x, bounds.min.y, bounds.min.z);
 
+        raycastOrigins.Center = bounds.center;
+        raycastOrigins.AroundRadius = bounds.size.z / 2;
+
     }
 
     public int verticalCircles;
@@ -252,6 +288,12 @@ public class Controller3D : MonoBehaviour {
     float horizontalRowSpacing;
     float horizontalRaySpacing;
     float horizontalRadius;
+
+    public int aroundRaysPerCircle;
+    public int aroundCircles;
+    public float aroundRaycastsLength = 3f;
+    float aroundCirclesSpacing;
+    float aroundAngleSpacing;
 
     void CalculateRaySpacing()
     {
@@ -272,6 +314,12 @@ public class Controller3D : MonoBehaviour {
         horizontalRowSpacing = bounds.size.y / (horizontalRows - 1);
         horizontalRaySpacing = bounds.size.x / (horizontalRaysPerRow - 1);
         horizontalRadius = Mathf.Abs(bounds.size.x / 2);
+
+        aroundCircles = Mathf.Clamp(aroundCircles, 3, int.MaxValue);
+        aroundRaysPerCircle = Mathf.Clamp(aroundRaysPerCircle, 3, int.MaxValue);
+
+        aroundCirclesSpacing = bounds.size.y / (aroundCircles - 1);
+        aroundAngleSpacing = 360 / (aroundRaysPerCircle);
     }
 
     struct RaycastOrigins
@@ -282,6 +330,9 @@ public class Controller3D : MonoBehaviour {
         //public Vector3 BottomLeft;//min x, miny, center z 
         public Vector3 BottomLFCorner, BottomRFCorner;
         public Vector3 BottomLBCorner;
+
+        public Vector3 Center;
+        public float AroundRadius;
         
     }
 
@@ -291,6 +342,7 @@ public class Controller3D : MonoBehaviour {
         public bool above, below;
         public bool left, right;
         public bool foward, behind;
+        public bool around;
 
         public void ResetVertical()
         {
@@ -300,6 +352,10 @@ public class Controller3D : MonoBehaviour {
         {
             left = right = false;
             foward = behind = false;
+        }
+        public void ResetAround()
+        {
+            around = false;
         }
     }
 }

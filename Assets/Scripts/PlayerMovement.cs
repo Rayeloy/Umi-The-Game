@@ -38,10 +38,13 @@ public class PlayerMovement : MonoBehaviour
     Vector3 currentVel;
     [Header("SPEED")]
     public float maxMoveSpeed = 10.0f;
-    float currentMaxMoveSpeed = 10.0f;
+    float maxMoveSpeed2; // is the max speed from which we aply the joystick sensitivity value
+    float currentMaxMoveSpeed = 10.0f; // its the final max speed, after the joyjoystick sensitivity value
     [Tooltip("Maximum speed that you can travel at horizontally when hit by someone")]
     public float maxKnockbackSpeed = 300f;
     float currentSpeed = 0;
+    public float maxSpeedInWater = 5f;
+    public float maxVerticalSpeedInWater = 3f;
     [Header("BOOST")]
     public float boostSpeed = 20f;
     public float boostCD = 5f;
@@ -74,7 +77,7 @@ public class PlayerMovement : MonoBehaviour
         jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
         print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
         Body.material = team == Team.blue ? teamBlueMat : teamRedMat;
-        currentMaxMoveSpeed = maxMoveSpeed;
+        currentMaxMoveSpeed = maxMoveSpeed2 = maxMoveSpeed;
     }
     int frameCounter = 0;
     public void KonoUpdate()
@@ -94,11 +97,16 @@ public class PlayerMovement : MonoBehaviour
         //print("CurrentVel = " + currentVel);
         controller.Move(currentVel * Time.deltaTime);
         myPlayerCombat.KonoUpdate();
+        controller.collisions.ResetAround();
     }
 
     void VerticalMovement()
     {
         currentVel.y += gravity * Time.deltaTime;
+        if (inWater)
+        {
+            currentVel.y = Mathf.Clamp(currentVel.y, -maxVerticalSpeedInWater, float.MaxValue);
+        }
         if (Input.GetButtonDown(contName + "A"))
         {
             //print("JUMP");
@@ -106,7 +114,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
-
+    
     void HorizontalMovement()
     {
         if (moveSt != MoveState.Knockback)
@@ -119,8 +127,10 @@ public class PlayerMovement : MonoBehaviour
         }
         ProcessBoostCD();
 
+        maxMoveSpeed2 = maxMoveSpeed;
+        ProcessWater();
         if (joystickSens >= 0.88 || joystickSens > 1) joystickSens = 1;
-        currentMaxMoveSpeed = (joystickSens / 1) * maxMoveSpeed;
+        currentMaxMoveSpeed = (joystickSens / 1) * maxMoveSpeed2;
         float actAccel = moveSt==MoveState.Moving && currentSpeed < currentMaxMoveSpeed ? initialAcc : breakAcc;
 
         currentSpeed = currentSpeed + actAccel * Time.deltaTime;
@@ -159,7 +169,7 @@ public class PlayerMovement : MonoBehaviour
                 currentVel = currentVel + knockback;
                 currentSpeed = currentVel.magnitude;
                 currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
-                print("currentVel = " + currentVel.ToString("F4"));
+                //print("currentVel = " + currentVel.ToString("F4"));
                 moveSt = MoveState.NotMoving;
                 break;
             case MoveState.MovingBreaking:
@@ -167,7 +177,7 @@ public class PlayerMovement : MonoBehaviour
                 horizontalVel = new Vector3(finalDir.x, 0, finalDir.z);
                 currentVel = horizontalVel.normalized * currentSpeed;
                 currentVel.y = finalDir.y;
-                print("CURRENT SPEED = " + currentSpeed);
+                //print("CURRENT SPEED = " + currentSpeed);
                 break;
         }
     }
@@ -239,7 +249,7 @@ public class PlayerMovement : MonoBehaviour
 
     void StartJump()
     {
-        if (controller.collisions.below)
+        if (controller.collisions.below && (!inWater || inWater && controller.collisions.around))
         {
             currentVel.y = jumpVelocity;
         }
@@ -247,7 +257,7 @@ public class PlayerMovement : MonoBehaviour
 
     void StartBoost()
     {
-        if (!noInput && boostReady && !haveFlag)
+        if (!noInput && boostReady && !haveFlag&& !inWater)
         {
             moveSt = MoveState.Boost;
             boostTime = 0f;
@@ -369,6 +379,24 @@ public class PlayerMovement : MonoBehaviour
         GameController.instance.RespawnPlayer(this);
     }
 
+    bool inWater = false;
+    void EnterWater()
+    {
+        inWater = true;
+    }
+    void ExitWater()
+    {
+        inWater = false;
+    }
+    void ProcessWater()
+    {
+        if (inWater)
+        {
+            controller.AroundCollisions();
+            maxMoveSpeed2 = maxSpeedInWater;
+        }
+    }
+
     void CheckWinGame(Respawn respawn)
     {
         if (haveFlag && team == respawn.team)
@@ -390,6 +418,18 @@ public class PlayerMovement : MonoBehaviour
             case "Respawn":
                 //print("I'm " + name + " and I touched a respawn");
                 CheckWinGame(col.GetComponent<Respawn>());
+                break;
+            case "Water":
+                EnterWater();
+                break;
+        }
+    }
+    private void OnTriggerExit(Collider col)
+    {
+        switch (col.tag)
+        {
+            case "Water":
+                ExitWater();
                 break;
         }
     }

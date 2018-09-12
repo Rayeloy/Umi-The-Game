@@ -18,7 +18,7 @@ public class Hitbox : MonoBehaviour
         if (myPlayerCombat.attackStg == PlayerCombat.attackStage.active)
         {
             //print("I'm " + myPlayerMov.gameObject.name + " and I collided with " + col.gameObject);
-            if (col.tag == "Player" && col.gameObject != myPlayerMov.gameObject)
+            if (col.tag == "Player" && col.gameObject != myPlayerMov.gameObject && myPlayerMov.team != col.GetComponent<PlayerMovement>().team)
             {
                 bool encontrado = false;
                 foreach (string n in myPlayerCombat.targetsHit)

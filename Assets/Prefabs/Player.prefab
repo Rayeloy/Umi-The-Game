@@ -484,6 +484,8 @@ MonoBehaviour:
   noInput: 0
   maxMoveSpeed: 10
   maxKnockbackSpeed: 300
+  maxSpeedInWater: 5
+  maxVerticalSpeedInWater: 3
   boostSpeed: 30
   boostCD: 3
   boostDuration: 0.3
@@ -511,12 +513,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collisionMask:
     serializedVersion: 2
+    m_Bits: 16896
+  collisionMaskAround:
+    serializedVersion: 2
     m_Bits: 512
   coll: {fileID: 136730111159505118}
   verticalCircles: 3
   verticalRaysPerCircle: 10
   horizontalRows: 10
   horizontalRaysPerRow: 20
+  aroundRaysPerCircle: 10
+  aroundCircles: 10
+  aroundRaycastsLength: 1.5
 --- !u!136 &136730111159505118
 CapsuleCollider:
   m_ObjectHideFlags: 1
