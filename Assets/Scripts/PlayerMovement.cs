@@ -383,6 +383,12 @@ public class PlayerMovement : MonoBehaviour
     void EnterWater()
     {
         inWater = true;
+        if (haveFlag)
+        {
+            GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
+            flag = null;
+            haveFlag = false;
+        }
     }
     void ExitWater()
     {
