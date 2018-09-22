@@ -133,11 +133,11 @@ MonoBehaviour:
   myPlayerMov: {fileID: 0}
   myCamera: {fileID: 4866120176445652}
   myPlayer: {fileID: 0}
-  camMode: 0
+  camMode: 1
   CameraMoveSpeed: 120
   CameraFollowObj: {fileID: 0}
-  clampAngleMax: 45
-  clampAngleMin: 0
+  clampAngleMax: 50
+  clampAngleMin: -50
   inputSensitivity: 150
   CameraObj: {fileID: 0}
   PlacerObj: {fileID: 0}
@@ -160,7 +160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09a22c45ec793904bbb9aab9ec18bca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minDistance: 1
+  minDistance: 3
   maxDistance: 7
   smooth: 5
   dollyDirAdjusted: {x: 0, y: 0, z: 0}
