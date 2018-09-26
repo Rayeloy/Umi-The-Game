@@ -111,9 +111,13 @@ public class GameController : MonoBehaviour {
             {
                 case PlayerMovement.Team.blue:
                     pM.transform.position = blueTeamSpawn.position;
+                    pM.rotateObj.transform.localRotation = Quaternion.Euler(0, blueTeamSpawn.rotation.eulerAngles.y,0);
+                    pM.myCamera.transform.localRotation = pM.rotateObj.transform.localRotation;
                     break;
                 case PlayerMovement.Team.red:
                     pM.transform.position = redTeamSpawn.position;
+                    pM.rotateObj.transform.localRotation = Quaternion.Euler(0, redTeamSpawn.rotation.eulerAngles.y, 0);
+                    pM.myCamera.transform.localRotation = pM.rotateObj.transform.localRotation;
                     break;
             }
         }
@@ -138,9 +142,13 @@ public class GameController : MonoBehaviour {
         {
             case PlayerMovement.Team.blue:
                 player.transform.position = blueTeamSpawn.position;
+                player.rotateObj.transform.localRotation = Quaternion.Euler(0, blueTeamSpawn.rotation.eulerAngles.y, 0);
+                player.myCamera.transform.localRotation = player.rotateObj.transform.localRotation;
                 break;
             case PlayerMovement.Team.red:
                 player.transform.position = redTeamSpawn.position;
+                player.rotateObj.transform.localRotation = Quaternion.Euler(0, redTeamSpawn.rotation.eulerAngles.y, 0);
+                player.myCamera.transform.localRotation = player.rotateObj.transform.localRotation;
                 break;
         }
     }

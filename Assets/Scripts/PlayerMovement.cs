@@ -33,6 +33,14 @@ public class PlayerMovement : MonoBehaviour
         Boost
     }
     [HideInInspector]
+    public JumpState jumpSt = JumpState.none;
+    public enum JumpState
+    {
+        Jumping,
+        Breaking,//Emergency stop
+        none
+    }
+    [HideInInspector]
     public bool noInput = false;
     Vector3 objectiveVel;
     Vector3 currentVel;
@@ -61,6 +69,12 @@ public class PlayerMovement : MonoBehaviour
     public float jumpHeight = 4f;
     public float jumpApexTime = 0.4f;
     float jumpVelocity;
+    float timePressingJump = 0.0f;
+    float maxTimePressingJump;
+    [Tooltip("How fast the 'stop jump early' stops in the air. This value is multiplied by the gravity and then applied to the vertical speed.")]
+    public float breakJumpForce = 2.0f;
+    [Tooltip("During how much part of the jump (in time to reach the apex) is the player able to stop the jump. 1 is equals to the whole jump, and 0.5 is equals the half of the jump time.")]
+    public float pressingJumpActiveProportion = 0.7f;
 
 
 
@@ -75,9 +89,11 @@ public class PlayerMovement : MonoBehaviour
     {
         gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
         jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
+        maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
         print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
         Body.material = team == Team.blue ? teamBlueMat : teamRedMat;
         currentMaxMoveSpeed = maxMoveSpeed2 = maxMoveSpeed;
+        
     }
     int frameCounter = 0;
     public void KonoUpdate()
@@ -100,21 +116,52 @@ public class PlayerMovement : MonoBehaviour
         controller.collisions.ResetAround();
     }
 
-    void VerticalMovement()
+    [HideInInspector]
+    public Vector3 currentMovDir;
+    float joystickAngle;
+    float deadzone = 0.15f;
+    float joystickSens = 0;
+    public void CalculateMoveDir()
     {
-        currentVel.y += gravity * Time.deltaTime;
-        if (inWater)
+        float horiz = Input.GetAxisRaw(contName + "H");
+        float vert = -Input.GetAxisRaw(contName + "V");
+        //print("H = " + horiz + "; V = " + vert);
+        // Check that they're not BOTH zero - otherwise
+        // dir would reset because the joystick is neutral.
+        Vector3 temp = new Vector3(horiz, 0, vert);
+        joystickSens = temp.magnitude;
+        //print("temp.magnitude = " + temp.magnitude);
+        if (temp.magnitude >= deadzone && !noInput)
         {
-            currentVel.y = Mathf.Clamp(currentVel.y, -maxVerticalSpeedInWater, float.MaxValue);
+            moveSt = MoveState.Moving;
+            currentMovDir = temp;
+            currentMovDir.Normalize();
+            switch (myCamera.camMode)
+            {
+                case CameraControler.cameraMode.Fixed:
+                    currentMovDir = RotateVector(-facingAngle, temp);
+                    break;
+                case CameraControler.cameraMode.Shoulder:
+                    currentMovDir = RotateVector(-facingAngle, temp);
+                    break;
+                case CameraControler.cameraMode.Free:
+                    Vector3 camDir = (transform.position-myCamera.transform.GetChild(0).position).normalized;
+                    camDir.y = 0;
+                    // ANGLE OF JOYSTICK
+                    joystickAngle = Mathf.Acos(((0 * currentMovDir.x) + (1 * currentMovDir.z)) / (1 * currentMovDir.magnitude)) * Mathf.Rad2Deg;
+                    joystickAngle = (horiz > 0) ? -joystickAngle : joystickAngle;
+                    //rotate camDir joystickAngle degrees
+                    currentMovDir=RotateVector(joystickAngle, camDir);
+                    RotateCharacter(0);
+                    break;
+            }
         }
-        if (Input.GetButtonDown(contName + "A"))
+        else
         {
-            //print("JUMP");
-            StartJump();
+            moveSt = MoveState.NotMoving;
         }
-
     }
-    
+
     void HorizontalMovement()
     {
         if (moveSt != MoveState.Knockback)
@@ -181,70 +228,51 @@ public class PlayerMovement : MonoBehaviour
                 break;
         }
     }
-    [HideInInspector]
-    public Vector3 currentMovDir;
-    float joystickAngle;
-    float deadzone = 0.15f;
-    float joystickSens = 0;
-    public void CalculateMoveDir()
+
+    void VerticalMovement()
     {
-        float horiz = Input.GetAxisRaw(contName + "H");
-        float vert = -Input.GetAxisRaw(contName + "V");
-        //print("H = " + horiz + "; V = " + vert);
-        // Check that they're not BOTH zero - otherwise
-        // dir would reset because the joystick is neutral.
-        Vector3 temp = new Vector3(horiz, 0, vert);
-        joystickSens = temp.magnitude;
-        //print("temp.magnitude = " + temp.magnitude);
-        if (temp.magnitude >= deadzone && !noInput)
+        if (Input.GetButtonDown(contName + "A"))
         {
-            moveSt = MoveState.Moving;
-            currentMovDir = temp;
-            currentMovDir.Normalize();
-            switch (myCamera.camMode)
-            {
-                case CameraControler.cameraMode.Free:
-                    //Calculate looking dir of camera
-                    Vector3 camPos = myCamera.transform.GetChild(0).position;
-                    Vector3 myPos = transform.position;
-                    Vector3 camDir = new Vector3(myPos.x - camPos.x, 0, myPos.z - camPos.z).normalized;
-                    // ANGLE OF JOYSTICK
-                    joystickAngle = Mathf.Acos(((0 * currentMovDir.x) + (1 * currentMovDir.z)) / (1 * currentMovDir.magnitude)) * Mathf.Rad2Deg;
-                    joystickAngle = (horiz > 0) ? -joystickAngle : joystickAngle;
-                    //print("currentMovDir = " + currentMovDir + "; camDir = " + camDir + "; joystickAngle = " + joystickAngle);
-                    //rotate camDir joystickAngle degrees
-                    float theta = joystickAngle * Mathf.Deg2Rad;
-                    float cs = Mathf.Cos(theta);
-                    float sn = Mathf.Sin(theta);
-                    float px = camDir.x * cs - camDir.z * sn;
-                    float py = camDir.x * sn + camDir.z * cs;
-                    currentMovDir = new Vector3(px, 0, py).normalized;
-                    //print("FINAL currentMovDir = " + currentMovDir);
-                    RotateCharacter(0);
-                    break;
-                case CameraControler.cameraMode.Fixed:
-                    float angle = -facingAngle * Mathf.Deg2Rad;
-                    float cos = Mathf.Cos(angle);
-                    float sin = Mathf.Sin(angle);
-                    float x = temp.x * cos - temp.z * sin;
-                    float y = temp.x * sin + temp.z * cos;
-                    currentMovDir = new Vector3(x, 0, y).normalized;
-                    //print("facingAngle ="+facingAngle+"; currentMovDir= " + currentMovDir);
-                    break;
-            }
-            //corrections...
-            //rotate angle -90 degrees
-            /*float theta = 90 * Mathf.Deg2Rad;
-            float cs = Mathf.Cos(theta);
-            float sn = Mathf.Sin(theta);
-            float px = currentMovDir.x * cs - currentMovDir.z * sn;
-            float py = currentMovDir.x * sn + currentMovDir.z * cs;
-            currentMovDir = new Vector3(px, 0, py).normalized;*/
+            //print("JUMP");
+            StartJump();
         }
-        else
+
+        switch (jumpSt)
         {
-            moveSt = MoveState.NotMoving;
+            case JumpState.none:
+                currentVel.y += gravity * Time.deltaTime;
+                break;
+            case JumpState.Jumping:
+                currentVel.y += gravity * Time.deltaTime;
+                timePressingJump += Time.deltaTime;
+                if (timePressingJump >= maxTimePressingJump-maxTimePressingJump/3)
+                {
+                    StopJump();
+                }
+                else
+                {
+                    if (Input.GetButtonUp(contName + "A"))
+                    {
+                        jumpSt = JumpState.Breaking;
+                    }
+                }
+                break;
+            case JumpState.Breaking:
+                currentVel.y += (gravity*breakJumpForce) * Time.deltaTime;
+                if (currentVel.y <= 0)
+                {
+                    jumpSt = JumpState.none;
+                }
+
+                break;
+
+
         }
+        if (inWater)
+        {
+            currentVel.y = Mathf.Clamp(currentVel.y, -maxVerticalSpeedInWater, float.MaxValue);
+        }
+
     }
 
     void StartJump()
@@ -252,7 +280,15 @@ public class PlayerMovement : MonoBehaviour
         if (controller.collisions.below && (!inWater || inWater && controller.collisions.around))
         {
             currentVel.y = jumpVelocity;
+            jumpSt = JumpState.Jumping;
+            timePressingJump = 0;
         }
+    }
+
+    void StopJump()
+    {
+        jumpSt = JumpState.none;
+        timePressingJump = 0;
     }
 
     void StartBoost()
@@ -292,14 +328,18 @@ public class PlayerMovement : MonoBehaviour
         {
             case CameraControler.cameraMode.Fixed:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
+                //Calculate looking dir of camera
+                Vector3 camPos = myCamera.transform.GetChild(0).position;
+                Vector3 myPos = transform.position;
+                currentFacingDir = new Vector3(myPos.x - camPos.x, 0, myPos.z - camPos.z).normalized;
+                break;
+            case CameraControler.cameraMode.Shoulder:
+                facingAngle = rotateObj.localRotation.eulerAngles.y;
+                currentFacingDir = RotateVector(-myCamera.transform.localRotation.eulerAngles.y, Vector3.forward).normalized;
+                //print("CurrentFacingDir = " + currentFacingDir);
                 break;
             case CameraControler.cameraMode.Free:
-                float theta = rotateObj.localRotation.y * Mathf.Deg2Rad;
-                float cs = Mathf.Cos(theta);
-                float sn = Mathf.Sin(theta);
-                float px = Vector3.forward.x * cs - Vector3.forward.z * sn;
-                float py = Vector3.forward.x * sn + Vector3.forward.z * cs;
-                currentFacingDir = new Vector3(px, 0, py).normalized;
+                currentFacingDir = RotateVector(-rotateObj.localRotation.eulerAngles.y, Vector3.forward).normalized;
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 break;
         }
@@ -313,6 +353,12 @@ public class PlayerMovement : MonoBehaviour
                 Vector3 point1 = transform.position;
                 Vector3 point2 = new Vector3(point1.x, point1.y + 1, point1.z);
                 Vector3 dir = new Vector3(point2.x - point1.x, point2.y - point1.y, point2.z - point1.z);
+                rotateObj.Rotate(dir, rotSpeed * Time.deltaTime);
+                break;
+            case CameraControler.cameraMode.Shoulder:
+                point1 = transform.position;
+                point2 = new Vector3(point1.x, point1.y + 1, point1.z);
+                dir = new Vector3(point2.x - point1.x, point2.y - point1.y, point2.z - point1.z);
                 rotateObj.Rotate(dir, rotSpeed * Time.deltaTime);
                 break;
             case CameraControler.cameraMode.Free:
@@ -362,10 +408,14 @@ public class PlayerMovement : MonoBehaviour
     public GameObject flag = null;
     public void PickFlag(GameObject _flag)
     {
-        flag = _flag;
-        flag.transform.SetParent(rotateObj);
-        flag.transform.localPosition = new Vector3(0, 0, -1);
-        haveFlag = true;
+        if (!haveFlag && flag.GetComponent<Flag>().currentOwner==null)
+        {
+            flag = _flag;
+            flag.transform.SetParent(rotateObj);
+            flag.transform.localPosition = new Vector3(0, 0, -1);
+            haveFlag = true;
+            flag.GetComponent<Flag>().currentOwner = gameObject;
+        }
     }
 
     void Die()
@@ -375,6 +425,7 @@ public class PlayerMovement : MonoBehaviour
             GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
             flag = null;
             haveFlag = false;
+            flag.GetComponent<Flag>().currentOwner = null;
         }
         GameController.instance.RespawnPlayer(this);
     }
@@ -388,6 +439,7 @@ public class PlayerMovement : MonoBehaviour
             GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
             flag = null;
             haveFlag = false;
+            flag.GetComponent<Flag>().currentOwner = null;
         }
     }
     void ExitWater()
@@ -438,5 +490,16 @@ public class PlayerMovement : MonoBehaviour
                 ExitWater();
                 break;
         }
+    }
+
+    public Vector3 RotateVector(float angle, Vector3 vector)
+    {
+        //rotate angle -90 degrees
+        float theta = angle * Mathf.Deg2Rad;
+        float cs = Mathf.Cos(theta);
+        float sn = Mathf.Sin(theta);
+        float px = vector.x * cs - vector.z * sn;
+        float py = vector.x * sn + vector.z * cs;
+        return  new Vector3(px, 0, py).normalized;
     }
 }

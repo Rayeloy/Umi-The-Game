@@ -7,7 +7,10 @@ public class Flag : MonoBehaviour {
     public Vector3 respawnPos;
     [Tooltip("Not used yet. Can be used to differentiate flags")]
     public int flagNumber;
+    [HideInInspector]
+    public GameObject currentOwner;
 	void Start () {
         respawnPos = transform.position;
+        currentOwner = null;
 	}
 }

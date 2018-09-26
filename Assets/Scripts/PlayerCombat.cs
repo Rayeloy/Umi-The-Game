@@ -62,6 +62,16 @@ public class PlayerCombat : MonoBehaviour {
         {
             ChangeNextAttackType();
         }
+
+        if (Input.GetButtonDown(myPlayerMovement.contName + "LB"))
+        {
+            print("startAiming");
+            StartAiming();
+        }
+        if (Input.GetButtonUp(myPlayerMovement.contName + "LB"))
+        {
+            StopAiming();
+        }
     }
 
 
@@ -140,5 +150,15 @@ public class PlayerCombat : MonoBehaviour {
                 }
                 break;
         }
+    }
+    
+    void StartAiming()
+    {
+        myPlayerMovement.myCamera.SwitchCamera(CameraControler.cameraMode.Shoulder);
+    }
+
+    void StopAiming()
+    {
+        myPlayerMovement.myCamera.SwitchCamera(CameraControler.cameraMode.Free);
     }
 }
