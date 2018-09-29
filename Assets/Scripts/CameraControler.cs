@@ -76,7 +76,7 @@ public class CameraControler : MonoBehaviour
                 break;
             case cameraMode.Free:
                 //myCamera.SetParent(transform);
-                GetComponentInChildren<CameraCollisions>().enabled = false;
+                GetComponentInChildren<CameraCollisions>().enabled = true;
                 myCamera.localPosition = new Vector3(0,0,-5f);
                 break;
             case cameraMode.FixedFree:
@@ -200,7 +200,7 @@ public class CameraControler : MonoBehaviour
                     {
                         currentCamPos = targetCamPos;
                         currentCamRot = targetCamRot;
-                        print("NOT SWITCHING: targetCamPos= " + targetCamPos + "; currentCamPos = " + currentCamPos);
+                        //print("NOT SWITCHING: targetCamPos= " + targetCamPos + "; currentCamPos = " + currentCamPos);
                     }
                     transform.position = Vector3.MoveTowards(transform.position, currentCamPos, step);
                     transform.rotation = currentCamRot;

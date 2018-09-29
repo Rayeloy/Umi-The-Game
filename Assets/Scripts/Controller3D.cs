@@ -197,11 +197,11 @@ public class Controller3D : MonoBehaviour
         float radius = raycastOrigins.AroundRadius;
         Vector3 circlesOrigin = raycastOrigins.BottomEnd;
         Vector3 circleOrigin = circlesOrigin;
-        print("----------NEW SET OF RAYS------------");
+        //print("----------NEW SET OF RAYS------------");
         for (int i = 0; i < aroundCircles; i++)
         {
             circleOrigin.y = circlesOrigin.y + (i * aroundCirclesSpacing);
-            print("Circle Origin= " + circleOrigin.ToString("F4"));
+            //print("Circle Origin= " + circleOrigin.ToString("F4"));
             for (int j = 0; j < aroundRaysPerCircle; j++)
             {
                 float angle = (j * aroundAngleSpacing) * Mathf.Deg2Rad;

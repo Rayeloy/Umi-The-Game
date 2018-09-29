@@ -377,6 +377,7 @@ public class PlayerMovement : MonoBehaviour
     Vector3 knockback;
     public void StartRecieveHit(Vector3 _knockback, PlayerMovement attacker, float _maxTimeStun)
     {
+        print("Recieve hit");
         moveSt = MoveState.Knockback;
         maxTimeStun = _maxTimeStun;
         timeStun = 0;
@@ -386,6 +387,7 @@ public class PlayerMovement : MonoBehaviour
         //Give FLAG
         if (haveFlag)
         {
+            print("ROBA BANDERA");
             attacker.PickFlag(flag);
             flag = null;
             haveFlag = false;
@@ -408,7 +410,7 @@ public class PlayerMovement : MonoBehaviour
     public GameObject flag = null;
     public void PickFlag(GameObject _flag)
     {
-        if (!haveFlag && flag.GetComponent<Flag>().currentOwner==null)
+        if (!haveFlag)
         {
             flag = _flag;
             flag.transform.SetParent(rotateObj);
@@ -437,9 +439,10 @@ public class PlayerMovement : MonoBehaviour
         if (haveFlag)
         {
             GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
+            flag.GetComponent<Flag>().currentOwner = null;
             flag = null;
             haveFlag = false;
-            flag.GetComponent<Flag>().currentOwner = null;
+            print("CURRENT OWNER = NULL");
         }
     }
     void ExitWater()
@@ -471,6 +474,7 @@ public class PlayerMovement : MonoBehaviour
                 Die();
                 break;
             case "Flag":
+                if(col.gameObject.GetComponent<Flag>().currentOwner==null)
                 PickFlag(col.gameObject);
                 break;
             case "Respawn":
