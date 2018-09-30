@@ -107,8 +107,10 @@ public class PlayerMovement : MonoBehaviour
         ProcessStun();
 
         HorizontalMovement();
+        print("vel = " + currentVel.ToString("F4"));
         UpdateFacingDir();
         VerticalMovement();
+        print("vel = " + currentVel.ToString("F4"));
 
         //print("CurrentVel = " + currentVel);
         controller.Move(currentVel * Time.deltaTime);
@@ -279,6 +281,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (controller.collisions.below && (!inWater || inWater && controller.collisions.around))
         {
+            print("JUMP");
             currentVel.y = jumpVelocity;
             jumpSt = JumpState.Jumping;
             timePressingJump = 0;

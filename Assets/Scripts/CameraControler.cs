@@ -105,7 +105,7 @@ public class CameraControler : MonoBehaviour
     }
 
     // Update is called once per frame
-    void LateUpdate()
+    public void LateUpdate()
     {
         if (GameController.instance.playing)
         {
@@ -215,6 +215,13 @@ public class CameraControler : MonoBehaviour
             SmoothCameraMove();
         }
     }
+
+    public void InstantPositioning()
+    {
+        currentCamPos = targetCamPos;
+        transform.position = currentCamPos;
+    }
+
     float smoothPosSpeedX, smoothPosSpeedY, smoothPosSpeedZ;
     public float smoothPositioningTime = 0.2f;
     void SmoothPos()
