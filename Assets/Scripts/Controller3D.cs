@@ -62,8 +62,8 @@ public class Controller3D : MonoBehaviour
         collisions.ResetHorizontal();
         collisions.ResetClimbingSlope();
 
+        print("Start Vel = " + vel.ToString("F4"));
         Debug.DrawRay(raycastOrigins.Center, vel.normalized * 2, Color.blue, 3);
-        //print("Start Vel = " + vel.ToString("F4"));
         /*if (vel.x != 0 || vel.z != 0)
         {
             //print("Check DescendSlopeCollisions");
@@ -89,7 +89,7 @@ public class Controller3D : MonoBehaviour
             VerticalCollisions(ref vel);
         }
 
-        //print("FinalVel= " + vel.ToString("F5"));
+        print("FinalVel= " + vel.ToString("F5"));
         transform.Translate(vel, Space.World);
     }
 
