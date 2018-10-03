@@ -100,6 +100,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (controller.collisions.above || controller.collisions.below)
         {
+            //print("SETTING VEL.Y TO 0");
             currentVel.y = 0;
         }
         //print("FRAME NUMBER " + frameCounter);
@@ -107,10 +108,10 @@ public class PlayerMovement : MonoBehaviour
         ProcessStun();
 
         HorizontalMovement();
-        print("vel = " + currentVel.ToString("F4"));
+        //print("vel = " + currentVel.ToString("F4"));
         UpdateFacingDir();
         VerticalMovement();
-        print("vel = " + currentVel.ToString("F4"));
+        //print("vel = " + currentVel.ToString("F4"));
 
         //print("CurrentVel = " + currentVel);
         controller.Move(currentVel * Time.deltaTime);
