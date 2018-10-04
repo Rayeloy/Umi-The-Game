@@ -7,7 +7,9 @@ public class PlayerMovement : MonoBehaviour
 {
     public CameraControler myCamera;
     public Transform rotateObj;
-    public MeshRenderer Body;
+    public SkinnedMeshRenderer Body;
+    public GameObject churroRojo;
+    public GameObject churroAzul;
     public Material teamBlueMat;
     public Material teamRedMat;
     PlayerCombat myPlayerCombat;
@@ -76,6 +78,12 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("During how much part of the jump (in time to reach the apex) is the player able to stop the jump. 1 is equals to the whole jump, and 0.5 is equals the half of the jump time.")]
     public float pressingJumpActiveProportion = 0.7f;
 
+    public void SetVelocity(Vector3 vel)
+    {
+        objectiveVel = vel;
+        currentVel = objectiveVel;
+    }
+
 
 
     private void Awake()
@@ -85,13 +93,24 @@ public class PlayerMovement : MonoBehaviour
         controller = GetComponent<Controller3D>();
         myPlayerCombat = GetComponent<PlayerCombat>();
     }
-    private void Start()
+    public void KonoStart()
     {
         gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
         jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
         maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
         print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
         Body.material = team == Team.blue ? teamBlueMat : teamRedMat;
+        switch (team)
+        {
+            case Team.blue:
+                churroAzul.SetActive(true);
+                churroRojo.SetActive(false);
+                break;
+            case Team.red:
+                churroAzul.SetActive(false);
+                churroRojo.SetActive(true);
+                break;
+        }
         currentMaxMoveSpeed = maxMoveSpeed2 = maxMoveSpeed;
         
     }
@@ -117,6 +136,7 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(currentVel * Time.deltaTime);
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();
+
     }
 
     [HideInInspector]
@@ -155,6 +175,7 @@ public class PlayerMovement : MonoBehaviour
                     joystickAngle = (horiz > 0) ? -joystickAngle : joystickAngle;
                     //rotate camDir joystickAngle degrees
                     currentMovDir=RotateVector(joystickAngle, camDir);
+                    //print("joystickAngle= " + joystickAngle + "; camDir= " + camDir.ToString("F4") + "; currentMovDir = " + currentMovDir.ToString("F4"));
                     RotateCharacter(0);
                     break;
             }
@@ -171,8 +192,9 @@ public class PlayerMovement : MonoBehaviour
         {
             CalculateMoveDir();//Movement direction
         }
-        if (Input.GetButtonDown(contName+"Y"))
+        if (!myPlayerCombat.LTPulsado && !myPlayerCombat.RTPulsado && Input.GetButtonDown(contName + "RB"))
         {
+            myPlayerCombat.RTPulsado = true;
             StartBoost();
         }
         ProcessBoostCD();
@@ -418,25 +440,27 @@ public class PlayerMovement : MonoBehaviour
         {
             flag = _flag;
             flag.transform.SetParent(rotateObj);
-            flag.transform.localPosition = new Vector3(0, 0, -1);
+            flag.transform.localPosition = new Vector3(0, 0, -0.5f);
+            flag.transform.localRotation = Quaternion.Euler(0,-90,0);
             haveFlag = true;
             flag.GetComponent<Flag>().currentOwner = gameObject;
         }
     }
 
-    void Die()
+    public void Die()
     {
         if (haveFlag)
         {
             GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
+            flag.GetComponent<Flag>().currentOwner = null;
             flag = null;
             haveFlag = false;
-            flag.GetComponent<Flag>().currentOwner = null;
         }
         GameController.instance.RespawnPlayer(this);
     }
 
-    bool inWater = false;
+    [HideInInspector]
+    public bool inWater = false;
     void EnterWater()
     {
         inWater = true;

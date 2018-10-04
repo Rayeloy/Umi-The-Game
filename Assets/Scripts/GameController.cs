@@ -7,7 +7,11 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour {
 
     public static GameController instance;
-    public AttackData[] allAttacks;
+    //public AttackData[] allAttacks;
+    public AttackData attackX;
+    public AttackData attackY;
+    public AttackData attackB;
+    public AttackData attackHook;
     int slowmo = 0;
     public PlayerMovement[] allPlayers;
     public GameObject[] allCanvas;
@@ -70,7 +74,12 @@ public class GameController : MonoBehaviour {
     }
     private void Start()
     {
+        foreach (PlayerMovement pM in allPlayers)
+        {
+            pM.KonoStart();
+        }
         StartGame();
+
     }
 
     // Update is called once per frame
@@ -107,20 +116,7 @@ public class GameController : MonoBehaviour {
         playing = true;
         foreach(PlayerMovement pM in allPlayers)
         {
-            switch (pM.team)
-            {
-                case PlayerMovement.Team.blue:
-                    pM.transform.position = blueTeamSpawn.position;
-                    pM.rotateObj.transform.localRotation = Quaternion.Euler(0, blueTeamSpawn.rotation.eulerAngles.y,0);
-                    break;
-                case PlayerMovement.Team.red:
-                    pM.transform.position = redTeamSpawn.position;
-                    pM.rotateObj.transform.localRotation = Quaternion.Euler(0, redTeamSpawn.rotation.eulerAngles.y, 0);
-                    break;
-            }
-            pM.myCamera.LateUpdate();
-            pM.myCamera.InstantPositioning();
-            pM.myCamera.transform.localRotation = pM.rotateObj.transform.localRotation;
+            RespawnPlayer(pM);
         }
     }
 
@@ -139,6 +135,7 @@ public class GameController : MonoBehaviour {
     public void RespawnPlayer(PlayerMovement player)
     {
         print("RESPAWN PLAYER");
+        player.SetVelocity(Vector3.zero);
         switch (player.team)
         {
             case PlayerMovement.Team.blue:
@@ -150,8 +147,13 @@ public class GameController : MonoBehaviour {
                 player.rotateObj.transform.localRotation = Quaternion.Euler(0, redTeamSpawn.rotation.eulerAngles.y, 0);
                 break;
         }
+        //player.myCamera.KonoAwake();
+        //player.myCamera.SwitchCamera(player.myCamera.camMode);
+        player.myCamera.LateUpdate();
         player.myCamera.InstantPositioning();
-        player.myCamera.transform.localRotation = player.rotateObj.transform.localRotation;
+        player.myCamera.InstantRotation();
+        //player.myCamera.transform.localRotation = player.rotateObj.transform.localRotation;
+        //player.myCamera.SwitchCamera(player.myCamera.camMode);
     }
 
     public void RespawnFlag(Flag flag)
@@ -204,7 +206,11 @@ public class GameController : MonoBehaviour {
         
         playing = true;
         SwitchGameOverMenu();
-        SceneManager.LoadScene(sceneLoadedOnReset);
+        foreach(PlayerMovement pM in allPlayers)
+        {
+            pM.Die();
+        }
+        //SceneManager.LoadScene(sceneLoadedOnReset);
     }
     public void ExitGame()
     {

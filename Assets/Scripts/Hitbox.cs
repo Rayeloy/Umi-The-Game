@@ -36,8 +36,8 @@ public class Hitbox : MonoBehaviour
                     myPlayerCombat.targetsHit.Add(col.name);
                     //calculate knockback vector
                     Vector3 result = Vector3.zero;
-                    print("KNOCKBACK TYPE= " + GameController.instance.allAttacks[myPlayerCombat.attackIndex].knockbackType);
-                    switch (GameController.instance.allAttacks[myPlayerCombat.attackIndex].knockbackType)
+                    print("KNOCKBACK TYPE= " + myPlayerCombat.currentAttack.knockbackType);
+                    switch (myPlayerCombat.currentAttack.knockbackType)
                     {
                         case AttackData.KnockbackType.outwards:
                             Vector3 myPos = myPlayerMov.transform.position;
@@ -52,7 +52,7 @@ public class Hitbox : MonoBehaviour
                         case AttackData.KnockbackType.customDir:
                             //calculate real direction based on character's facing direction
                             float facingAngle = -myPlayerMov.facingAngle;
-                            Vector3 customDir = GameController.instance.allAttacks[myPlayerCombat.attackIndex].knockbackDirection;
+                            Vector3 customDir = myPlayerCombat.currentAttack.knockbackDirection;
 
                             float theta = facingAngle * Mathf.Deg2Rad;
                             float cs = Mathf.Cos(theta);
@@ -65,7 +65,7 @@ public class Hitbox : MonoBehaviour
                     }
                     print("KNOCKBACK DIR= " + result);
                     result = result * myPlayerCombat.knockBackSpeed;
-                    col.GetComponent<PlayerMovement>().StartRecieveHit(result,myPlayerMov,GameController.instance.allAttacks[myPlayerCombat.attackIndex].stunTime);
+                    col.GetComponent<PlayerMovement>().StartRecieveHit(result,myPlayerMov, myPlayerCombat.currentAttack.stunTime);
                 }
             }
         }

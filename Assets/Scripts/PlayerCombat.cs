@@ -7,9 +7,16 @@ using UnityEngine.UI;
 
 public class PlayerCombat : MonoBehaviour {
     PlayerMovement myPlayerMovement;
+    public float triggerDeadZone=0.15f;
+    [HideInInspector]
+    public bool LTPulsado = false;
+    [HideInInspector]
+    public bool RTPulsado = false;
     //List<string> attacks;
     [HideInInspector]
     public int attackIndex = 0;
+    [HideInInspector]
+    public AttackData currentAttack;
     float chargingTime;
     float startupTime;
     float activeTime;
@@ -47,35 +54,97 @@ public class PlayerCombat : MonoBehaviour {
     private void Start()
     {
         attackIndex = -1;
-        ChangeNextAttackType();
+        ChangeAttackType(GameController.instance.attackX);
+        HideAttackHitBox();
+        //ChangeNextAttackType();
     }
 
     public void KonoUpdate()
     {
-        if (Input.GetButtonDown(myPlayerMovement.contName+ "X") && !myPlayerMovement.noInput)
+        //print("Trigger = " + Input.GetAxis(myPlayerMovement.contName + "LT"));
+        if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && attackStg == attackStage.ready)
         {
-            //print(myPlayerMovement.contName);
-            StartAttack();
-        }
-        ProcessAttack();
-        if (Input.GetButtonDown(myPlayerMovement.contName + "B"))
-        {
-            ChangeNextAttackType();
+            if (Input.GetButtonDown(myPlayerMovement.contName + "X"))
+            {
+                ChangeAttackType(GameController.instance.attackX);
+                StartAttack();
+            }
+            if (Input.GetButtonDown(myPlayerMovement.contName + "Y"))
+            {
+                ChangeAttackType(GameController.instance.attackY);
+                StartAttack();
+                //ChangeNextAttackType();
+            }
+            if (Input.GetButtonDown(myPlayerMovement.contName + "B"))
+            {
+                ChangeAttackType(GameController.instance.attackB);
+                StartAttack();
+                //ChangeNextAttackType();
+            }
+            if (LTPulsado && !RTPulsado && Input.GetButtonDown(myPlayerMovement.contName + "RB"))
+            {
+                RTPulsado = true;
+                ChangeAttackType(GameController.instance.attackHook);
+                StartAttack();
+            }
         }
 
-        if (Input.GetButtonDown(myPlayerMovement.contName + "LB"))
+        ProcessAttack();
+
+        if (Input.GetButtonUp(myPlayerMovement.contName + "RB"))
+        {
+            RTPulsado = false;
+        }
+
+        if (Input.GetButtonDown(myPlayerMovement.contName + "LB") && !LTPulsado)
         {
             print("startAiming");
+            LTPulsado = true;
             StartAiming();
         }
-        if (Input.GetButtonUp(myPlayerMovement.contName + "LB"))
+        if (Input.GetButtonUp(myPlayerMovement.contName + "LB") && LTPulsado)
         {
+            print("stopAiming");
+            LTPulsado = false;
             StopAiming();
         }
     }
 
+    public void ChangeAttackType(AttackData attack)
+    {
+        currentAttack = attack;
+        attackName.text = attack.attackName;
+        chargingTime = attack.chargingTime;
+        startupTime = attack.startupTime;
+        activeTime = attack.activeTime;
+        recoveryTime = attack.recoveryTime;
+        knockBackSpeed = attack.knockbackSpeed;
+        //change hitbox
+        if (hitboxes.childCount > 0)
+        {
+            for (int i = 0; i < hitboxes.childCount; i++)
+            {
+                Destroy(hitboxes.GetChild(i).gameObject);
+            }
+        }
 
-    void ChangeNextAttackType()
+        GameObject newHitbox = Instantiate(attack.hitboxPrefab, hitboxes, false);
+        hitbox = newHitbox.GetComponent<Collider>();
+        hitbox.GetComponent<MeshRenderer>().material = hitboxMats[0];
+    }
+
+    public void HideAttackHitBox()
+    {
+        if (hitboxes.childCount > 0)
+        {
+            for (int i = 0; i < hitboxes.childCount; i++)
+            {
+                Destroy(hitboxes.GetChild(i).gameObject);
+            }
+        }
+    }
+
+    /*void ChangeNextAttackType()
     {
             attackIndex++;
             if (attackIndex >= GameController.instance.allAttacks.Length)
@@ -100,7 +169,7 @@ public class PlayerCombat : MonoBehaviour {
             GameObject newHitbox = Instantiate(GameController.instance.allAttacks[attackIndex].hitboxPrefab, hitboxes, false);
             hitbox = newHitbox.GetComponent<Collider>();
             hitbox.GetComponent<MeshRenderer>().material = hitboxMats[0];
-    }
+    }*/
 
     float attackTime = 0;
     public void StartAttack()
@@ -147,6 +216,7 @@ public class PlayerCombat : MonoBehaviour {
                     attackTime = 0;
                     attackStg = attackStage.ready;
                     hitbox.GetComponent<MeshRenderer>().material = hitboxMats[0];
+                    HideAttackHitBox();
                 }
                 break;
         }
@@ -155,6 +225,7 @@ public class PlayerCombat : MonoBehaviour {
     void StartAiming()
     {
         myPlayerMovement.myCamera.SwitchCamera(CameraControler.cameraMode.Shoulder);
+        //ChangeAttackType(GameController.instance.attackHook);
     }
 
     void StopAiming()

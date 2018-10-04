@@ -28,6 +28,7 @@ public class CameraControler : MonoBehaviour
     public float clampAngleMinSho = -40f;
     public float rotSpeedSho = 120.0f;
     [Header("FREE CAMERA")] //------------------------ 3rd person FREE CAMERA
+    public Vector3 originalCamPosFree;
     public float cameraMoveSpeed = 120.0f;
     public float clampAngleMax = 80f;
     public float clampAngleMin = 80f;
@@ -77,7 +78,9 @@ public class CameraControler : MonoBehaviour
             case cameraMode.Free:
                 //myCamera.SetParent(transform);
                 GetComponentInChildren<CameraCollisions>().enabled = true;
-                myCamera.localPosition = new Vector3(0,0,-5f);
+                transform.localRotation = myPlayerMov.rotateObj.localRotation;
+                //print("I'm " + gameObject.name + " and my local rotation = " + transform.localRotation.eulerAngles);
+                myCamera.localPosition = originalCamPosFree;
                 break;
             case cameraMode.FixedFree:
                 break;
@@ -213,13 +216,28 @@ public class CameraControler : MonoBehaviour
                 myCamera.GetComponent<CameraCollisions>().KonoUpdate();
             }
             SmoothCameraMove();
+            //print("I'm " + gameObject.name + " and my local rotation = " + transform.localRotation.eulerAngles);
         }
     }
 
     public void InstantPositioning()
     {
+        targetCamPos = cameraFollowObj.transform.position;
         currentCamPos = targetCamPos;
         transform.position = currentCamPos;
+    }
+
+    public void InstantRotation()
+    {
+        if (camMode == cameraMode.Free)
+        {
+            rotY = myPlayerMov.rotateObj.localRotation.eulerAngles.y;
+        }
+        targetCamRot = myPlayerMov.rotateObj.localRotation;
+        currentCamRot = targetCamRot;
+        transform.localRotation = currentCamRot;
+        //print("I'm " + gameObject.name + " and my rotateObj.localRotation = " + myPlayerMov.rotateObj.localRotation.eulerAngles+"; my local rotation = "+transform.localRotation.eulerAngles);
+        myCamera.localPosition = originalCamPosFree;
     }
 
     float smoothPosSpeedX, smoothPosSpeedY, smoothPosSpeedZ;
@@ -269,7 +287,9 @@ public class CameraControler : MonoBehaviour
                 break;
             case cameraMode.Free:
                 GetComponentInChildren<CameraCollisions>().enabled = false;
-                targetMyCamPos = new Vector3(0, 0, -5f);
+                //transform.localRotation = myPlayerMov.rotateObj.localRotation;
+                rotY = myPlayerMov.rotateObj.localRotation.eulerAngles.y;
+                targetMyCamPos = originalCamPosFree;
                 break;
             case cameraMode.FixedFree:
                 break;
