@@ -199,7 +199,6 @@ public class GameController : MonoBehaviour {
             }
         }
     }
-
     public string sceneLoadedOnReset;
     public void ResetGame()
     {

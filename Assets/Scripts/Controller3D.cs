@@ -71,30 +71,14 @@ public class Controller3D : MonoBehaviour
         if (vel.x != 0 || vel.z != 0)
         {
             NewHorizontalCollisions(ref vel);
-            //print("Check DescendSlopeCollisions");
-            /*DescendSlopeCollisions(ref vel);
-            if (collisions.climbSt != ClimbingState.descending)
-            {
-                ClimbSlopeCollisions(ref vel);
-            }*/
         }
-        /*
-                if (vel.x != 0)
-                {
-                    XCollisions(ref vel);
-                }
-
-                if (vel.z != 0)
-                {
-                    ZCollisions(ref vel);
-                }
-                */
+        
 
         if (vel.y != 0 || vel.x != 0 || vel.z != 0)
         {
             NewVerticalCollisions(ref vel);
         }
-
+        //print("SLOPE TYPE = " + collisions.climbSt+"; slopeAngle = "+collisions.slopeAngle+"; FinalVel = "+ vel.ToString("F5"));
         //print("FinalVel= " + vel.ToString("F5"));
         transform.Translate(vel, Space.World);
     }
@@ -649,16 +633,19 @@ public class Controller3D : MonoBehaviour
                     }
                     //CHECK FOR NEXT SLOPE/FLOOR
                     Vector3 horVelAux = new Vector3(vel.x, 0, vel.z);
-                    rayLength = vel.y + skinWidth;
+                    rayLength = (Mathf.Abs(vel.y) + skinWidth);
                     Vector3 rayOrigin = collisions.closestVerRaycast.origin + horVelAux;
                     RaycastHit hit;
-                    Debug.DrawRay(rayOrigin, Vector3.down * rayLength, Color.yellow,2);
+                    Debug.DrawRay(rayOrigin, Vector3.down * rayLength, Color.yellow,4);
                     if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                    {
-                        float slopeAngle = GetSlopeAngle(collisions.closestVerRaycast.ray);
+                    { 
+                        float slopeAngle = GetSlopeAngle(hit);
+                        //print("HIT  with angle = " + slopeAngle);
+                        Debug.DrawRay(rayOrigin, Vector3.down * rayLength, Color.magenta, 4);
                         if (slopeAngle != collisions.slopeAngle)
                         {
-                            vel.y = (hit.distance - skinWidth);
+                            //print("HIT NEW SLOPE/FLOOR with angle = " + slopeAngle);
+                            vel.y = -(hit.distance - skinWidth);
                             //vel = new Vector3(horVelAux.x, vel.y, horVelAux.z);
                             collisions.slopeAngle = slopeAngle;
                         }
