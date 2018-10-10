@@ -141,7 +141,7 @@ public class Controller3D : MonoBehaviour
                 }
             }
         }
-    }
+    }//No se usa
 
     void XCollisions(ref Vector3 vel)
     {
@@ -178,7 +178,7 @@ public class Controller3D : MonoBehaviour
                 }
             }
         }
-    }
+    }//No se usa
 
     void ZCollisions(ref Vector3 vel)
     {
@@ -214,7 +214,7 @@ public class Controller3D : MonoBehaviour
                 }
             }
         }
-    }
+    }//No se usa
 
     float GetSlopeAngle(RaycastHit hit)
     {
@@ -391,7 +391,7 @@ public class Controller3D : MonoBehaviour
                 vel = new Vector3(horVel.x, vel.y, horVel.z);
             }
         }
-    }
+    }//No se usa
 
     void DescendSlopeCollisions(ref Vector3 vel)
     {
@@ -460,7 +460,7 @@ public class Controller3D : MonoBehaviour
             horVel = horVel.normalized * (horVel.magnitude + distanceToSlopeStart);
             vel = new Vector3(horVel.x, vel.y, horVel.z);*/
         }
-    }
+    }//No se usa
 
     void SlideWall(ref Vector3 vel, Raycast rayCast)
     {
@@ -487,7 +487,7 @@ public class Controller3D : MonoBehaviour
             rowOrigin.y = raycastOrigins.BottomCenter.y + (i * horizontalRowSpacing);
             //for(int j=0; j<)
         }
-    }
+    }//No se usa
 
     void NewHorizontalCollisions(ref Vector3 vel)
     {
@@ -769,7 +769,7 @@ public class Controller3D : MonoBehaviour
                 //if (i == 0) { break; }
             }
         }
-    }
+    }//No se usa
 
     void UpdateRaycastOrigins()
     {

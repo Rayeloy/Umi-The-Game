@@ -265,7 +265,7 @@ public class CameraControler : MonoBehaviour
     Vector3 currentMyCamPos;
     float smoothMyCamX, smoothMyCamY, smoothMyCamZ;
     public float smoothCamMoveTime = 0.2f;
-    void SmoothCameraMove()
+    void SmoothCameraMove()//para la camara de dentro
     {
         currentMyCamPos.x = Mathf.SmoothDamp(currentMyCamPos.x, targetMyCamPos.x, ref smoothMyCamX, smoothCamMoveTime);
         currentMyCamPos.y = Mathf.SmoothDamp(currentMyCamPos.y, targetMyCamPos.y, ref smoothMyCamY, smoothCamMoveTime);

@@ -188,6 +188,7 @@ public class PlayerMovement : MonoBehaviour
 
     void HorizontalMovement()
     {
+        //------------------------------------------------ direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
         if (moveSt != MoveState.Knockback)
         {
             CalculateMoveDir();//Movement direction
@@ -213,6 +214,7 @@ public class PlayerMovement : MonoBehaviour
             //print("horizontalVel.magnitude = " + horizontalVel.magnitude + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
             moveSt = MoveState.MovingBreaking;
         }
+        //------------------------------------------------ DIRECCION CON VELOCIDAD ---------------------------------
         //print("MoveState = " + moveSt);
         switch (moveSt)
         {

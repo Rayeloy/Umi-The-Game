@@ -1952,7 +1952,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1705813512628444}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 93.43802, y: 1.6534157, z: 20.97}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4008034527547972}
@@ -3512,7 +3512,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ae6d69e3764304f8c7b1a52d60636e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  triggerDeadZone: 0.15
+  LTPulsado: 0
+  RTPulsado: 0
   attackIndex: 0
+  currentAttack: {fileID: 0}
   hitboxMats:
   - {fileID: 2100000, guid: 2700333b147dd394c8452531278051f7, type: 2}
   - {fileID: 2100000, guid: 8ef3e573ffcdc814aa37206d968bffe3, type: 2}
@@ -3568,6 +3572,7 @@ MonoBehaviour:
   maxTimeStun: 1
   haveFlag: 0
   flag: {fileID: 0}
+  inWater: 0
 --- !u!114 &114769351598123618
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3597,15 +3602,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   maxClimbAngle: 60
-  minClimbAngle: 3
+  minClimbAngle: 0
   maxDescendAngle: 60
   minDescendAngle: 3
   precisionHeight: 0.01
   coll: {fileID: 136730111159505118}
-  verticalRows: 50
-  verticalRaysPerRow: 50
-  horizontalRows: 50
-  horizontalRaysPerRow: 50
+  verticalRows: 10
+  verticalRaysPerRow: 10
+  horizontalRows: 10
+  horizontalRaysPerRow: 10
   aroundRaysPerCircle: 10
   aroundCircles: 10
   aroundRaycastsLength: 1.5

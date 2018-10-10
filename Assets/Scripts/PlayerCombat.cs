@@ -185,41 +185,44 @@ public class PlayerCombat : MonoBehaviour {
 
     public void ProcessAttack()
     {
-        attackTime += Time.deltaTime;
-        switch (attackStg)
+        if (attackStg != attackStage.ready)
         {
-            case attackStage.ready:
-                break;
-            case attackStage.charging:
-                break;
-            case attackStage.startup:
+            attackTime += Time.deltaTime;
+            switch (attackStg)
+            {
+                case attackStage.ready:
+                    break;
+                case attackStage.charging:
+                    break;
+                case attackStage.startup:
 
-            //animacion startup
-                if(attackTime>= startupTime)
-                {
-                    attackTime = 0;
-                    attackStg = attackStage.active;
-                    hitbox.GetComponent<MeshRenderer>().material = hitboxMats[2];
-                }
-                break;
-            case attackStage.active:
-                if (attackTime >= activeTime)
-                {
-                    attackTime = 0;
-                    attackStg = attackStage.recovery;
-                    hitbox.GetComponent<MeshRenderer>().material = hitboxMats[3];
-                }
-                break;
-            case attackStage.recovery:
-                if (attackTime >= recoveryTime)
-                {
-                    attackTime = 0;
-                    attackStg = attackStage.ready;
-                    hitbox.GetComponent<MeshRenderer>().material = hitboxMats[0];
-                    HideAttackHitBox();
-                }
-                break;
-        }
+                    //animacion startup
+                    if (attackTime >= startupTime)
+                    {
+                        attackTime = 0;
+                        attackStg = attackStage.active;
+                        hitbox.GetComponent<MeshRenderer>().material = hitboxMats[2];
+                    }
+                    break;
+                case attackStage.active:
+                    if (attackTime >= activeTime)
+                    {
+                        attackTime = 0;
+                        attackStg = attackStage.recovery;
+                        hitbox.GetComponent<MeshRenderer>().material = hitboxMats[3];
+                    }
+                    break;
+                case attackStage.recovery:
+                    if (attackTime >= recoveryTime)
+                    {
+                        attackTime = 0;
+                        attackStg = attackStage.ready;
+                        hitbox.GetComponent<MeshRenderer>().material = hitboxMats[0];
+                        HideAttackHitBox();
+                    }
+                    break;
+            }
+        }   
     }
     
     void StartAiming()
