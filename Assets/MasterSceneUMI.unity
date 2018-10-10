@@ -1962,8 +1962,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 361776322}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -13.559999, z: -3}
+  m_LocalRotation: {x: 0.14322479, y: 0.25576526, z: 0.03834557, w: -0.9553012}
+  m_LocalPosition: {x: 112.47759, y: -33.81756, z: 22.01149}
   m_LocalScale: {x: 3.0686, y: 3.0686, z: 3.0686}
   m_Children: []
   m_Father: {fileID: 0}
@@ -2751,7 +2751,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1705813512628444, guid: a76334c98b710ce4fb20c747d78a778b, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4097083565045360, guid: a76334c98b710ce4fb20c747d78a778b, type: 2}
       propertyPath: m_LocalScale.x
@@ -2960,7 +2960,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 566445196}
   m_LocalRotation: {x: 0.0000011324881, y: -0.92387986, z: -0.38268277, w: 0.0000026822088}
-  m_LocalPosition: {x: 14.919989, y: 4.670002, z: -4.590044}
+  m_LocalPosition: {x: 14.92, y: 4.6, z: -4.66}
   m_LocalScale: {x: 20.84316, y: 1, z: 13.062511}
   m_Children: []
   m_Father: {fileID: 1291878342}
@@ -3768,6 +3768,31 @@ Prefab:
       propertyPath: myCamera
       value: 
       objectReference: {fileID: 1514103954}
+    - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: verticalRows
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: verticalRaysPerRow
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: horizontalRows
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: horizontalRaysPerRow
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: minClimbAngle
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a76334c98b710ce4fb20c747d78a778b, type: 2}
   m_IsPrefabAsset: 0
@@ -5415,9 +5440,6 @@ MonoBehaviour:
   attackHook: {fileID: 11400000, guid: cec4095a724a9f14f9540ad2fb191b30, type: 2}
   allPlayers:
   - {fileID: 782544798}
-  - {fileID: 505351957}
-  - {fileID: 1900558437}
-  - {fileID: 1425019379}
   allCanvas:
   - {fileID: 1499396176}
   - {fileID: 750274780}
@@ -6343,8 +6365,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1286032093}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -13.559999, z: -3}
+  m_LocalRotation: {x: 0.14322479, y: 0.25576526, z: 0.03834557, w: -0.9553012}
+  m_LocalPosition: {x: 112.47759, y: -33.81756, z: 22.01149}
   m_LocalScale: {x: 3.0686, y: 3.0686, z: 3.0686}
   m_Children: []
   m_Father: {fileID: 0}
@@ -7070,7 +7092,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1705813512628444, guid: a76334c98b710ce4fb20c747d78a778b, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4097083565045360, guid: a76334c98b710ce4fb20c747d78a778b, type: 2}
       propertyPath: m_LocalScale.x
@@ -9222,7 +9244,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1705813512628444, guid: a76334c98b710ce4fb20c747d78a778b, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4097083565045360, guid: a76334c98b710ce4fb20c747d78a778b, type: 2}
       propertyPath: m_LocalScale.x
