@@ -112,8 +112,8 @@ public class CameraControler : MonoBehaviour
     {
         if (GameController.instance.playing)
         {
-            float inputX = Input.GetAxis(myPlayerMov.contName + "H2");
-            float inputZ = Input.GetAxis(myPlayerMov.contName + "V2");
+            float inputX = myPlayerMov.Actions.Movement.X;//Input.GetAxis(myPlayerMov.contName + "H2");
+            float inputZ = myPlayerMov.Actions.Movement.Y;//Input.GetAxis(myPlayerMov.contName + "V2");
             //mouseX = Input.GetAxis("Mouse X");
             //mouseY = Input.GetAxis("Mouse Y");
             finalInputX = inputX + mouseX;

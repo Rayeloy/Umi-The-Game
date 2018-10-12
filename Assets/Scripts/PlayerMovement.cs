@@ -14,7 +14,8 @@ public class PlayerMovement : MonoBehaviour
     public Material teamRedMat;
     PlayerCombat myPlayerCombat;
 
-    public GameController.controllerName contName;
+    //public GameController.controllerName contName;
+    public PlayerActions Actions {get; set; }
     public Team team = Team.blue;
     [HideInInspector]
     public Controller3D controller;
@@ -84,8 +85,6 @@ public class PlayerMovement : MonoBehaviour
         currentVel = objectiveVel;
     }
 
-
-
     private void Awake()
     {
         currentSpeed = 0;
@@ -112,7 +111,6 @@ public class PlayerMovement : MonoBehaviour
                 break;
         }
         currentMaxMoveSpeed = maxMoveSpeed2 = maxMoveSpeed;
-        
     }
     int frameCounter = 0;
     public void KonoUpdate()
@@ -146,9 +144,9 @@ public class PlayerMovement : MonoBehaviour
     float joystickSens = 0;
     public void CalculateMoveDir()
     {
-        float horiz = Input.GetAxisRaw(contName + "H");
-        float vert = -Input.GetAxisRaw(contName + "V");
-        //print("H = " + horiz + "; V = " + vert);
+        float horiz = Actions.Movement.X;//Input.GetAxisRaw(contName + "H");
+        float vert = Actions.Movement.Y;//-Input.GetAxisRaw(contName + "V");
+        print("H = " + horiz + "; V = " + vert);
         // Check that they're not BOTH zero - otherwise
         // dir would reset because the joystick is neutral.
         Vector3 temp = new Vector3(horiz, 0, vert);
@@ -193,7 +191,7 @@ public class PlayerMovement : MonoBehaviour
         {
             CalculateMoveDir();//Movement direction
         }
-        if (!myPlayerCombat.LTPulsado && !myPlayerCombat.RTPulsado && Input.GetButtonDown(contName + "RB"))
+        if (!myPlayerCombat.LTPulsado && !myPlayerCombat.RTPulsado && Actions.Boost)//Input.GetButtonDown(contName + "RB"))
         {
             myPlayerCombat.RTPulsado = true;
             StartBoost();
@@ -258,7 +256,7 @@ public class PlayerMovement : MonoBehaviour
 
     void VerticalMovement()
     {
-        if (Input.GetButtonDown(contName + "A"))
+        if (Actions.Jump.WasPressed)//Input.GetButtonDown(contName + "A"))
         {
             //print("JUMP");
             StartJump();
@@ -278,7 +276,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else
                 {
-                    if (Input.GetButtonUp(contName + "A"))
+                    if (Actions.Jump.WasReleased)//Input.GetButtonUp(contName + "A"))
                     {
                         jumpSt = JumpState.Breaking;
                     }

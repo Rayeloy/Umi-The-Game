@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using InControl;
 
 public class GameController : MonoBehaviour {
 
@@ -28,10 +29,17 @@ public class GameController : MonoBehaviour {
         PlayersSetup();
     }
 
+    private List<InputDevice> mandos = new List<InputDevice>();
     void PlayersSetup()
     {
+        Debug.Log(InputManager.ActiveDevice);
+        foreach (InputDevice iD in InputManager.ActiveDevices){
+            //if (iD.)
+        }
+
         for (int i = 0; i < allCanvas.Length; i++)
         {
+            
             if (i < allPlayers.Length)
             {
                 allCanvas[i].SetActive(true);
@@ -39,6 +47,9 @@ public class GameController : MonoBehaviour {
                 allCanvas[i].GetComponent<Canvas>().worldCamera = allCameraBases[i].myCamera.GetComponent<Camera>();
                 allPlayers[i].myCamera = allCameraBases[i];
                 allPlayers[i].GetComponent<PlayerCombat>().attackName = allCanvas[i].transform.GetChild(0).GetComponent<Text>();
+
+                allPlayers[i].Actions = new PlayerActions();
+                allPlayers[i].Actions.Device = InputManager.ActiveDevice;
             }
             else
             {
