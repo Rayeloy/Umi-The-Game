@@ -603,34 +603,19 @@ public class Controller3D : MonoBehaviour
             switch (value)//con que tipo de objeto collisionamos? pared/cuesta arriba/cuesta abajo
             {
                 case MovingState.wall:
-                    //horVel = horVel * (collisions.closestHorRaycast.distance - skinWidth);
-                    //vel = new Vector3(horVel.x, vel.y, horVel.z);
-
-                    //float distanceToWall = 0;
                     if (collisions.wallAngleOld != collisions.closestHorRaycast.wallAngle)
                     {
                         print("APPROACHING WALL: " + "distance = " + collisions.closestHorRaycast.distance);
                         horVel = horVel * (collisions.closestHorRaycast.distance - skinWidth);
                         vel = new Vector3(horVel.x, vel.y, horVel.z);
                         collisions.wallAngle = collisions.closestHorRaycast.wallAngle;
-                        /*distanceToWall = collisions.closestHorRaycast.distance - skinWidth;
-                        horVel = new Vector3(vel.x, 0, vel.z);
-                        horVel = horVel.normalized * (horVel.magnitude - distanceToWall);
-                        vel = new Vector3(horVel.x, vel.y, horVel.z);*/
                     }
                     else
                     {
                         SlideWall(ref vel, collisions.closestHorRaycast);
                     }
-                    /*horVel = new Vector3(vel.x, 0, vel.z);
-                    horVel = horVel.normalized * (horVel.magnitude + distanceToWall);
-                    vel = new Vector3(horVel.x, vel.y, horVel.z);*/
-
-                    /*if (collisions.lastMoveSt == MovingState.climbing)
-                    {
-                        collisions.moveSt = MovingState.climbing;
-                        vel.y = Mathf.Tan(collisions.slopeAngleOld * Mathf.Deg2Rad) * horVel.magnitude;
-                    }*/
+                    collisions.horCollisionsPoint = collisions.closestHorRaycast.ray.point;
+                    collisions.wallNormal = collisions.closestHorRaycast.ray.normal;
                     switch (collisions.closestHorRaycast.axis)
                     {
                         case Raycast.Axis.X:
@@ -644,22 +629,20 @@ public class Controller3D : MonoBehaviour
                     }
                     break;
                 case MovingState.climbing:
-                        print("AUXILIAR RAYS FOR DISTANCE CALCULATION");
-                        Debug.DrawRay(collisions.closestHorRaycast.origin, horVel * rayLength, Color.cyan, 4);
-                        float distanceToSlopeStart = 0;
-                        if (collisions.slopeAngleOld != collisions.closestHorRaycast.slopeAngle)
-                        {
-                            //RaycastHit hit;
-                            //Debug.DrawRay(collisions.closestHorRaycast.origin, horVel * rayLength, Color.white);
-                            distanceToSlopeStart = collisions.closestHorRaycast.distance - skinWidth;
-                            horVel = new Vector3(vel.x, 0, vel.z);
-                            horVel = horVel.normalized * (horVel.magnitude - distanceToSlopeStart);
-                            vel = new Vector3(horVel.x, vel.y, horVel.z);
-                        }
-                        ClimbSlope(ref vel, collisions.closestHorRaycast);
+                    print("AUXILIAR RAYS FOR DISTANCE CALCULATION");
+                    Debug.DrawRay(collisions.closestHorRaycast.origin, horVel * rayLength, Color.cyan, 4);
+                    float distanceToSlopeStart = 0;
+                    if (collisions.slopeAngleOld != collisions.closestHorRaycast.slopeAngle)
+                    {
+                        distanceToSlopeStart = collisions.closestHorRaycast.distance - skinWidth;
                         horVel = new Vector3(vel.x, 0, vel.z);
-                        horVel = horVel.normalized * (horVel.magnitude + distanceToSlopeStart);
+                        horVel = horVel.normalized * (horVel.magnitude - distanceToSlopeStart);
                         vel = new Vector3(horVel.x, vel.y, horVel.z);
+                    }
+                    ClimbSlope(ref vel, collisions.closestHorRaycast);
+                    horVel = new Vector3(vel.x, 0, vel.z);
+                    horVel = horVel.normalized * (horVel.magnitude + distanceToSlopeStart);
+                    vel = new Vector3(horVel.x, vel.y, horVel.z);
                     if (wallRay.axis != Raycast.Axis.none)
                     {
 
@@ -693,7 +676,7 @@ public class Controller3D : MonoBehaviour
                 rayOrigin += (Vector3.up * -directionY) * skinWidth;
 
                 RaycastHit hit;
-                Debug.DrawRay(rayOrigin, Vector3.up * directionY * rayLength, Color.red);
+                //Debug.DrawRay(rayOrigin, Vector3.up * directionY * rayLength, Color.red);
 
                 if (Physics.Raycast(rayOrigin, Vector3.up * directionY, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
                 {
@@ -797,7 +780,7 @@ public class Controller3D : MonoBehaviour
                         {
                             collisions.closestHorRaycast = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Raycast.Axis.X, i);
                         }
-                        if (slopeAngle > maxClimbAngle && hit.distance<wallRay.distance)
+                        if (slopeAngle > maxClimbAngle && hit.distance < wallRay.distance)
                         {
                             wallRay = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Raycast.Axis.X, i);
                         }
@@ -1029,7 +1012,7 @@ public class Controller3D : MonoBehaviour
             for (int j = 0; j < horizontalRaysPerRow; j++)
             {
                 Vector3 rayOriginX = rowOriginX + Vector3.back * (j * horizontalRaySpacing);
-                rayOriginX += (Vector3.right * directionX *skinWidth);
+                rayOriginX += (Vector3.right * directionX * skinWidth);
                 rayOriginX += (-horVel * skinWidth);
                 RaycastHit hit;
                 Debug.DrawRay(rayOriginX, horVel * rayLength, Color.yellow, 0.1f);
@@ -1271,6 +1254,14 @@ public class Controller3D : MonoBehaviour
         public bool above, below;
         public bool left, right;
         public bool foward, behind;
+        public bool collisionHorizontal
+        {
+            get
+            {
+                return (left || right || foward || behind);
+            }
+            set { }
+        }
         public bool around;
 
         public MovingState moveSt;
@@ -1279,6 +1270,8 @@ public class Controller3D : MonoBehaviour
         public Vector3 startVel;
         public Raycast closestHorRaycast;
         public Raycast closestVerRaycast;
+        public Vector3 horCollisionsPoint;
+        public Vector3 wallNormal;
 
 
         public void ResetVertical()
@@ -1291,6 +1284,8 @@ public class Controller3D : MonoBehaviour
             foward = behind = false;
             wallAngleOld = wallAngle;
             wallAngle = 0;
+            horCollisionsPoint = Vector3.zero;
+            wallNormal = Vector3.zero;
         }
         public void ResetAround()
         {
