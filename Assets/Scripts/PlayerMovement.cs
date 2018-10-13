@@ -90,6 +90,7 @@ public class PlayerMovement : MonoBehaviour
     public float wallJumpMinHorizAngle = 30;
     float wallJumpRadius;
     float walJumpConeHeight = 1;
+    GameObject lastWall;
     //bool wallJumped = false;
 
     public void SetVelocity(Vector3 vel)
@@ -106,6 +107,7 @@ public class PlayerMovement : MonoBehaviour
         noInput = false;
         controller = GetComponent<Controller3D>();
         myPlayerCombat = GetComponent<PlayerCombat>();
+        lastWall = null;
     }
     public void KonoStart()
     {
@@ -284,6 +286,10 @@ public class PlayerMovement : MonoBehaviour
 
     void VerticalMovement()
     {
+        if(lastWall!=null && controller.collisions.below)
+        {
+            lastWall = null;
+        }
         if (Input.GetButtonDown(contName + "A"))
         {
             //print("JUMP");
@@ -351,7 +357,7 @@ public class PlayerMovement : MonoBehaviour
 
     void StartWallJump()
     {
-        if(!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal)
+        if(!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal && lastWall!=controller.collisions.closestHorRaycast.ray.transform.gameObject)
         {
             print("WallJump");
             //wallJumped = true;
@@ -361,6 +367,7 @@ public class PlayerMovement : MonoBehaviour
             anchorPoint = transform.position;
             wallNormal = controller.collisions.wallNormal;
             wallNormal.y = 0;
+            lastWall = controller.collisions.closestHorRaycast.ray.transform.gameObject;
         }
     }
 
