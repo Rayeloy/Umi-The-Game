@@ -6,6 +6,7 @@ public class CameraCollisions : MonoBehaviour {
 
     CameraControler myCamController;
     public float minDistance = 1.0f;
+    [Tooltip("CameraController changes this value. ")]
     public float maxDistance = 4.0f;
     public float smooth = 10.0f;
     Vector3 dollyDir;
@@ -33,7 +34,7 @@ public class CameraCollisions : MonoBehaviour {
     {
         Vector3 desiredCameraPos = transform.parent.TransformPoint(dollyDir * maxDistance);
         RaycastHit hit;
-        Debug.DrawRay(transform.parent.position, dollyDir * maxDistance, Color.yellow, 0.01f);
+        Debug.DrawLine(transform.parent.position, desiredCameraPos, Color.yellow, 0.01f);
         if (Physics.Linecast(transform.parent.position, desiredCameraPos, out hit, collisionMask, QueryTriggerInteraction.Ignore))
         {
             //print("CAMARA OBSTRUIDA");
