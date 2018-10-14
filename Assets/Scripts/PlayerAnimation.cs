@@ -12,5 +12,9 @@ public class PlayerAnimation : MonoBehaviour
 		animator.SetFloat("HorizontalSpeed", playerMovement.currentSpeed);//new Vector2 (playerMovement.currentVel.x, playerMovement.currentVel.z).magnitude);
         animator.SetFloat("VerticalSpeed", playerMovement.currentVel.y);
 		animator.SetBool("OnGround", playerMovement.controller.collisions.below);
+		if (playerMovement.wallJumpAnim){
+			animator.SetTrigger("WallJump");
+			playerMovement.wallJumpAnim = false;
+		}
 	}
 }

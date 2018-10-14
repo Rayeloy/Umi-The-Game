@@ -400,10 +400,12 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    [HideInInspector]
+    public bool wallJumpAnim = false;
     void EndWallJump()
     {
-
         wallJumping = false;
+        wallJumpAnim = true;
         //CALCULATE JUMP DIR
         //LEFT OR RIGHT ORIENTATION?
         //Angle
