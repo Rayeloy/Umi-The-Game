@@ -169,6 +169,7 @@ public class PlayerMovement : MonoBehaviour
     float joystickAngle;
     float deadzone = 0.15f;
     float joystickSens = 0;
+
     public void CalculateMoveDir()
     {
         float horiz = Input.GetAxisRaw(contName + "H");
@@ -201,7 +202,7 @@ public class PlayerMovement : MonoBehaviour
                     //rotate camDir joystickAngle degrees
                     currentMovDir=RotateVector(joystickAngle, camDir);
                     //print("joystickAngle= " + joystickAngle + "; camDir= " + camDir.ToString("F4") + "; currentMovDir = " + currentMovDir.ToString("F4"));
-                    RotateCharacter(0);
+                    RotateCharacter();
                     break;
             }
         }
@@ -223,7 +224,7 @@ public class PlayerMovement : MonoBehaviour
             myPlayerCombat.RTPulsado = true;
             StartBoost();
         }
-        ProcessBoostCD();
+        ProcessBoost();
 
         maxMoveSpeed2 = maxMoveSpeed;
         ProcessWater();
@@ -236,11 +237,9 @@ public class PlayerMovement : MonoBehaviour
         Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
         if (moveSt == MoveState.Moving && horizontalVel.magnitude > currentMaxMoveSpeed)
         {
-            //print("horizontalVel.magnitude = " + horizontalVel.magnitude + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
             moveSt = MoveState.MovingBreaking;
         }
         //------------------------------------------------ DIRECCION CON VELOCIDAD ---------------------------------
-        //print("MoveState = " + moveSt);
         switch (moveSt)
         {
             case MoveState.Moving:
@@ -253,24 +252,27 @@ public class PlayerMovement : MonoBehaviour
                 }
                 break;
             case MoveState.NotMoving:
-                //print("CURRENT VEL1= " + currentVel+"; currentSpeed = "+currentSpeed);
                 Vector3 aux = currentVel.normalized * currentSpeed;
                 currentVel = new Vector3(aux.x, currentVel.y, aux.z);
-                //print("CURRENT VEL2= " + currentVel);
                 break;
             case MoveState.Boost:
-                currentVel = currentVel + currentMovDir * movingAcc;
-                horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
-                horizontalVel = horizontalVel.normalized * boostSpeed;
-                currentVel = new Vector3(horizontalVel.x, 0, horizontalVel.z);
-                currentSpeed = boostSpeed;
-                //print("BOOST -> CURRENT VEL = " + currentVel.ToString("F4"));
+                if (controller.collisions.collisionHorizontal)//BOOST CONTRA PARED
+                {
+                    WallBoost();
+                }
+                else
+                {
+                    currentVel = currentVel + currentMovDir * movingAcc;
+                    horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                    horizontalVel = horizontalVel.normalized * boostSpeed;
+                    currentVel = new Vector3(horizontalVel.x, 0, horizontalVel.z);
+                    currentSpeed = boostSpeed;
+                }
                 break;
             case MoveState.Knockback:
                 currentVel = currentVel + knockback;
                 currentSpeed = currentVel.magnitude;
                 currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
-                //print("currentVel = " + currentVel.ToString("F4"));
                 moveSt = MoveState.NotMoving;
                 break;
             case MoveState.MovingBreaking:
@@ -278,7 +280,6 @@ public class PlayerMovement : MonoBehaviour
                 horizontalVel = new Vector3(finalDir.x, 0, finalDir.z);
                 currentVel = horizontalVel.normalized * currentSpeed;
                 currentVel.y = finalDir.y;
-                //print("CURRENT SPEED = " + currentSpeed);
                 break;
         }
     }
@@ -386,45 +387,38 @@ public class PlayerMovement : MonoBehaviour
 
     void EndWallJump()
     {
+
         wallJumping = false;
         //CALCULATE JUMP DIR
         //LEFT OR RIGHT ORIENTATION?
-        Vector3 wallDirLeft = Vector3.Cross(wallNormal, Vector3.down).normalized;
-        float ang = Vector3.Angle(wallDirLeft, currentFacingDir);
-        float direction = ang > 90 ? -1 : 1;
         //Angle
         Vector3 circleCenter = anchorPoint + Vector3.up * walJumpConeHeight;
-        float angle = Vector3.Angle(currentFacingDir, wallNormal);
-        if (angle >= 90)
-        {
-            angle -= 90;
-        }
-        else
-        {
-            angle = 90 - angle;
-        }
-        angle = Mathf.Clamp(angle, wallJumpMinHorizAngle, 90);
-        if (direction == -1)
-        {
-            float complementaryAng = 90 - angle;
-            angle += complementaryAng * 2;
-        }
-        Debug.LogWarning("ANGLE = " + angle);
-        float offsetAngleDir= Vector3.Angle(wallDirLeft, Vector3.forward) > 90 ? -1 : 1;
-        float offsetAngle = Vector3.Angle(Vector3.right, wallDirLeft) * offsetAngleDir;
-        angle += offsetAngle;
-        //CALCULATE CIRCUMFERENCE POINT
-        float px = circleCenter.x + (wallJumpRadius*Mathf.Cos(angle*Mathf.Deg2Rad));
-        float pz = circleCenter.z + (wallJumpRadius * Mathf.Sin(angle * Mathf.Deg2Rad));
-        Vector3 circumfPoint = new Vector3(px, circleCenter.y, pz);
+        Vector3 circumfPoint = CalculateReflectPoint(1, wallNormal, circleCenter);
         Vector3 finalDir = (circumfPoint - anchorPoint).normalized;
+        Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
+
         currentVel = finalDir * wallJumpVelocity;
         currentSpeed = currentVel.magnitude;
-        Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4") + "; circleCenter= " + circleCenter + "; circumfPoint = " + circumfPoint + "; angle = " + angle + "; offsetAngle = " + offsetAngle + "; offsetAngleDir = " + offsetAngleDir
-            + ";wallDirLeft = "+ wallDirLeft );
-        Debug.DrawLine(anchorPoint, circleCenter, Color.yellow, 20);
-        Debug.DrawLine(circleCenter, circumfPoint, Color.yellow, 20);
-        Debug.DrawLine(anchorPoint, circumfPoint, Color.white, 20);
+        currentMovDir = new Vector3(finalDir.x, 0, finalDir.z);
+        RotateCharacter();
+
+
+        Debug.DrawLine(anchorPoint, circleCenter, Color.white, 20);
+        Debug.DrawLine(anchorPoint, circumfPoint, Color.yellow, 20);
+    }
+
+    void WallBoost()
+    {
+        //CALCULATE JUMP DIR
+        Vector3 circleCenter = transform.position;
+        Vector3 circumfPoint = CalculateReflectPoint(1, controller.collisions.wallNormal, circleCenter);
+        Vector3 finalDir = (circumfPoint - circleCenter).normalized;
+        Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
+
+        currentVel = finalDir * currentVel.magnitude;
+        currentSpeed = currentVel.magnitude;
+        currentMovDir = new Vector3(finalDir.x, 0, finalDir.z);
+        RotateCharacter();
     }
 
     void StartBoost()
@@ -438,7 +432,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    void ProcessBoostCD()
+    void ProcessBoost()
     {
         if (!boostReady)
         {
@@ -458,6 +452,7 @@ public class PlayerMovement : MonoBehaviour
     public Vector3 currentFacingDir = Vector3.forward;
     [HideInInspector]
     public float facingAngle = 0;
+
     void UpdateFacingDir()//change so that only rotateObj rotates, not whole body
     {
         switch (myCamera.camMode)
@@ -481,7 +476,8 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
-    public void RotateCharacter(float rotSpeed)
+
+    public void RotateCharacter(float rotSpeed=0)
     {
         switch (myCamera.camMode)
         {
@@ -511,6 +507,7 @@ public class PlayerMovement : MonoBehaviour
     public float maxTimeStun = 0.6f;
     float timeStun = 0;
     Vector3 knockback;
+
     public void StartRecieveHit(Vector3 _knockback, PlayerMovement attacker, float _maxTimeStun)
     {
         print("Recieve hit");
@@ -531,6 +528,7 @@ public class PlayerMovement : MonoBehaviour
 
         print("STUNNED");
     }
+
     void ProcessStun()
     {
         timeStun += Time.deltaTime;
@@ -545,6 +543,7 @@ public class PlayerMovement : MonoBehaviour
     public bool haveFlag = false;
     [HideInInspector]
     public GameObject flag = null;
+
     public void PickFlag(GameObject _flag)
     {
         if (!haveFlag)
@@ -572,6 +571,7 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector]
     public bool inWater = false;
+
     void EnterWater()
     {
         inWater = true;
@@ -584,10 +584,7 @@ public class PlayerMovement : MonoBehaviour
             print("CURRENT OWNER = NULL");
         }
     }
-    void ExitWater()
-    {
-        inWater = false;
-    }
+
     void ProcessWater()
     {
         if (inWater)
@@ -595,6 +592,11 @@ public class PlayerMovement : MonoBehaviour
             controller.AroundCollisions();
             maxMoveSpeed2 = maxSpeedInWater;
         }
+    }
+
+    void ExitWater()
+    {
+        inWater = false;
     }
 
     void CheckWinGame(Respawn respawn)
@@ -635,6 +637,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    //Auxiliar functions
     public Vector3 RotateVector(float angle, Vector3 vector)
     {
         //rotate angle -90 degrees
@@ -644,5 +647,42 @@ public class PlayerMovement : MonoBehaviour
         float px = vector.x * cs - vector.z * sn;
         float py = vector.x * sn + vector.z * cs;
         return  new Vector3(px, 0, py).normalized;
+    }
+    public Vector3 CalculateReflectPoint(float radius, Vector3 _wallNormal, Vector3 circleCenter)//needs wallJumpRadius and wallNormal
+    {
+        //LEFT OR RIGHT ORIENTATION?
+        Vector3 wallDirLeft = Vector3.Cross(_wallNormal, Vector3.down).normalized;
+        float ang = Vector3.Angle(wallDirLeft, currentFacingDir);
+        float direction = ang > 90 ? -1 : 1;
+        //Angle
+        float angle = Vector3.Angle(currentFacingDir, _wallNormal);
+        if (angle >= 90)
+        {
+            angle -= 90;
+        }
+        else
+        {
+            angle = 90 - angle;
+        }
+        angle = Mathf.Clamp(angle, wallJumpMinHorizAngle, 90);
+        if (direction == -1)
+        {
+            float complementaryAng = 90 - angle;
+            angle += complementaryAng * 2;
+        }
+        Debug.LogWarning("ANGLE = " + angle);
+        float offsetAngleDir = Vector3.Angle(wallDirLeft, Vector3.forward) > 90 ? -1 : 1;
+        float offsetAngle = Vector3.Angle(Vector3.right, wallDirLeft) * offsetAngleDir;
+        angle += offsetAngle;
+        //CALCULATE CIRCUMFERENCE POINT
+        float px = circleCenter.x + (radius * Mathf.Cos(angle * Mathf.Deg2Rad));
+        float pz = circleCenter.z + (radius * Mathf.Sin(angle * Mathf.Deg2Rad));
+        Vector3 circumfPoint = new Vector3(px, circleCenter.y, pz);
+
+        Debug.LogWarning("; circleCenter= " + circleCenter + "; circumfPoint = " + circumfPoint + "; angle = " + angle + "; offsetAngle = " + offsetAngle + "; offsetAngleDir = " + offsetAngleDir
+    + ";wallDirLeft = " + wallDirLeft);
+        Debug.DrawLine(circleCenter, circumfPoint, Color.white, 20);
+
+        return circumfPoint;
     }
 }

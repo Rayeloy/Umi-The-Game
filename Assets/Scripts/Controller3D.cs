@@ -905,7 +905,7 @@ public class Controller3D : MonoBehaviour
                     break;
             }
         }
-    }
+    }//No se usa
 
     void NewVerticalCollisions(ref Vector3 vel)
     {
@@ -996,7 +996,7 @@ public class Controller3D : MonoBehaviour
                     break;
             }
         }
-    }
+    }//No se usa
 
     Raycast MovingDirHorizontalCollisions(ref Vector3 vel)
     {
@@ -1066,7 +1066,7 @@ public class Controller3D : MonoBehaviour
             return new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
         }
 
-    }
+    }//No se usa
 
     void HorizontalCollisions(ref Vector3 vel)
     {
