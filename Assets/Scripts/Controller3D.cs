@@ -616,6 +616,7 @@ public class Controller3D : MonoBehaviour
                     }
                     collisions.horCollisionsPoint = collisions.closestHorRaycast.ray.point;
                     collisions.wallNormal = collisions.closestHorRaycast.ray.normal;
+                    collisions.wall = collisions.closestHorRaycast.ray.transform.gameObject;
                     switch (collisions.closestHorRaycast.axis)
                     {
                         case Raycast.Axis.X:
@@ -1272,6 +1273,7 @@ public class Controller3D : MonoBehaviour
         public Raycast closestVerRaycast;
         public Vector3 horCollisionsPoint;
         public Vector3 wallNormal;
+        public GameObject wall;
 
 
         public void ResetVertical()
@@ -1286,6 +1288,7 @@ public class Controller3D : MonoBehaviour
             wallAngle = 0;
             horCollisionsPoint = Vector3.zero;
             wallNormal = Vector3.zero;
+            wall = null;
         }
         public void ResetAround()
         {

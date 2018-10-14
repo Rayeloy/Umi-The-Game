@@ -357,7 +357,7 @@ public class PlayerMovement : MonoBehaviour
 
     void StartWallJump()
     {
-        if(!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal && lastWall!=controller.collisions.closestHorRaycast.ray.transform.gameObject)
+        if(!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal && lastWall!= controller.collisions.wall)
         {
             print("WallJump");
             //wallJumped = true;
@@ -367,7 +367,7 @@ public class PlayerMovement : MonoBehaviour
             anchorPoint = transform.position;
             wallNormal = controller.collisions.wallNormal;
             wallNormal.y = 0;
-            lastWall = controller.collisions.closestHorRaycast.ray.transform.gameObject;
+            lastWall = controller.collisions.wall;
         }
     }
 
