@@ -45,14 +45,16 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector]
     public bool noInput = false;
     Vector3 objectiveVel;
-    Vector3 currentVel;
+    [HideInInspector]
+    public Vector3 currentVel;
     [Header("SPEED")]
     public float maxMoveSpeed = 10.0f;
     float maxMoveSpeed2; // is the max speed from which we aply the joystick sensitivity value
     float currentMaxMoveSpeed = 10.0f; // its the final max speed, after the joyjoystick sensitivity value
     [Tooltip("Maximum speed that you can travel at horizontally when hit by someone")]
     public float maxKnockbackSpeed = 300f;
-    float currentSpeed = 0;
+    [HideInInspector]
+    public float currentSpeed = 0;
     public float maxSpeedInWater = 5f;
     public float maxVerticalSpeedInWater = 3f;
     [Header("BOOST")]
@@ -83,8 +85,6 @@ public class PlayerMovement : MonoBehaviour
         objectiveVel = vel;
         currentVel = objectiveVel;
     }
-
-
 
     private void Awake()
     {
@@ -136,7 +136,6 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(currentVel * Time.deltaTime);
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();
-
     }
 
     [HideInInspector]
@@ -420,6 +419,7 @@ public class PlayerMovement : MonoBehaviour
             flag = null;
             haveFlag = false;
         }
+
         print("STUNNED");
     }
     void ProcessStun()
