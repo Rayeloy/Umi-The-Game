@@ -214,7 +214,7 @@ public class PlayerMovement : MonoBehaviour
 
     void HorizontalMovement()
     {
-        //------------------------------------------------ direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
+        //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
         if (moveSt != MoveState.Knockback)
         {
             CalculateMoveDir();//Movement direction
@@ -226,12 +226,27 @@ public class PlayerMovement : MonoBehaviour
         }
         ProcessBoost();
 
+        //------------------------------- Max Move Speed -------------------------------
         maxMoveSpeed2 = maxMoveSpeed;
         ProcessWater();
         if (joystickSens >= 0.88 || joystickSens > 1) joystickSens = 1;
         currentMaxMoveSpeed = (joystickSens / 1) * maxMoveSpeed2;
-        float actAccel = moveSt==MoveState.Moving && currentSpeed < currentMaxMoveSpeed ? initialAcc : breakAcc;
 
+        //------------------------------- Acceleration -------------------------------
+        float actAccel;
+        if (moveSt == MoveState.Moving && currentSpeed < currentMaxMoveSpeed)
+        {
+            actAccel = initialAcc;
+        }
+        else if (moveSt == MoveState.MovingBreaking)
+        {
+            actAccel = breakAcc * 2;
+        }
+        else
+        {
+            actAccel = breakAcc;
+        }
+        //------------------------------- Speed ------------------------------ -
         currentSpeed = currentSpeed + actAccel * Time.deltaTime;
         currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
         Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
@@ -260,7 +275,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     WallBoost();
                 }
-                else
+                else//BOOST NORMAL
                 {
                     currentVel = currentVel + currentMovDir * movingAcc;
                     horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
