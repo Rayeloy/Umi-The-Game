@@ -16,10 +16,10 @@
 		const int maxPlayers = 4;
 
 		List<Vector3> playerPositions = new List<Vector3>() {
-			new Vector3( -1, 1, -10 ),
-			new Vector3( 1, 1, -10 ),
-			new Vector3( -1, -1, -10 ),
-			new Vector3( 1, -1, -10 ),
+			new Vector3( -1, 1, 0),
+			new Vector3( 1, 1, 0 ),
+			new Vector3( -1, -1, 0 ),
+			new Vector3( 1, -1, 0 ),
 		};
 
 		List<Player> players = new List<Player>( maxPlayers );
