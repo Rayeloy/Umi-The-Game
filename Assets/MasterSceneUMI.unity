@@ -2592,7 +2592,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 450092222}
   m_LocalRotation: {x: -0.5467257, y: 0.44843173, z: 0.44843167, w: 0.5467258}
-  m_LocalPosition: {x: -22.161, y: 5.51, z: -8.2476}
+  m_LocalPosition: {x: -22.11, y: 5.51, z: -8.5}
   m_LocalScale: {x: 20.843227, y: 1, z: 13.062526}
   m_Children: []
   m_Father: {fileID: 1291878342}
@@ -2941,6 +2941,16 @@ Prefab:
       propertyPath: m_LocalScale.z
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 137818649566950484, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 827c5af0c0bcfe947926aa02db3778ea, type: 2}
+    - target: {fileID: 137886533429629468, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: effd04fd204834f4baa177d7e6f232f9, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a76334c98b710ce4fb20c747d78a778b, type: 2}
   m_IsPrefabAsset: 0
@@ -3950,53 +3960,13 @@ Prefab:
       objectReference: {fileID: 1514103954}
     - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
         type: 2}
-      propertyPath: verticalRows
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
-        type: 2}
-      propertyPath: verticalRaysPerRow
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
-        type: 2}
       propertyPath: horizontalRows
-      value: 50
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
         type: 2}
       propertyPath: horizontalRaysPerRow
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
-        type: 2}
-      propertyPath: minClimbAngle
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114464777488655940, guid: a76334c98b710ce4fb20c747d78a778b,
-        type: 2}
-      propertyPath: stopWallMaxTime
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114464777488655940, guid: a76334c98b710ce4fb20c747d78a778b,
-        type: 2}
-      propertyPath: wallJumpAngle
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 114464777488655940, guid: a76334c98b710ce4fb20c747d78a778b,
-        type: 2}
-      propertyPath: wallJumpVelocity
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 114464777488655940, guid: a76334c98b710ce4fb20c747d78a778b,
-        type: 2}
-      propertyPath: boostDuration
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114464777488655940, guid: a76334c98b710ce4fb20c747d78a778b,
-        type: 2}
-      propertyPath: boostCD
-      value: 3
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a76334c98b710ce4fb20c747d78a778b, type: 2}

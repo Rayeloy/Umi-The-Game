@@ -15,7 +15,7 @@ public class GameController : MonoBehaviour {
     int slowmo = 0;
     public PlayerMovement[] allPlayers;
     public GameObject[] allCanvas;
-    public CameraControler[] allCameraBases;
+    public CameraController[] allCameraBases;
     private void Awake()
     {
         instance = this;
