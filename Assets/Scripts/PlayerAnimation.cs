@@ -10,7 +10,7 @@ public class PlayerAnimation : MonoBehaviour
     [Header("WEAPONS ATTACH")]
     public Transform rightHand;
     public Transform leftHand;
-
+    //Churros: Pos: -0.0086, 0.0097, 0.0068; Rot: 45.854,-163.913,-5.477; Scale: 1.599267,1.599267,1.599267
     public WeaponAttachInfo[] weaponsAttachInfo;
 
     [System.Serializable]
@@ -18,11 +18,14 @@ public class PlayerAnimation : MonoBehaviour
     {
         public Vector3 pos;
         public Vector3 rot;
+        public Vector3 scale;
         public Transform weapon;
-        public WeaponAttachInfo(Transform _weapon, Vector3 _pos, Vector3 _rot) {
+
+        public WeaponAttachInfo(Transform _weapon, Vector3 _pos, Vector3 _rot, Vector3 _scale) {
             weapon = _weapon;
             pos = _pos;
             rot = _rot;
+            scale = _scale;
         }
     }
 
@@ -53,5 +56,6 @@ public class PlayerAnimation : MonoBehaviour
         weapInf.weapon.SetParent(rightHand);
         weapInf.weapon.localPosition = weapInf.pos;
         weapInf.weapon.localRotation = Quaternion.Euler(weapInf.rot.x, weapInf.rot.y, weapInf.rot.z);
+        weapInf.weapon.localScale = weapInf.scale; 
     }
 }

@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     public Material teamBlueMat;
     public Material teamRedMat;
     PlayerCombat myPlayerCombat;
+    PlayerAnimation myPlayerAnimation;
 
     public GameController.controllerName contName;
     public Team team = Team.blue;
@@ -108,6 +109,7 @@ public class PlayerMovement : MonoBehaviour
         noInput = false;
         controller = GetComponent<Controller3D>();
         myPlayerCombat = GetComponent<PlayerCombat>();
+        myPlayerAnimation = GetComponent<PlayerAnimation>();
         lastWallAngle = 0;
     }
     public void KonoStart()
@@ -124,10 +126,12 @@ public class PlayerMovement : MonoBehaviour
             case Team.blue:
                 churroAzul.SetActive(true);
                 churroRojo.SetActive(false);
+                myPlayerAnimation.AttachWeapon(myPlayerAnimation.weaponsAttachInfo[1]);
                 break;
             case Team.red:
                 churroAzul.SetActive(false);
                 churroRojo.SetActive(true);
+                myPlayerAnimation.AttachWeapon(myPlayerAnimation.weaponsAttachInfo[0]);
                 break;
         }
         currentMaxMoveSpeed = maxMoveSpeed2 = maxMoveSpeed;
