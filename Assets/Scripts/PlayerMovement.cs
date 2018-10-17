@@ -14,7 +14,8 @@ public class PlayerMovement : MonoBehaviour
     public Material teamRedMat;
     PlayerCombat myPlayerCombat;
 
-    public GameController.controllerName contName;
+    //public GameController.controllerName contName;
+    public PlayerActions Actions { get; set; }
     public Team team = Team.blue;
     [HideInInspector]
     public Controller3D controller;
@@ -173,8 +174,8 @@ public class PlayerMovement : MonoBehaviour
 
     public void CalculateMoveDir()
     {
-        float horiz = Input.GetAxisRaw(contName + "H");
-        float vert = -Input.GetAxisRaw(contName + "V");
+        float horiz = Actions.Movement.X;//Input.GetAxisRaw(contName + "H");
+        float vert = Actions.Movement.Y;//-Input.GetAxisRaw(contName + "V");
         //print("H = " + horiz + "; V = " + vert);
         // Check that they're not BOTH zero - otherwise
         // dir would reset because the joystick is neutral.
@@ -220,7 +221,7 @@ public class PlayerMovement : MonoBehaviour
         {
             CalculateMoveDir();//Movement direction
         }
-        if (!myPlayerCombat.LTPulsado && !myPlayerCombat.RTPulsado && Input.GetButtonDown(contName + "RB"))
+        if (!myPlayerCombat.LTPulsado && !myPlayerCombat.RTPulsado && Actions.Boost.WasPressed)//Input.GetButtonDown(contName + "RB"))
         {
             myPlayerCombat.RTPulsado = true;
             StartBoost();
@@ -307,7 +308,7 @@ public class PlayerMovement : MonoBehaviour
         {
             lastWallAngle = -1;
         }
-        if (Input.GetButtonDown(contName + "A"))
+        if (Actions.Jump.WasPressed)//Input.GetButtonDown(contName + "A"))
         {
             //print("JUMP");
             StartJump();
@@ -327,7 +328,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else
                 {
-                    if (Input.GetButtonUp(contName + "A"))
+                    if (Actions.Jump.WasReleased)//Input.GetButtonUp(contName + "A"))
                     {
                         jumpSt = JumpState.Breaking;
                     }

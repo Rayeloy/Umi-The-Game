@@ -64,24 +64,24 @@ public class PlayerCombat : MonoBehaviour {
         //print("Trigger = " + Input.GetAxis(myPlayerMovement.contName + "LT"));
         if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && attackStg == attackStage.ready)
         {
-            if (Input.GetButtonDown(myPlayerMovement.contName + "X"))
+            if (myPlayerMovement.Actions.Attack1.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
             {
                 ChangeAttackType(GameController.instance.attackX);
                 StartAttack();
             }
-            if (Input.GetButtonDown(myPlayerMovement.contName + "Y"))
+            if (myPlayerMovement.Actions.Attack2.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
             {
                 ChangeAttackType(GameController.instance.attackY);
                 StartAttack();
                 //ChangeNextAttackType();
             }
-            if (Input.GetButtonDown(myPlayerMovement.contName + "B"))
+            if (myPlayerMovement.Actions.Attack3.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "B"))
             {
                 ChangeAttackType(GameController.instance.attackB);
                 StartAttack();
                 //ChangeNextAttackType();
             }
-            if (LTPulsado && !RTPulsado && Input.GetButtonDown(myPlayerMovement.contName + "RB"))
+            if (LTPulsado && !RTPulsado && myPlayerMovement.Actions.Boost.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
             {
                 RTPulsado = true;
                 ChangeAttackType(GameController.instance.attackHook);
@@ -91,18 +91,18 @@ public class PlayerCombat : MonoBehaviour {
 
         ProcessAttack();
 
-        if (Input.GetButtonUp(myPlayerMovement.contName + "RB"))
+        if (myPlayerMovement.Actions.Boost.WasReleased)//Input.GetButtonUp(myPlayerMovement.contName + "RB"))
         {
             RTPulsado = false;
         }
 
-        if (Input.GetButtonDown(myPlayerMovement.contName + "LB") && !LTPulsado)
+        if (myPlayerMovement.Actions.Aim.WasPressed/*Input.GetButtonDown(myPlayerMovement.contName + "LB")*/ && !LTPulsado)
         {
             print("startAiming");
             LTPulsado = true;
             StartAiming();
         }
-        if (Input.GetButtonUp(myPlayerMovement.contName + "LB") && LTPulsado)
+        if (myPlayerMovement.Actions.Aim.WasReleased/*Input.GetButtonUp(myPlayerMovement.contName + "LB")*/ && LTPulsado)
         {
             print("stopAiming");
             LTPulsado = false;
