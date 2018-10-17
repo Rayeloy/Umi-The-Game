@@ -9,12 +9,15 @@ public class Controller3D : MonoBehaviour
     public LayerMask collisionMaskAround;
 
     const float skinWidth = 0.1f;
-    const float skinWidthHeight = 0.001f;
+    [Tooltip("DO NOT CHANGE. Space the first horizontal raycast (feet) is lifted up to avoid colliding horizontally (like it was a wall) when on the edge of floor.")]
+    public float skinWidthHeight = 0.0001f;
     public float maxClimbAngle = 60f;
-    public float minClimbAngle = 3f;
+    public float minClimbAngle = 0f;
     public float maxDescendAngle = 60f;
-    public float minDescendAngle = 3f;
+    public float minDescendAngle = 0f;
     public float precisionHeight = 0.01f;
+    public float precisionSpaceFromSlideWall = 0.001f;
+    public float precisClimbSlopeInsideWall = 0.000f;
     //Vector3 finalVel;
 
     public struct Raycast
@@ -82,139 +85,6 @@ public class Controller3D : MonoBehaviour
         transform.Translate(vel, Space.World);
     }
 
-    void VerticalCollisions(ref Vector3 vel)
-    {
-        // ---------------------- 3D "CAPSULE" -------------------
-        float directionY = Mathf.Sign(vel.y);
-        float rayLength = Mathf.Abs(vel.y) + skinWidth;
-        Vector3 rowsOrigin = directionY == -1 ? raycastOrigins.BottomLFCorner : raycastOrigins.TopLFCorner;
-        Vector3 rowOrigin = rowsOrigin;
-        //print("----------NEW SET OF RAYS------------");
-        for (int i = 0; i < verticalRows; i++)
-        {
-            rowOrigin.z = rowsOrigin.z - (verticalRowSpacing * i);
-            //print("i= " + i + "; Radius = " + radius);
-
-            for (int j = 0; j < verticalRaysPerRow; j++)
-            {
-                Vector3 rayOrigin = new Vector3(rowOrigin.x + (verticalRaySpacing * j + vel.x), rowOrigin.y, rowOrigin.z + vel.z);
-
-                RaycastHit hit;
-                //Debug.DrawRay(rayOrigin, Vector3.up * directionY * rayLength, Color.red);
-                //print("rayOrigin= " + rayOrigin + "; direction = " + directionY + "; rayLength = " + rayLength+"; BottomCenter.y= "+raycastOrigins.BottomCenter.y+"; min.y = "+coll.bounds.min.y);
-
-                if (Physics.Raycast(rayOrigin, Vector3.up * directionY, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                {
-                    float slopeAngle = GetSlopeAngle(hit);
-                    if (collisions.moveSt != MovingState.descending)
-                    {
-                        //print("VERTICAL COLLISIONS");
-                        vel.y = (hit.distance - skinWidth) * directionY;
-                        rayLength = hit.distance;
-
-                        if (collisions.moveSt == MovingState.climbing)
-                        {
-                            Vector3 horVel = new Vector3(vel.x, 0, vel.z);
-                            horVel = horVel.normalized * (vel.y / Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad));
-                            vel = new Vector3(horVel.x, vel.y, horVel.z);
-                        }
-                        collisions.below = directionY == -1;
-                        collisions.above = directionY == 1;
-                    }
-                }
-            }
-            if (collisions.moveSt == MovingState.climbing && collisions.slopeAngle != collisions.slopeAngleOld)//new slope, being on a slope already.This avoids going into the slope b4 adapting to new slope.
-            {
-                Vector3 horVel = new Vector3(vel.x, 0, vel.z);
-                rayLength = horVel.magnitude + skinWidth;
-                Vector3 rayOrigin = collisions.closestHorRaycast.origin + Vector3.up * vel.y;//NEEDS TO BE FIXED, the real ray origin should be  = BottomCenter + horVel.normalized * radius - skinWidth;
-                RaycastHit hit;
-                if (Physics.Raycast(rayOrigin, horVel.normalized, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                {
-                    float slopeAngle = Vector3.Angle(hit.normal, Vector3.up);
-                    if (slopeAngle != collisions.slopeAngle)
-                    {
-                        Vector3 newHorVel = (hit.distance - skinWidth) * horVel.normalized;
-                        collisions.slopeAngle = slopeAngle;
-                    }
-                }
-            }
-        }
-    }//No se usa
-
-    void XCollisions(ref Vector3 vel)
-    {
-        float directionX = Mathf.Sign(vel.x);
-        float rayLength = Mathf.Abs(vel.x) + skinWidth;
-        Vector3 rowsOrigin = directionX == 1 ? raycastOrigins.BottomRFCorner : raycastOrigins.BottomLFCorner;
-        for (int i = 0; i < horizontalRows; i++)
-        {
-            Vector3 rowOrigin = rowsOrigin;
-            rowOrigin.y = rowsOrigin.y + i * horizontalRowSpacing;
-            for (int j = 0; j < horizontalRaysPerRow; j++)
-            {
-                Vector3 rayOrigin = rowOrigin + Vector3.back * (j * horizontalRaySpacing + vel.y);
-                RaycastHit hit;
-                Debug.DrawRay(rayOrigin, Vector3.right * directionX * rayLength, Color.red);
-                //print("rayOrigin= " + rayOrigin + "; rayLength = " + rayLength+"; BottomCenter.y= "+raycastOrigins.BottomCenter.y+"; min.y = "+coll.bounds.min.y);
-
-                if (Physics.Raycast(rayOrigin, Vector3.right * directionX, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                {
-                    float slopeAngle = GetSlopeAngle(hit);
-                    if (collisions.moveSt == MovingState.none || slopeAngle > maxClimbAngle)
-                    {
-                        vel.x = (hit.distance - skinWidth) * directionX;
-                        rayLength = hit.distance;
-
-                        if (collisions.moveSt == MovingState.climbing)
-                        {
-                            vel.y = Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(vel.x);
-                        }
-                        collisions.left = directionX == -1;
-                        collisions.right = directionX == 1;
-                    }
-
-                }
-            }
-        }
-    }//No se usa
-
-    void ZCollisions(ref Vector3 vel)
-    {
-        float directionZ = Mathf.Sign(vel.z);
-        float rayLength = Mathf.Abs(vel.z) + skinWidth;
-        Vector3 rowsOrigin = directionZ == 1 ? raycastOrigins.BottomLFCorner : raycastOrigins.BottomLBCorner;
-        for (int i = 0; i < horizontalRows; i++)
-        {
-            Vector3 rowOrigin = rowsOrigin;
-            rowOrigin.y = rowsOrigin.y + i * horizontalRowSpacing;
-            for (int j = 0; j < horizontalRaysPerRow; j++)
-            {
-                Vector3 rayOrigin = rowOrigin + Vector3.right * (j * horizontalRaySpacing + vel.y);
-                RaycastHit hit;
-                Debug.DrawRay(rayOrigin, Vector3.forward * directionZ * rayLength, Color.red);
-                //print("rayOrigin= " + rayOrigin + "; rayLength = " + rayLength+"; BottomCenter.y= "+raycastOrigins.BottomCenter.y+"; min.y = "+coll.bounds.min.y);
-
-                if (Physics.Raycast(rayOrigin, Vector3.forward * directionZ, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                {
-                    float slopeAngle = GetSlopeAngle(hit);
-                    if (collisions.moveSt == MovingState.none || slopeAngle > maxClimbAngle)
-                    {
-                        vel.z = (hit.distance - skinWidth) * directionZ;
-                        rayLength = hit.distance;
-
-                        if (collisions.moveSt == MovingState.climbing)
-                        {
-                            vel.y = Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(vel.z);
-                        }
-                        collisions.behind = directionZ == -1;
-                        collisions.foward = directionZ == 1;
-                    }
-                }
-            }
-        }
-    }//No se usa
-
     float GetSlopeAngle(RaycastHit hit)
     {
         float slopeAngle = Vector3.Angle(hit.normal, Vector3.up);
@@ -238,6 +108,8 @@ public class Controller3D : MonoBehaviour
             collisions.below = true;
             collisions.moveSt = MovingState.climbing;
             collisions.slopeAngle = rayCast.slopeAngle;
+            collisions.realSlopeAngle = Mathf.Asin(climbVel.y / climbVel.magnitude) * Mathf.Rad2Deg;
+            print("REAL SLOPE ANGLE = " + collisions.realSlopeAngle);
             //print("CLIMBING: Angle = " + rayCast.slopeAngle + "; old Vel= " + horVel.ToString("F5") + "; vel= " + vel.ToString("F5") +
             //    "; old magnitude=" + horVel.magnitude + "; new magnitude = " + vel.magnitude);
             Debug.DrawRay(raycastOrigins.Center, vel.normalized * 2, Color.green, 3);
@@ -332,140 +204,7 @@ public class Controller3D : MonoBehaviour
         }
     }
 
-    void ClimbSlopeCollisions(ref Vector3 vel)
-    {
-        float directionX = Mathf.Sign(vel.x);
-        float rayLengthX = skinWidth;
-        Vector3 rowOriginX = directionX == 1 ? raycastOrigins.BottomRFCorner : raycastOrigins.BottomLFCorner;
-        for (int j = 0; j < horizontalRaysPerRow; j++)
-        {
-            Vector3 rayOriginX = rowOriginX + Vector3.back * (j * horizontalRaySpacing);
-            RaycastHit hit;
-            Debug.DrawRay(rayOriginX, Vector3.right * directionX * rayLengthX, Color.yellow);
-            //print("rayOrigin= " + rayOrigin + "; rayLength = " + rayLength+"; BottomCenter.y= "+raycastOrigins.BottomCenter.y+"; min.y = "+coll.bounds.min.y);
-
-            if (Physics.Raycast(rayOriginX, Vector3.right * directionX, out hit, rayLengthX, collisionMask, QueryTriggerInteraction.Ignore))
-            {
-                float slopeAngle = GetSlopeAngle(hit);
-                if (hit.distance < collisions.closestHorRaycast.distance)
-                {
-                    float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
-                    collisions.closestHorRaycast = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Raycast.Axis.X);
-                }
-            }
-        }
-        float directionZ = Mathf.Sign(vel.z);
-        float rayLengthZ = skinWidth;
-        Vector3 rowOriginZ = directionZ == 1 ? raycastOrigins.BottomLFCorner : raycastOrigins.BottomLBCorner;
-        for (int j = 0; j < horizontalRaysPerRow; j++)
-        {
-            Vector3 rayOriginZ = rowOriginZ + Vector3.right * (j * horizontalRaySpacing);
-            RaycastHit hit;
-            Debug.DrawRay(rayOriginZ, Vector3.forward * directionZ * rayLengthZ, Color.yellow);
-            //print("rayOrigin= " + rayOrigin + "; rayLength = " + rayLength+"; BottomCenter.y= "+raycastOrigins.BottomCenter.y+"; min.y = "+coll.bounds.min.y);
-
-            if (Physics.Raycast(rayOriginZ, Vector3.forward * directionZ, out hit, rayLengthZ, collisionMask, QueryTriggerInteraction.Ignore))
-            {
-                float slopeAngle = GetSlopeAngle(hit);
-                if (hit.distance < collisions.closestHorRaycast.distance)
-                {
-                    float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
-                    collisions.closestHorRaycast = new Raycast(hit, hit.distance, vel, rayOriginZ, slopeAngle, wallAngle, Raycast.Axis.Z);
-                }
-            }
-        }
-        if (collisions.closestHorRaycast.axis != Raycast.Axis.none)// En otras palabras, si se ha movido y rellenado el valor de "closestHorRaycast"(hit)
-        {
-            if (collisions.closestHorRaycast.slopeAngle <= maxClimbAngle)
-            {
-                Vector3 horVel;
-                float distanceToSlopeStart = 0;
-                if (collisions.closestHorRaycast.slopeAngle != collisions.slopeAngleOld)//if new slope
-                {//Substract the distance to slope from the velocity
-                    distanceToSlopeStart = collisions.closestHorRaycast.distance - skinWidth;
-                    horVel = new Vector3(vel.x, 0, vel.z);
-                    horVel = horVel.normalized * (horVel.magnitude - distanceToSlopeStart);
-                    vel = new Vector3(horVel.x, vel.y, horVel.z);
-                }
-                ClimbSlope(ref vel, collisions.closestHorRaycast);
-                horVel = new Vector3(vel.x, 0, vel.z);
-                horVel = horVel.normalized * (horVel.magnitude + distanceToSlopeStart);
-                vel = new Vector3(horVel.x, vel.y, horVel.z);
-            }
-        }
-    }//No se usa
-
-    void DescendSlopeCollisions(ref Vector3 vel)
-    {
-        float directionY = Mathf.Sign(vel.y);
-        float rayLength = 1 + skinWidth;
-        Vector3 rowsOrigin = raycastOrigins.BottomLFCorner;
-        Vector3 rowOrigin = rowsOrigin;
-        //print("----------NEW SET OF RAYS------------");
-        for (int i = 0; i < verticalRows; i++)
-        {
-            rowOrigin.z = rowsOrigin.z - (verticalRowSpacing * i);
-            //print("i= " + i + "; Radius = " + radius);
-
-            for (int j = 0; j < verticalRaysPerRow; j++)
-            {
-                Vector3 rayOrigin = new Vector3(rowOrigin.x + (verticalRaySpacing * j), rowOrigin.y, rowOrigin.z);
-
-                RaycastHit hit;
-                Debug.DrawRay(rayOrigin, Vector3.up * directionY * rayLength, Color.yellow);
-                //print("rayOrigin= " + rayOrigin + "; direction = " + directionY + "; rayLength = " + rayLength+"; BottomCenter.y= "+raycastOrigins.BottomCenter.y+"; min.y = "+coll.bounds.min.y);
-
-                if (Physics.Raycast(rayOrigin, Vector3.up * directionY, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                {
-                    float slopeAngle = GetSlopeAngle(hit);
-                    if (hit.distance < collisions.closestVerRaycast.distance)
-                    {
-                        //print("NEW CLOSEST VERTRAY, slope angle= " + slopeAngle);
-                        float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
-                        collisions.closestVerRaycast = new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, wallAngle, Raycast.Axis.Y);
-                    }
-                }
-            }
-        }
-
-        if (collisions.closestVerRaycast.axis == Raycast.Axis.Y)// We are touching floor
-        {
-            if (CheckSlopeType(ref vel, collisions.closestVerRaycast) == MovingState.descending)
-            {
-                if (collisions.closestVerRaycast.slopeAngle <= maxDescendAngle)
-                {
-                    float distanceToSlopeStart = 0;
-                    if (collisions.closestVerRaycast.slopeAngle != collisions.slopeAngleOld)//if new slope
-                    {
-                        print("NEW SLOPE DESCENDING slope angle= " + collisions.closestVerRaycast.slopeAngle + "; hit point =" + collisions.closestVerRaycast.ray.point.ToString("F4"));
-                        distanceToSlopeStart = collisions.closestVerRaycast.distance - skinWidth;
-                        vel.y -= distanceToSlopeStart * -1;
-                    }
-                    //print("DESCEND SLOPE");
-                    DescendSlope(ref vel, collisions.closestVerRaycast);
-                    vel.y += distanceToSlopeStart * -1;
-                    //print("vel= " + vel.ToString("F5"));
-                }
-            }
-
-
-            /*Vector3 horVel;
-            float distanceToSlopeStart = 0;
-            if (collisions.closestHorRaycast.slopeAngle != collisions.slopeAngleOld)//if new slope
-            {//Substract the distance to slope from the velocity
-                distanceToSlopeStart = collisions.closestHorRaycast.distance - skinWidth;
-                horVel = new Vector3(vel.x, 0, vel.z);
-                horVel = horVel.normalized * (horVel.magnitude - distanceToSlopeStart);
-                vel = new Vector3(horVel.x, vel.y, horVel.z);
-            }
-            ClimbSlope(ref vel, collisions.closestHorRaycast);
-            horVel = new Vector3(vel.x, 0, vel.z);
-            horVel = horVel.normalized * (horVel.magnitude + distanceToSlopeStart);
-            vel = new Vector3(horVel.x, vel.y, horVel.z);*/
-        }
-    }//No se usa
-
-    void SlideWall(ref Vector3 vel, Raycast rayCast)
+    void WallSlide(ref Vector3 vel, Raycast rayCast)
     {
         Vector3 horVel = new Vector3(rayCast.vel.x, 0, rayCast.vel.z);
         float wallAngle = Vector3.Angle(rayCast.ray.normal, Vector3.forward);
@@ -478,29 +217,243 @@ public class Controller3D : MonoBehaviour
         //LEFT OR RIGHT ORIENTATION?
         float ang = Vector3.Angle(slideVel, horVel);
         slideVel = ang > 90 ? -slideVel : slideVel;
-        print("SLIDE ANGLE= " + angle + "; slideVel = " + slideVel.ToString("F4") + "; a = " + a + "; wallAngle = " + wallAngle + "; distanceToWall = " + rayCast.distance);
+        print("SLIDE ANGLE= " + angle + "; vel = " + vel + "; slideVel = " + slideVel.ToString("F4") + "; a = " + a + "; wallAngle = " + wallAngle + "; distanceToWall = " + rayCast.distance);
         slideVel *= a;
+        SlideState slideSt = ang > 90 ? SlideState.right : SlideState.left;
+        print("------------SLIDE STATE ------------ = " + slideSt);
+
+        collisions.slideSt = slideSt;
         vel = new Vector3(slideVel.x, vel.y, slideVel.z);
         collisions.moveSt = MovingState.wall;
         collisions.wallAngle = wallAngle;
         Debug.DrawRay(raycastOrigins.Center, slideVel.normalized * 2, Color.green, 3);
     }
 
-    void CylinderHorizontalCollisions(ref Vector3 vel)
+    bool SecondWallSlide(ref Vector3 vel, Raycast rayCast, Vector3 originalVel)
+    {
+        Vector3 horVel = new Vector3(originalVel.x, 0, originalVel.z);
+        float wallAngle = Vector3.Angle(rayCast.ray.normal, Vector3.forward);
+        float moveDistance = Mathf.Abs(horVel.magnitude);
+        Vector3 normal = -new Vector3(rayCast.ray.normal.x, 0, rayCast.ray.normal.z).normalized;
+        float angle = Vector3.Angle(normal, horVel);
+        float a = Mathf.Sin(angle * Mathf.Deg2Rad) * horVel.magnitude;
+        Vector3 movementNormal = Vector3.up;
+        Vector3 slideVel = Vector3.Cross(normal, movementNormal).normalized;
+        //LEFT OR RIGHT ORIENTATION?
+        float ang = Vector3.Angle(slideVel, horVel);
+        slideVel = ang > 90 ? -slideVel : slideVel;
+        print("SLIDE ANGLE= " + angle + "; vel = " + vel + "; slideVel = " + slideVel.ToString("F4") + "; a = " + a + "; wallAngle = " + wallAngle + "; distanceToWall = " + rayCast.distance);
+        slideVel *= a;
+        SlideState slideSt = ang > 90 ? SlideState.right : SlideState.left;
+        print("------------SLIDE STATE ------------ = " + slideSt);
+        if (slideSt == collisions.slideSt)
+        {
+            collisions.slideSt = slideSt;
+            vel = new Vector3(slideVel.x, vel.y, slideVel.z);
+            collisions.moveSt = MovingState.wall;
+            collisions.wallAngle = wallAngle;
+            Debug.DrawRay(raycastOrigins.Center, slideVel.normalized * 2, Color.green, 3);
+            return true;
+        }
+        else
+        {
+            Debug.LogWarning("-----------SECOND WALL SLIDE HAS WRONG DIRECTION---------- = " + slideSt);
+            horVel = horVel * (rayCast.distance - skinWidth);
+            vel = new Vector3(horVel.x, vel.y, horVel.z);
+            collisions.wallAngle2 = rayCast.wallAngle;
+            return false;
+        }
+    }
+
+    void WallSlideCollisions(ref Vector3 vel)
     {
         Vector3 horVel = new Vector3(vel.x, 0, vel.z);
         float rayLength = horVel.magnitude + skinWidth;
-        Vector3 rowOrigin = raycastOrigins.BottomCenter + (horVel.normalized * raycastOrigins.AroundRadius);
-        for (int i = 0; i < horizontalRows; i++)
+        horVel = horVel.normalized;
+        float directionX = 0, directionZ = 0; ;
+        Vector3 wallNormal = new Vector3(collisions.wallNormal.x, 0, collisions.wallNormal.z).normalized;
+
+        if (vel.x != 0)
         {
-            rowOrigin.y = raycastOrigins.BottomCenter.y + (i * horizontalRowSpacing);
-            //for(int j=0; j<)
+            directionX = Mathf.Sign(vel.x);
+            Vector3 rowsOriginX = directionX == 1 ? raycastOrigins.BottomRFCornerReal : raycastOrigins.BottomLFCornerReal;
+            //LEAVE SAFE SPACE FROM WALL 
+            rowsOriginX += wallNormal * precisionSpaceFromSlideWall;
+            for (int i = 0; i < horizontalRows; i++)
+            {
+                Vector3 rowOriginX = rowsOriginX;
+                rowOriginX.y = (rowsOriginX.y) + i * horizontalRowSpacing;
+                //For drawing the character collider limits only
+                Vector3 lastOriginX = rowOriginX;
+                for (int j = 0; j < horizontalRaysPerRow; j++)
+                {
+                    Vector3 rayOriginX = rowOriginX + Vector3.back * (j * horizontalRaySpacing);
+                    Debug.DrawLine(lastOriginX, rayOriginX, Color.blue);
+                    lastOriginX = rayOriginX;
+                    rayOriginX += (-horVel * skinWidth);
+                    Debug.DrawLine(rayOriginX, rayOriginX, Color.blue);
+                    RaycastHit hit;
+                    //Debug.DrawRay(rayOriginX, horVel * rayLength, Color.yellow);
+
+                    if (Physics.Raycast(rayOriginX, horVel, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
+                    {
+                        float slopeAngle = GetSlopeAngle(hit);
+                        float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
+                        if (hit.distance < collisions.closestHorRaycastSlide.distance && hit.transform.gameObject != collisions.wall)
+                        {
+                            collisions.closestHorRaycastSlide = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Raycast.Axis.X, i);
+                        }
+                    }
+                }
+            }
         }
-    }//No se usa
+
+        if (vel.z != 0)
+        {
+            directionZ = Mathf.Sign(vel.z);
+            Vector3 rowsOriginZ = directionZ == 1 ? raycastOrigins.BottomLFCornerReal : raycastOrigins.BottomLBCornerReal;
+            //LEAVE SAFE SPACE FROM WALL 
+            rowsOriginZ += wallNormal * precisionSpaceFromSlideWall;
+            for (int i = 0; i < horizontalRows; i++)
+            {
+                Vector3 rowOriginZ = rowsOriginZ;
+                rowOriginZ.y = (rowsOriginZ.y) + i * horizontalRowSpacing;
+                //For drawing the character collider limits only
+                Vector3 lastOriginZ = rowOriginZ;
+                for (int j = 0; j < horizontalRaysPerRow; j++)
+                {
+                    Vector3 rayOriginZ = rowOriginZ + Vector3.right * (j * horizontalRaySpacing);
+                    Debug.DrawLine(lastOriginZ, rayOriginZ, Color.blue);
+                    lastOriginZ = rayOriginZ;
+                    rayOriginZ += (-horVel * skinWidth);
+
+                    RaycastHit hit;
+                    //Debug.DrawRay(rayOriginZ, horVel * rayLength, Color.yellow);
+
+                    if (Physics.Raycast(rayOriginZ, horVel, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
+                    {
+                        float slopeAngle = GetSlopeAngle(hit);
+                        float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
+                        if (hit.distance < collisions.closestHorRaycastSlide.distance && hit.transform.gameObject != collisions.wall)
+                        {
+                            collisions.closestHorRaycastSlide = new Raycast(hit, hit.distance, vel, rayOriginZ, slopeAngle, wallAngle, Raycast.Axis.Z, i);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (collisions.closestHorRaycastSlide.axis != Raycast.Axis.none)//si ha habido una collision horizontal
+        {
+            MovingState value = collisions.closestHorRaycastSlide.row == 0 ? CheckSlopeType(ref vel, collisions.closestHorRaycastSlide) : MovingState.wall;
+            print("---------- SECOND COLLISION HOR: " + value + "; slopeAngle=" + collisions.closestHorRaycastSlide.slopeAngle);
+            switch (value)//con que tipo de objeto collisionamos? pared/cuesta arriba/cuesta abajo
+            {
+                case MovingState.wall:
+                    //check if the "wall" is not just the floor/really small ridge
+                    bool validWall = true;
+                    float heightToPrecisionHeight = precisionHeight - (collisions.closestHorRaycast.origin.y - raycastOrigins.BottomLBCornerReal.y);
+                    if (heightToPrecisionHeight <= 0)
+                    {
+                        validWall = true;
+                    }
+                    else
+                    {
+                        Vector3 rayOriginAux = collisions.closestHorRaycast.origin + Vector3.up * heightToPrecisionHeight;
+                        RaycastHit hitAux;
+                        if (Physics.Raycast(rayOriginAux, horVel, out hitAux, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
+                        {
+                            float slopeAngle = GetSlopeAngle(hitAux);
+                            if (slopeAngle == collisions.closestHorRaycast.slopeAngle)
+                            {
+                                validWall = true;
+                            }
+                        }
+                    }
+                    if (validWall)
+                    {
+                        if (collisions.wallAngleOld2 != collisions.closestHorRaycastSlide.wallAngle)
+                        {
+                            print("APPROACHING WALL: " + "distance = " + collisions.closestHorRaycastSlide.distance);
+                            horVel = horVel * (collisions.closestHorRaycastSlide.distance - skinWidth);
+                            vel = new Vector3(horVel.x, vel.y, horVel.z);
+                            collisions.wallAngle2 = collisions.closestHorRaycastSlide.wallAngle;
+                        }
+                        else
+                        {
+
+                            if (SecondWallSlide(ref vel, collisions.closestHorRaycastSlide, collisions.closestHorRaycast.vel))
+                            {
+                                collisions.horCollisionsPoint = collisions.closestHorRaycast.ray.point;
+                                collisions.wallNormal = collisions.closestHorRaycast.ray.normal;
+                                collisions.wall = collisions.closestHorRaycast.ray.transform.gameObject;
+                                switch (collisions.closestHorRaycast.axis)
+                                {
+                                    case Raycast.Axis.X:
+                                        collisions.left = directionX == -1;
+                                        collisions.right = directionX == 1;
+                                        break;
+                                    case Raycast.Axis.Z:
+                                        collisions.behind = directionZ == -1;
+                                        collisions.foward = directionZ == 1;
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case MovingState.climbing:
+                    //print("AUXILIAR RAYS FOR DISTANCE CALCULATION");
+                    Debug.DrawRay(collisions.closestHorRaycastSlide.origin, horVel * rayLength, Color.cyan, 4);
+                    float distanceToSlopeStart = 0;
+                    if (collisions.slopeAngleOld != collisions.closestHorRaycastSlide.slopeAngle)
+                    {
+                        distanceToSlopeStart = collisions.closestHorRaycastSlide.distance - skinWidth;
+                        horVel = new Vector3(vel.x, 0, vel.z);
+                        horVel = horVel.normalized * (horVel.magnitude - distanceToSlopeStart);
+                        vel = new Vector3(horVel.x, vel.y, horVel.z);
+                    }
+                    ClimbSlope(ref vel, collisions.closestHorRaycastSlide);
+                    horVel = new Vector3(vel.x, 0, vel.z);
+                    horVel = horVel.normalized * (horVel.magnitude + distanceToSlopeStart);
+                    vel = new Vector3(horVel.x, vel.y, horVel.z);
+                    //--------------------- CHECK FOR NEXT SLOPE/WALL -------------------------------------
+                    Vector3 horVelAux = new Vector3(vel.x, 0, vel.z);
+                    rayLength = (horVelAux.magnitude + skinWidth);
+                    Vector3 rayOrigin = collisions.closestHorRaycastSlide.origin + Vector3.up * vel.y;
+                    RaycastHit hit;
+                    Debug.DrawRay(rayOrigin, horVelAux * rayLength, Color.yellow, 4);
+                    if (Physics.Raycast(rayOrigin, horVelAux, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
+                    {
+                        float slopeAngle = GetSlopeAngle(hit);
+                        //+print("HIT  with angle = " + slopeAngle);
+                        Debug.DrawRay(rayOrigin, horVelAux * rayLength, Color.magenta, 4);
+                        if (slopeAngle != collisions.slopeAngle)
+                        {
+                            horVelAux = horVelAux.normalized * (hit.distance - skinWidth);
+                            //tan(realAngle)=y/xz;
+                            float y = vel.y;
+                            if (slopeAngle > maxClimbAngle)//IF IT'S A WALL
+                            {
+                                y = Mathf.Tan(collisions.realSlopeAngle * Mathf.Deg2Rad) * horVelAux.magnitude;
+                            }
+                            vel = new Vector3(horVelAux.x, y, horVelAux.z);
+                            print("HIT NEW SLOPE/Wall with angle = " + slopeAngle);
+                            //vel = new Vector3(horVelAux.x, vel.y, horVelAux.z);
+                            collisions.slopeAngle = slopeAngle;
+                        }
+                    }
+                    break;
+                case MovingState.descending:
+                    break;
+                case MovingState.none:
+                    break;
+            }
+        }
+    }
 
     void NewHorizontalCollisions2(ref Vector3 vel)
     {
-        Raycast wallRay = new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
         Vector3 horVel = new Vector3(vel.x, 0, vel.z);
         float rayLength = horVel.magnitude + skinWidth;
         horVel = horVel.normalized;
@@ -528,7 +481,6 @@ public class Controller3D : MonoBehaviour
                     Vector3 rayOriginX = rowOriginX + Vector3.back * (j * horizontalRaySpacing);
                     Debug.DrawLine(lastOriginX, rayOriginX, Color.blue);
                     lastOriginX = rayOriginX;
-                    //rayOriginX += (Vector3.right * directionX * skinWidth);
                     rayOriginX += (-horVel * skinWidth);
                     Debug.DrawLine(rayOriginX, rayOriginX, Color.blue);
                     RaycastHit hit;
@@ -541,10 +493,6 @@ public class Controller3D : MonoBehaviour
                         if (hit.distance < collisions.closestHorRaycast.distance)
                         {
                             collisions.closestHorRaycast = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Raycast.Axis.X, i);
-                        }
-                        if (slopeAngle > maxClimbAngle && hit.distance < wallRay.distance)
-                        {
-                            wallRay = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Raycast.Axis.X, i);
                         }
                     }
                 }
@@ -573,7 +521,6 @@ public class Controller3D : MonoBehaviour
                     Vector3 rayOriginZ = rowOriginZ + Vector3.right * (j * horizontalRaySpacing);
                     Debug.DrawLine(lastOriginZ, rayOriginZ, Color.blue);
                     lastOriginZ = rayOriginZ;
-                    //rayOriginZ += (Vector3.forward * directionZ * skinWidth);
                     rayOriginZ += (-horVel * skinWidth);
 
                     RaycastHit hit;
@@ -587,10 +534,6 @@ public class Controller3D : MonoBehaviour
                         {
                             collisions.closestHorRaycast = new Raycast(hit, hit.distance, vel, rayOriginZ, slopeAngle, wallAngle, Raycast.Axis.Z, i);
                         }
-                        if (slopeAngle > maxClimbAngle && hit.distance < wallRay.distance)
-                        {
-                            wallRay = new Raycast(hit, hit.distance, vel, rayOriginZ, slopeAngle, wallAngle, Raycast.Axis.Z, i);
-                        }
                     }
                 }
             }
@@ -603,33 +546,71 @@ public class Controller3D : MonoBehaviour
             switch (value)//con que tipo de objeto collisionamos? pared/cuesta arriba/cuesta abajo
             {
                 case MovingState.wall:
-                    if (collisions.wallAngleOld != collisions.closestHorRaycast.wallAngle)
+                    Debug.DrawRay(collisions.closestHorRaycast.origin, horVel * 0.5f, Color.white);
+                    //check if the "wall" is not just the floor/really small ridge
+                    bool validWall = false;
+                    if (collisions.lastMoveSt == MovingState.descending)
                     {
-                        print("APPROACHING WALL: " + "distance = " + collisions.closestHorRaycast.distance);
-                        horVel = horVel * (collisions.closestHorRaycast.distance - skinWidth);
-                        vel = new Vector3(horVel.x, vel.y, horVel.z);
-                        collisions.wallAngle = collisions.closestHorRaycast.wallAngle;
+                        float heightToPrecisionHeight = precisionHeight - (collisions.closestHorRaycast.origin.y - raycastOrigins.BottomLBCornerReal.y);
+                        if (heightToPrecisionHeight <= 0)
+                        {
+                            validWall = true;
+                        }
+                        else
+                        {
+                            Vector3 rayOriginAux = collisions.closestHorRaycast.origin + Vector3.up * heightToPrecisionHeight;
+                            RaycastHit hitAux;
+                            if (Physics.Raycast(rayOriginAux, horVel, out hitAux, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
+                            {
+                                float slopeAngle = GetSlopeAngle(hitAux);
+                                if (slopeAngle == collisions.closestHorRaycast.slopeAngle)
+                                {
+                                    validWall = true;
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        SlideWall(ref vel, collisions.closestHorRaycast);
+                        validWall = true;
                     }
-                    collisions.horCollisionsPoint = collisions.closestHorRaycast.ray.point;
-                    collisions.wallNormal = collisions.closestHorRaycast.ray.normal;
-                    switch (collisions.closestHorRaycast.axis)
+                    if (validWall)
                     {
-                        case Raycast.Axis.X:
-                            collisions.left = directionX == -1;
-                            collisions.right = directionX == 1;
-                            break;
-                        case Raycast.Axis.Z:
-                            collisions.behind = directionZ == -1;
-                            collisions.foward = directionZ == 1;
-                            break;
+                        if (collisions.wallAngleOld != collisions.closestHorRaycast.wallAngle)
+                        {
+                            print("APPROACHING WALL: " + "distance = " + collisions.closestHorRaycast.distance);
+                            horVel = horVel * (collisions.closestHorRaycast.distance - skinWidth);
+                            vel = new Vector3(horVel.x, vel.y, horVel.z);
+                            collisions.wallAngle = collisions.closestHorRaycast.wallAngle;
+                        }
+                        else
+                        {
+                            WallSlide(ref vel, collisions.closestHorRaycast);
+                        }
+                        collisions.horCollisionsPoint = collisions.closestHorRaycast.ray.point;
+                        collisions.wallNormal = collisions.closestHorRaycast.ray.normal;
+                        collisions.wall = collisions.closestHorRaycast.ray.transform.gameObject;
+                        switch (collisions.closestHorRaycast.axis)
+                        {
+                            case Raycast.Axis.X:
+                                collisions.left = directionX == -1;
+                                collisions.right = directionX == 1;
+                                break;
+                            case Raycast.Axis.Z:
+                                collisions.behind = directionZ == -1;
+                                collisions.foward = directionZ == 1;
+                                break;
+                        }
+                        RaycastHit hitAux;
+                        if (Physics.Raycast(collisions.closestHorRaycast.origin, Vector3.down, out hitAux, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
+                        {
+                            collisions.floorAngle = GetSlopeAngle(hitAux);
+                        }
+                        WallSlideCollisions(ref vel);
                     }
                     break;
                 case MovingState.climbing:
-                    print("AUXILIAR RAYS FOR DISTANCE CALCULATION");
+                    //print("AUXILIAR RAYS FOR DISTANCE CALCULATION");
                     Debug.DrawRay(collisions.closestHorRaycast.origin, horVel * rayLength, Color.cyan, 4);
                     float distanceToSlopeStart = 0;
                     if (collisions.slopeAngleOld != collisions.closestHorRaycast.slopeAngle)
@@ -643,9 +624,31 @@ public class Controller3D : MonoBehaviour
                     horVel = new Vector3(vel.x, 0, vel.z);
                     horVel = horVel.normalized * (horVel.magnitude + distanceToSlopeStart);
                     vel = new Vector3(horVel.x, vel.y, horVel.z);
-                    if (wallRay.axis != Raycast.Axis.none)
+                    //--------------------- CHECK FOR NEXT SLOPE/WALL -------------------------------------
+                    Vector3 horVelAux = new Vector3(vel.x, 0, vel.z);
+                    rayLength = (horVelAux.magnitude + skinWidth);
+                    Vector3 rayOrigin = collisions.closestHorRaycast.origin + Vector3.up * vel.y;
+                    RaycastHit hit;
+                    Debug.DrawRay(rayOrigin, horVelAux * rayLength, Color.yellow, 4);
+                    if (Physics.Raycast(rayOrigin, horVelAux, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
                     {
-
+                        float slopeAngle = GetSlopeAngle(hit);
+                        //+print("HIT  with angle = " + slopeAngle);
+                        Debug.DrawRay(rayOrigin, horVelAux * rayLength, Color.magenta, 4);
+                        if (slopeAngle != collisions.slopeAngle)
+                        {
+                            horVelAux = horVelAux.normalized * (hit.distance - skinWidth+ precisClimbSlopeInsideWall);
+                            //tan(realAngle)=y/xz;
+                            float y = vel.y;
+                            if (slopeAngle > maxClimbAngle)//IF IT'S A WALL
+                            {
+                                y = Mathf.Tan(collisions.realSlopeAngle * Mathf.Deg2Rad) * horVelAux.magnitude;
+                            }
+                            vel = new Vector3(horVelAux.x, y, horVelAux.z);
+                            print("HIT NEW SLOPE/Wall with angle = " + slopeAngle);
+                            //vel = new Vector3(horVelAux.x, vel.y, horVelAux.z);
+                            collisions.slopeAngle = slopeAngle;
+                        }
                     }
                     break;
                 case MovingState.descending:
@@ -663,6 +666,11 @@ public class Controller3D : MonoBehaviour
         float rayLength = Mathf.Abs(vel.y) + skinWidth;
         Vector3 rowsOrigin = directionY == -1 ? raycastOrigins.BottomLFCornerReal : raycastOrigins.TopLFCornerReal;
         Vector3 rowOrigin = rowsOrigin;
+        Vector3 wallNormal = new Vector3(collisions.wallNormal.x, 0, collisions.wallNormal.z).normalized;
+        if (collisions.floorAngle >= 0 && collisions.floorAngle < 0.2f)//SEPARATION FROM WALL IN CASE WE ARE STANDING ON FLOOR AN COLLIDING WITH WALL
+        {
+            rowOrigin += wallNormal * 0.01f;
+        }
         //print("----------NEW SET OF RAYS------------");
         for (int i = 0; i < verticalRows; i++)
         {
@@ -749,406 +757,6 @@ public class Controller3D : MonoBehaviour
             }
         }
     }
-
-    void NewHorizontalCollisions(ref Vector3 vel)
-    {
-        Raycast wallRay = new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
-        Vector3 horVel = new Vector3(vel.x, 0, vel.z);
-        float rayLength = horVel.magnitude + skinWidth;
-        horVel = horVel.normalized;
-        float directionX = 0, directionZ = 0; ;
-
-        if (vel.x != 0)
-        {
-            directionX = Mathf.Sign(vel.x);
-            Vector3 rowsOriginX = directionX == 1 ? raycastOrigins.BottomRFCorner : raycastOrigins.BottomLFCorner;
-            for (int i = 0; i < horizontalRows; i++)
-            {
-                Vector3 rowOriginX = rowsOriginX;
-                rowOriginX.y = (rowsOriginX.y) + i * horizontalRowSpacing;
-                for (int j = 0; j < horizontalRaysPerRow; j++)
-                {
-                    Vector3 rayOriginX = rowOriginX + Vector3.back * (j * horizontalRaySpacing);
-                    RaycastHit hit;
-                    Debug.DrawRay(rayOriginX, Vector3.right * directionX * rayLength, Color.red);
-
-                    if (Physics.Raycast(rayOriginX, Vector3.right * directionX, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                    {
-                        float slopeAngle = GetSlopeAngle(hit);
-                        float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
-                        if (hit.distance < collisions.closestHorRaycast.distance)
-                        {
-                            collisions.closestHorRaycast = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Raycast.Axis.X, i);
-                        }
-                        if (slopeAngle > maxClimbAngle && hit.distance < wallRay.distance)
-                        {
-                            wallRay = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Raycast.Axis.X, i);
-                        }
-
-                    }
-                }
-            }
-        }
-
-        if (vel.z != 0)
-        {
-            directionZ = Mathf.Sign(vel.z);
-            Vector3 rowsOriginZ = directionZ == 1 ? raycastOrigins.BottomLFCorner : raycastOrigins.BottomLBCorner;
-            for (int i = 0; i < horizontalRows; i++)
-            {
-                Vector3 rowOriginZ = rowsOriginZ;
-                rowOriginZ.y = (rowsOriginZ.y) + i * horizontalRowSpacing;
-                for (int j = 0; j < horizontalRaysPerRow; j++)
-                {
-                    Vector3 rayOriginZ = rowOriginZ + Vector3.right * (j * horizontalRaySpacing);
-                    RaycastHit hit;
-                    Debug.DrawRay(rayOriginZ, Vector3.forward * directionZ * rayLength, Color.red);
-
-                    if (Physics.Raycast(rayOriginZ, Vector3.forward * directionZ, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                    {
-                        float slopeAngle = GetSlopeAngle(hit);
-                        float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
-                        if (hit.distance < collisions.closestHorRaycast.distance)
-                        {
-                            collisions.closestHorRaycast = new Raycast(hit, hit.distance, vel, rayOriginZ, slopeAngle, wallAngle, Raycast.Axis.Z, i);
-                        }
-                        if (slopeAngle > maxClimbAngle && hit.distance < wallRay.distance)
-                        {
-                            wallRay = new Raycast(hit, hit.distance, vel, rayOriginZ, slopeAngle, wallAngle, Raycast.Axis.Z, i);
-                        }
-                    }
-                }
-            }
-        }
-
-        if (collisions.closestHorRaycast.axis != Raycast.Axis.none)//si ha habido una collision horizontal
-        {
-            MovingState value = collisions.closestHorRaycast.row == 0 ? CheckSlopeType(ref vel, collisions.closestHorRaycast) : MovingState.wall;
-            print("COLLISION HOR: " + value + "; slopeAngle=" + collisions.closestHorRaycast.slopeAngle);
-            switch (value)//con que tipo de objeto collisionamos? pared/cuesta arriba/cuesta abajo
-            {
-                case MovingState.wall:
-                    //horVel = horVel * (collisions.closestHorRaycast.distance - skinWidth);
-                    //vel = new Vector3(horVel.x, vel.y, horVel.z);
-
-                    //float distanceToWall = 0;
-                    if (collisions.wallAngleOld != collisions.closestHorRaycast.wallAngle)
-                    {
-                        print("APPROACHING WALL: " + "distance = " + collisions.closestHorRaycast.distance);
-                        horVel = horVel * (collisions.closestHorRaycast.distance - skinWidth);
-                        vel = new Vector3(horVel.x, vel.y, horVel.z);
-                        collisions.wallAngle = collisions.closestHorRaycast.wallAngle;
-                        /*distanceToWall = collisions.closestHorRaycast.distance - skinWidth;
-                        horVel = new Vector3(vel.x, 0, vel.z);
-                        horVel = horVel.normalized * (horVel.magnitude - distanceToWall);
-                        vel = new Vector3(horVel.x, vel.y, horVel.z);*/
-                    }
-                    else
-                    {
-                        SlideWall(ref vel, collisions.closestHorRaycast);
-                    }
-                    /*horVel = new Vector3(vel.x, 0, vel.z);
-                    horVel = horVel.normalized * (horVel.magnitude + distanceToWall);
-                    vel = new Vector3(horVel.x, vel.y, horVel.z);*/
-
-                    /*if (collisions.lastMoveSt == MovingState.climbing)
-                    {
-                        collisions.moveSt = MovingState.climbing;
-                        vel.y = Mathf.Tan(collisions.slopeAngleOld * Mathf.Deg2Rad) * horVel.magnitude;
-                    }*/
-                    switch (collisions.closestHorRaycast.axis)
-                    {
-                        case Raycast.Axis.X:
-                            collisions.left = directionX == -1;
-                            collisions.right = directionX == 1;
-                            break;
-                        case Raycast.Axis.Z:
-                            collisions.behind = directionZ == -1;
-                            collisions.foward = directionZ == 1;
-                            break;
-                    }
-                    break;
-                case MovingState.climbing:
-                    Raycast hit = MovingDirHorizontalCollisions(ref vel);
-                    if (hit.axis != Raycast.Axis.none)//Physics.Raycast(collisions.closestHorRaycast.origin, horVel, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                    {
-                        print("AUXILIAR RAYS FOR DISTANCE CALCULATION");
-                        Debug.DrawRay(hit.origin, horVel * rayLength, Color.cyan, 4);
-                        float distanceToSlopeStart = 0;
-                        if (collisions.slopeAngleOld != collisions.closestHorRaycast.slopeAngle)
-                        {
-                            //RaycastHit hit;
-                            //Debug.DrawRay(collisions.closestHorRaycast.origin, horVel * rayLength, Color.white);
-                            distanceToSlopeStart = hit.distance - skinWidth;
-                            horVel = new Vector3(vel.x, 0, vel.z);
-                            horVel = horVel.normalized * (horVel.magnitude - distanceToSlopeStart);
-                            vel = new Vector3(horVel.x, vel.y, horVel.z);
-                        }
-                        ClimbSlope(ref vel, collisions.closestHorRaycast);
-                        horVel = new Vector3(vel.x, 0, vel.z);
-                        horVel = horVel.normalized * (horVel.magnitude + distanceToSlopeStart);
-                        vel = new Vector3(horVel.x, vel.y, horVel.z);
-                        if (wallRay.axis != Raycast.Axis.none)
-                        {
-
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogWarning("COULDNT HIT SLOPE to check for distance");
-                    }
-                    break;
-                case MovingState.descending:
-                    break;
-                case MovingState.none:
-                    break;
-            }
-        }
-    }
-
-    void NewVerticalCollisions(ref Vector3 vel)
-    {
-        // ---------------------- 3D "Cube" -------------------
-        float directionY = Mathf.Sign(vel.y);
-        float rayLength = Mathf.Abs(vel.y) + skinWidth;
-        Vector3 rowsOrigin = directionY == -1 ? raycastOrigins.BottomLFCorner : raycastOrigins.TopLFCorner;
-        Vector3 rowOrigin = rowsOrigin;
-        //print("----------NEW SET OF RAYS------------");
-        for (int i = 0; i < verticalRows; i++)
-        {
-            rowOrigin.z = rowsOrigin.z - (verticalRowSpacing * i);
-
-            for (int j = 0; j < verticalRaysPerRow; j++)
-            {
-                Vector3 rayOrigin = new Vector3(rowOrigin.x + (verticalRaySpacing * j), rowOrigin.y, rowOrigin.z);
-
-                RaycastHit hit;
-                Debug.DrawRay(rayOrigin, Vector3.up * directionY * rayLength, Color.red);
-
-                if (Physics.Raycast(rayOrigin, Vector3.up * directionY, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                {
-                    //print("Vertical Hit");
-                    if (hit.distance < collisions.closestVerRaycast.distance)
-                    {
-                        float slopeAngle = GetSlopeAngle(hit);
-                        float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
-                        collisions.closestVerRaycast = new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, wallAngle, Raycast.Axis.Y, i);
-                    }
-                }
-            }
-        }
-        if (collisions.closestVerRaycast.axis != Raycast.Axis.none)//si ha habido una collision horizontal
-        {
-            MovingState value = CheckSlopeType(ref vel, collisions.closestVerRaycast);
-            //print("COLLISION VER: " + value + "; slopeAngle=" + collisions.closestVerRaycast.slopeAngle);
-            if (value == MovingState.climbing)
-            {
-                value = MovingState.none;
-            }
-            //print("COLLISION " + value + "; slopeAngle=" + collisions.closestVerRaycast.slopeAngle);
-            switch (value)//con que tipo de objeto collisionamos? suelo/cuesta arriba/cuesta abajo
-            {
-                case MovingState.none:
-                    vel.y = (collisions.closestVerRaycast.distance - skinWidth) * directionY;
-                    rayLength = collisions.closestVerRaycast.distance;
-                    if (collisions.moveSt == MovingState.climbing)//Subiendo chocamos con un techo
-                    {
-                        Vector3 horVel = new Vector3(vel.x, 0, vel.z);
-                        horVel = horVel.normalized * (vel.y / Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad));
-                        vel = new Vector3(horVel.x, vel.y, horVel.z);
-                    }
-                    collisions.below = directionY == -1;
-                    collisions.above = directionY == 1;
-                    break;
-                case MovingState.climbing:
-                    break;
-                case MovingState.descending:
-                    if (collisions.moveSt != MovingState.climbing)
-                    {
-                        float distanceToSlopeStart = 0;
-                        //print("NEW SLOPE DESCENDING slope angle= " + collisions.closestVerRaycast.slopeAngle + "; hit point =" + collisions.closestVerRaycast.ray.point.ToString("F4"));
-                        distanceToSlopeStart = collisions.closestVerRaycast.distance - skinWidth;
-                        vel.y -= distanceToSlopeStart * -1;
-                        print("DESCEND SLOPE");
-                        DescendSlope(ref vel, collisions.closestVerRaycast);
-                        vel.y += distanceToSlopeStart * -1;
-                    }
-                    //--------------------- CHECK FOR NEXT SLOPE/FLOOR -------------------------------------
-                    Vector3 horVelAux = new Vector3(vel.x, 0, vel.z);
-                    rayLength = (Mathf.Abs(vel.y) + skinWidth);
-                    Vector3 rayOrigin = collisions.closestVerRaycast.origin + horVelAux;
-                    RaycastHit hit;
-                    Debug.DrawRay(rayOrigin, Vector3.down * rayLength, Color.yellow, 4);
-                    if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                    {
-                        float slopeAngle = GetSlopeAngle(hit);
-                        //+print("HIT  with angle = " + slopeAngle);
-                        Debug.DrawRay(rayOrigin, Vector3.down * rayLength, Color.magenta, 4);
-                        if (slopeAngle != collisions.slopeAngle)
-                        {
-                            //print("HIT NEW SLOPE/FLOOR with angle = " + slopeAngle);
-                            vel.y = -(hit.distance - skinWidth);
-                            //vel = new Vector3(horVelAux.x, vel.y, horVelAux.z);
-                            collisions.slopeAngle = slopeAngle;
-                        }
-                    }
-                    break;
-            }
-        }
-    }
-
-    Raycast MovingDirHorizontalCollisions(ref Vector3 vel)
-    {
-        Raycast result = new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
-        Vector3 horVel = new Vector3(vel.x, 0, vel.z);
-        float rayLength = horVel.magnitude + skinWidth;
-        horVel = horVel.normalized;
-        float directionX = 0, directionZ = 0; ;
-
-        if (vel.x != 0)
-        {
-            directionX = Mathf.Sign(vel.x);
-            Vector3 rowOriginX = directionX == 1 ? raycastOrigins.BottomRFCorner : raycastOrigins.BottomLFCorner;
-            for (int j = 0; j < horizontalRaysPerRow; j++)
-            {
-                Vector3 rayOriginX = rowOriginX + Vector3.back * (j * horizontalRaySpacing);
-                rayOriginX += (Vector3.right * directionX * skinWidth);
-                rayOriginX += (-horVel * skinWidth);
-                RaycastHit hit;
-                Debug.DrawRay(rayOriginX, horVel * rayLength, Color.yellow, 0.1f);
-
-                if (Physics.Raycast(rayOriginX, horVel, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                {
-                    if (hit.distance < result.distance)
-                    {
-                        float slopeAngle = GetSlopeAngle(hit);
-                        float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
-                        result = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Raycast.Axis.X, 0);
-                    }
-
-
-                }
-            }
-        }
-
-        if (vel.z != 0)
-        {
-            directionZ = Mathf.Sign(vel.z);
-            Vector3 rowOriginZ = directionZ == 1 ? raycastOrigins.BottomLFCorner : raycastOrigins.BottomLBCorner;
-            for (int j = 0; j < horizontalRaysPerRow; j++)
-            {
-                Vector3 rayOriginZ = rowOriginZ + Vector3.right * (j * horizontalRaySpacing);
-                rayOriginZ += (Vector3.forward * directionZ * skinWidth);
-                rayOriginZ += (-horVel * skinWidth);
-                RaycastHit hit;
-                Debug.DrawRay(rayOriginZ, horVel * rayLength, Color.yellow, 0.1f);
-
-                if (Physics.Raycast(rayOriginZ, horVel, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                {
-                    if (hit.distance < result.distance)
-                    {
-                        float slopeAngle = GetSlopeAngle(hit);
-                        float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
-                        result = new Raycast(hit, hit.distance, vel, rayOriginZ, slopeAngle, wallAngle, Raycast.Axis.Z, 0);
-                    }
-
-                }
-            }
-        }
-        MovingState val = CheckSlopeType(ref vel, result);
-        if (val == MovingState.climbing)
-        {
-            return result;
-        }
-        else
-        {
-            return new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
-        }
-
-    }
-
-    void HorizontalCollisions(ref Vector3 vel)
-    {
-        // ---------------------- 3D CAPSULE -------------------
-        float directionX = Mathf.Sign(vel.x);
-        float directionZ = Mathf.Sign(vel.z);
-
-        Vector3 dirXZ = new Vector3(vel.x, 0, vel.z);
-        //PERPENDICULAR VECTOR TO MOVING DIR
-        float perpX = 1;
-        float perpZ = (-dirXZ.x / dirXZ.z) * perpX;
-        Vector3 perpVector = new Vector3(perpX, 0, perpZ).normalized;
-        Vector3 rowDir = -perpVector;
-
-        float rayLength = Mathf.Abs(dirXZ.magnitude) + skinWidth;
-        //CIRCUMFERENCE POINT THAT INTERSECTS WITH dirXZ THAT CROSSES CENTER
-        Vector3 rowsOriginCenter = dirXZ.normalized * (horizontalRadius - skinWidth);
-        float rx = rowsOriginCenter.x + raycastOrigins.BottomCenterH.x;
-        float rz = rowsOriginCenter.z + raycastOrigins.BottomCenterH.z;
-        rowsOriginCenter = new Vector3(rx, raycastOrigins.BottomCenterH.y, rz);
-        //CIRCUMFERENCE POINT THAT INTERSECTS WITH PERPENDICULAR VECTOR THAT CROSSES CENTER
-        /*float angle = Mathf.Acos(((1 * perpVector.x) + (0 * perpVector.z)) / (1 * perpVector.magnitude)) * Mathf.Rad2Deg;
-        float px = raycastOrigins.BottomCenter.x + horizontalRadius * Mathf.Cos(angle);
-        float pz = raycastOrigins.BottomCenter.z + horizontalRadius * Mathf.Sin(angle);
-        Vector3 rowsOrigin = new Vector3(px, raycastOrigins.BottomCenter.y, pz);*/
-        Vector3 rowsOrigin = perpVector * (horizontalRadius);
-        rx = rowsOrigin.x + rowsOriginCenter.x;
-        rz = rowsOrigin.z + rowsOriginCenter.z;
-        rowsOrigin = new Vector3(rx, rowsOriginCenter.y, rz);
-        //print("dirXZ=" + dirXZ.ToString("F4") + "; perpVector=" + perpVector + ";rowsOrigin="+rowsOrigin);
-        //print("----------NEW SET OF RAYS------------");
-        for (int i = 0; i < horizontalRows; i++)
-        {
-            Vector3 rowOrigin = new Vector3(rowsOrigin.x, rowsOrigin.y + (i * horizontalRowSpacing), rowsOrigin.z);
-            //print("horizontalRowSpacing= " + horizontalRowSpacing + "; rowOrigin = " + rowOrigin.ToString("F4"));
-            for (int j = 0; j < horizontalRaysPerRow; j++)
-            {
-                //o=(rowOrigin.x,rowOrigin.z), f=(fx,fz), r=(perpVector2.x,perpVector2.z)
-                //(perpVector2.x,perpVector2.z)=(fx-rowOrigin.x,fz-rowOrigin.z)
-                Vector3 finalRowDir = rowDir * (j * horizontalRaySpacing);
-                float fx = finalRowDir.x + rowOrigin.x;
-                float fz = finalRowDir.z + rowOrigin.z;
-                Vector3 rayOrigin = new Vector3(fx, rowOrigin.y, fz);
-
-                RaycastHit hit;
-                Debug.DrawRay(rayOrigin, dirXZ * rayLength, Color.red);
-                //print("rayOrigin= " + rayOrigin + "; rayLength = " + rayLength+"; BottomCenter.y= "+raycastOrigins.BottomCenter.y+"; min.y = "+coll.bounds.min.y);
-
-                if (Physics.Raycast(rayOrigin, dirXZ, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
-                {
-                    //print("HIT AGAINST " + hit.collider.gameObject.name);
-                    //print("DISTANCE HIT = " + hit.distance);
-                    if (hit.distance > (skinWidth))
-                    {
-                        print("HIT DISTANCE= " + hit.distance);
-                        Vector3 aux = dirXZ.normalized * (hit.distance - skinWidth);
-                        vel = new Vector3(aux.x, vel.y, aux.z);
-                        rayLength = hit.distance;
-                    }
-                    else
-                    {
-                        //calculate parallel direction to plane hit and percentage of magnitude, based on incidence angle (90º->0)
-                        Vector3 normal = new Vector3(hit.normal.x, 0, hit.normal.z);
-                        Vector3 parallel = -normal;
-                        //angle
-                        float cos = Vector3.Dot(dirXZ, normal);
-                        float cosDeg = Mathf.Acos(cos) * Mathf.Rad2Deg;
-                        float prop = ((cosDeg - 90) / 90);
-                        prop = Mathf.Clamp(prop, 0, 1);
-                        float finalSpeed = vel.magnitude * prop;
-                        vel = new Vector3(parallel.x * finalSpeed, vel.y, parallel.z * finalSpeed);
-                        print("HIT ANGLE = " + cosDeg + "; PARALLEL DIR= " + parallel.ToString("F4") + "; FINAL SPEED= " + finalSpeed);
-                    }
-
-                    collisions.behind = directionZ == -1;
-                    collisions.foward = directionZ == 1;
-                    collisions.left = directionX == -1;
-                    collisions.right = directionX == 1;
-                }
-                //if (i == 0) { break; }
-            }
-        }
-    }//No se usa
 
     void UpdateRaycastOrigins()
     {
@@ -1249,6 +857,14 @@ public class Controller3D : MonoBehaviour
         climbing,
         descending
     }
+
+    public enum SlideState
+    {
+        none,
+        left,
+        right
+    }
+
     public struct CollisionInfo
     {
         public bool above, below;
@@ -1266,12 +882,15 @@ public class Controller3D : MonoBehaviour
 
         public MovingState moveSt;
         public MovingState lastMoveSt;
-        public float slopeAngle, slopeAngleOld, wallAngle, wallAngleOld;
+        public float slopeAngle, slopeAngleOld, realSlopeAngle, wallAngle, wallAngleOld, wallAngle2, wallAngleOld2, floorAngle;
         public Vector3 startVel;
         public Raycast closestHorRaycast;
+        public Raycast closestHorRaycastSlide;
         public Raycast closestVerRaycast;
         public Vector3 horCollisionsPoint;
         public Vector3 wallNormal;
+        public GameObject wall;
+        public SlideState slideSt;
 
 
         public void ResetVertical()
@@ -1284,8 +903,12 @@ public class Controller3D : MonoBehaviour
             foward = behind = false;
             wallAngleOld = wallAngle;
             wallAngle = 0;
+            wallAngleOld2 = wallAngle2;
+            wallAngle2 = 0;
             horCollisionsPoint = Vector3.zero;
             wallNormal = Vector3.zero;
+            wall = null;
+            slideSt = SlideState.none;
         }
         public void ResetAround()
         {
@@ -1295,10 +918,13 @@ public class Controller3D : MonoBehaviour
         {
             lastMoveSt = moveSt;
             moveSt = MovingState.none;
+            floorAngle = -1;
             slopeAngleOld = slopeAngle;
             slopeAngle = 0;
+            realSlopeAngle = 0;
             startVel = Vector3.zero;
             closestHorRaycast = new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
+            closestHorRaycastSlide = new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
             closestVerRaycast = new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
         }
     }

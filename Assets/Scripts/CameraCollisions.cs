@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraCollisions : MonoBehaviour {
 
-    CameraControler myCamController;
+    CameraController myCamController;
     public float minDistance = 1.0f;
     [Tooltip("CameraController changes this value. ")]
     public float maxDistance = 4.0f;
@@ -16,7 +16,7 @@ public class CameraCollisions : MonoBehaviour {
 
     private void Awake()
     {
-        myCamController = transform.parent.GetComponent<CameraControler>();
+        myCamController = transform.parent.GetComponent<CameraController>();
     }
     private void Start()
     {

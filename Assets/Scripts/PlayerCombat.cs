@@ -227,12 +227,12 @@ public class PlayerCombat : MonoBehaviour {
     
     void StartAiming()
     {
-        myPlayerMovement.myCamera.SwitchCamera(CameraControler.cameraMode.Shoulder);
+        myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Shoulder);
         //ChangeAttackType(GameController.instance.attackHook);
     }
 
     void StopAiming()
     {
-        myPlayerMovement.myCamera.SwitchCamera(CameraControler.cameraMode.Free);
+        myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Free);
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Controller3D))]
 public class PlayerMovement : MonoBehaviour
 {
-    public CameraControler myCamera;
+    public CameraController myCamera;
     public Transform rotateObj;
     public SkinnedMeshRenderer Body;
     public GameObject churroRojo;
@@ -45,14 +45,16 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector]
     public bool noInput = false;
     Vector3 objectiveVel;
-    Vector3 currentVel;
+    [HideInInspector]
+    public Vector3 currentVel;
     [Header("SPEED")]
     public float maxMoveSpeed = 10.0f;
     float maxMoveSpeed2; // is the max speed from which we aply the joystick sensitivity value
     float currentMaxMoveSpeed = 10.0f; // its the final max speed, after the joyjoystick sensitivity value
     [Tooltip("Maximum speed that you can travel at horizontally when hit by someone")]
     public float maxKnockbackSpeed = 300f;
-    float currentSpeed = 0;
+    [HideInInspector]
+    public float currentSpeed = 0;
     public float maxSpeedInWater = 5f;
     public float maxVerticalSpeedInWater = 3f;
     [Header("BOOST")]
@@ -65,6 +67,7 @@ public class PlayerMovement : MonoBehaviour
     public float initialAcc = 2.0f;
     public float breakAcc = -2.0f;
     public float movingAcc = 2.0f;
+    public float airMovingAcc = 1;
     //public float breakAccOnHit = -2.0f;
     float gravity;
     [Header("JUMP")]
@@ -90,6 +93,7 @@ public class PlayerMovement : MonoBehaviour
     public float wallJumpMinHorizAngle = 30;
     float wallJumpRadius;
     float walJumpConeHeight = 1;
+    float  lastWallAngle=-1;
     //bool wallJumped = false;
 
     public void SetVelocity(Vector3 vel)
@@ -98,14 +102,13 @@ public class PlayerMovement : MonoBehaviour
         currentVel = objectiveVel;
     }
 
-
-
     private void Awake()
     {
         currentSpeed = 0;
         noInput = false;
         controller = GetComponent<Controller3D>();
         myPlayerCombat = GetComponent<PlayerCombat>();
+        lastWallAngle = 0;
     }
     public void KonoStart()
     {
@@ -160,7 +163,6 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(currentVel * Time.deltaTime);
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();
-
     }
 
     [HideInInspector]
@@ -168,6 +170,7 @@ public class PlayerMovement : MonoBehaviour
     float joystickAngle;
     float deadzone = 0.15f;
     float joystickSens = 0;
+
     public void CalculateMoveDir()
     {
         float horiz = Input.GetAxisRaw(contName + "H");
@@ -185,13 +188,13 @@ public class PlayerMovement : MonoBehaviour
             currentMovDir.Normalize();
             switch (myCamera.camMode)
             {
-                case CameraControler.cameraMode.Fixed:
+                case CameraController.cameraMode.Fixed:
                     currentMovDir = RotateVector(-facingAngle, temp);
                     break;
-                case CameraControler.cameraMode.Shoulder:
+                case CameraController.cameraMode.Shoulder:
                     currentMovDir = RotateVector(-facingAngle, temp);
                     break;
-                case CameraControler.cameraMode.Free:
+                case CameraController.cameraMode.Free:
                     Vector3 camDir = (transform.position-myCamera.transform.GetChild(0).position).normalized;
                     camDir.y = 0;
                     // ANGLE OF JOYSTICK
@@ -200,7 +203,7 @@ public class PlayerMovement : MonoBehaviour
                     //rotate camDir joystickAngle degrees
                     currentMovDir=RotateVector(joystickAngle, camDir);
                     //print("joystickAngle= " + joystickAngle + "; camDir= " + camDir.ToString("F4") + "; currentMovDir = " + currentMovDir.ToString("F4"));
-                    RotateCharacter(0);
+                    RotateCharacter();
                     break;
             }
         }
@@ -212,7 +215,7 @@ public class PlayerMovement : MonoBehaviour
 
     void HorizontalMovement()
     {
-        //------------------------------------------------ direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
+        //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
         if (moveSt != MoveState.Knockback)
         {
             CalculateMoveDir();//Movement direction
@@ -222,28 +225,42 @@ public class PlayerMovement : MonoBehaviour
             myPlayerCombat.RTPulsado = true;
             StartBoost();
         }
-        ProcessBoostCD();
+        ProcessBoost();
 
+        //------------------------------- Max Move Speed -------------------------------
         maxMoveSpeed2 = maxMoveSpeed;
         ProcessWater();
         if (joystickSens >= 0.88 || joystickSens > 1) joystickSens = 1;
         currentMaxMoveSpeed = (joystickSens / 1) * maxMoveSpeed2;
-        float actAccel = moveSt==MoveState.Moving && currentSpeed < currentMaxMoveSpeed ? initialAcc : breakAcc;
 
+        //------------------------------- Acceleration -------------------------------
+        float actAccel;
+        if (moveSt == MoveState.Moving && currentSpeed < currentMaxMoveSpeed)
+        {
+            actAccel = initialAcc;
+        }
+        else if (moveSt == MoveState.MovingBreaking)
+        {
+            actAccel = breakAcc * 3;
+        }
+        else
+        {
+            actAccel = breakAcc;
+        }
+        float finalMovingAcc = controller.collisions.below ? movingAcc : airMovingAcc;
+        //------------------------------- Speed ------------------------------ -
         currentSpeed = currentSpeed + actAccel * Time.deltaTime;
         currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
         Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
         if (moveSt == MoveState.Moving && horizontalVel.magnitude > currentMaxMoveSpeed)
         {
-            //print("horizontalVel.magnitude = " + horizontalVel.magnitude + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
             moveSt = MoveState.MovingBreaking;
         }
         //------------------------------------------------ DIRECCION CON VELOCIDAD ---------------------------------
-        //print("MoveState = " + moveSt);
         switch (moveSt)
         {
             case MoveState.Moving:
-                currentVel = currentVel + currentMovDir * movingAcc;
+                currentVel = currentVel + currentMovDir * finalMovingAcc;
                 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
                 if (horizontalVel.magnitude > currentMaxMoveSpeed)
                 {
@@ -252,38 +269,44 @@ public class PlayerMovement : MonoBehaviour
                 }
                 break;
             case MoveState.NotMoving:
-                //print("CURRENT VEL1= " + currentVel+"; currentSpeed = "+currentSpeed);
                 Vector3 aux = currentVel.normalized * currentSpeed;
                 currentVel = new Vector3(aux.x, currentVel.y, aux.z);
-                //print("CURRENT VEL2= " + currentVel);
                 break;
             case MoveState.Boost:
-                currentVel = currentVel + currentMovDir * movingAcc;
-                horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
-                horizontalVel = horizontalVel.normalized * boostSpeed;
-                currentVel = new Vector3(horizontalVel.x, 0, horizontalVel.z);
-                currentSpeed = boostSpeed;
-                //print("BOOST -> CURRENT VEL = " + currentVel.ToString("F4"));
+                if (controller.collisions.collisionHorizontal)//BOOST CONTRA PARED
+                {
+                    WallBoost();
+                }
+                else//BOOST NORMAL
+                {
+                    currentVel = currentVel + currentMovDir * finalMovingAcc;
+                    horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                    horizontalVel = horizontalVel.normalized * boostSpeed;
+                    currentVel = new Vector3(horizontalVel.x, 0, horizontalVel.z);
+                    currentSpeed = boostSpeed;
+                }
                 break;
             case MoveState.Knockback:
                 currentVel = currentVel + knockback;
                 currentSpeed = currentVel.magnitude;
                 currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
-                //print("currentVel = " + currentVel.ToString("F4"));
                 moveSt = MoveState.NotMoving;
                 break;
             case MoveState.MovingBreaking:
-                Vector3 finalDir = currentVel + currentMovDir * movingAcc;
+                Vector3 finalDir = currentVel + currentMovDir * finalMovingAcc;
                 horizontalVel = new Vector3(finalDir.x, 0, finalDir.z);
                 currentVel = horizontalVel.normalized * currentSpeed;
                 currentVel.y = finalDir.y;
-                //print("CURRENT SPEED = " + currentSpeed);
                 break;
         }
     }
 
     void VerticalMovement()
     {
+        if(lastWallAngle>=0 && controller.collisions.below)
+        {
+            lastWallAngle = -1;
+        }
         if (Input.GetButtonDown(contName + "A"))
         {
             //print("JUMP");
@@ -351,7 +374,7 @@ public class PlayerMovement : MonoBehaviour
 
     void StartWallJump()
     {
-        if(!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal)
+        if(!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal && lastWallAngle != controller.collisions.wallAngle)
         {
             print("WallJump");
             //wallJumped = true;
@@ -361,6 +384,7 @@ public class PlayerMovement : MonoBehaviour
             anchorPoint = transform.position;
             wallNormal = controller.collisions.wallNormal;
             wallNormal.y = 0;
+            lastWallAngle = controller.collisions.wallAngle;
         }
     }
 
@@ -378,47 +402,43 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    [HideInInspector]
+    public bool wallJumpAnim = false;
+
     void EndWallJump()
     {
         wallJumping = false;
+        wallJumpAnim = true;
         //CALCULATE JUMP DIR
         //LEFT OR RIGHT ORIENTATION?
-        Vector3 wallDirLeft = Vector3.Cross(wallNormal, Vector3.down).normalized;
-        float ang = Vector3.Angle(wallDirLeft, currentFacingDir);
-        float direction = ang > 90 ? -1 : 1;
         //Angle
         Vector3 circleCenter = anchorPoint + Vector3.up * walJumpConeHeight;
-        float angle = Vector3.Angle(currentFacingDir, wallNormal);
-        if (angle >= 90)
-        {
-            angle -= 90;
-        }
-        else
-        {
-            angle = 90 - angle;
-        }
-        angle = Mathf.Clamp(angle, wallJumpMinHorizAngle, 90);
-        if (direction == -1)
-        {
-            float complementaryAng = 90 - angle;
-            angle += complementaryAng * 2;
-        }
-        Debug.LogWarning("ANGLE = " + angle);
-        float offsetAngleDir= Vector3.Angle(wallDirLeft, Vector3.forward) > 90 ? -1 : 1;
-        float offsetAngle = Vector3.Angle(Vector3.right, wallDirLeft) * offsetAngleDir;
-        angle += offsetAngle;
-        //CALCULATE CIRCUMFERENCE POINT
-        float px = circleCenter.x + (wallJumpRadius*Mathf.Cos(angle*Mathf.Deg2Rad));
-        float pz = circleCenter.z + (wallJumpRadius * Mathf.Sin(angle * Mathf.Deg2Rad));
-        Vector3 circumfPoint = new Vector3(px, circleCenter.y, pz);
+        Vector3 circumfPoint = CalculateReflectPoint(1, wallNormal, circleCenter);
         Vector3 finalDir = (circumfPoint - anchorPoint).normalized;
+        Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
+
         currentVel = finalDir * wallJumpVelocity;
         currentSpeed = currentVel.magnitude;
-        Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4") + "; circleCenter= " + circleCenter + "; circumfPoint = " + circumfPoint + "; angle = " + angle + "; offsetAngle = " + offsetAngle + "; offsetAngleDir = " + offsetAngleDir
-            + ";wallDirLeft = "+ wallDirLeft );
-        Debug.DrawLine(anchorPoint, circleCenter, Color.yellow, 20);
-        Debug.DrawLine(circleCenter, circumfPoint, Color.yellow, 20);
-        Debug.DrawLine(anchorPoint, circumfPoint, Color.white, 20);
+        currentMovDir = new Vector3(finalDir.x, 0, finalDir.z);
+        RotateCharacter();
+
+
+        Debug.DrawLine(anchorPoint, circleCenter, Color.white, 20);
+        Debug.DrawLine(anchorPoint, circumfPoint, Color.yellow, 20);
+    }
+
+    void WallBoost()
+    {
+        //CALCULATE JUMP DIR
+        Vector3 circleCenter = transform.position;
+        Vector3 circumfPoint = CalculateReflectPoint(1, controller.collisions.wallNormal, circleCenter);
+        Vector3 finalDir = (circumfPoint - circleCenter).normalized;
+        Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
+
+        currentVel = finalDir * currentVel.magnitude;
+        currentSpeed = currentVel.magnitude;
+        currentMovDir = new Vector3(finalDir.x, 0, finalDir.z);
+        RotateCharacter();
     }
 
     void StartBoost()
@@ -432,7 +452,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    void ProcessBoostCD()
+    void ProcessBoost()
     {
         if (!boostReady)
         {
@@ -452,46 +472,48 @@ public class PlayerMovement : MonoBehaviour
     public Vector3 currentFacingDir = Vector3.forward;
     [HideInInspector]
     public float facingAngle = 0;
+
     void UpdateFacingDir()//change so that only rotateObj rotates, not whole body
     {
         switch (myCamera.camMode)
         {
-            case CameraControler.cameraMode.Fixed:
+            case CameraController.cameraMode.Fixed:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 //Calculate looking dir of camera
                 Vector3 camPos = myCamera.transform.GetChild(0).position;
                 Vector3 myPos = transform.position;
                 currentFacingDir = new Vector3(myPos.x - camPos.x, 0, myPos.z - camPos.z).normalized;
                 break;
-            case CameraControler.cameraMode.Shoulder:
+            case CameraController.cameraMode.Shoulder:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 currentFacingDir = RotateVector(-myCamera.transform.localRotation.eulerAngles.y, Vector3.forward).normalized;
                 //print("CurrentFacingDir = " + currentFacingDir);
                 break;
-            case CameraControler.cameraMode.Free:
+            case CameraController.cameraMode.Free:
                 currentFacingDir = RotateVector(-rotateObj.localRotation.eulerAngles.y, Vector3.forward).normalized;
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 break;
         }
 
     }
-    public void RotateCharacter(float rotSpeed)
+
+    public void RotateCharacter(float rotSpeed=0)
     {
         switch (myCamera.camMode)
         {
-            case CameraControler.cameraMode.Fixed:
+            case CameraController.cameraMode.Fixed:
                 Vector3 point1 = transform.position;
                 Vector3 point2 = new Vector3(point1.x, point1.y + 1, point1.z);
                 Vector3 dir = new Vector3(point2.x - point1.x, point2.y - point1.y, point2.z - point1.z);
                 rotateObj.Rotate(dir, rotSpeed * Time.deltaTime);
                 break;
-            case CameraControler.cameraMode.Shoulder:
+            case CameraController.cameraMode.Shoulder:
                 point1 = transform.position;
                 point2 = new Vector3(point1.x, point1.y + 1, point1.z);
                 dir = new Vector3(point2.x - point1.x, point2.y - point1.y, point2.z - point1.z);
                 rotateObj.Rotate(dir, rotSpeed * Time.deltaTime);
                 break;
-            case CameraControler.cameraMode.Free:
+            case CameraController.cameraMode.Free:
                 float angle = Mathf.Acos(((0 * currentMovDir.x) + (1 * currentMovDir.z)) / (1 * currentMovDir.magnitude)) * Mathf.Rad2Deg;
                 angle = currentMovDir.x < 0 ? -angle : angle;
                 //print("ANGULO = " + angle);
@@ -505,6 +527,7 @@ public class PlayerMovement : MonoBehaviour
     public float maxTimeStun = 0.6f;
     float timeStun = 0;
     Vector3 knockback;
+
     public void StartRecieveHit(Vector3 _knockback, PlayerMovement attacker, float _maxTimeStun)
     {
         print("Recieve hit");
@@ -522,8 +545,10 @@ public class PlayerMovement : MonoBehaviour
             flag = null;
             haveFlag = false;
         }
+
         print("STUNNED");
     }
+
     void ProcessStun()
     {
         timeStun += Time.deltaTime;
@@ -538,6 +563,7 @@ public class PlayerMovement : MonoBehaviour
     public bool haveFlag = false;
     [HideInInspector]
     public GameObject flag = null;
+
     public void PickFlag(GameObject _flag)
     {
         if (!haveFlag)
@@ -565,6 +591,7 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector]
     public bool inWater = false;
+
     void EnterWater()
     {
         inWater = true;
@@ -577,10 +604,7 @@ public class PlayerMovement : MonoBehaviour
             print("CURRENT OWNER = NULL");
         }
     }
-    void ExitWater()
-    {
-        inWater = false;
-    }
+
     void ProcessWater()
     {
         if (inWater)
@@ -588,6 +612,11 @@ public class PlayerMovement : MonoBehaviour
             controller.AroundCollisions();
             maxMoveSpeed2 = maxSpeedInWater;
         }
+    }
+
+    void ExitWater()
+    {
+        inWater = false;
     }
 
     void CheckWinGame(Respawn respawn)
@@ -628,6 +657,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    //Auxiliar functions
     public Vector3 RotateVector(float angle, Vector3 vector)
     {
         //rotate angle -90 degrees
@@ -637,5 +667,42 @@ public class PlayerMovement : MonoBehaviour
         float px = vector.x * cs - vector.z * sn;
         float py = vector.x * sn + vector.z * cs;
         return  new Vector3(px, 0, py).normalized;
+    }
+    public Vector3 CalculateReflectPoint(float radius, Vector3 _wallNormal, Vector3 circleCenter)//needs wallJumpRadius and wallNormal
+    {
+        //LEFT OR RIGHT ORIENTATION?
+        Vector3 wallDirLeft = Vector3.Cross(_wallNormal, Vector3.down).normalized;
+        float ang = Vector3.Angle(wallDirLeft, currentFacingDir);
+        float direction = ang > 90 ? -1 : 1;
+        //Angle
+        float angle = Vector3.Angle(currentFacingDir, _wallNormal);
+        if (angle >= 90)
+        {
+            angle -= 90;
+        }
+        else
+        {
+            angle = 90 - angle;
+        }
+        angle = Mathf.Clamp(angle, wallJumpMinHorizAngle, 90);
+        if (direction == -1)
+        {
+            float complementaryAng = 90 - angle;
+            angle += complementaryAng * 2;
+        }
+        Debug.LogWarning("ANGLE = " + angle);
+        float offsetAngleDir = Vector3.Angle(wallDirLeft, Vector3.forward) > 90 ? -1 : 1;
+        float offsetAngle = Vector3.Angle(Vector3.right, wallDirLeft) * offsetAngleDir;
+        angle += offsetAngle;
+        //CALCULATE CIRCUMFERENCE POINT
+        float px = circleCenter.x + (radius * Mathf.Cos(angle * Mathf.Deg2Rad));
+        float pz = circleCenter.z + (radius * Mathf.Sin(angle * Mathf.Deg2Rad));
+        Vector3 circumfPoint = new Vector3(px, circleCenter.y, pz);
+
+        Debug.LogWarning("; circleCenter= " + circleCenter + "; circumfPoint = " + circumfPoint + "; angle = " + angle + "; offsetAngle = " + offsetAngle + "; offsetAngleDir = " + offsetAngleDir
+    + ";wallDirLeft = " + wallDirLeft);
+        Debug.DrawLine(circleCenter, circumfPoint, Color.white, 20);
+
+        return circumfPoint;
     }
 }

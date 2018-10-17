@@ -20,11 +20,11 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 0.1, g: 0.1, b: 0.1, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 4
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
@@ -495,10 +495,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 384e2a8ce393b094bb0754e6774c8dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allAttacks:
-  - {fileID: 11400000, guid: 62b70d52c7fb6024eafbe61034f7d534, type: 2}
-  - {fileID: 11400000, guid: cec4095a724a9f14f9540ad2fb191b30, type: 2}
-  - {fileID: 11400000, guid: f966ce84c6d7ddd4f8ee9bf2d3992d62, type: 2}
+  attackX: {fileID: 0}
+  attackY: {fileID: 0}
+  attackB: {fileID: 0}
+  attackHook: {fileID: 0}
   allPlayers:
   - {fileID: 1152256012}
   allCanvas:
@@ -1392,6 +1392,11 @@ Prefab:
       propertyPath: myCamera
       value: 
       objectReference: {fileID: 1927830475}
+    - target: {fileID: 114078510699935020, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a76334c98b710ce4fb20c747d78a778b, type: 2}
   m_IsPrefabAsset: 0
