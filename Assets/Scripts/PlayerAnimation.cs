@@ -7,8 +7,32 @@ public class PlayerAnimation : MonoBehaviour
 	[Header("Referencias")]
 	public Animator animator;
 	public PlayerMovement playerMovement;
+    [Header("WEAPONS ATTACH")]
+    public Transform rightHand;
+    public Transform leftHand;
 
-	public void LateUpdate(){
+    public WeaponAttachInfo[] weaponsAttachInfo;
+
+    [System.Serializable]
+    public struct WeaponAttachInfo
+    {
+        public Vector3 pos;
+        public Vector3 rot;
+        public Transform weapon;
+        public WeaponAttachInfo(Transform _weapon, Vector3 _pos, Vector3 _rot) {
+            weapon = _weapon;
+            pos = _pos;
+            rot = _rot;
+        }
+    }
+
+    private void Start()
+    {
+        animator.SetFloat("mierdiSpeed", 3);
+
+    }
+    int frames = 0;
+    public void LateUpdate(){
 		animator.SetFloat("HorizontalSpeed", playerMovement.currentSpeed);//new Vector2 (playerMovement.currentVel.x, playerMovement.currentVel.z).magnitude);
         animator.SetFloat("VerticalSpeed", playerMovement.currentVel.y);
 		animator.SetBool("OnGround", playerMovement.controller.collisions.below);
@@ -16,5 +40,18 @@ public class PlayerAnimation : MonoBehaviour
 			animator.SetTrigger("WallJump");
 			playerMovement.wallJumpAnim = false;
 		}
-	}
+        frames++;
+        if (frames > 10)
+        {
+            animator.SetFloat("mierdiSpeed", 1);
+        }
+
+    }
+
+    public void AttachWeapon(WeaponAttachInfo weapInf)
+    {
+        weapInf.weapon.SetParent(rightHand);
+        weapInf.weapon.localPosition = weapInf.pos;
+        weapInf.weapon.localRotation = Quaternion.Euler(weapInf.rot.x, weapInf.rot.y, weapInf.rot.z);
+    }
 }
