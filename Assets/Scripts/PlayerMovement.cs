@@ -8,8 +8,6 @@ public class PlayerMovement : MonoBehaviour
     public CameraController myCamera;
     public Transform rotateObj;
     public SkinnedMeshRenderer Body;
-    public GameObject churroRojo;
-    public GameObject churroAzul;
     public Material teamBlueMat;
     public Material teamRedMat;
     PlayerCombat myPlayerCombat;
@@ -120,18 +118,14 @@ public class PlayerMovement : MonoBehaviour
         wallJumpRadius = Mathf.Atan(wallJumpAngle*Mathf.Deg2Rad) * walJumpConeHeight;
         wallJumpMinHorizAngle = Mathf.Clamp(wallJumpMinHorizAngle, 0, 90);
         print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
-        Body.material = team == Team.blue ? teamBlueMat : teamRedMat;
+        //Body.material = team == Team.blue ? teamBlueMat : teamRedMat;
         switch (team)
         {
             case Team.blue:
-                churroAzul.SetActive(true);
-                churroRojo.SetActive(false);
-                myPlayerAnimation.AttachWeapon(myPlayerAnimation.weaponsAttachInfo[1]);
+                myPlayerAnimation.AttachWeapon("Churro Azul");
                 break;
             case Team.red:
-                churroAzul.SetActive(false);
-                churroRojo.SetActive(true);
-                myPlayerAnimation.AttachWeapon(myPlayerAnimation.weaponsAttachInfo[0]);
+                myPlayerAnimation.AttachWeapon("Churro Rojo");
                 break;
         }
         currentMaxMoveSpeed = maxMoveSpeed2 = maxMoveSpeed;

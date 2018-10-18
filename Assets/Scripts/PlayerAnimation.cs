@@ -51,11 +51,26 @@ public class PlayerAnimation : MonoBehaviour
 
     }
 
-    public void AttachWeapon(WeaponAttachInfo weapInf)
+    public WeaponData SearchWeapon(string name)
     {
-        weapInf.weapon.SetParent(rightHand);
-        weapInf.weapon.localPosition = weapInf.pos;
-        weapInf.weapon.localRotation = Quaternion.Euler(weapInf.rot.x, weapInf.rot.y, weapInf.rot.z);
-        weapInf.weapon.localScale = weapInf.scale; 
+        WeaponData[] allWeap = GameController.instance.allWeapons;
+        foreach(WeaponData wp in allWeap)
+        {
+            if(name == wp.weaponName)
+            {
+                return wp;
+            }
+        }
+        return null;
+    }
+
+    public void AttachWeapon(string weaponName)
+    {
+        WeaponData weapData = SearchWeapon(weaponName);
+        Transform wep = Instantiate(weapData.weaponPrefab,rightHand).transform;
+        wep.SetParent(rightHand);
+        wep.localPosition = weapData.localPosition;
+        wep.localRotation = Quaternion.Euler(weapData.localRotation.x, weapData.localRotation.y, weapData.localRotation.z);
+        wep.localScale = weapData.localScale; 
     }
 }

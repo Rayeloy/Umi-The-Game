@@ -39,8 +39,6 @@ public class PlayerCombat : MonoBehaviour {
         active=3,
         recovery=4
     }
-
-    public GameObject churro;
     public Transform hitboxes;
     Collider hitbox;
     //public Collider hitbox;
