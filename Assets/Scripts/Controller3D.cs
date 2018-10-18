@@ -144,11 +144,11 @@ public class Controller3D : MonoBehaviour
         Vector3 horVel = new Vector3(rayCast.vel.x, 0, rayCast.vel.z);
         Vector3 wallHorNormal = new Vector3(rayCast.ray.normal.x, 0, rayCast.ray.normal.z).normalized;
         float moveDistance = Mathf.Abs(horVel.magnitude);
-        Vector3 movementNormal = new Vector3(-wallHorNormal.z, 0, wallHorNormal.x).normalized;
+        Vector3 movementNormal = new Vector3(wallHorNormal.z, 0, -wallHorNormal.x).normalized;
         Vector3 slipDir = Vector3.Cross(rayCast.ray.normal, movementNormal).normalized;
-        float xz = vel.y / Mathf.Sin(rayCast.slopeAngle * Mathf.Deg2Rad);
-        Vector3 slipVel = (wallHorNormal * xz);//+ horVel;
-        slipVel.y = vel.y;
+        float xz = vel.y * Mathf.Cos(rayCast.slopeAngle * Mathf.Deg2Rad);
+        Vector3 slipVel = (slipDir * vel.y) + horVel;
+        //slipVel.y = vel.y;
 
         float angWithWall = Vector3.Angle(wallHorNormal, horVel);
 
@@ -207,7 +207,7 @@ public class Controller3D : MonoBehaviour
         {
             return MovingState.descending;
         }
-        else if (climbVel.y < 0 && ray.axis == Raycast.Axis.Y && ray.slopeAngle > maxDescendAngle)
+        else if (ray.axis == Raycast.Axis.Y && ray.slopeAngle > maxDescendAngle)
         {
             return MovingState.sliping;
         }
