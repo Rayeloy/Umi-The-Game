@@ -87,6 +87,7 @@ public class PlayerMovement : MonoBehaviour
     Vector3 anchorPoint;
     Vector3 wallNormal;
     [Tooltip("Vertical angle in which the player wall-jumps.")]
+    [Range(0, 89)]
     public float wallJumpAngle=30;
     [Tooltip("Minimum horizontal angle in which the player wall-jumps. This number ranges from 0 to 90. 0 --> parallel to the wall; 90 --> perpendicular to the wall")]
     public float wallJumpMinHorizAngle = 30;
@@ -115,7 +116,8 @@ public class PlayerMovement : MonoBehaviour
         gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
         jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
         maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
-        wallJumpRadius = Mathf.Atan(wallJumpAngle*Mathf.Deg2Rad) * walJumpConeHeight;
+        wallJumpRadius = Mathf.Tan(wallJumpAngle*Mathf.Deg2Rad) * walJumpConeHeight;
+        print("wallJumpRaduis = " + wallJumpRadius + "; tan(wallJumpAngle)= " + Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad));
         wallJumpMinHorizAngle = Mathf.Clamp(wallJumpMinHorizAngle, 0, 90);
         print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
         //Body.material = team == Team.blue ? teamBlueMat : teamRedMat;
@@ -357,6 +359,7 @@ public class PlayerMovement : MonoBehaviour
             currentVel.y = jumpVelocity;
             jumpSt = JumpState.Jumping;
             timePressingJump = 0;
+            myPlayerAnimation.SetJump(true);
         }
         else
         {
@@ -383,6 +386,7 @@ public class PlayerMovement : MonoBehaviour
             wallNormal = controller.collisions.wallNormal;
             wallNormal.y = 0;
             lastWallAngle = controller.collisions.wallAngle;
+            myPlayerAnimation.SetJump(true);
         }
     }
 
@@ -411,7 +415,7 @@ public class PlayerMovement : MonoBehaviour
         //LEFT OR RIGHT ORIENTATION?
         //Angle
         Vector3 circleCenter = anchorPoint + Vector3.up * walJumpConeHeight;
-        Vector3 circumfPoint = CalculateReflectPoint(1, wallNormal, circleCenter);
+        Vector3 circumfPoint = CalculateReflectPoint(wallJumpRadius, wallNormal, circleCenter);
         Vector3 finalDir = (circumfPoint - anchorPoint).normalized;
         Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
 

@@ -4842,14 +4842,14 @@ MonoBehaviour:
   initialAcc: 30
   breakAcc: -30
   movingAcc: 2
-  airMovingAcc: 1
+  airMovingAcc: 0.5
   jumpHeight: 2.5
   jumpApexTime: 0.4
   breakJumpForce: 2
   pressingJumpActiveProportion: 0.7
   wallJumpVelocity: 15
   stopWallMaxTime: 0.1
-  wallJumpAngle: 50
+  wallJumpAngle: 45
   wallJumpMinHorizAngle: 30
   currentMovDir: {x: 0, y: 0, z: 0}
   wallJumpAnim: 0
@@ -11803,17 +11803,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 2137762462}
   playerMovement: {fileID: 782544798}
+  startLandHeight: 2
   rightHand: {fileID: 1260170652}
   leftHand: {fileID: 957506579}
-  weaponsAttachInfo:
-  - pos: {x: -0.0086, y: 0.0097, z: 0.0068}
-    rot: {x: 45.854, y: -163.913, z: -5.477}
-    scale: {x: 1.599267, y: 1.599267, z: 1.599267}
-    weapon: {fileID: 0}
-  - pos: {x: -0.0086, y: 0.0097, z: 0.0068}
-    rot: {x: 45.854, y: -163.913, z: -5.477}
-    scale: {x: 1.599267, y: 1.599267, z: 1.599267}
-    weapon: {fileID: 0}
 --- !u!114 &1737827426
 MonoBehaviour:
   m_ObjectHideFlags: 0

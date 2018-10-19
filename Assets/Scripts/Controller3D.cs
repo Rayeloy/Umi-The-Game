@@ -722,7 +722,7 @@ public class Controller3D : MonoBehaviour
         if (collisions.closestVerRaycast.axis != Raycast.Axis.none)//si ha habido una collision horizontal
         {
             MovingState value = CheckSlopeType(ref vel, collisions.closestVerRaycast);
-            print("COLLISION VER: " + value + "; slopeAngle=" + collisions.closestVerRaycast.slopeAngle);
+            //print("COLLISION VER: " + value + "; slopeAngle=" + collisions.closestVerRaycast.slopeAngle);
             if (value == MovingState.climbing)
             {
                 value = MovingState.none;
@@ -783,7 +783,7 @@ public class Controller3D : MonoBehaviour
 
     void VerticalCollisionsDistanceCheck(ref Vector3 vel)
     {
-        if (vel.y < 0)
+        if (vel.y != 0)
         {
             float rayLength = FloorMaxDistanceCheck;
             Vector3 rowsOrigin = raycastOrigins.BottomLFCornerReal;
@@ -935,7 +935,7 @@ public class Controller3D : MonoBehaviour
 
     public struct CollisionInfo
     {
-        public bool above, below;
+        public bool above, below, lastBelow;
         public bool left, right;
         public bool foward, behind;
         public bool collisionHorizontal
@@ -964,9 +964,10 @@ public class Controller3D : MonoBehaviour
 
         public void ResetVertical()
         {
+            lastBelow = below;
             above = below = false;
             closestVerRaycast = new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
-            distanceToFloor = 0;
+            distanceToFloor = float.MaxValue;
         }
         public void ResetHorizontal()
         {
