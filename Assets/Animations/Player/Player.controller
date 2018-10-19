@@ -178,9 +178,6 @@ AnimatorStateTransition:
   m_PrefabInternal: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 4
-    m_ConditionEvent: HorizontalSpeed
-    m_EventTreshold: 0.1
   - m_ConditionMode: 2
     m_ConditionEvent: Land
     m_EventTreshold: 0
@@ -445,6 +442,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 3
     m_ConditionEvent: HorizontalSpeed
     m_EventTreshold: 0.1
+  - m_ConditionMode: 2
+    m_ConditionEvent: Land
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102469494495979044}
   m_Solo: 0
@@ -568,9 +568,9 @@ AnimatorState:
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
-  - {fileID: 1101167741832199536}
-  - {fileID: 1101905749959518038}
   - {fileID: 1101746389071981908}
+  - {fileID: 1101905749959518038}
+  - {fileID: 1101167741832199536}
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
