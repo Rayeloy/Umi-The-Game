@@ -39,7 +39,7 @@ public class GameController : MonoBehaviour {
                 allCanvas[i].GetComponent<Canvas>().worldCamera = allCameraBases[i].myCamera.GetComponent<Camera>();
                 allPlayers[i].myCamera = allCameraBases[i];
                 allPlayers[i].GetComponent<PlayerCombat>().attackName = allCanvas[i].transform.GetChild(0).GetComponent<Text>();
-                Debug.Log(GameInfo.playerActionsList.Count);
+                Debug.Log(GameInfo.playerActionsList[i]);
                 allPlayers[i].Actions = GameInfo.playerActionsList[i];
             }
             else

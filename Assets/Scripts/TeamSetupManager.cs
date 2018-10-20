@@ -71,6 +71,7 @@ public class TeamSetupManager : MonoBehaviour
 				GameInfo.playerActionsList = new List<PlayerActions>();
 				foreach(PlayerSelected ps in players){
 					GameInfo.playerActionsList.Add(ps.Actions);
+					Debug.Log(ps.Actions);
 				}
 				SceneManager.LoadScene(SiguenteEscena);
 			}
