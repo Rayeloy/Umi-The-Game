@@ -16,8 +16,12 @@ public class PlayerAnimation : MonoBehaviour
     int landHash = Animator.StringToHash("Land");
     int jumpStateHash = Animator.StringToHash("Ascender");
     bool landing;
+    int swimmingIdleHash = Animator.StringToHash("SwimmingIdle");
+    bool swimmingIdle;
+    int swimmingHash = Animator.StringToHash("Swimming");
+    bool swimming;
     [Tooltip("Distance to floor at which the landing animation will start")]
-    public float startLandHeight = 1;
+    public float maxTimeToLand = 1;
     //-------------
     bool jump;
     [Header("WEAPONS ATTACH")]
@@ -52,6 +56,11 @@ public class PlayerAnimation : MonoBehaviour
             landing = false;
             animator.SetBool(landHash, landing);
         }
+        if (swimming && !playerMovement.inWater && playerMovement.currentSpeed > 0)
+        {
+            swimming = false;
+            animator.SetBool(swimmingHash, swimming);
+        }
     }
 
     public void ProcessVariableValues()
@@ -64,11 +73,23 @@ public class PlayerAnimation : MonoBehaviour
                 jump = false;
                 animator.SetBool(jumpHash, jump);
             }
+            if (swimming)
+            {
+                swimming = false;
+                animator.SetBool(swimmingHash, swimming);
+            }
+            if (landing)
+            {
+                landing = false;
+                animator.SetBool(landHash, landing);
+            }
             jumpingValue = true;
             animator.SetBool(jumpingHash, jumpingValue);
         }
-        print("vel.y = "+playerMovement.currentVel.y+"; below = "+ playerMovement.controller.collisions.below+"; distance to floor = "+ playerMovement.controller.collisions.distanceToFloor);
-        if ((playerMovement.currentVel.y<0 && !playerMovement.controller.collisions.below && playerMovement.controller.collisions.distanceToFloor <= startLandHeight) 
+
+        float timeToLand = playerMovement.controller.collisions.distanceToFloor / Mathf.Abs(playerMovement.currentVel.y);
+        Debug.LogWarning("vel.y = " + playerMovement.currentVel.y + "; below = " + playerMovement.controller.collisions.below + "; distance to floor = " + playerMovement.controller.collisions.distanceToFloor + "; timeToLand = " + timeToLand);
+        if ((playerMovement.currentVel.y<0 && !playerMovement.controller.collisions.below && timeToLand <= maxTimeToLand) 
             || (jumpingValue && playerMovement.controller.collisions.below))
         {
             if (jumpingValue)
@@ -80,6 +101,29 @@ public class PlayerAnimation : MonoBehaviour
             landing = true;
             animator.SetBool(landHash,landing);
         }
+
+        if(playerMovement.inWater && playerMovement.currentSpeed > 0)
+        {
+            if (swimmingIdle)
+            {
+                swimmingIdle = false;
+                animator.SetBool(swimmingIdleHash, swimmingIdle);
+            }
+            swimming = true;
+            animator.SetBool(swimmingHash, swimming);
+        }
+
+        if (playerMovement.inWater && playerMovement.currentSpeed == 0)
+        {
+            if (swimming)
+            {
+                swimming = false;
+                animator.SetBool(swimmingHash, swimming);
+            }
+            swimmingIdle = true;
+            animator.SetBool(swimmingIdleHash, swimmingIdle);
+        }
+
     }
 
     public void SetJump(bool _jump)

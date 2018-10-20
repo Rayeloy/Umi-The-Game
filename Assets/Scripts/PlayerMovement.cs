@@ -386,7 +386,6 @@ public class PlayerMovement : MonoBehaviour
             wallNormal = controller.collisions.wallNormal;
             wallNormal.y = 0;
             lastWallAngle = controller.collisions.wallAngle;
-            myPlayerAnimation.SetJump(true);
         }
     }
 
@@ -424,6 +423,7 @@ public class PlayerMovement : MonoBehaviour
         currentMovDir = new Vector3(finalDir.x, 0, finalDir.z);
         RotateCharacter();
 
+        myPlayerAnimation.SetJump(true);
 
         Debug.DrawLine(anchorPoint, circleCenter, Color.white, 20);
         Debug.DrawLine(anchorPoint, circumfPoint, Color.yellow, 20);
@@ -596,14 +596,17 @@ public class PlayerMovement : MonoBehaviour
 
     void EnterWater()
     {
-        inWater = true;
-        if (haveFlag)
+        if (!inWater)
         {
-            GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
-            flag.GetComponent<Flag>().currentOwner = null;
-            flag = null;
-            haveFlag = false;
-            print("CURRENT OWNER = NULL");
+            inWater = true;
+            if (haveFlag)
+            {
+                GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
+                flag.GetComponent<Flag>().currentOwner = null;
+                flag = null;
+                haveFlag = false;
+                print("CURRENT OWNER = NULL");
+            }
         }
     }
 
@@ -618,7 +621,10 @@ public class PlayerMovement : MonoBehaviour
 
     void ExitWater()
     {
-        inWater = false;
+        if (inWater)
+        {
+            inWater = false;
+        }
     }
 
     void CheckWinGame(Respawn respawn)
@@ -626,6 +632,27 @@ public class PlayerMovement : MonoBehaviour
         if (haveFlag && team == respawn.team)
         {
             GameController.instance.GameOver(team);
+        }
+    }
+
+    private void OnTriggerStay(Collider col)
+    {
+        switch (col.tag)
+        {
+            case "Water":
+                float waterSurface = col.GetComponent<Collider>().bounds.max.y;
+                if (transform.position.y <= waterSurface)
+                {
+                    EnterWater();
+                }
+                else
+                {
+                    ExitWater();
+                }
+
+
+
+                break;
         }
     }
 
@@ -644,18 +671,12 @@ public class PlayerMovement : MonoBehaviour
                 //print("I'm " + name + " and I touched a respawn");
                 CheckWinGame(col.GetComponent<Respawn>());
                 break;
-            case "Water":
-                EnterWater();
-                break;
         }
     }
     private void OnTriggerExit(Collider col)
     {
         switch (col.tag)
         {
-            case "Water":
-                ExitWater();
-                break;
         }
     }
 

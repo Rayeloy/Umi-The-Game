@@ -821,6 +821,7 @@ public class Controller3D : MonoBehaviour
                     }
                 }
             }
+            collisions.distanceToFloor -= skinWidth;
         }
     }
 
