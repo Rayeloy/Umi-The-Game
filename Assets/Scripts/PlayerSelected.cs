@@ -7,6 +7,7 @@ public class PlayerSelected : MonoBehaviour
 {
 	//public int
 	public PlayerActions Actions { get; set; }
+	//public int actionNum;
 
 	public Renderer cachedRenderer;
 

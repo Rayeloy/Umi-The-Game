@@ -68,11 +68,14 @@ public class TeamSetupManager : MonoBehaviour
 				}
 			}
 			if (contador == players.Count){
-				GameInfo.playerActionsList = new List<PlayerActions>();
+				//GameInfo.playerActionsList = new PlayerActions[players.Count];
+				/*GameInfo.playerActionsList = new List<PlayerActions>();
+				//for(int i = 0; i < players.Count; i++){
 				foreach(PlayerSelected ps in players){
+					//GameInfo.playerActionsList[i] = players[i].Actions;
 					GameInfo.playerActionsList.Add(ps.Actions);
-					Debug.Log(ps.Actions);
-				}
+					//Debug.Log(ps.Actions);
+				}*/
 				SceneManager.LoadScene(SiguenteEscena);
 			}
 		}
@@ -154,16 +157,19 @@ public class TeamSetupManager : MonoBehaviour
 			{
 				// We could create a new instance, but might as well reuse the one we have
 				// and it lets us easily find the keyboard player.
-				player.Actions = keyboardListener;
+				
+				GameInfo.playerActionsList.Add(keyboardListener);
+				player.Actions = GameInfo.playerActionsList[GameInfo.playerActionsList.Count - 1];
 			}
 			else
 			{
 				// Create a new instance and specifically set it to listen to the
 				// given input device (joystick).
-				var actions = PlayerActions.CreateWithJoystickBindings();
+				PlayerActions actions = PlayerActions.CreateWithJoystickBindings();
 				actions.Device = inputDevice;
 
-				player.Actions = actions;
+				GameInfo.playerActionsList.Add(actions);
+				player.Actions = GameInfo.playerActionsList[GameInfo.playerActionsList.Count - 1];
 			}
 
 			players.Add( player );
