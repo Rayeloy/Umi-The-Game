@@ -159,6 +159,7 @@ public class TeamSetupManager : MonoBehaviour
 				// and it lets us easily find the keyboard player.
 				
 				GameInfo.playerActionsList.Add(keyboardListener);
+				GameInfo.playerActionUno = keyboardListener;
 				player.Actions = GameInfo.playerActionsList[GameInfo.playerActionsList.Count - 1];
 			}
 			else

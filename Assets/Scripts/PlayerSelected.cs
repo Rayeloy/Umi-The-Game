@@ -13,6 +13,10 @@ public class PlayerSelected : MonoBehaviour
 
 	public bool Ready = false;
 
+	void Start()
+	{
+		DontDestroyOnLoad(this.gameObject);
+	}
 
 	void OnDisable()
 	{
