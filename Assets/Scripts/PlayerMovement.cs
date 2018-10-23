@@ -8,11 +8,10 @@ public class PlayerMovement : MonoBehaviour
     public CameraController myCamera;
     public Transform rotateObj;
     public SkinnedMeshRenderer Body;
-    public GameObject churroRojo;
-    public GameObject churroAzul;
     public Material teamBlueMat;
     public Material teamRedMat;
     PlayerCombat myPlayerCombat;
+    PlayerAnimation myPlayerAnimation;
 
     //public GameController.controllerName contName;
     public PlayerActions Actions { get; set; }
@@ -89,6 +88,7 @@ public class PlayerMovement : MonoBehaviour
     Vector3 anchorPoint;
     Vector3 wallNormal;
     [Tooltip("Vertical angle in which the player wall-jumps.")]
+    [Range(0, 89)]
     public float wallJumpAngle=30;
     [Tooltip("Minimum horizontal angle in which the player wall-jumps. This number ranges from 0 to 90. 0 --> parallel to the wall; 90 --> perpendicular to the wall")]
     public float wallJumpMinHorizAngle = 30;
@@ -109,6 +109,7 @@ public class PlayerMovement : MonoBehaviour
         noInput = false;
         controller = GetComponent<Controller3D>();
         myPlayerCombat = GetComponent<PlayerCombat>();
+        myPlayerAnimation = GetComponent<PlayerAnimation>();
         lastWallAngle = 0;
     }
     public void KonoStart()
@@ -116,19 +117,18 @@ public class PlayerMovement : MonoBehaviour
         gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
         jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
         maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
-        wallJumpRadius = Mathf.Atan(wallJumpAngle*Mathf.Deg2Rad) * walJumpConeHeight;
+        wallJumpRadius = Mathf.Tan(wallJumpAngle*Mathf.Deg2Rad) * walJumpConeHeight;
+        print("wallJumpRaduis = " + wallJumpRadius + "; tan(wallJumpAngle)= " + Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad));
         wallJumpMinHorizAngle = Mathf.Clamp(wallJumpMinHorizAngle, 0, 90);
         print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
-        Body.material = team == Team.blue ? teamBlueMat : teamRedMat;
+        //Body.material = team == Team.blue ? teamBlueMat : teamRedMat;
         switch (team)
         {
             case Team.blue:
-                churroAzul.SetActive(true);
-                churroRojo.SetActive(false);
+                myPlayerAnimation.AttachWeapon("Churro Azul");
                 break;
             case Team.red:
-                churroAzul.SetActive(false);
-                churroRojo.SetActive(true);
+                myPlayerAnimation.AttachWeapon("Churro Rojo");
                 break;
         }
         currentMaxMoveSpeed = maxMoveSpeed2 = maxMoveSpeed;
@@ -360,6 +360,7 @@ public class PlayerMovement : MonoBehaviour
             currentVel.y = jumpVelocity;
             jumpSt = JumpState.Jumping;
             timePressingJump = 0;
+            myPlayerAnimation.SetJump(true);
         }
         else
         {
@@ -414,7 +415,7 @@ public class PlayerMovement : MonoBehaviour
         //LEFT OR RIGHT ORIENTATION?
         //Angle
         Vector3 circleCenter = anchorPoint + Vector3.up * walJumpConeHeight;
-        Vector3 circumfPoint = CalculateReflectPoint(1, wallNormal, circleCenter);
+        Vector3 circumfPoint = CalculateReflectPoint(wallJumpRadius, wallNormal, circleCenter);
         Vector3 finalDir = (circumfPoint - anchorPoint).normalized;
         Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
 
@@ -423,6 +424,7 @@ public class PlayerMovement : MonoBehaviour
         currentMovDir = new Vector3(finalDir.x, 0, finalDir.z);
         RotateCharacter();
 
+        myPlayerAnimation.SetJump(true);
 
         Debug.DrawLine(anchorPoint, circleCenter, Color.white, 20);
         Debug.DrawLine(anchorPoint, circumfPoint, Color.yellow, 20);
@@ -595,14 +597,17 @@ public class PlayerMovement : MonoBehaviour
 
     void EnterWater()
     {
-        inWater = true;
-        if (haveFlag)
+        if (!inWater)
         {
-            GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
-            flag.GetComponent<Flag>().currentOwner = null;
-            flag = null;
-            haveFlag = false;
-            print("CURRENT OWNER = NULL");
+            inWater = true;
+            if (haveFlag)
+            {
+                GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
+                flag.GetComponent<Flag>().currentOwner = null;
+                flag = null;
+                haveFlag = false;
+                print("CURRENT OWNER = NULL");
+            }
         }
     }
 
@@ -617,7 +622,10 @@ public class PlayerMovement : MonoBehaviour
 
     void ExitWater()
     {
-        inWater = false;
+        if (inWater)
+        {
+            inWater = false;
+        }
     }
 
     void CheckWinGame(Respawn respawn)
@@ -625,6 +633,27 @@ public class PlayerMovement : MonoBehaviour
         if (haveFlag && team == respawn.team)
         {
             GameController.instance.GameOver(team);
+        }
+    }
+
+    private void OnTriggerStay(Collider col)
+    {
+        switch (col.tag)
+        {
+            case "Water":
+                float waterSurface = col.GetComponent<Collider>().bounds.max.y;
+                if (transform.position.y <= waterSurface)
+                {
+                    EnterWater();
+                }
+                else
+                {
+                    ExitWater();
+                }
+
+
+
+                break;
         }
     }
 
@@ -643,18 +672,12 @@ public class PlayerMovement : MonoBehaviour
                 //print("I'm " + name + " and I touched a respawn");
                 CheckWinGame(col.GetComponent<Respawn>());
                 break;
-            case "Water":
-                EnterWater();
-                break;
         }
     }
     private void OnTriggerExit(Collider col)
     {
         switch (col.tag)
         {
-            case "Water":
-                ExitWater();
-                break;
         }
     }
 

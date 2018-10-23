@@ -7,6 +7,9 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour {
 
     public static GameController instance;
+    [Tooltip("Number of players in the game")]
+    [Range(1,4)]
+    public int playerNum = 1;
     //public AttackData[] allAttacks;
     public AttackData attackX;
     public AttackData attackY;
@@ -16,6 +19,7 @@ public class GameController : MonoBehaviour {
     public PlayerMovement[] allPlayers;
     public GameObject[] allCanvas;
     public CameraController[] allCameraBases;
+    public WeaponData[] allWeapons;
     private void Awake()
     {
         instance = this;
@@ -23,6 +27,7 @@ public class GameController : MonoBehaviour {
         veil.SetActive(false);
         victoryText.SetActive(false);
         gameOverMenuOn = false;
+        playerNum = Mathf.Clamp(playerNum, 1, 4);
 
         //AUTOMATIC PLAYERS/CAMERAS/CANVAS SETUP
         PlayersSetup();
@@ -32,11 +37,12 @@ public class GameController : MonoBehaviour {
     {
         for (int i = 0; i < allCanvas.Length; i++)
         {
-            if (i < allPlayers.Length)
+            if (i < playerNum)
             {
                 allCanvas[i].SetActive(true);
                 allCameraBases[i].gameObject.SetActive(true);
                 allCanvas[i].GetComponent<Canvas>().worldCamera = allCameraBases[i].myCamera.GetComponent<Camera>();
+                allPlayers[i].gameObject.SetActive(true);
                 allPlayers[i].myCamera = allCameraBases[i];
                 allPlayers[i].GetComponent<PlayerCombat>().attackName = allCanvas[i].transform.GetChild(0).GetComponent<Text>();
                 Debug.Log(GameInfo.playerActionsList[i]);
@@ -44,11 +50,12 @@ public class GameController : MonoBehaviour {
             }
             else
             {
+                allPlayers[i].gameObject.SetActive(false);
                 allCanvas[i].SetActive(false);
                 allCameraBases[i].gameObject.SetActive(false);
             }
         }
-        switch (allPlayers.Length)
+        switch (playerNum)
         {
             case 1:
                 allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
@@ -58,9 +65,9 @@ public class GameController : MonoBehaviour {
                 allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
                 break;
             case 3:
-                allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1, 0.5f);
-                allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
-                allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0, 1, 0.5f);
+                allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
                 break;
             case 4:
                 allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
@@ -76,9 +83,9 @@ public class GameController : MonoBehaviour {
     }
     private void Start()
     {
-        foreach (PlayerMovement pM in allPlayers)
+        for(int i = 0; i < playerNum; i++)
         {
-            pM.KonoStart();
+            allPlayers[i].KonoStart();
         }
         StartGame();
 
@@ -105,10 +112,10 @@ public class GameController : MonoBehaviour {
         }
         if (playing)
         {
-            foreach (PlayerMovement pM in allPlayers)
-            {
-                pM.KonoUpdate();
-            }
+        for(int i = 0; i < playerNum; i++)
+        {
+            allPlayers[i].KonoUpdate();
+        }
         }
 	}
     [HideInInspector]
@@ -116,9 +123,9 @@ public class GameController : MonoBehaviour {
     public void StartGame()
     {
         playing = true;
-        foreach(PlayerMovement pM in allPlayers)
+        for (int i = 0; i < playerNum; i++)
         {
-            RespawnPlayer(pM);
+            RespawnPlayer(allPlayers[i]);
         }
     }
 

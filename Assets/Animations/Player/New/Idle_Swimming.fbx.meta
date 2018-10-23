@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cf922255f00771345858be6e5aec22b4
+guid: fcc0ff5696d472047837aaab9418a171
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
@@ -8,7 +8,7 @@ ModelImporter:
     100004: Cara_grp
     100006: CierreCremallera
     100008: CremalleraLow_grp
-    100010: default1
+    100010: //RootNode
     100012: mixamorig:Head
     100014: mixamorig:HeadTop_End
     100016: mixamorig:Hips
@@ -74,15 +74,14 @@ ModelImporter:
     100136: mixamorig:Spine
     100138: mixamorig:Spine1
     100140: mixamorig:Spine2
-    100142: //RootNode
-    100144: Neopreno_grp
-    100146: PelOjos_grp
+    100142: Neopreno_grp
+    100144: PelOjos_grp
     400000: Accesorios_grp
     400002: BaseNeopreno
     400004: Cara_grp
     400006: CierreCremallera
     400008: CremalleraLow_grp
-    400010: default1
+    400010: //RootNode
     400012: mixamorig:Head
     400014: mixamorig:HeadTop_End
     400016: mixamorig:Hips
@@ -148,21 +147,23 @@ ModelImporter:
     400136: mixamorig:Spine
     400138: mixamorig:Spine1
     400140: mixamorig:Spine2
-    400142: //RootNode
-    400144: Neopreno_grp
-    400146: PelOjos_grp
-    2100000: No Name
-    2300000: default1
-    3300000: default1
-    4300000: default1
-    4300002: CremalleraLow_grp
-    4300004: PelOjos_grp
-    4300006: CierreCremallera
-    4300008: Accesorios_grp
-    4300010: Cara_grp
-    4300012: Neopreno_grp
-    4300014: BaseNeopreno
-    7400000: mixamo.com
+    400142: Neopreno_grp
+    400144: PelOjos_grp
+    2100000: lambert8
+    2100002: lambert7
+    2100004: lambert6
+    2100006: lambert5
+    2100008: lambert4
+    2100010: lambert3
+    2100012: lambert2
+    4300000: CremalleraLow_grp
+    4300002: PelOjos_grp
+    4300004: CierreCremallera
+    4300006: Accesorios_grp
+    4300008: Cara_grp
+    4300010: Neopreno_grp
+    4300012: BaseNeopreno
+    7400000: Take 001
     9500000: //RootNode
     13700000: Accesorios_grp
     13700002: BaseNeopreno
@@ -192,14 +193,42 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 3
+    animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Take 001
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 180
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
@@ -244,9 +273,8 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
-    hasExtraRoot: 1
+    hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
