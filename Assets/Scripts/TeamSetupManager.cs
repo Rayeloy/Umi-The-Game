@@ -69,13 +69,14 @@ public class TeamSetupManager : MonoBehaviour
 			}
 			if (contador == players.Count){
 				//GameInfo.playerActionsList = new PlayerActions[players.Count];
-				/*GameInfo.playerActionsList = new List<PlayerActions>();
+				//GameInfo.playerActionsList = new List<PlayerActions>();
 				//for(int i = 0; i < players.Count; i++){
 				foreach(PlayerSelected ps in players){
 					//GameInfo.playerActionsList[i] = players[i].Actions;
-					GameInfo.playerActionsList.Add(ps.Actions);
+					GameInfo.instance.playerActionsList.Add(ps.Actions);
 					//Debug.Log(ps.Actions);
-				}*/
+				}
+                GameInfo.instance.nPlayers = players.Count;
 				SceneManager.LoadScene(SiguenteEscena);
 			}
 		}
@@ -150,17 +151,17 @@ public class TeamSetupManager : MonoBehaviour
 			var playerPosition = playerPositions[0];
 			playerPositions.RemoveAt( 0 );
 
-			var gameObject = (GameObject) Instantiate( playerPrefab, playerPosition, Quaternion.identity );
+			var gameObject = Instantiate( playerPrefab, playerPosition, Quaternion.identity );
 			var player = gameObject.GetComponent<PlayerSelected>();
 
 			if (inputDevice == null)
 			{
-				// We could create a new instance, but might as well reuse the one we have
-				// and it lets us easily find the keyboard player.
-				
-				GameInfo.playerActionsList.Add(keyboardListener);
-				GameInfo.playerActionUno = keyboardListener;
-				player.Actions = GameInfo.playerActionsList[GameInfo.playerActionsList.Count - 1];
+                // We could create a new instance, but might as well reuse the one we have
+                // and it lets us easily find the keyboard player.
+
+                //GameInfo.instance.playerActionsList.Add(keyboardListener);
+                //GameInfo.instance.playerActionUno = keyboardListener;
+                player.Actions = keyboardListener;
 			}
 			else
 			{
@@ -169,8 +170,8 @@ public class TeamSetupManager : MonoBehaviour
 				PlayerActions actions = PlayerActions.CreateWithJoystickBindings();
 				actions.Device = inputDevice;
 
-				GameInfo.playerActionsList.Add(actions);
-				player.Actions = GameInfo.playerActionsList[GameInfo.playerActionsList.Count - 1];
+                //GameInfo.instance.playerActionsList.Add(actions);
+                player.Actions = actions;
 			}
 
 			players.Add( player );

@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour {
 
     public static GameController instance;
     [Tooltip("Number of players in the game")]
+    [HideInInspector]
     [Range(1,4)]
     public int playerNum = 1;
     //public AttackData[] allAttacks;
@@ -27,6 +28,7 @@ public class GameController : MonoBehaviour {
         veil.SetActive(false);
         victoryText.SetActive(false);
         gameOverMenuOn = false;
+        playerNum = GameInfo.instance.nPlayers;
         playerNum = Mathf.Clamp(playerNum, 1, 4);
 
         //AUTOMATIC PLAYERS/CAMERAS/CANVAS SETUP
@@ -45,8 +47,8 @@ public class GameController : MonoBehaviour {
                 allPlayers[i].gameObject.SetActive(true);
                 allPlayers[i].myCamera = allCameraBases[i];
                 allPlayers[i].GetComponent<PlayerCombat>().attackName = allCanvas[i].transform.GetChild(0).GetComponent<Text>();
-                Debug.Log(GameInfo.playerActionsList[i]);
-                allPlayers[i].Actions = GameInfo.playerActionsList[i];
+                Debug.Log(GameInfo.instance.playerActionsList[i]);
+                allPlayers[i].Actions = GameInfo.instance.playerActionsList[i];
             }
             else
             {
