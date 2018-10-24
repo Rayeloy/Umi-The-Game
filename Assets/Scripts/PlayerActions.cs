@@ -49,18 +49,18 @@ public class PlayerActions : PlayerActionSet
 	{
 		var actions = new PlayerActions();
 
-		actions.Boost.AddDefaultBinding( Key.A );
+		actions.Boost.AddDefaultBinding( Key.Q );
 		actions.Jump.AddDefaultBinding( Key.Space );
-		actions.Aim.AddDefaultBinding( Key.S );
+		actions.Aim.AddDefaultBinding( Key.E );
 
-		actions.Attack1.AddDefaultBinding( Key.Q );
-		actions.Attack2.AddDefaultBinding( Key.W );
-		actions.Attack3.AddDefaultBinding( Key.E );
+		actions.Attack1.AddDefaultBinding( Key.Key1 );
+		actions.Attack2.AddDefaultBinding( Key.Key2 );
+		actions.Attack3.AddDefaultBinding( Key.Key3 );
 
-		actions.Up.AddDefaultBinding( Key.UpArrow );
-		actions.Down.AddDefaultBinding( Key.DownArrow );
-		actions.Left.AddDefaultBinding( Key.LeftArrow );
-		actions.Right.AddDefaultBinding( Key.RightArrow );
+		actions.Up.AddDefaultBinding( Key.W );
+		actions.Down.AddDefaultBinding( Key.S );
+		actions.Left.AddDefaultBinding( Key.A );
+		actions.Right.AddDefaultBinding( Key.D );
 
 		actions.CamUp.AddDefaultBinding( Mouse.PositiveY );
 		actions.CamDown.AddDefaultBinding( Mouse.NegativeY );
