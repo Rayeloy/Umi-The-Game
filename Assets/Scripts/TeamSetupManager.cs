@@ -161,7 +161,7 @@ public class TeamSetupManager : MonoBehaviour
 
                 //GameInfo.instance.playerActionsList.Add(keyboardListener);
                 //GameInfo.instance.playerActionUno = keyboardListener;
-                player.Actions = keyboardListener;
+                player.Actions = PlayerActions.CreateWithKeyboardBindings();
 			}
 			else
 			{
