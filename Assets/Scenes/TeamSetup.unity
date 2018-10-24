@@ -147,7 +147,7 @@ MonoBehaviour:
   dontDestroyOnLoad: 1
   suspendInBackground: 0
   enableICade: 0
-  enableXInput: 0
+  enableXInput: 1
   xInputOverrideUpdateRate: 0
   xInputUpdateRate: 0
   xInputOverrideBufferSize: 0
@@ -182,6 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9323e31668167364198da848908c72b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nPlayers: 0
 --- !u!1 &412541375
 GameObject:
   m_ObjectHideFlags: 0
