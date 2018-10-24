@@ -44,7 +44,7 @@ public class TeamSetupManager : MonoBehaviour
 	{
 		if (JoinButtonWasPressedOnListener( joystickListener ))
 		{
-			var inputDevice = InputManager.ActiveDevice;
+			InputDevice inputDevice = InputManager.ActiveDevice;
 
 			if (ThereIsNoPlayerUsingJoystick( inputDevice ))
 			{
@@ -91,10 +91,10 @@ public class TeamSetupManager : MonoBehaviour
 
 	PlayerSelected FindPlayerUsingJoystick( InputDevice inputDevice )
 	{
-		var playerCount = players.Count;
-		for (var i = 0; i < playerCount; i++)
+		int playerCount = players.Count;
+		for (int i = 0; i < playerCount; i++)
 		{
-			var player = players[i];
+			PlayerSelected player = players[i];
 			if (player.Actions.Device == inputDevice)
 			{
 				return player;
@@ -113,10 +113,10 @@ public class TeamSetupManager : MonoBehaviour
 
 	PlayerSelected FindPlayerUsingKeyboard()
 	{
-		var playerCount = players.Count;
-		for (var i = 0; i < playerCount; i++)
+		int playerCount = players.Count;
+		for (int i = 0; i < playerCount; i++)
 		{
-			var player = players[i];
+			PlayerSelected player = players[i];
 			if (player.Actions == keyboardListener)
 			{
 				return player;
@@ -132,10 +132,10 @@ public class TeamSetupManager : MonoBehaviour
 		return FindPlayerUsingKeyboard() == null;
 	}
 
-
+ 
 	void OnDeviceDetached( InputDevice inputDevice )
 	{
-		var player = FindPlayerUsingJoystick( inputDevice );
+		PlayerSelected player = FindPlayerUsingJoystick( inputDevice );
 		if (player != null)
 		{
 			RemovePlayer( player );
@@ -148,11 +148,11 @@ public class TeamSetupManager : MonoBehaviour
 		if (players.Count < maxPlayers)
 		{
 			// Pop a position off the list. We'll add it back if the player is removed.
-			var playerPosition = playerPositions[0];
+			Vector3 playerPosition = playerPositions[0];
 			playerPositions.RemoveAt( 0 );
 
-			var gameObject = Instantiate( playerPrefab, playerPosition, Quaternion.identity );
-			var player = gameObject.GetComponent<PlayerSelected>();
+			GameObject gameObject = Instantiate( playerPrefab, playerPosition, Quaternion.identity );
+			PlayerSelected player = gameObject.GetComponent<PlayerSelected>();
 
 			if (inputDevice == null)
 			{
@@ -195,7 +195,7 @@ public class TeamSetupManager : MonoBehaviour
 	void OnGUI()
 	{
 		const float h = 22.0f;
-		var y = 10.0f;
+		float y = 10.0f;
 
 		GUI.Label( new Rect( 10, y, 300, y + h ), "Active players: " + players.Count + "/" + maxPlayers );
 		y += h;
