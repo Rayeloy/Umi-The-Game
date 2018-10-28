@@ -228,6 +228,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9323e31668167364198da848908c72b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerTeamList: 
   nPlayers: 0
 --- !u!1 &412541375
 GameObject:
@@ -370,7 +371,7 @@ Camera:
   m_GameObject: {fileID: 1236364680}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0, g: 0.49803922, b: 1, a: 1}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
