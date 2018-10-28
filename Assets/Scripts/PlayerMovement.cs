@@ -23,11 +23,6 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector]
     public Controller3D controller;
 
-    public enum Team
-    {
-        red,
-        blue
-    }
     [HideInInspector]
     public MoveState moveSt = MoveState.NotMoving;
     public enum MoveState
@@ -822,4 +817,10 @@ public class PlayerMovement : MonoBehaviour
 
         return circumfPoint;
     }
+}
+
+public enum Team
+{
+    red,
+    blue
 }

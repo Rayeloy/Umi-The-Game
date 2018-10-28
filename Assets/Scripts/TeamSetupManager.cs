@@ -14,12 +14,7 @@ public class TeamSetupManager : MonoBehaviour
 
 	const int maxPlayers = 4;
 
-	List<Vector3> playerPositions = new List<Vector3>() {
-		new Vector3( -2, 2, 0 ),
-		new Vector3( 2, 2, 0 ),
-		new Vector3( -2, -2, 0 ),
-		new Vector3( 2, -2, 0 ),
-	};
+	public List<Transform> playerPositions = new List<Transform>();
 
 	List<PlayerSelected> players = new List<PlayerSelected>( maxPlayers );
 
@@ -81,6 +76,7 @@ public class TeamSetupManager : MonoBehaviour
 				foreach(PlayerSelected ps in players){
 					//GameInfo.playerActionsList[i] = players[i].Actions;
 					GameInfo.instance.playerActionsList.Add(ps.Actions);
+					GameInfo.instance.playerTeamList.Add(ps.team);
 					//Debug.Log(ps.Actions);
 				}
                 GameInfo.instance.nPlayers = players.Count;
@@ -155,7 +151,7 @@ public class TeamSetupManager : MonoBehaviour
 		if (players.Count < maxPlayers)
 		{
 			// Pop a position off the list. We'll add it back if the player is removed.
-			Vector3 playerPosition = playerPositions[0];
+			Vector3 playerPosition = playerPositions[0].position;
 			playerPositions.RemoveAt( 0 );
 
 			GameObject gameObject = Instantiate( playerPrefab, playerPosition, Quaternion.identity );
@@ -192,7 +188,7 @@ public class TeamSetupManager : MonoBehaviour
 
 	void RemovePlayer( PlayerSelected player )
 	{
-		playerPositions.Insert( 0, player.transform.position );
+		playerPositions.Insert( 0, player.transform );
 		players.Remove( player );
 		player.Actions = null;
 		Destroy( player.gameObject );

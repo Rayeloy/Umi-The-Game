@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class Respawn : MonoBehaviour {
 
-    public PlayerMovement.Team team;
+    public Team team;
 }

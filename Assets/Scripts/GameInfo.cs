@@ -6,7 +6,8 @@ using InControl;
 public class GameInfo : MonoBehaviour
 {
     public static GameInfo instance;
-    public List<PlayerActions> playerActionsList = new List<PlayerActions>();
+    public List<PlayerActions> playerActionsList;
+    public List<Team> playerTeamList;
     public int nPlayers;
 
 
@@ -14,6 +15,7 @@ public class GameInfo : MonoBehaviour
     {
         instance = this;
         playerActionsList = new List<PlayerActions>();
+        playerTeamList = new List<Team>();
 
     }
     //public static PlayerActions[] playerActionsList;

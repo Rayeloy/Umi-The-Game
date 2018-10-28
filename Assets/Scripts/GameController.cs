@@ -54,6 +54,7 @@ public class GameController : MonoBehaviour {
                 allPlayers[i].GetComponent<PlayerCombat>().attackName = allCanvas[i].transform.GetChild(0).GetComponent<Text>();
                 Debug.Log(GameInfo.instance.playerActionsList[i]);
                 allPlayers[i].Actions = GameInfo.instance.playerActionsList[i];
+                allPlayers[i].team = GameInfo.instance.playerTeamList[i];
             }
             else
             {
@@ -137,8 +138,8 @@ public class GameController : MonoBehaviour {
     }
 
     [HideInInspector]
-    public PlayerMovement.Team winnerTeam = PlayerMovement.Team.blue;
-    public void GameOver(PlayerMovement.Team _winnerTeam)
+    public Team winnerTeam = Team.blue;
+    public void GameOver(Team _winnerTeam)
     {
         print("GAME OVER");
         playing = false;
@@ -154,11 +155,11 @@ public class GameController : MonoBehaviour {
         player.SetVelocity(Vector3.zero);
         switch (player.team)
         {
-            case PlayerMovement.Team.blue:
+            case Team.blue:
                 player.transform.position = blueTeamSpawn.position;
                 player.rotateObj.transform.localRotation = Quaternion.Euler(0, blueTeamSpawn.rotation.eulerAngles.y, 0);
                 break;
-            case PlayerMovement.Team.red:
+            case Team.red:
                 player.transform.position = redTeamSpawn.position;
                 player.rotateObj.transform.localRotation = Quaternion.Euler(0, redTeamSpawn.rotation.eulerAngles.y, 0);
                 break;
@@ -203,12 +204,12 @@ public class GameController : MonoBehaviour {
             gameOverMenu.SetActive(true);
             veil.SetActive(true);
             victoryText.SetActive(true);
-            if (winnerTeam == PlayerMovement.Team.blue)
+            if (winnerTeam == Team.blue)
             {
                 victoryText.GetComponent<Text>().text = "BLUE TEAM WON";
                 victoryText.GetComponent<Text>().color = Color.blue;
             }
-            else if (winnerTeam == PlayerMovement.Team.red)
+            else if (winnerTeam == Team.red)
             {
                 victoryText.GetComponent<Text>().text = "RED TEAM WON";
                 victoryText.GetComponent<Text>().color = Color.red;
