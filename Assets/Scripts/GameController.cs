@@ -55,9 +55,9 @@ public class GameController : MonoBehaviour {
                 Debug.Log(GameInfo.instance.playerActionsList[i]);
                 allPlayers[i].Actions = GameInfo.instance.playerActionsList[i];
                 if (GameInfo.instance.playerTeamList[i] == Team.none)
-                    allPlayers[i].team = GameInfo.instance.noneTeamSelect();
-                else
-                    allPlayers[i].team = GameInfo.instance.playerTeamList[i];
+                    GameInfo.instance.playerTeamList[i] = GameInfo.instance.noneTeamSelect();
+                
+                allPlayers[i].team = GameInfo.instance.playerTeamList[i];
             }
             else
             {
