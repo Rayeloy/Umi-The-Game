@@ -18,5 +18,28 @@ public class GameInfo : MonoBehaviour
         playerTeamList = new List<Team>();
 
     }
-    //public static PlayerActions[] playerActionsList;
+    
+    public Team noneTeamSelect()
+    {
+        int nAzul = 0;
+        int nRojo = 0;
+        foreach (Team t in playerTeamList)
+        {
+            if (t == Team.blue)
+                nAzul++;
+            else if (t == Team.blue)
+                nRojo++;
+        }
+        if (nAzul > nRojo)
+            return Team.red;
+        else if (nAzul < nRojo)
+            return Team.blue;
+        else
+        {
+            if (Random.value < 0.5f)
+                return Team.blue;
+            else
+                return Team.red;
+        }
+    }
 }

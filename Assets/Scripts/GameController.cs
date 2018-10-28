@@ -54,7 +54,10 @@ public class GameController : MonoBehaviour {
                 allPlayers[i].GetComponent<PlayerCombat>().attackName = allCanvas[i].transform.GetChild(0).GetComponent<Text>();
                 Debug.Log(GameInfo.instance.playerActionsList[i]);
                 allPlayers[i].Actions = GameInfo.instance.playerActionsList[i];
-                allPlayers[i].team = GameInfo.instance.playerTeamList[i];
+                if (GameInfo.instance.playerTeamList[i] == Team.none)
+                    allPlayers[i].team = GameInfo.instance.noneTeamSelect();
+                else
+                    allPlayers[i].team = GameInfo.instance.playerTeamList[i];
             }
             else
             {

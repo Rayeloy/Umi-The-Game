@@ -10,7 +10,7 @@ public class PlayerSelected : MonoBehaviour
 	//public int actionNum;
 	//public PlayerMovement.Team team;
 
-	public Team team;
+	public Team team = Team.none;
 
 	public SkinnedMeshRenderer Body;
     public Material teamBlueMat;
@@ -18,15 +18,26 @@ public class PlayerSelected : MonoBehaviour
 
 	//public Renderer cachedRenderer;
 
-	public bool Ready = false;
+	private bool _ready = false;
+	/// <value>The Name property gets/sets the value of the string field, _name.</value>
+	public bool Ready
+	{
+		get{return _ready;}
+		set
+		{
+			animator.SetBool("Ready", value);
+			_ready = value;
+		}
+	}
+
+	//public bool Ready = false;
+	[Header("Referencias")]
+	public Animator animator;
 
 	void Update()
 	{
-		Debug.Log(Actions.Movement.X < -0.5f && team == Team.red);
 		if (Actions.Jump.WasPressed)
-		{
 			Ready = !Ready;
-		}
 		
 		if (Actions.Movement.X < -0.5f && team != Team.blue){
 			changeTeam(Team.blue);
