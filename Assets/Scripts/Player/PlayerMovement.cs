@@ -67,11 +67,11 @@ public class PlayerMovement : MonoBehaviour
     bool boostReady = true;
     Vector3 boostDir;
     [Header("ACCELERATIONS")]
-    public float initialAcc = 2.0f;
-    public float breakAcc = -2.0f;
+    public float initialAcc = 30;
+    public float breakAcc = -30;
     public float movingAcc = 2.0f;
-    public float airMovingAcc = 1;
-    public float hardBreakAcc = -6.0f;
+    public float airMovingAcc = 0.5f;
+    public float hardBreakAcc = -120f;
     //public float breakAccOnHit = -2.0f;
     float gravity;
     [Header("JUMP")]
@@ -227,7 +227,7 @@ public class PlayerMovement : MonoBehaviour
     void HorizontalMovement()
     {
         float finalMovingAcc = 0;
-        Vector3 horizontalVel = Vector3.zero;
+        Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
         if (!hooked)
         {
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
@@ -235,6 +235,11 @@ public class PlayerMovement : MonoBehaviour
             if (moveSt != MoveState.Knockback)
             {
                 CalculateMoveDir();//Movement direction
+            }
+            if (currentSpeed > maxMoveSpeed)
+            {
+                moveSt = MoveState.MovingBreaking;
+                print("MOVING BREAKING");
             }
             if (!myPlayerCombat.LTPulsado && !myPlayerCombat.RTPulsado && Actions.Boost.WasPressed)//Input.GetButtonDown(contName + "RB"))
             {
@@ -265,18 +270,15 @@ public class PlayerMovement : MonoBehaviour
             finalMovingAcc = controller.collisions.below ? movingAcc : airMovingAcc;
             //------------------------------- Speed ------------------------------ -
             currentSpeed = currentSpeed + actAccel * Time.deltaTime;
-            currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
-            horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
-            if (moveSt == MoveState.Moving && horizontalVel.magnitude > currentMaxMoveSpeed)
-            {
-                moveSt = MoveState.MovingBreaking;
-            }
+            float maxSpeedClamp = moveSt == MoveState.Moving ? maxMoveSpeed : maxKnockbackSpeed;
+            currentSpeed = Mathf.Clamp(currentSpeed, 0, maxSpeedClamp);
         }
         else
         {
             ProcessHooked();
         }
         //------------------------------------------------ DIRECCION CON VELOCIDAD ---------------------------------
+        print("MY MOVE STATE IT = " + moveSt);
         switch (moveSt)
         {
             case MoveState.Moving:
@@ -497,12 +499,13 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!boostReady)
         {
-            if(Actions.Jump.WasPressed)
-                StopBoost();
-
             boostTime += Time.deltaTime;
             if(boostTime < boostDuration)
             {
+                if (Actions.Jump.WasPressed)
+                {
+                    StopBoost();
+                }
                 moveSt = MoveState.Boost;
             }
             if (boostTime >= boostCD)

@@ -6067,6 +6067,7 @@ MonoBehaviour:
   breakAcc: -30
   movingAcc: 2
   airMovingAcc: 0.5
+  hardBreakAcc: -6
   jumpHeight: 2.5
   jumpApexTime: 0.4
   breakJumpForce: 2
@@ -10727,6 +10728,41 @@ Prefab:
         type: 2}
       propertyPath: cdMaxTime
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: disableAllRays
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: showVerticalLimits
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: showHorizontalLimits
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114856670354348932, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: showWallLimits
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114464777488655940, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: hardBreakAcc
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 114464777488655940, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: boostDuration
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114464777488655940, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: breakAcc
+      value: -30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a76334c98b710ce4fb20c747d78a778b, type: 2}
@@ -16031,6 +16067,7 @@ MonoBehaviour:
   breakAcc: -30
   movingAcc: 2
   airMovingAcc: 0.5
+  hardBreakAcc: -6
   jumpHeight: 2.5
   jumpApexTime: 0.4
   breakJumpForce: 2
@@ -20472,6 +20509,7 @@ MonoBehaviour:
   breakAcc: -30
   movingAcc: 2
   airMovingAcc: 0.5
+  hardBreakAcc: -6
   jumpHeight: 2.5
   jumpApexTime: 0.4
   breakJumpForce: 2
