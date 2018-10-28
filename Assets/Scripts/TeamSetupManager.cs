@@ -5,7 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class TeamSetupManager : MonoBehaviour
 {
-	//public static List<PlayerActions> playerActionsList = new List<PlayerActions>();
+    //public static List<PlayerActions> playerActionsList = new List<PlayerActions>();
+    [Range(1,6)]
+    public int minNumPlayers;
 	public GameObject playerPrefab;
 
 	public string SiguenteEscena;
@@ -24,7 +26,12 @@ public class TeamSetupManager : MonoBehaviour
 	PlayerActions keyboardListener;
 	PlayerActions joystickListener;
 
-	void OnEnable()
+    private void Awake()
+    {
+        minNumPlayers = Mathf.Clamp(minNumPlayers, 1, 6);
+    }
+
+    void OnEnable()
 	{
 		InputManager.OnDeviceDetached += OnDeviceDetached;
 		keyboardListener = PlayerActions.CreateWithKeyboardBindings();
@@ -60,7 +67,7 @@ public class TeamSetupManager : MonoBehaviour
 			}
 		}
 
-		if (players.Count > 1){
+		if (players.Count >= minNumPlayers){
 			int contador = 0;
 			foreach(PlayerSelected ps in players){
 				if (ps.Ready){

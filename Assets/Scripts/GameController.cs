@@ -23,6 +23,11 @@ public class GameController : MonoBehaviour {
     public WeaponData[] allWeapons;
     private void Awake()
     {
+        if (GameInfo.instance == null)
+        {
+            SceneManager.LoadScene("TeamSetup");
+            return;
+        }
         instance = this;
         gameOverMenu.SetActive(false);
         veil.SetActive(false);

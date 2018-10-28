@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Controller3D))]
+[RequireComponent(typeof(PlayerCombat))]
+[RequireComponent(typeof(PlayerAnimation))]
+[RequireComponent(typeof(PlayerWeapons))]
 public class PlayerMovement : MonoBehaviour
 {
     public CameraController myCamera;
@@ -12,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     public Material teamRedMat;
     PlayerCombat myPlayerCombat;
     PlayerAnimation myPlayerAnimation;
+    PlayerWeapons myPlayerWeap;
 
     //public GameController.controllerName contName;
     public PlayerActions Actions { get; set; }
@@ -32,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
         NotMoving,//Not stunned, breaking
         Knockback,//Stunned
         MovingBreaking,//Moving but reducing speed by breakAcc till maxMovSpeed
+        Hooked,
         Boost
     }
     [HideInInspector]
@@ -53,6 +58,8 @@ public class PlayerMovement : MonoBehaviour
     float currentMaxMoveSpeed = 10.0f; // its the final max speed, after the joyjoystick sensitivity value
     [Tooltip("Maximum speed that you can travel at horizontally when hit by someone")]
     public float maxKnockbackSpeed = 300f;
+    public float maxAimingSpeed = 5f;
+    public float maxHookingSpeed = 2f;
     [HideInInspector]
     public float currentSpeed = 0;
     public float maxSpeedInWater = 5f;
@@ -110,6 +117,7 @@ public class PlayerMovement : MonoBehaviour
         controller = GetComponent<Controller3D>();
         myPlayerCombat = GetComponent<PlayerCombat>();
         myPlayerAnimation = GetComponent<PlayerAnimation>();
+        myPlayerWeap = GetComponent<PlayerWeapons>();
         lastWallAngle = 0;
     }
     public void KonoStart()
@@ -125,10 +133,12 @@ public class PlayerMovement : MonoBehaviour
         switch (team)
         {
             case Team.blue:
-                myPlayerAnimation.AttachWeapon("Churro Azul");
+                myPlayerWeap.AttachWeapon("Churro Azul");
+                Body.material = teamBlueMat;
                 break;
             case Team.red:
-                myPlayerAnimation.AttachWeapon("Churro Rojo");
+                myPlayerWeap.AttachWeapon("Churro Rojo");
+                Body.material = teamRedMat;
                 break;
         }
         currentMaxMoveSpeed = maxMoveSpeed2 = maxMoveSpeed;
@@ -171,7 +181,7 @@ public class PlayerMovement : MonoBehaviour
     float joystickAngle;
     float deadzone = 0.15f;
     float joystickSens = 0;
-
+    //--------------------------------------------- MOVEMENT ---------------------------------------------
     public void CalculateMoveDir()
     {
         float horiz = Actions.Movement.X;//Input.GetAxisRaw(contName + "H");
@@ -181,6 +191,7 @@ public class PlayerMovement : MonoBehaviour
         // dir would reset because the joystick is neutral.
         Vector3 temp = new Vector3(horiz, 0, vert);
         joystickSens = temp.magnitude;
+        if (joystickSens >= 0.88 || joystickSens > 1) joystickSens = 1;
         //print("temp.magnitude = " + temp.magnitude);
         if (temp.magnitude >= deadzone && !noInput)
         {
@@ -216,46 +227,55 @@ public class PlayerMovement : MonoBehaviour
 
     void HorizontalMovement()
     {
-        //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
-        if (moveSt != MoveState.Knockback)
+        float finalMovingAcc = 0;
+        Vector3 horizontalVel = Vector3.zero;
+        if (!hooked)
         {
-            CalculateMoveDir();//Movement direction
-        }
-        if (!myPlayerCombat.LTPulsado && !myPlayerCombat.RTPulsado && Actions.Boost.WasPressed)//Input.GetButtonDown(contName + "RB"))
-        {
-            myPlayerCombat.RTPulsado = true;
-            StartBoost();
-        }
-        ProcessBoost();
-
-        //------------------------------- Max Move Speed -------------------------------
-        maxMoveSpeed2 = maxMoveSpeed;
-        ProcessWater();
-        if (joystickSens >= 0.88 || joystickSens > 1) joystickSens = 1;
-        currentMaxMoveSpeed = (joystickSens / 1) * maxMoveSpeed2;
-
-        //------------------------------- Acceleration -------------------------------
-        float actAccel;
-        if (moveSt == MoveState.Moving && currentSpeed < currentMaxMoveSpeed)
-        {
-            actAccel = initialAcc;
-        }
-        else if (moveSt == MoveState.MovingBreaking)
-        {
-            actAccel = breakAcc * 3;
+            //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
+            //------------------------------- Joystick Direction -------------------------------
+            if (moveSt != MoveState.Knockback)
+            {
+                CalculateMoveDir();//Movement direction
+            }
+            if (!myPlayerCombat.LTPulsado && !myPlayerCombat.RTPulsado && Actions.Boost.WasPressed)//Input.GetButtonDown(contName + "RB"))
+            {
+                myPlayerCombat.RTPulsado = true;
+                StartBoost();
+            }
+            ProcessBoost();
+            //------------------------------- Max Move Speed -------------------------------
+            maxMoveSpeed2 = maxMoveSpeed;
+            ProcessWater();
+            ProcessAiming();
+            ProcessHooking();
+            currentMaxMoveSpeed = (joystickSens / 1) * maxMoveSpeed2;
+            //------------------------------- Acceleration -------------------------------
+            float actAccel;
+            if (moveSt == MoveState.Moving && currentSpeed < currentMaxMoveSpeed)
+            {
+                actAccel = initialAcc;
+            }
+            else if (moveSt == MoveState.MovingBreaking)
+            {
+                actAccel = breakAcc * 3;
+            }
+            else
+            {
+                actAccel = breakAcc;
+            }
+            finalMovingAcc = controller.collisions.below ? movingAcc : airMovingAcc;
+            //------------------------------- Speed ------------------------------ -
+            currentSpeed = currentSpeed + actAccel * Time.deltaTime;
+            currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
+            horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+            if (moveSt == MoveState.Moving && horizontalVel.magnitude > currentMaxMoveSpeed)
+            {
+                moveSt = MoveState.MovingBreaking;
+            }
         }
         else
         {
-            actAccel = breakAcc;
-        }
-        float finalMovingAcc = controller.collisions.below ? movingAcc : airMovingAcc;
-        //------------------------------- Speed ------------------------------ -
-        currentSpeed = currentSpeed + actAccel * Time.deltaTime;
-        currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
-        Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
-        if (moveSt == MoveState.Moving && horizontalVel.magnitude > currentMaxMoveSpeed)
-        {
-            moveSt = MoveState.MovingBreaking;
+            ProcessHooked();
         }
         //------------------------------------------------ DIRECCION CON VELOCIDAD ---------------------------------
         switch (moveSt)
@@ -299,6 +319,10 @@ public class PlayerMovement : MonoBehaviour
                 currentVel = horizontalVel.normalized * currentSpeed;
                 currentVel.y = finalDir.y;
                 break;
+            case MoveState.Hooked:
+                currentSpeed = currentVel.magnitude;
+                break;
+
         }
     }
 
@@ -351,7 +375,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
-
+    //--------------------------------------------- JUMP ---------------------------------------------
     void StartJump()
     {
         if (controller.collisions.below && (!inWater || inWater && controller.collisions.around))
@@ -429,7 +453,7 @@ public class PlayerMovement : MonoBehaviour
         Debug.DrawLine(anchorPoint, circleCenter, Color.white, 20);
         Debug.DrawLine(anchorPoint, circumfPoint, Color.yellow, 20);
     }
-
+    //--------------------------------------------- DASH ---------------------------------------------
     void WallBoost()
     {
         //CALCULATE JUMP DIR
@@ -470,7 +494,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
-
+    //--------------------------------------------- FACING DIR AND ANGLE & BODY ROTATION---------------------------------------------
     [HideInInspector]
     public Vector3 currentFacingDir = Vector3.forward;
     [HideInInspector]
@@ -525,7 +549,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
-
+    //--------------------------------------------- RECIEVE HIT AND STUN ---------------------------------------------
     [HideInInspector]
     public float maxTimeStun = 0.6f;
     float timeStun = 0;
@@ -561,7 +585,70 @@ public class PlayerMovement : MonoBehaviour
             print("STUN END");
         }
     }
+    //--------------------------------------------- HOOKING/HOOK ---------------------------------------------
+    bool hooked;
+    public void StartHooked()
+    {
+        if (!hooked)
+        {
+            noInput = true;
+            hooked = true;
+        }
+    }
 
+    void ProcessHooked()
+    {
+        if (hooked)
+        {
+            moveSt = MoveState.Hooked;
+        }
+    }
+
+    public void StopHooked()
+    {
+        if (hooked)
+        {
+            noInput = false;
+            hooked = false;
+        }
+    }
+
+    bool hooking;
+    public void StartHooking()
+    {
+        if (!hooking)
+        {
+            hooking = true;
+        }
+    }
+
+    void ProcessHooking()
+    {
+        if (hooking)
+        {
+            if (maxMoveSpeed2 > maxHookingSpeed)
+            {
+                maxMoveSpeed2 = maxHookingSpeed;
+            }
+        }
+    }
+
+    public void StopHooking()
+    {
+        if (hooking)
+        {
+            hooking = false;
+        }
+    }
+
+    void ProcessAiming()
+    {
+        if (myPlayerCombat.aiming && maxMoveSpeed2>maxAimingSpeed)
+        {
+            maxMoveSpeed2 = maxAimingSpeed;
+        }
+    }
+    //--------------------------------------------- PICKUP / FLAG / DEATH ---------------------------------------------
     [HideInInspector]
     public bool haveFlag = false;
     [HideInInspector]
@@ -591,7 +678,7 @@ public class PlayerMovement : MonoBehaviour
         }
         GameController.instance.RespawnPlayer(this);
     }
-
+    //--------------------------------------------- WATER ---------------------------------------------
     [HideInInspector]
     public bool inWater = false;
 
@@ -600,6 +687,7 @@ public class PlayerMovement : MonoBehaviour
         if (!inWater)
         {
             inWater = true;
+            myPlayerWeap.AttachWeaponToBack();
             if (haveFlag)
             {
                 GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
@@ -616,7 +704,10 @@ public class PlayerMovement : MonoBehaviour
         if (inWater)
         {
             controller.AroundCollisions();
-            maxMoveSpeed2 = maxSpeedInWater;
+            if (maxMoveSpeed2 > maxSpeedInWater)
+            {
+                maxMoveSpeed2 = maxSpeedInWater;
+            }
         }
     }
 
@@ -625,9 +716,10 @@ public class PlayerMovement : MonoBehaviour
         if (inWater)
         {
             inWater = false;
+            myPlayerWeap.AttachWeapon();
         }
     }
-
+    //--------------------------------------------- CHECK WIN ---------------------------------------------
     void CheckWinGame(Respawn respawn)
     {
         if (haveFlag && team == respawn.team)
@@ -636,6 +728,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    //--------------------------------------------- TRIGGER COLLISIONS ---------------------------------------------
     private void OnTriggerStay(Collider col)
     {
         switch (col.tag)
@@ -681,7 +774,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    //Auxiliar functions
+    //--------------------------------------------- AUXILIAR FUNCTIONS ---------------------------------------------
     public Vector3 RotateVector(float angle, Vector3 vector)
     {
         //rotate angle -90 degrees

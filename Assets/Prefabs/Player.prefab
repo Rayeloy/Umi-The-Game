@@ -892,6 +892,7 @@ GameObject:
   - component: {fileID: 114089744483878592}
   - component: {fileID: 114856670354348932}
   - component: {fileID: 114078510699935020}
+  - component: {fileID: 114707133594277346}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -2493,8 +2494,6 @@ MonoBehaviour:
   animator: {fileID: 95422959760590640}
   playerMovement: {fileID: 114464777488655940}
   maxTimeToLand: 0.3
-  rightHand: {fileID: 4471929702773362}
-  leftHand: {fileID: 4027939180687830}
 --- !u!114 &114089744483878592
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2506,6 +2505,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ae6d69e3764304f8c7b1a52d60636e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myPlayerHUD: {fileID: 0}
   triggerDeadZone: 0.15
   LTPulsado: 0
   RTPulsado: 0
@@ -2534,11 +2534,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myCamera: {fileID: 0}
   rotateObj: {fileID: 4036635015999044}
-  Body: {fileID: 0}
+  Body: {fileID: 137056666545966954}
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
-  contName: 0
-  team: 1
+  team: 0
   controller: {fileID: 114856670354348932}
   moveSt: 1
   jumpSt: 2
@@ -2572,6 +2571,21 @@ MonoBehaviour:
   haveFlag: 0
   flag: {fileID: 0}
   inWater: 0
+--- !u!114 &114707133594277346
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1705813512628444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61727bad74f98ad44acc6f2ced10c58c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myPlayerAnim: {fileID: 114078510699935020}
+  senaka: {fileID: 4146493875498302}
+  rightHand: {fileID: 4471929702773362}
+  leftHand: {fileID: 4027939180687830}
 --- !u!114 &114769351598123618
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2594,26 +2608,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c515b7e1049281419f36a8f533abb98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disableAllRays: 0
   collisionMask:
     serializedVersion: 2
     m_Bits: 16896
   collisionMaskAround:
     serializedVersion: 2
     m_Bits: 512
-  skinWidthHeight: 0.0001
   maxClimbAngle: 60
   minClimbAngle: 0
   maxDescendAngle: 60
   minDescendAngle: 0
+  precisClimbSlopeInsideWall: 0
+  skinWidthHeight: 0.0001
   precisionHeight: 0.1
   precisionSpaceFromSlideWall: 0.001
-  precisClimbSlopeInsideWall: 0
   FloorMaxDistanceCheck: 15
   coll: {fileID: 136730111159505118}
+  showVerticalRays: 0
+  showVerticalLimits: 1
+  showDistanceCheckRays: 0
   verticalRows: 50
   verticalRaysPerRow: 50
+  showHorizontalRays: 0
+  showHorizontalLimits: 1
+  showWallRays: 0
+  showWallLimits: 1
   horizontalRows: 50
   horizontalRaysPerRow: 50
+  showWaterRays: 0
   aroundRaysPerCircle: 10
   aroundCircles: 10
   aroundRaycastsLength: 1.5

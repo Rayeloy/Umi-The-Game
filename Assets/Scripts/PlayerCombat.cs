@@ -5,8 +5,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(PlayerMovement))]
+[RequireComponent(typeof(Hook))]
 public class PlayerCombat : MonoBehaviour {
     PlayerMovement myPlayerMovement;
+    PlayerWeapons myPlayerWeap;
+    Hook myHook;
+    public PlayerHUD myPlayerHUD;
     public float triggerDeadZone=0.15f;
     [HideInInspector]
     public bool LTPulsado = false;
@@ -45,6 +50,8 @@ public class PlayerCombat : MonoBehaviour {
     private void Awake()
     {
         myPlayerMovement = GetComponent<PlayerMovement>();
+        myPlayerWeap = GetComponent<PlayerWeapons>();
+        myHook = GetComponent<Hook>();
         attackStg = attackStage.ready;
         targetsHit = new List<string>();
     }
@@ -79,11 +86,13 @@ public class PlayerCombat : MonoBehaviour {
                 StartAttack();
                 //ChangeNextAttackType();
             }
-            if (LTPulsado && !RTPulsado && myPlayerMovement.Actions.Boost.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
+            if (LTPulsado && !RTPulsado && myPlayerMovement.Actions.Boost.WasPressed)// HOOK      //Input.GetButtonDown(myPlayerMovement.contName + "RB"))
             {
                 RTPulsado = true;
-                ChangeAttackType(GameController.instance.attackHook);
-                StartAttack();
+                myHook.StartHook();
+                //ChangeAttackType(GameController.instance.attackHook);
+                //StartAttack();
+
             }
         }
 
@@ -222,15 +231,28 @@ public class PlayerCombat : MonoBehaviour {
             }
         }   
     }
-    
+    [HideInInspector]
+    public bool aiming;
     void StartAiming()
     {
-        myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Shoulder);
-        //ChangeAttackType(GameController.instance.attackHook);
+        if(!aiming)
+        {
+            aiming = true;
+            myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Shoulder);
+            myPlayerWeap.AttachWeaponToBack();
+            myPlayerHUD.StartAim();
+            //ChangeAttackType(GameController.instance.attackHook);
+        }
     }
 
     void StopAiming()
     {
-        myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Free);
+        if (aiming)
+        {
+            aiming = false;
+            myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Free);
+            myPlayerWeap.AttachWeapon();
+            myPlayerHUD.StopAim();
+        }
     }
 }

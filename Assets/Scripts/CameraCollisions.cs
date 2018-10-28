@@ -34,7 +34,11 @@ public class CameraCollisions : MonoBehaviour {
     {
         Vector3 desiredCameraPos = transform.parent.TransformPoint(dollyDir * maxDistance);
         RaycastHit hit;
-        Debug.DrawLine(transform.parent.position, desiredCameraPos, Color.yellow, 0.01f);
+        if (!myCamController.myPlayerMov.controller.disableAllRays)
+        {
+            Debug.DrawLine(transform.parent.position, desiredCameraPos, Color.yellow, 0.01f);
+        }
+
         if (Physics.Linecast(transform.parent.position, desiredCameraPos, out hit, collisionMask, QueryTriggerInteraction.Ignore))
         {
             //print("CAMARA OBSTRUIDA");

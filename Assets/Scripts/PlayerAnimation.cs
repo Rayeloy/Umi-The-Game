@@ -24,9 +24,7 @@ public class PlayerAnimation : MonoBehaviour
     public float maxTimeToLand = 1;
     //-------------
     bool jump;
-    [Header("WEAPONS ATTACH")]
-    public Transform rightHand;
-    public Transform leftHand;
+
     //Churros: Pos: -0.0086, 0.0097, 0.0068; Rot: 45.854,-163.913,-5.477; Scale: 1.599267,1.599267,1.599267
 
     private void Awake()
@@ -56,10 +54,15 @@ public class PlayerAnimation : MonoBehaviour
             landing = false;
             animator.SetBool(landHash, landing);
         }
-        if (swimming && !playerMovement.inWater && playerMovement.currentSpeed > 0)
+        if (swimming && !playerMovement.inWater)
         {
             swimming = false;
             animator.SetBool(swimmingHash, swimming);
+        }
+        if(swimmingIdle && !playerMovement.inWater)
+        {
+            swimmingIdle = false;
+            animator.SetBool(swimmingIdleHash, swimmingIdle);
         }
     }
 
@@ -88,7 +91,7 @@ public class PlayerAnimation : MonoBehaviour
         }
 
         float timeToLand = playerMovement.controller.collisions.distanceToFloor / Mathf.Abs(playerMovement.currentVel.y);
-        Debug.LogWarning("vel.y = " + playerMovement.currentVel.y + "; below = " + playerMovement.controller.collisions.below + "; distance to floor = " + playerMovement.controller.collisions.distanceToFloor + "; timeToLand = " + timeToLand);
+        //Debug.LogWarning("vel.y = " + playerMovement.currentVel.y + "; below = " + playerMovement.controller.collisions.below + "; distance to floor = " + playerMovement.controller.collisions.distanceToFloor + "; timeToLand = " + timeToLand);
         if ((playerMovement.currentVel.y<0 && !playerMovement.controller.collisions.below && timeToLand <= maxTimeToLand) 
             || (jumpingValue && playerMovement.controller.collisions.below))
         {
@@ -97,7 +100,7 @@ public class PlayerAnimation : MonoBehaviour
                 jumpingValue = false;
                 animator.SetBool(jumpingHash, jumpingValue);
             }
-            print("SET TRIGGER LAND ");
+            //print("SET TRIGGER LAND ");
             landing = true;
             animator.SetBool(landHash,landing);
         }
@@ -130,28 +133,5 @@ public class PlayerAnimation : MonoBehaviour
     {
         jump = _jump;
         animator.SetBool(jumpHash, jump);
-    }
-
-    public WeaponData SearchWeapon(string name)
-    {
-        WeaponData[] allWeap = GameController.instance.allWeapons;
-        foreach(WeaponData wp in allWeap)
-        {
-            if(name == wp.weaponName)
-            {
-                return wp;
-            }
-        }
-        return null;
-    }
-
-    public void AttachWeapon(string weaponName)
-    {
-        WeaponData weapData = SearchWeapon(weaponName);
-        Transform wep = Instantiate(weapData.weaponPrefab,rightHand).transform;
-        wep.SetParent(rightHand);
-        wep.localPosition = weapData.localPosition;
-        wep.localRotation = Quaternion.Euler(weapData.localRotation.x, weapData.localRotation.y, weapData.localRotation.z);
-        wep.localScale = weapData.localScale; 
     }
 }
