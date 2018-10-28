@@ -71,6 +71,7 @@ public class PlayerMovement : MonoBehaviour
     public float breakAcc = -2.0f;
     public float movingAcc = 2.0f;
     public float airMovingAcc = 1;
+    public float hardBreakAcc = -6.0f;
     //public float breakAccOnHit = -2.0f;
     float gravity;
     [Header("JUMP")]
@@ -177,7 +178,8 @@ public class PlayerMovement : MonoBehaviour
     float joystickAngle;
     float deadzone = 0.15f;
     float joystickSens = 0;
-    //--------------------------------------------- MOVEMENT ---------------------------------------------
+
+#region MOVEMENT -----------------------------------------------
     public void CalculateMoveDir()
     {
         float horiz = Actions.Movement.X;//Input.GetAxisRaw(contName + "H");
@@ -254,7 +256,7 @@ public class PlayerMovement : MonoBehaviour
             }
             else if (moveSt == MoveState.MovingBreaking)
             {
-                actAccel = breakAcc * 3;
+                actAccel = hardBreakAcc;//breakAcc * 3;
             }
             else
             {
@@ -372,7 +374,9 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
-    //--------------------------------------------- JUMP ---------------------------------------------
+#endregion
+
+#region JUMP ---------------------------------------------------
     void StartJump()
     {
         if (!noInput)
@@ -452,7 +456,9 @@ public class PlayerMovement : MonoBehaviour
         Debug.DrawLine(anchorPoint, circleCenter, Color.white, 20);
         Debug.DrawLine(anchorPoint, circumfPoint, Color.yellow, 20);
     }
-    //--------------------------------------------- DASH ---------------------------------------------
+#endregion
+
+#region  DASH ---------------------------------------------
     void WallBoost()
     {
         //CALCULATE JUMP DIR
@@ -491,6 +497,9 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!boostReady)
         {
+            if(Actions.Jump.WasPressed)
+                StopBoost();
+
             boostTime += Time.deltaTime;
             if(boostTime < boostDuration)
             {
@@ -502,7 +511,14 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
-    //--------------------------------------------- FACING DIR AND ANGLE & BODY ROTATION---------------------------------------------
+
+    void StopBoost()
+    {
+        boostTime = boostDuration;
+    }
+#endregion
+
+#region  FACING DIR AND ANGLE & BODY ROTATION---------------------------------------------
     [HideInInspector]
     public Vector3 currentFacingDir = Vector3.forward;
     [HideInInspector]
@@ -565,7 +581,9 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
-    //--------------------------------------------- RECIEVE HIT AND STUN ---------------------------------------------
+#endregion
+
+#region RECIEVE HIT AND STUN ---------------------------------------------
     [HideInInspector]
     public float maxTimeStun = 0.6f;
     float timeStun = 0;
@@ -601,7 +619,9 @@ public class PlayerMovement : MonoBehaviour
             print("STUN END");
         }
     }
-    //--------------------------------------------- HOOKING/HOOK ---------------------------------------------
+#endregion
+
+#region HOOKING/HOOK ---------------------------------------------
     bool hooked;
     public void StartHooked()
     {
@@ -666,7 +686,9 @@ public class PlayerMovement : MonoBehaviour
             maxMoveSpeed2 = maxAimingSpeed;
         }
     }
-    //--------------------------------------------- PICKUP / FLAG / DEATH ---------------------------------------------
+#endregion
+
+#region PICKUP / FLAG / DEATH ---------------------------------------------
     [HideInInspector]
     public bool haveFlag = false;
     [HideInInspector]
@@ -696,7 +718,9 @@ public class PlayerMovement : MonoBehaviour
         }
         GameController.instance.RespawnPlayer(this);
     }
-    //--------------------------------------------- WATER ---------------------------------------------
+#endregion
+
+#region  WATER ---------------------------------------------
     [HideInInspector]
     public bool inWater = false;
 
@@ -737,7 +761,9 @@ public class PlayerMovement : MonoBehaviour
             myPlayerWeap.AttachWeapon();
         }
     }
-    //--------------------------------------------- CHECK WIN ---------------------------------------------
+#endregion
+
+#region  CHECK WIN ---------------------------------------------
     void CheckWinGame(Respawn respawn)
     {
         if (haveFlag && team == respawn.team)
@@ -745,8 +771,9 @@ public class PlayerMovement : MonoBehaviour
             GameController.instance.GameOver(team);
         }
     }
+#endregion
 
-    //--------------------------------------------- TRIGGER COLLISIONS ---------------------------------------------
+#region  TRIGGER COLLISIONS ---------------------------------------------
     private void OnTriggerStay(Collider col)
     {
         switch (col.tag)
@@ -792,8 +819,9 @@ public class PlayerMovement : MonoBehaviour
         {
         }
     }
+#endregion
 
-    //--------------------------------------------- AUXILIAR FUNCTIONS ---------------------------------------------
+#region  AUXILIAR FUNCTIONS ---------------------------------------------
     public Vector3 RotateVector(float angle, Vector3 vector)
     {
         //rotate angle -90 degrees
@@ -841,6 +869,7 @@ public class PlayerMovement : MonoBehaviour
 
         return circumfPoint;
     }
+#endregion
 }
 public enum Team
 {
