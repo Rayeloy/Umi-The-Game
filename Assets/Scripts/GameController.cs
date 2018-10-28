@@ -166,7 +166,7 @@ public class GameController : MonoBehaviour {
         }
         //player.myCamera.KonoAwake();
         //player.myCamera.SwitchCamera(player.myCamera.camMode);
-        player.myCamera.LateUpdate();
+        //player.myCamera.LateUpdate();
         player.myCamera.InstantPositioning();
         player.myCamera.InstantRotation();
         //player.myCamera.transform.localRotation = player.rotateObj.transform.localRotation;

@@ -181,7 +181,7 @@ public class PlayerCombat : MonoBehaviour {
     float attackTime = 0;
     public void StartAttack()
     {
-        if (attackStg == attackStage.ready)
+        if (attackStg == attackStage.ready && !myPlayerMovement.noInput)
         {
             targetsHit.Clear();
             attackTime = 0;

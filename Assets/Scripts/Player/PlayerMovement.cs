@@ -65,6 +65,7 @@ public class PlayerMovement : MonoBehaviour
     public float boostDuration = 1f;
     float boostTime = 0f;
     bool boostReady = true;
+    Vector3 boostDir;
     [Header("ACCELERATIONS")]
     public float initialAcc = 2.0f;
     public float breakAcc = -2.0f;
@@ -149,7 +150,7 @@ public class PlayerMovement : MonoBehaviour
     int frameCounter = 0;
     public void KonoUpdate()
     {
-        if (controller.collisions.above || controller.collisions.below)
+        if ((controller.collisions.above || controller.collisions.below ) && !hooked)
         {
             //print("SETTING VEL.Y TO 0");
             currentVel.y = 0;
@@ -186,10 +187,10 @@ public class PlayerMovement : MonoBehaviour
         // dir would reset because the joystick is neutral.
         Vector3 temp = new Vector3(horiz, 0, vert);
         joystickSens = temp.magnitude;
-        if (joystickSens >= 0.88 || joystickSens > 1) joystickSens = 1;
         //print("temp.magnitude = " + temp.magnitude);
         if (temp.magnitude >= deadzone && !noInput)
         {
+            if (joystickSens >= 0.88 || joystickSens > 1) joystickSens = 1;
             moveSt = MoveState.Moving;
             currentMovDir = temp;
             currentMovDir.Normalize();
@@ -217,6 +218,7 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             moveSt = MoveState.NotMoving;
+            currentMovDir = Vector3.zero;
         }
     }
 
@@ -295,7 +297,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else//BOOST NORMAL
                 {
-                    currentVel = currentVel + currentMovDir * finalMovingAcc;
+                    currentVel = boostDir * finalMovingAcc;
                     horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
                     horizontalVel = horizontalVel.normalized * boostSpeed;
                     currentVel = new Vector3(horizontalVel.x, 0, horizontalVel.z);
@@ -373,17 +375,19 @@ public class PlayerMovement : MonoBehaviour
     //--------------------------------------------- JUMP ---------------------------------------------
     void StartJump()
     {
-        if (controller.collisions.below && (!inWater || inWater && controller.collisions.around))
+        if (!noInput)
         {
-            print("JUMP");
-            currentVel.y = jumpVelocity;
-            jumpSt = JumpState.Jumping;
-            timePressingJump = 0;
-            myPlayerAnimation.SetJump(true);
-        }
-        else
-        {
-            StartWallJump();
+            if (controller.collisions.below && (!inWater || inWater && controller.collisions.around))
+            {
+                currentVel.y = jumpVelocity;
+                jumpSt = JumpState.Jumping;
+                timePressingJump = 0;
+                myPlayerAnimation.SetJump(true);
+            }
+            else
+            {
+                StartWallJump();
+            }
         }
     }
 
@@ -459,17 +463,26 @@ public class PlayerMovement : MonoBehaviour
 
         currentVel = finalDir * currentVel.magnitude;
         currentSpeed = currentVel.magnitude;
-        currentMovDir = new Vector3(finalDir.x, 0, finalDir.z);
+        boostDir = new Vector3(finalDir.x, 0, finalDir.z);
         RotateCharacter();
     }
 
     void StartBoost()
     {
-        if (!noInput && boostReady && !haveFlag&& !inWater)
+        if (!noInput && boostReady && !haveFlag && !inWater)
         {
+            boostReady = false;
             moveSt = MoveState.Boost;
             boostTime = 0f;
-            boostReady = false;
+            if (currentMovDir!=Vector3.zero)
+            {
+                boostDir = currentMovDir;
+            }
+            else
+            {
+                currentMovDir = boostDir = new Vector3(currentCamFacingDir.x, 0, currentCamFacingDir.z);
+                RotateCharacter();
+            }
         }
 
     }
@@ -494,6 +507,8 @@ public class PlayerMovement : MonoBehaviour
     public Vector3 currentFacingDir = Vector3.forward;
     [HideInInspector]
     public float facingAngle = 0;
+    [HideInInspector]
+    public Vector3 currentCamFacingDir = Vector3.zero;
 
     void UpdateFacingDir()//change so that only rotateObj rotates, not whole body
     {
@@ -505,17 +520,21 @@ public class PlayerMovement : MonoBehaviour
                 Vector3 camPos = myCamera.transform.GetChild(0).position;
                 Vector3 myPos = transform.position;
                 currentFacingDir = new Vector3(myPos.x - camPos.x, 0, myPos.z - camPos.z).normalized;
+                currentCamFacingDir = myCamera.myCamera.transform.forward.normalized;
                 break;
             case CameraController.cameraMode.Shoulder:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 currentFacingDir = RotateVector(-myCamera.transform.localRotation.eulerAngles.y, Vector3.forward).normalized;
+                currentCamFacingDir = myCamera.myCamera.transform.forward.normalized;
                 //print("CurrentFacingDir = " + currentFacingDir);
                 break;
             case CameraController.cameraMode.Free:
-                currentFacingDir = RotateVector(-rotateObj.localRotation.eulerAngles.y, Vector3.forward).normalized;
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
+                currentFacingDir = RotateVector(-rotateObj.localRotation.eulerAngles.y, Vector3.forward).normalized;
+                currentCamFacingDir = (myCamera.cameraFollowObj.transform.position - myCamera.myCamera.transform.position).normalized;
                 break;
         }
+        //print("currentFacingDir = " + currentFacingDir + "; currentCamFacingDir = " + currentCamFacingDir);
 
     }
 
@@ -536,10 +555,12 @@ public class PlayerMovement : MonoBehaviour
                 rotateObj.Rotate(dir, rotSpeed * Time.deltaTime);
                 break;
             case CameraController.cameraMode.Free:
-                float angle = Mathf.Acos(((0 * currentMovDir.x) + (1 * currentMovDir.z)) / (1 * currentMovDir.magnitude)) * Mathf.Rad2Deg;
-                angle = currentMovDir.x < 0 ? -angle : angle;
-                //print("ANGULO = " + angle);
-                rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
+                if (currentMovDir != Vector3.zero)
+                {
+                    float angle = Mathf.Acos(((0 * currentMovDir.x) + (1 * currentMovDir.z)) / (1 * currentMovDir.magnitude)) * Mathf.Rad2Deg;
+                    angle = currentMovDir.x < 0 ? -angle : angle;
+                    rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
+                }
                 break;
         }
 
@@ -605,6 +626,8 @@ public class PlayerMovement : MonoBehaviour
         {
             noInput = false;
             hooked = false;
+            currentVel = Vector3.zero;
+            currentSpeed = 0;
         }
     }
 
@@ -762,6 +785,7 @@ public class PlayerMovement : MonoBehaviour
                 break;
         }
     }
+
     private void OnTriggerExit(Collider col)
     {
         switch (col.tag)
@@ -818,9 +842,9 @@ public class PlayerMovement : MonoBehaviour
         return circumfPoint;
     }
 }
-
 public enum Team
 {
     red,
-    blue
+    blue,
+    none
 }
