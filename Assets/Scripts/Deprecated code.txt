@@ -951,3 +951,51 @@ void VerticalCollisions(ref Vector3 vel)
             //for(int j=0; j<)
         }
     }//No se usa
+
+	    /*
+     public void PickFlag(GameObject _flag)
+     {
+         Flag auxFlag = _flag.GetComponent<Flag>();
+         GameObject ownerFlag = _flag.GetComponent<Flag>().currentOwner;
+         if (ownerFlag == null)
+         {
+             if (!haveFlag && ((!auxFlag.beingHooked) || (auxFlag.beingHooked && auxFlag.playerHooking != transform)))
+             {
+                 flag = _flag;
+                 flag.transform.SetParent(rotateObj);
+                 flag.transform.localPosition = new Vector3(0, 0, -0.5f);
+                 flag.transform.localRotation = Quaternion.Euler(0, -90, 0);
+                 haveFlag = true;
+                 ownerFlag = gameObject;
+             }
+         }
+     }
+
+     public void StealFlag(Transform _flag)
+     {
+         Flag auxFlag = _flag.GetComponent<Flag>();
+         GameObject ownerFlag = auxFlag = 
+
+     }
+
+     public void LoseFlag(PlayerMovement attacker)
+     {
+         if (haveFlag)
+         {
+             print("ROBA BANDERA");
+             attacker.PickFlag(flag);
+             flag = null;
+             haveFlag = false;
+         }
+     }
+
+     public void LoseFlag()
+     {
+         if (haveFlag)
+         {
+             flag.GetComponent<Flag>().currentOwner = null;
+             flag.transform.SetParent(StoringManager.instance.transform);
+             flag = null;
+             haveFlag = false;
+         }
+     }*/

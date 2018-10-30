@@ -94,12 +94,13 @@ public class PlayerMovement : MonoBehaviour
     Vector3 wallNormal;
     [Tooltip("Vertical angle in which the player wall-jumps.")]
     [Range(0, 89)]
-    public float wallJumpAngle=30;
+    public float wallJumpAngle = 30;
     [Tooltip("Minimum horizontal angle in which the player wall-jumps. This number ranges from 0 to 90. 0 --> parallel to the wall; 90 --> perpendicular to the wall")]
+    [Range(0, 89)]
     public float wallJumpMinHorizAngle = 30;
     float wallJumpRadius;
     float walJumpConeHeight = 1;
-    float  lastWallAngle=-1;
+    float lastWallAngle = -1;
     //bool wallJumped = false;
 
     public void SetVelocity(Vector3 vel)
@@ -123,7 +124,7 @@ public class PlayerMovement : MonoBehaviour
         gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
         jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
         maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
-        wallJumpRadius = Mathf.Tan(wallJumpAngle*Mathf.Deg2Rad) * walJumpConeHeight;
+        wallJumpRadius = Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad) * walJumpConeHeight;
         print("wallJumpRaduis = " + wallJumpRadius + "; tan(wallJumpAngle)= " + Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad));
         wallJumpMinHorizAngle = Mathf.Clamp(wallJumpMinHorizAngle, 0, 90);
         print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
@@ -141,10 +142,10 @@ public class PlayerMovement : MonoBehaviour
         }
         currentMaxMoveSpeed = maxMoveSpeed2 = maxMoveSpeed;
         //PRUEBAS
-        Vector3 centro = new Vector3(1,1,1);
+        Vector3 centro = new Vector3(1, 1, 1);
         float radio = 1;
         float angle = 270;
-        float xpos = centro.x + (radio*Mathf.Cos(angle*Mathf.Deg2Rad));
+        float xpos = centro.x + (radio * Mathf.Cos(angle * Mathf.Deg2Rad));
         float zpos = centro.z + (radio * Mathf.Sin(angle * Mathf.Deg2Rad));
         Vector3 punto = new Vector3(xpos, centro.y, zpos);
         Debug.DrawLine(centro, punto, Color.yellow, 20);
@@ -152,7 +153,7 @@ public class PlayerMovement : MonoBehaviour
     int frameCounter = 0;
     public void KonoUpdate()
     {
-        if ((controller.collisions.above || controller.collisions.below ) && !hooked)
+        if ((controller.collisions.above || controller.collisions.below) && !hooked)
         {
             //print("SETTING VEL.Y TO 0");
             currentVel.y = 0;
@@ -181,6 +182,10 @@ public class PlayerMovement : MonoBehaviour
     float deadzone = 0.15f;
     float joystickSens = 0;
 
+<<<<<<< HEAD
+=======
+    #region MOVEMENT -----------------------------------------------
+>>>>>>> master
     public void CalculateMoveDir()
     {
         float horiz = Actions.Movement.X;//Input.GetAxisRaw(contName + "H");
@@ -206,13 +211,13 @@ public class PlayerMovement : MonoBehaviour
                     currentMovDir = RotateVector(-facingAngle, temp);
                     break;
                 case CameraController.cameraMode.Free:
-                    Vector3 camDir = (transform.position-myCamera.transform.GetChild(0).position).normalized;
+                    Vector3 camDir = (transform.position - myCamera.transform.GetChild(0).position).normalized;
                     camDir.y = 0;
                     // ANGLE OF JOYSTICK
                     joystickAngle = Mathf.Acos(((0 * currentMovDir.x) + (1 * currentMovDir.z)) / (1 * currentMovDir.magnitude)) * Mathf.Rad2Deg;
                     joystickAngle = (horiz > 0) ? -joystickAngle : joystickAngle;
                     //rotate camDir joystickAngle degrees
-                    currentMovDir=RotateVector(joystickAngle, camDir);
+                    currentMovDir = RotateVector(joystickAngle, camDir);
                     //print("joystickAngle= " + joystickAngle + "; camDir= " + camDir.ToString("F4") + "; currentMovDir = " + currentMovDir.ToString("F4"));
                     RotateCharacter();
                     break;
@@ -279,7 +284,7 @@ public class PlayerMovement : MonoBehaviour
             ProcessHooked();
         }
         //------------------------------------------------ DIRECCION CON VELOCIDAD ---------------------------------
-        print("MY MOVE STATE IT = " + moveSt);
+        //print("MY MOVE STATE IT = " + moveSt);
         switch (moveSt)
         {
             case MoveState.Moving:
@@ -330,7 +335,7 @@ public class PlayerMovement : MonoBehaviour
 
     void VerticalMovement()
     {
-        if(lastWallAngle>=0 && controller.collisions.below)
+        if (lastWallAngle >= 0 && controller.collisions.below)
         {
             lastWallAngle = -1;
         }
@@ -348,7 +353,7 @@ public class PlayerMovement : MonoBehaviour
             case JumpState.Jumping:
                 currentVel.y += gravity * Time.deltaTime;
                 timePressingJump += Time.deltaTime;
-                if (timePressingJump >= maxTimePressingJump-maxTimePressingJump/3)
+                if (timePressingJump >= maxTimePressingJump - maxTimePressingJump / 3)
                 {
                     StopJump();
                 }
@@ -361,7 +366,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 break;
             case JumpState.Breaking:
-                currentVel.y += (gravity*breakJumpForce) * Time.deltaTime;
+                currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
                 if (currentVel.y <= 0)
                 {
                     jumpSt = JumpState.none;
@@ -377,12 +382,12 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
-#endregion
+    #endregion
 
-#region JUMP ---------------------------------------------------
+    #region JUMP ---------------------------------------------------
     void StartJump()
     {
-        if (!noInput)
+        if (!noInput && moveSt != MoveState.Boost)
         {
             if (controller.collisions.below && (!inWater || inWater && controller.collisions.around))
             {
@@ -406,7 +411,7 @@ public class PlayerMovement : MonoBehaviour
 
     void StartWallJump()
     {
-        if(!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal && lastWallAngle != controller.collisions.wallAngle)
+        if (!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal && lastWallAngle != controller.collisions.wallAngle)
         {
             print("WallJump");
             //wallJumped = true;
@@ -459,9 +464,9 @@ public class PlayerMovement : MonoBehaviour
         Debug.DrawLine(anchorPoint, circleCenter, Color.white, 20);
         Debug.DrawLine(anchorPoint, circumfPoint, Color.yellow, 20);
     }
-#endregion
+    #endregion
 
-#region  DASH ---------------------------------------------
+    #region  DASH ---------------------------------------------
     void WallBoost()
     {
         //CALCULATE JUMP DIR
@@ -483,7 +488,7 @@ public class PlayerMovement : MonoBehaviour
             boostReady = false;
             moveSt = MoveState.Boost;
             boostTime = 0f;
-            if (currentMovDir!=Vector3.zero)
+            if (currentMovDir != Vector3.zero)
             {
                 boostDir = currentMovDir;
             }
@@ -501,7 +506,7 @@ public class PlayerMovement : MonoBehaviour
         if (!boostReady)
         {
             boostTime += Time.deltaTime;
-            if(boostTime < boostDuration)
+            if (boostTime < boostDuration)
             {
                 if (Actions.Jump.WasPressed)
                 {
@@ -520,9 +525,9 @@ public class PlayerMovement : MonoBehaviour
     {
         boostTime = boostDuration;
     }
-#endregion
+    #endregion
 
-#region  FACING DIR AND ANGLE & BODY ROTATION---------------------------------------------
+    #region  FACING DIR AND ANGLE & BODY ROTATION---------------------------------------------
     [HideInInspector]
     public Vector3 currentFacingDir = Vector3.forward;
     [HideInInspector]
@@ -558,7 +563,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    public void RotateCharacter(float rotSpeed=0)
+    public void RotateCharacter(float rotSpeed = 0)
     {
         switch (myCamera.camMode)
         {
@@ -585,9 +590,9 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
-#endregion
+    #endregion
 
-#region RECIEVE HIT AND STUN ---------------------------------------------
+    #region RECIEVE HIT AND STUN ---------------------------------------------
     [HideInInspector]
     public float maxTimeStun = 0.6f;
     float timeStun = 0;
@@ -605,10 +610,7 @@ public class PlayerMovement : MonoBehaviour
         //Give FLAG
         if (haveFlag)
         {
-            print("ROBA BANDERA");
-            attacker.PickFlag(flag);
-            flag = null;
-            haveFlag = false;
+            flag.StealFlag(attacker);
         }
 
         print("STUNNED");
@@ -623,9 +625,9 @@ public class PlayerMovement : MonoBehaviour
             print("STUN END");
         }
     }
-#endregion
+    #endregion
 
-#region HOOKING/HOOK ---------------------------------------------
+    #region HOOKING/HOOK ---------------------------------------------
     bool hooked;
     public void StartHooked()
     {
@@ -685,30 +687,30 @@ public class PlayerMovement : MonoBehaviour
 
     void ProcessAiming()
     {
-        if (myPlayerCombat.aiming && maxMoveSpeed2>maxAimingSpeed)
+        if (myPlayerCombat.aiming && maxMoveSpeed2 > maxAimingSpeed)
         {
             maxMoveSpeed2 = maxAimingSpeed;
         }
     }
-#endregion
+    #endregion
 
-#region PICKUP / FLAG / DEATH ---------------------------------------------
+    #region PICKUP / FLAG / DEATH ---------------------------------------------
     [HideInInspector]
     public bool haveFlag = false;
     [HideInInspector]
-    public GameObject flag = null;
+    public Flag flag = null;
 
-    public void PickFlag(GameObject _flag)
+    public void PutOnFlag(Flag _flag)
     {
-        if (!haveFlag)
-        {
-            flag = _flag;
-            flag.transform.SetParent(rotateObj);
-            flag.transform.localPosition = new Vector3(0, 0, -0.5f);
-            flag.transform.localRotation = Quaternion.Euler(0,-90,0);
-            haveFlag = true;
-            flag.GetComponent<Flag>().currentOwner = gameObject;
-        }
+        flag.transform.SetParent(rotateObj);
+        flag.transform.localPosition = new Vector3(0, 0, -0.5f);
+        flag.transform.localRotation = Quaternion.Euler(0, -90, 0);
+    }
+
+    public void LoseFlag()
+    {
+        haveFlag = false;
+        flag = null;
     }
 
     public void Die()
@@ -722,9 +724,9 @@ public class PlayerMovement : MonoBehaviour
         }
         GameController.instance.RespawnPlayer(this);
     }
-#endregion
+    #endregion
 
-#region  WATER ---------------------------------------------
+    #region  WATER ---------------------------------------------
     [HideInInspector]
     public bool inWater = false;
 
@@ -765,9 +767,9 @@ public class PlayerMovement : MonoBehaviour
             myPlayerWeap.AttachWeapon();
         }
     }
-#endregion
+    #endregion
 
-#region  CHECK WIN ---------------------------------------------
+    #region  CHECK WIN ---------------------------------------------
     void CheckWinGame(Respawn respawn)
     {
         if (haveFlag && team == respawn.team)
@@ -775,9 +777,9 @@ public class PlayerMovement : MonoBehaviour
             GameController.instance.GameOver(team);
         }
     }
-#endregion
+    #endregion
 
-#region  TRIGGER COLLISIONS ---------------------------------------------
+    #region  TRIGGER COLLISIONS ---------------------------------------------
     private void OnTriggerStay(Collider col)
     {
         switch (col.tag)
@@ -807,8 +809,7 @@ public class PlayerMovement : MonoBehaviour
                 Die();
                 break;
             case "Flag":
-                if(col.gameObject.GetComponent<Flag>().currentOwner==null)
-                PickFlag(col.gameObject);
+                col.GetComponent<Flag>().PickupFlag(this);
                 break;
             case "Respawn":
                 //print("I'm " + name + " and I touched a respawn");
@@ -830,9 +831,9 @@ public class PlayerMovement : MonoBehaviour
         {
         }
     }
-#endregion
+    #endregion
 
-#region  AUXILIAR FUNCTIONS ---------------------------------------------
+    #region  AUXILIAR FUNCTIONS ---------------------------------------------
     public Vector3 RotateVector(float angle, Vector3 vector)
     {
         //rotate angle -90 degrees
@@ -841,7 +842,7 @@ public class PlayerMovement : MonoBehaviour
         float sn = Mathf.Sin(theta);
         float px = vector.x * cs - vector.z * sn;
         float py = vector.x * sn + vector.z * cs;
-        return  new Vector3(px, 0, py).normalized;
+        return new Vector3(px, 0, py).normalized;
     }
     public Vector3 CalculateReflectPoint(float radius, Vector3 _wallNormal, Vector3 circleCenter)//needs wallJumpRadius and wallNormal
     {
@@ -880,7 +881,7 @@ public class PlayerMovement : MonoBehaviour
 
         return circumfPoint;
     }
-#endregion
+    #endregion
 }
 public enum Team
 {

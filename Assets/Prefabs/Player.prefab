@@ -2450,9 +2450,10 @@ MonoBehaviour:
   hookPrefab: {fileID: 1929792848688554, guid: a6854d43b57b2bd4c939845b09db9437, type: 2}
   hookLocalOrigin: {x: -0.2, y: 0.381, z: 0.511}
   hookMaxDistance: 20
-  hookFowardSpeed: 30
-  hookBackwardsSpeed: 30
+  hookFowardSpeed: 45
+  hookBackwardsSpeed: 45
   hookMinDistance: 1
+  cdMaxTime: 2
   collisionMask:
     serializedVersion: 2
     m_Bits: 22016
@@ -2487,11 +2488,12 @@ MonoBehaviour:
   maxVerticalSpeedInWater: 3
   boostSpeed: 30
   boostCD: 3
-  boostDuration: 0.3
+  boostDuration: 0.5
   initialAcc: 30
   breakAcc: -30
   movingAcc: 2
   airMovingAcc: 0.5
+  hardBreakAcc: -90
   jumpHeight: 2.5
   jumpApexTime: 0.4
   breakJumpForce: 2

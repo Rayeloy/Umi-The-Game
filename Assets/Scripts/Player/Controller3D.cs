@@ -7,6 +7,7 @@ public class Controller3D : MonoBehaviour
     public bool disableAllRays;
     public LayerMask collisionMask;
     public LayerMask collisionMaskAround;
+    public float FloorMaxDistanceCheck = 5;
 
     const float skinWidth = 0.1f;
     [Tooltip("DO NOT CHANGE. Space the first horizontal raycast (feet) is lifted up to avoid colliding horizontally (like it was a wall) when on the edge of floor.")]
@@ -20,10 +21,6 @@ public class Controller3D : MonoBehaviour
     public float skinWidthHeight = 0.0001f;
     public float precisionHeight = 0.01f;
     public float precisionSpaceFromSlideWall = 0.001f;
-
-
-    public float FloorMaxDistanceCheck = 5;
-    //Vector3 finalVel;
 
     public struct Raycast
     {

@@ -152,38 +152,18 @@ public class Hook : MonoBehaviour
             }
             for (int i = 0; i < currentHook.transform.childCount; i++)
             {
-                currentHook.transform.GetChild(i).GetComponent<Hitbox>().KonoAwake(myPlayerMov, this);
+                if (currentHook.transform.GetChild(i).tag.Contains("Hook"))
+                {
+                    currentHook.transform.GetChild(i).GetComponent<Hitbox>().KonoAwake(myPlayerMov, this);
+                }
             }
-        }
-    }
-
-    public void StartReeling()
-    {
-        if (!reelingStarted)
-        {
-            print("START REELING");
-            reelingStarted = true;
-        }
-    }
-
-    public void FinishHook()
-    {
-        if (doingHook)
-        {
-            print("FINISH HOOK");
-            doingHook = false;
-            myPlayerMov.StopHooking();
-            StopHook();
-            reelingStarted = false;
-            StoringManager.instance.StoreObject(currentHook.transform);
-            currentHook = null;
-            cdTime = 0;
+            print("Current Hook = " + currentHook);
         }
     }
 
     public void HookPlayer(PlayerMovement player)
     {
-        if (canHookEnemy)
+        if (canHookSomething)
         {
             print("HOOK PLAYER");
             enemyHooked = true;
@@ -198,14 +178,28 @@ public class Hook : MonoBehaviour
 
     public void HookObject(Transform item)
     {
-        if (canHookEnemy)
+        if (canHookSomething)
         {
             objectHooked = true;
             hookedObject = item;
-            hookedObject.transform.SetParent(currentHook.transform);
+            if (item.tag == "Flag")
+            {
+                Flag flag = item.GetComponent<Flag>();
+                flag.HookFlag(myPlayerMov);
+            }
+            print("Current hook = " + currentHook);
+            hookedObject.SetParent(currentHook.transform);
             hookedObject.transform.localPosition = Vector3.zero;
             StartReeling();
+        }
+    }
 
+    public void StartReeling()
+    {
+        if (!reelingStarted)
+        {
+            print("START REELING");
+            reelingStarted = true;
         }
     }
 
@@ -224,15 +218,54 @@ public class Hook : MonoBehaviour
             }
             else if (objectHooked)
             {
-                objectHooked = false;
-                Flag flag = hookedObject.GetComponent<Flag>();
-                if (flag != null)
+                print("DROP OBJECT FROM HOOK");
+                if (hookedObject.tag == "Flag")
                 {
-                    myPlayerMov.PickFlag(hookedObject.gameObject);
+                    Flag flag = hookedObject.GetComponent<Flag>();
+                    flag.DropFlag();
                 }
+                objectHooked = false;
+                hookedObject.SetParent(StoringManager.instance.transform);
                 hookedObject = null;
+
             }
-            currentHook.transform.SetParent(StoringManager.instance.transform);
+        }
+    }
+
+    public void FinishHook()
+    {
+        if (doingHook)
+        {
+            print("FINISH HOOK");
+            doingHook = false;
+            myPlayerMov.StopHooking();
+            HandinObject();
+            StopHook();
+            reelingStarted = false;
+            StoringManager.instance.StoreObject(currentHook.transform);
+            currentHook = null;
+            cdTime = 0;
+        }
+    }
+
+    void HandinObject()
+    {
+        if (objectHooked)
+        {
+            if (hookedObject.tag == "Flag")
+            {
+                print("Recieve flag with hook");
+                Flag flag = hookedObject.GetComponent<Flag>();
+                flag.StopBeingHooked();
+                flag.PickupFlag(myPlayerMov);
+            }
+            else
+            {
+                StoringManager.instance.StoreObject(hookedObject);
+                //OBTAIN ITEM
+            }
+            objectHooked = false;
+            hookedObject = null;
         }
     }
 
@@ -257,7 +290,7 @@ public class Hook : MonoBehaviour
     }
 
     [HideInInspector]
-    public bool canHookEnemy
+    public bool canHookSomething
     {
         get
         {

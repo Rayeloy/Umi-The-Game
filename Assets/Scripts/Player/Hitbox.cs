@@ -22,8 +22,7 @@ public class Hitbox : MonoBehaviour
         myPlayerMov = playerMov;
         myHook = hook;
     }
-
-    private void OnTriggerStay(Collider col)
+    private void OnTriggerEnter(Collider col)
     {
         //Debug.LogWarning("I'm " + gameObject.name);
         if (col.gameObject != myPlayerMov.gameObject)
@@ -31,7 +30,7 @@ public class Hitbox : MonoBehaviour
 
             if (tag == "HookBigHB")
             {
-                if (myHook.canHookEnemy)
+                if (myHook.canHookSomething)
                 {
                     if (col.tag == "Flag")
                     {
@@ -56,14 +55,21 @@ public class Hitbox : MonoBehaviour
                     }
                 }
             }
-            else if(tag == "HookSmallHB")
+            else if (tag == "HookSmallHB")
             {
                 if (col.tag == "Stage")
                 {
                     myHook.StopHook();
                 }
             }
-            else if (myPlayerCombat.attackStg == PlayerCombat.attackStage.active)
+        }
+    }
+    private void OnTriggerStay(Collider col)
+    {
+        //Debug.LogWarning("I'm " + gameObject.name);
+        if (col.gameObject != myPlayerMov.gameObject)
+        {
+            if ((tag != "HookBigHB" && tag != "HookSmallHB") && myPlayerCombat.attackStg == PlayerCombat.attackStage.active)
             {
                 //print("I'm " + myPlayerMov.gameObject.name + " and I collided with " + col.gameObject);
                 if (col.tag == "Player" && myPlayerMov.team != col.GetComponent<PlayerMovement>().team)
