@@ -32,7 +32,9 @@ public class PlayerMovement : MonoBehaviour
         Knockback,//Stunned
         MovingBreaking,//Moving but reducing speed by breakAcc till maxMovSpeed
         Hooked,
-        Boost
+        Boost,
+        FixedJump,
+        NotBreaking
     }
     [HideInInspector]
     public JumpState jumpSt = JumpState.none;
@@ -229,14 +231,28 @@ public class PlayerMovement : MonoBehaviour
     {
         float finalMovingAcc = 0;
         Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
-        if (!hooked)
+        #region//------------------------------------------------ DECIDO TIPO DE MOVIMIENTO --------------------------------------------
+        #region//----------------------------------------------------- Efecto externo --------------------------------------------
+        if (stunned)
+        {
+            ProcessStun();
+        }
+        else if (hooked)
+        {
+            ProcessHooked();
+        }
+        else if (fixedJumping)// FIXED JUMPING
+        {
+
+            ProcessFixedJump();
+        }
+        #endregion
+        #region //----------------------------------------------------- Efecto interno --------------------------------------------
+        else
         {
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
-            if (moveSt != MoveState.Knockback)
-            {
-                CalculateMoveDir();//Movement direction
-            }
+            CalculateMoveDir();//Movement direction
             if (currentSpeed > maxMoveSpeed)
             {
                 moveSt = MoveState.MovingBreaking;
@@ -268,18 +284,15 @@ public class PlayerMovement : MonoBehaviour
             {
                 actAccel = breakAcc;
             }
-            finalMovingAcc = controller.collisions.below ? movingAcc : airMovingAcc;
+            finalMovingAcc = controller.collisions.below ? movingAcc : airMovingAcc; //Turning accleration
             //------------------------------- Speed ------------------------------ -
             currentSpeed = currentSpeed + actAccel * Time.deltaTime;
             float maxSpeedClamp = moveSt == MoveState.Moving ? maxMoveSpeed : maxKnockbackSpeed;
             currentSpeed = Mathf.Clamp(currentSpeed, 0, maxSpeedClamp);
         }
-        else
-        {
-            ProcessHooked();
-        }
-        //------------------------------------------------ DIRECCION CON VELOCIDAD ---------------------------------
-        //print("MY MOVE STATE IT = " + moveSt);
+        #endregion
+        #endregion
+        #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
         switch (moveSt)
         {
             case MoveState.Moving:
@@ -310,12 +323,12 @@ public class PlayerMovement : MonoBehaviour
                 }
                 break;
             case MoveState.Knockback:
+                print("KNOCKBACK");
                 currentVel = currentVel + knockback;
                 currentSpeed = currentVel.magnitude;
                 currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
-                moveSt = MoveState.NotMoving;
                 break;
-            case MoveState.MovingBreaking:
+            case MoveState.MovingBreaking://FRENADA FUERTE
                 Vector3 finalDir = currentVel + currentMovDir * finalMovingAcc;
                 horizontalVel = new Vector3(finalDir.x, 0, finalDir.z);
                 currentVel = horizontalVel.normalized * currentSpeed;
@@ -324,8 +337,17 @@ public class PlayerMovement : MonoBehaviour
             case MoveState.Hooked:
                 currentSpeed = currentVel.magnitude;
                 break;
+            case MoveState.FixedJump:
+                    currentVel = knockback;
+                    currentSpeed = currentVel.magnitude;
+                    currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
+                break;
+            case MoveState.NotBreaking:
+                currentSpeed = currentVel.magnitude;
+                break;
 
         }
+        #endregion
     }
 
     void VerticalMovement()
@@ -591,15 +613,18 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector]
     public float maxTimeStun = 0.6f;
     float timeStun = 0;
+    bool stunned;
+    bool knockBackDone;
     Vector3 knockback;
 
     public void StartRecieveHit(Vector3 _knockback, PlayerMovement attacker, float _maxTimeStun)
     {
         print("Recieve hit");
-        moveSt = MoveState.Knockback;
         maxTimeStun = _maxTimeStun;
         timeStun = 0;
         noInput = true;
+        stunned = true;
+        knockBackDone = false;
         knockback = _knockback;
 
         //Give FLAG
@@ -613,13 +638,82 @@ public class PlayerMovement : MonoBehaviour
 
     void ProcessStun()
     {
-        timeStun += Time.deltaTime;
-        if (timeStun >= maxTimeStun && noInput)
+        if (stunned)
         {
-            noInput = false;
-            print("STUN END");
+            if (!knockBackDone)
+            {
+                moveSt = MoveState.Knockback;
+                knockBackDone = true;
+            }
+            else
+            {
+                moveSt = MoveState.NotBreaking;
+
+            }
+            timeStun += Time.deltaTime;
+            if (timeStun >= maxTimeStun)
+            {
+                StopStun();
+            }
         }
     }
+
+    void StopStun()
+    {
+        noInput = false;  
+        stunned = false;
+        print("STUN END");
+    }
+
+    #endregion
+
+    #region FIXED JUMP ---------------------------------------------------
+    bool fixedJumping;
+    bool fixedJumpDone;
+    float noMoveMaxTime;
+    float noMoveTime;
+    
+    public void StartFixedJump(Vector3 vel, float _noMoveMaxTime)
+    {
+        fixedJumping = true;
+        fixedJumpDone = false;
+        noInput = true;
+        noMoveMaxTime = _noMoveMaxTime;
+        noMoveTime = 0;
+        knockback = vel;
+
+    }
+
+    void ProcessFixedJump()
+    {
+        if (fixedJumping)
+        {
+            if (!fixedJumpDone)
+            {
+                moveSt = MoveState.FixedJump;
+                fixedJumpDone = true;
+            }
+            else
+            {
+                moveSt = MoveState.NotBreaking;
+            }
+            noMoveTime += Time.deltaTime;
+            if (noMoveTime >= noMoveMaxTime)
+            {
+                StopFixedJump();
+            }
+        }
+    }
+
+    void StopFixedJump()
+    {
+        if (fixedJumping)
+        {
+            fixedJumping = false;
+            noInput = false;
+        }
+    }
+
     #endregion
 
     #region HOOKING/HOOK ---------------------------------------------
