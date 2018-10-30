@@ -52,6 +52,8 @@ public class CameraCollisions : MonoBehaviour {
         myCamController.targetMyCamPos = dollyDir * distance;
     }
 
+
+
     bool shaking, smoothShakeStart_End;
     float TimeShaking;
     float MaxTimeShaking;

@@ -5,7 +5,7 @@ using UnityEngine;
 public class StoringManager : MonoBehaviour {
 
     public static StoringManager instance;
-    List<Transform> objectsStored;
+    public List<Transform> objectsStored;
 
     private void Awake()
     {
