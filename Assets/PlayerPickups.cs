@@ -98,6 +98,7 @@ public class PlayerPickups : MonoBehaviour
 			foreach (PickupData p in pickupList){
 				if (p == pickupData && p.Cantidad < p.MaxCantidad){
 					p.Cantidad += pickupData.Cantidad;
+					p.Cantidad = Mathf.Clamp(p.Cantidad, 0, p.MaxCantidad);
 					return true;
 				}
 			}

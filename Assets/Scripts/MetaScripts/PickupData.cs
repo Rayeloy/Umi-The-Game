@@ -12,14 +12,7 @@ public class PickupData : ScriptableObject
 	public float Rango;
 	public float Velocidad;
 	public float recargaDeDisparo;
-	private int _Cantidad;
-	/// <value>The Name property gets/sets the value of the string field, _Cantidad and takes care not to pass the MaxCantidad.</value>
-	public int Cantidad{
-		get{return _Cantidad;}
-		set{
-			_Cantidad = Mathf.Clamp(value, 0, MaxCantidad);
-		}
-	}
+	public int Cantidad;
 	public int MaxCantidad;
 	[Range(0.1f, 100)]
 	public float Cooldown;
