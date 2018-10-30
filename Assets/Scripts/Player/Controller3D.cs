@@ -220,7 +220,7 @@ public class Controller3D : MonoBehaviour
         {
             return MovingState.descending;
         }
-        else if (ray.axis == Raycast.Axis.Y && ray.slopeAngle > maxDescendAngle)
+        else if (ray.axis == Raycast.Axis.Y && ((vel.y<=0 && ray.slopeAngle > maxDescendAngle)||(vel.y>0 && ray.slopeAngle!=0)))
         {
             return MovingState.sliping;
         }
@@ -778,6 +778,10 @@ public class Controller3D : MonoBehaviour
                     if (hit.distance < collisions.closestVerRaycast.distance)
                     {
                         float slopeAngle = GetSlopeAngle(hit);
+                        if (directionY == 1)
+                        {
+                            slopeAngle = slopeAngle == 180 ? slopeAngle = 0 : slopeAngle - 90;
+                        }
                         float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
                         collisions.closestVerRaycast = new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, wallAngle, Raycast.Axis.Y, i);
                     }
@@ -792,7 +796,6 @@ public class Controller3D : MonoBehaviour
             {
                 value = MovingState.none;
             }
-            //print("COLLISION " + value + "; slopeAngle=" + collisions.closestVerRaycast.slopeAngle);
             switch (value)//con que tipo de objeto collisionamos? suelo/cuesta arriba/cuesta abajo
             {
                 case MovingState.none:
