@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     PlayerCombat myPlayerCombat;
     PlayerAnimation myPlayerAnimation;
     PlayerWeapons myPlayerWeap;
+    public PlayerPickups myPlayerPickups;
 
     //public GameController.controllerName contName;
     public PlayerActions Actions { get; set; }
@@ -173,13 +174,13 @@ public class PlayerMovement : MonoBehaviour
         controller.collisions.ResetAround();
     }
 
+#region MOVEMENT -----------------------------------------------
     [HideInInspector]
     public Vector3 currentMovDir;
     float joystickAngle;
     float deadzone = 0.15f;
     float joystickSens = 0;
 
-#region MOVEMENT -----------------------------------------------
     public void CalculateMoveDir()
     {
         float horiz = Actions.Movement.X;//Input.GetAxisRaw(contName + "H");
@@ -797,7 +798,7 @@ public class PlayerMovement : MonoBehaviour
                 break;
         }
     }
-
+    
     private void OnTriggerEnter(Collider col)
     {
         switch (col.tag)
@@ -812,6 +813,13 @@ public class PlayerMovement : MonoBehaviour
             case "Respawn":
                 //print("I'm " + name + " and I touched a respawn");
                 CheckWinGame(col.GetComponent<Respawn>());
+                break;
+            case "PickUp":
+                //Pasa PickUpData
+                // PickupData pickupData = col.gameObject.GetComponent<Pickup>().pickupData;
+                // if (pickupData != null) myPlayerPickups.CogerPickup(pickupData);
+                //Pasar GameObject
+                myPlayerPickups.CogerPickup(col.gameObject);
                 break;
         }
     }

@@ -1012,8 +1012,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 65581205}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.64579946, y: -2.2355473, z: -67.56176}
+  m_LocalRotation: {x: -0.06470642, y: 0.7863, z: 0.08358132, w: 0.608736}
+  m_LocalPosition: {x: 26.279964, y: -3.36448, z: -62.153267}
   m_LocalScale: {x: 0.32588154, y: 0.32588154, z: 0.32588154}
   m_Children: []
   m_Father: {fileID: 538996555}
@@ -6047,6 +6047,7 @@ MonoBehaviour:
   Body: {fileID: 155006537}
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
+  myPlayerPickups: {fileID: 0}
   team: 1
   controller: {fileID: 254660246}
   moveSt: 1
@@ -10128,8 +10129,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 959634548}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.64579946, y: -2.2355473, z: -67.56176}
+  m_LocalRotation: {x: -0.008663094, y: 0.9909132, z: 0.10833823, w: 0.079239294}
+  m_LocalPosition: {x: 29.959877, y: -2.557366, z: -60.60585}
   m_LocalScale: {x: 0.32588154, y: 0.32588154, z: 0.32588154}
   m_Children: []
   m_Father: {fileID: 538996555}
@@ -10764,9 +10765,34 @@ Prefab:
       propertyPath: breakAcc
       value: -30
       objectReference: {fileID: 0}
+    - target: {fileID: 114464777488655940, guid: a76334c98b710ce4fb20c747d78a778b,
+        type: 2}
+      propertyPath: myPlayerPickups
+      value: 
+      objectReference: {fileID: 997684753}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a76334c98b710ce4fb20c747d78a778b, type: 2}
   m_IsPrefabAsset: 0
+--- !u!1 &997684752 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1705813512628444, guid: a76334c98b710ce4fb20c747d78a778b,
+    type: 2}
+  m_PrefabInternal: {fileID: 997684751}
+--- !u!114 &997684753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 997684752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b80c92f3c003a364c96c4f0a154c2d70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickupList: []
+  maxPickups: 5
+  activePickup: 0
+  myPlayerMovement: {fileID: 782544798}
 --- !u!1 &999987175
 GameObject:
   m_ObjectHideFlags: 0
@@ -14074,6 +14100,104 @@ Transform:
   m_Father: {fileID: 1656732610}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -43.87397, y: 4.088156, z: 160.10434}
+--- !u!1 &1262087754
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1262087758}
+  - component: {fileID: 1262087757}
+  - component: {fileID: 1262087756}
+  - component: {fileID: 1262087755}
+  - component: {fileID: 1262087759}
+  m_Layer: 15
+  m_Name: Cube (1)
+  m_TagString: PickUp
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &1262087755
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1262087754}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1262087756
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1262087754}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!33 &1262087757
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1262087754}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1262087758
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1262087754}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 94.36, y: 0.67, z: 15.59}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1262087759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1262087754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16e3c541da39517448393bf63bf0c103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickupData: {fileID: 11400000, guid: ca373800963c04649bbd55870793fc99, type: 2}
 --- !u!1 &1265833163
 GameObject:
   m_ObjectHideFlags: 0
@@ -16047,6 +16171,7 @@ MonoBehaviour:
   Body: {fileID: 1187184334}
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
+  myPlayerPickups: {fileID: 0}
   team: 0
   controller: {fileID: 1150946800}
   moveSt: 1
@@ -20489,6 +20614,7 @@ MonoBehaviour:
   Body: {fileID: 1800804065}
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
+  myPlayerPickups: {fileID: 0}
   team: 0
   controller: {fileID: 773414174}
   moveSt: 1

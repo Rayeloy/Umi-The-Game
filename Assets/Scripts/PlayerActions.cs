@@ -6,6 +6,7 @@ public class PlayerActions : PlayerActionSet
 	public PlayerAction Boost;
 	public PlayerAction Jump;
 	public PlayerAction Aim;
+	public PlayerAction UsePickup;
 
 	public PlayerAction Attack1;
 	public PlayerAction Attack2;
@@ -27,7 +28,8 @@ public class PlayerActions : PlayerActionSet
 	{
 		Boost = CreatePlayerAction( "Boost" );
 		Jump = CreatePlayerAction( "Jump" );
-		Aim = CreatePlayerAction ( "Aim" );
+		Aim = CreatePlayerAction( "Aim" );
+		UsePickup = CreatePlayerAction( "UsePickup" );
 
 		Attack1 = CreatePlayerAction( "Attack1" );
 		Attack2 = CreatePlayerAction( "Attack2" );
@@ -52,6 +54,7 @@ public class PlayerActions : PlayerActionSet
 		actions.Boost.AddDefaultBinding( Key.Q );
 		actions.Jump.AddDefaultBinding( Key.Space );
 		actions.Aim.AddDefaultBinding( Key.E );
+		actions.UsePickup.AddDefaultBinding( Mouse.LeftButton);
 
 		actions.Attack1.AddDefaultBinding( Key.Key1 );
 		actions.Attack2.AddDefaultBinding( Key.Key2 );
@@ -74,6 +77,7 @@ public class PlayerActions : PlayerActionSet
 		actions.Boost.AddDefaultBinding( InputControlType.RightTrigger );
 		actions.Jump.AddDefaultBinding( InputControlType.Action1 );
 		actions.Aim.AddDefaultBinding( InputControlType.LeftTrigger );
+		actions.UsePickup.AddDefaultBinding( InputControlType.LeftBumper);
 
 		actions.Attack1.AddDefaultBinding( InputControlType.Action3 );
 		actions.Attack2.AddDefaultBinding( InputControlType.Action4 );
