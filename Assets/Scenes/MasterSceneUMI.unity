@@ -1012,8 +1012,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 65581205}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.64579946, y: -2.2355473, z: -67.56176}
+  m_LocalRotation: {x: -0.11862309, y: 0.7303212, z: 0.13131613, w: 0.6597845}
+  m_LocalPosition: {x: 28.600399, y: -1.7485198, z: -64.98041}
   m_LocalScale: {x: 0.32588154, y: 0.32588154, z: 0.32588154}
   m_Children: []
   m_Father: {fileID: 538996555}
@@ -2718,6 +2718,7 @@ MonoBehaviour:
   collisionMaskAround:
     serializedVersion: 2
     m_Bits: 512
+  FloorMaxDistanceCheck: 15
   maxClimbAngle: 60
   minClimbAngle: 0
   maxDescendAngle: 60
@@ -2726,7 +2727,6 @@ MonoBehaviour:
   skinWidthHeight: 0.0001
   precisionHeight: 0.1
   precisionSpaceFromSlideWall: 0.001
-  FloorMaxDistanceCheck: 15
   coll: {fileID: 254660249}
   showVerticalRays: 0
   showVerticalLimits: 1
@@ -6047,6 +6047,7 @@ MonoBehaviour:
   Body: {fileID: 155006537}
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
+  myPlayerPickups: {fileID: 0}
   team: 1
   controller: {fileID: 254660246}
   moveSt: 1
@@ -7938,6 +7939,104 @@ Transform:
   m_Father: {fileID: 511399776}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90.00001, y: 0, z: 90.00001}
+--- !u!1 &725356746
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 725356751}
+  - component: {fileID: 725356750}
+  - component: {fileID: 725356749}
+  - component: {fileID: 725356748}
+  - component: {fileID: 725356747}
+  m_Layer: 15
+  m_Name: Cube
+  m_TagString: PickUp
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &725356747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 725356746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16e3c541da39517448393bf63bf0c103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickupData: {fileID: 11400000, guid: ca373800963c04649bbd55870793fc99, type: 2}
+--- !u!65 &725356748
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 725356746}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &725356749
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 725356746}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!33 &725356750
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 725356746}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &725356751
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 725356746}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 92.41, y: -2.19, z: 4.65}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &725433392
 GameObject:
   m_ObjectHideFlags: 0
@@ -8212,6 +8311,7 @@ MonoBehaviour:
   collisionMaskAround:
     serializedVersion: 2
     m_Bits: 512
+  FloorMaxDistanceCheck: 15
   maxClimbAngle: 60
   minClimbAngle: 0
   maxDescendAngle: 60
@@ -8220,7 +8320,6 @@ MonoBehaviour:
   skinWidthHeight: 0.0001
   precisionHeight: 0.1
   precisionSpaceFromSlideWall: 0.001
-  FloorMaxDistanceCheck: 15
   coll: {fileID: 773414177}
   showVerticalRays: 0
   showVerticalLimits: 1
@@ -10128,8 +10227,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 959634548}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.64579946, y: -2.2355473, z: -67.56176}
+  m_LocalRotation: {x: -0.12521322, y: 0.796696, z: 0.17682175, w: 0.56420857}
+  m_LocalPosition: {x: 28.672884, y: -1.8180918, z: -64.78862}
   m_LocalScale: {x: 0.32588154, y: 0.32588154, z: 0.32588154}
   m_Children: []
   m_Father: {fileID: 538996555}
@@ -12700,6 +12799,7 @@ MonoBehaviour:
   collisionMaskAround:
     serializedVersion: 2
     m_Bits: 512
+  FloorMaxDistanceCheck: 15
   maxClimbAngle: 60
   minClimbAngle: 0
   maxDescendAngle: 60
@@ -12708,7 +12808,6 @@ MonoBehaviour:
   skinWidthHeight: 0.0001
   precisionHeight: 0.1
   precisionSpaceFromSlideWall: 0.001
-  FloorMaxDistanceCheck: 15
   coll: {fileID: 1150946803}
   showVerticalRays: 0
   showVerticalLimits: 1
@@ -16008,6 +16107,7 @@ MonoBehaviour:
   Body: {fileID: 1187184334}
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
+  myPlayerPickups: {fileID: 0}
   team: 0
   controller: {fileID: 1150946800}
   moveSt: 1
@@ -20450,6 +20550,7 @@ MonoBehaviour:
   Body: {fileID: 1800804065}
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
+  myPlayerPickups: {fileID: 0}
   team: 0
   controller: {fileID: 773414174}
   moveSt: 1

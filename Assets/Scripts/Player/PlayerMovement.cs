@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     PlayerCombat myPlayerCombat;
     PlayerAnimation myPlayerAnimation;
     PlayerWeapons myPlayerWeap;
+    public PlayerPickups myPlayerPickups;
 
     //public GameController.controllerName contName;
     public PlayerActions Actions { get; set; }
@@ -809,6 +810,9 @@ public class PlayerMovement : MonoBehaviour
             case "Respawn":
                 //print("I'm " + name + " and I touched a respawn");
                 CheckWinGame(col.GetComponent<Respawn>());
+                break;
+            case "PickUp":
+                myPlayerPickups.CogerPickup(col.gameObject);
                 break;
         }
     }
