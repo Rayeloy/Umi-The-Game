@@ -875,6 +875,7 @@ GameObject:
   - component: {fileID: 114078510699935020}
   - component: {fileID: 114707133594277346}
   - component: {fileID: 114452011727701492}
+  - component: {fileID: 114612565617347228}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -2473,6 +2474,7 @@ MonoBehaviour:
   Body: {fileID: 137056666545966954}
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
+  myPlayerPickups: {fileID: 114612565617347228}
   team: 1
   controller: {fileID: 114856670354348932}
   moveSt: 1
@@ -2511,6 +2513,21 @@ MonoBehaviour:
   haveFlag: 0
   flag: {fileID: 0}
   inWater: 0
+--- !u!114 &114612565617347228
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1705813512628444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b80c92f3c003a364c96c4f0a154c2d70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickupList: []
+  maxPickups: 4
+  activePickup: 0
+  myPlayerMovement: {fileID: 114464777488655940}
 --- !u!114 &114707133594277346
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2544,6 +2561,7 @@ MonoBehaviour:
   collisionMaskAround:
     serializedVersion: 2
     m_Bits: 512
+  FloorMaxDistanceCheck: 15
   maxClimbAngle: 60
   minClimbAngle: 0
   maxDescendAngle: 60
@@ -2552,7 +2570,6 @@ MonoBehaviour:
   skinWidthHeight: 0.0001
   precisionHeight: 0.1
   precisionSpaceFromSlideWall: 0.001
-  FloorMaxDistanceCheck: 15
   coll: {fileID: 136730111159505118}
   showVerticalRays: 0
   showVerticalLimits: 1
