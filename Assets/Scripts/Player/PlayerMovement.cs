@@ -74,7 +74,10 @@ public class PlayerMovement : MonoBehaviour
     public float breakAcc = -30;
     public float movingAcc = 2.0f;
     public float airMovingAcc = 0.5f;
+    [Tooltip("Acceleration used when breaking from a boost.")]
     public float hardBreakAcc = -120f;
+    [Tooltip("Breaking negative acceleration that is used under the effects of a knockback (stunned). Value is clamped to not be higher than breakAcc.")]
+    public float knockbackBreakAcc = -30f;
     //public float breakAccOnHit = -2.0f;
     float gravity;
     [Header("JUMP")]
@@ -143,26 +146,17 @@ public class PlayerMovement : MonoBehaviour
                 break;
         }
         currentMaxMoveSpeed = maxMoveSpeed2 = maxMoveSpeed;
-        //PRUEBAS
-        Vector3 centro = new Vector3(1, 1, 1);
-        float radio = 1;
-        float angle = 270;
-        float xpos = centro.x + (radio * Mathf.Cos(angle * Mathf.Deg2Rad));
-        float zpos = centro.z + (radio * Mathf.Sin(angle * Mathf.Deg2Rad));
-        Vector3 punto = new Vector3(xpos, centro.y, zpos);
-        Debug.DrawLine(centro, punto, Color.yellow, 20);
+        knockbackBreakAcc = Mathf.Clamp(knockbackBreakAcc, -float.MaxValue, breakAcc);//menos de break Acc lo haría ver raro
     }
     int frameCounter = 0;
     public void KonoUpdate()
     {
         if ((controller.collisions.above || controller.collisions.below) && !hooked)
         {
-            //print("SETTING VEL.Y TO 0");
             currentVel.y = 0;
         }
         //print("FRAME NUMBER " + frameCounter);
         frameCounter++;
-        ProcessStun();
 
         HorizontalMovement();
         //print("vel = " + currentVel.ToString("F4"));
@@ -186,45 +180,48 @@ public class PlayerMovement : MonoBehaviour
     #region MOVEMENT -----------------------------------------------
     public void CalculateMoveDir()
     {
-        float horiz = Actions.Movement.X;//Input.GetAxisRaw(contName + "H");
-        float vert = Actions.Movement.Y;//-Input.GetAxisRaw(contName + "V");
-        //print("H = " + horiz + "; V = " + vert);
-        // Check that they're not BOTH zero - otherwise
-        // dir would reset because the joystick is neutral.
-        Vector3 temp = new Vector3(horiz, 0, vert);
-        joystickSens = temp.magnitude;
-        //print("temp.magnitude = " + temp.magnitude);
-        if (temp.magnitude >= deadzone && !noInput)
+        if (!noInput)
         {
-            if (joystickSens >= 0.88 || joystickSens > 1) joystickSens = 1;
-            moveSt = MoveState.Moving;
-            currentMovDir = temp;
-            currentMovDir.Normalize();
-            switch (myCamera.camMode)
+            float horiz = Actions.Movement.X;//Input.GetAxisRaw(contName + "H");
+            float vert = Actions.Movement.Y;//-Input.GetAxisRaw(contName + "V");
+                                            //print("H = " + horiz + "; V = " + vert);
+                                            // Check that they're not BOTH zero - otherwise
+                                            // dir would reset because the joystick is neutral.
+            Vector3 temp = new Vector3(horiz, 0, vert);
+            joystickSens = temp.magnitude;
+            //print("temp.magnitude = " + temp.magnitude);
+            if (temp.magnitude >= deadzone)
             {
-                case CameraController.cameraMode.Fixed:
-                    currentMovDir = RotateVector(-facingAngle, temp);
-                    break;
-                case CameraController.cameraMode.Shoulder:
-                    currentMovDir = RotateVector(-facingAngle, temp);
-                    break;
-                case CameraController.cameraMode.Free:
-                    Vector3 camDir = (transform.position - myCamera.transform.GetChild(0).position).normalized;
-                    camDir.y = 0;
-                    // ANGLE OF JOYSTICK
-                    joystickAngle = Mathf.Acos(((0 * currentMovDir.x) + (1 * currentMovDir.z)) / (1 * currentMovDir.magnitude)) * Mathf.Rad2Deg;
-                    joystickAngle = (horiz > 0) ? -joystickAngle : joystickAngle;
-                    //rotate camDir joystickAngle degrees
-                    currentMovDir = RotateVector(joystickAngle, camDir);
-                    //print("joystickAngle= " + joystickAngle + "; camDir= " + camDir.ToString("F4") + "; currentMovDir = " + currentMovDir.ToString("F4"));
-                    RotateCharacter();
-                    break;
+                if (joystickSens >= 0.88 || joystickSens > 1) joystickSens = 1;
+                moveSt = MoveState.Moving;
+                currentMovDir = temp;
+                currentMovDir.Normalize();
+                switch (myCamera.camMode)
+                {
+                    case CameraController.cameraMode.Fixed:
+                        currentMovDir = RotateVector(-facingAngle, temp);
+                        break;
+                    case CameraController.cameraMode.Shoulder:
+                        currentMovDir = RotateVector(-facingAngle, temp);
+                        break;
+                    case CameraController.cameraMode.Free:
+                        Vector3 camDir = (transform.position - myCamera.transform.GetChild(0).position).normalized;
+                        camDir.y = 0;
+                        // ANGLE OF JOYSTICK
+                        joystickAngle = Mathf.Acos(((0 * currentMovDir.x) + (1 * currentMovDir.z)) / (1 * currentMovDir.magnitude)) * Mathf.Rad2Deg;
+                        joystickAngle = (horiz > 0) ? -joystickAngle : joystickAngle;
+                        //rotate camDir joystickAngle degrees
+                        currentMovDir = RotateVector(joystickAngle, camDir);
+                        //print("joystickAngle= " + joystickAngle + "; camDir= " + camDir.ToString("F4") + "; currentMovDir = " + currentMovDir.ToString("F4"));
+                        RotateCharacter();
+                        break;
+                }
             }
-        }
-        else
-        {
-            moveSt = MoveState.NotMoving;
-            currentMovDir = Vector3.zero;
+            else
+            {
+                moveSt = MoveState.NotMoving;
+                currentMovDir = Vector3.zero;
+            }
         }
     }
 
@@ -249,7 +246,7 @@ public class PlayerMovement : MonoBehaviour
         }
         #endregion
         #region //----------------------------------------------------- Efecto interno --------------------------------------------
-        else
+        if(!hooked && !fixedJumping)
         {
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
@@ -257,7 +254,6 @@ public class PlayerMovement : MonoBehaviour
             if (currentSpeed > maxMoveSpeed)
             {
                 moveSt = MoveState.MovingBreaking;
-                print("MOVING BREAKING");
             }
             if (!myPlayerCombat.LTPulsado && !myPlayerCombat.RTPulsado && Actions.Boost.WasPressed)//Input.GetButtonDown(contName + "RB"))
             {
@@ -273,17 +269,20 @@ public class PlayerMovement : MonoBehaviour
             currentMaxMoveSpeed = (joystickSens / 1) * maxMoveSpeed2;
             //------------------------------- Acceleration -------------------------------
             float actAccel;
-            if (moveSt == MoveState.Moving && currentSpeed < currentMaxMoveSpeed)
+            switch (moveSt)
             {
-                actAccel = initialAcc;
-            }
-            else if (moveSt == MoveState.MovingBreaking)
-            {
-                actAccel = hardBreakAcc;//breakAcc * 3;
-            }
-            else
-            {
-                actAccel = breakAcc;
+                case MoveState.Moving:
+                    actAccel = initialAcc;
+                    break;
+                case MoveState.MovingBreaking:
+                    actAccel = hardBreakAcc;//breakAcc * 3;
+                    break;
+                case MoveState.Knockback:
+                    actAccel = knockbackBreakAcc;
+                    break;
+                default:
+                    actAccel = breakAcc;
+                    break;
             }
             finalMovingAcc = controller.collisions.below ? movingAcc : airMovingAcc; //Turning accleration
             //------------------------------- Speed ------------------------------ -
@@ -324,10 +323,22 @@ public class PlayerMovement : MonoBehaviour
                 }
                 break;
             case MoveState.Knockback:
-                print("KNOCKBACK");
-                currentVel = currentVel + knockback;
-                currentSpeed = currentVel.magnitude;
-                currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
+                if (!knockBackDone)
+                {
+                    print("KNOCKBACK");
+                    currentVel = currentVel + knockback;
+                    horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                    currentSpeed = horizontalVel.magnitude;
+                    currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
+                    knockBackDone = true;
+                }
+                else
+                {
+                    aux = currentVel.normalized * currentSpeed;
+                    currentVel = new Vector3(aux.x, currentVel.y, aux.z);
+                }
+                print("vel.y = " + currentVel.y);
+
                 break;
             case MoveState.MovingBreaking://FRENADA FUERTE
                 Vector3 finalDir = currentVel + currentMovDir * finalMovingAcc;
@@ -336,15 +347,18 @@ public class PlayerMovement : MonoBehaviour
                 currentVel.y = finalDir.y;
                 break;
             case MoveState.Hooked:
-                currentSpeed = currentVel.magnitude;
+                horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                currentSpeed = horizontalVel.magnitude;
                 break;
             case MoveState.FixedJump:
-                    currentVel = knockback;
-                    currentSpeed = currentVel.magnitude;
-                    currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
+                currentVel = knockback;
+                horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                currentSpeed = horizontalVel.magnitude;
+                currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
                 break;
             case MoveState.NotBreaking:
-                currentSpeed = currentVel.magnitude;
+                horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                currentSpeed = horizontalVel.magnitude;
                 break;
 
         }
@@ -641,16 +655,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (stunned)
         {
-            if (!knockBackDone)
-            {
-                moveSt = MoveState.Knockback;
-                knockBackDone = true;
-            }
-            else
-            {
-                moveSt = MoveState.NotBreaking;
-
-            }
+            moveSt = MoveState.Knockback;
             timeStun += Time.deltaTime;
             if (timeStun >= maxTimeStun)
             {
@@ -696,6 +701,7 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
+                print("notBreaking on");
                 moveSt = MoveState.NotBreaking;
             }
             noMoveTime += Time.deltaTime;
