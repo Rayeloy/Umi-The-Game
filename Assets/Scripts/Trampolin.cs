@@ -6,13 +6,16 @@ public class Trampolin : MonoBehaviour
 {
 	public float Fuerza;
 	public float tiempoStuneado;
+    [Tooltip("Velocidad vertical minima que tiene que llevar el jugador para saltar en el trampolin")]
+    [Range(0,-100)]
+    public float playerSpeed;
 
 	private void OnTriggerEnter(Collider other)
     {
 		if (other.tag != "Player") return;
 
         PlayerMovement pm = other.gameObject.GetComponent<PlayerMovement>();
-		if (pm != null)
+		if (pm != null && pm.currentVel.y <= playerSpeed)
 			pm.StartFixedJump(transform.up * Fuerza, tiempoStuneado);
     }
 
