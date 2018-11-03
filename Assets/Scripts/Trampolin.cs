@@ -15,4 +15,11 @@ public class Trampolin : MonoBehaviour
 		if (pm != null)
 			pm.StartFixedJump(transform.up * Fuerza, tiempoStuneado);
     }
+
+	void OnDrawGizmosSelected()
+    {
+        // Display the explosion radius when selected
+        Gizmos.color = new Color(1, 0, 0, 0.75F);
+        DrawArrow.ForGizmo(transform.position, transform.up, 0.25f, 20, 1);
+    }
 }
