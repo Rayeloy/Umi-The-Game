@@ -6,7 +6,14 @@ public class PlayerPickups : MonoBehaviour
 {
 	public List<PickupData> pickupList = new List<PickupData>();//PickupData[] pickupList;
 	public int maxPickups;
+	[HideInInspector]
 	public int activePickup = 0;
+
+	[Header("Hinchador")]
+	public LayerMask m_LayerMask; 
+	public Vector3 collPosition;
+	public Vector3 collScale;
+	public Transform rota;
 
 	[Header ("Referencias")]
 	public PlayerMovement myPlayerMovement;
@@ -42,16 +49,28 @@ public class PlayerPickups : MonoBehaviour
 	{
 		if (pickupList.Count < 0) return;
 
-		switch (pickupList[activePickup].Type)
+		switch (pickupList[activePickup].name)
         {
-            case PickupType.Mele:
-                //uso de pickup mele
-				Debug.Log("Uso:" + pickupList[activePickup].name + " Tipo: Mele");
+            case "Hinchador":
+				Collider[] hitColliders = Physics.OverlapBox(rota.position + collPosition, collScale / 2, rota.rotation, m_LayerMask);
+				int i = 0;
+
+				while (i < hitColliders.Length)
+				{
+					hinchable h = hitColliders[i].GetComponent<hinchable>();
+					if (h != null)
+						h.Hinchar(pickupList[activePickup].Daño);
+					i++;
+				}
                 break;
-			case PickupType.Range:
-                //uso de pickup mele
-				Debug.Log("Uso:" + pickupList[activePickup].name + " Tipo: Range");
-                break;
+//            case PickupType.Mele:
+//                //uso de pickup mele
+//				Debug.Log("Uso:" + pickupList[activePickup].name + " Tipo: Mele");
+//                break;
+//			case PickupType.Range:
+//                //uso de pickup mele
+//				Debug.Log("Uso:" + pickupList[activePickup].name + " Tipo: Range");
+//                break;
 		}
 	}
 
@@ -112,4 +131,17 @@ public class PlayerPickups : MonoBehaviour
 		return false;
 	}
 #endregion
+
+    void OnDrawGizmos()
+    {
+
+		Matrix4x4 rotationMatrix = Matrix4x4.TRS(rota.position, rota.rotation, rota.lossyScale);
+		Gizmos.matrix = rotationMatrix; 
+        Gizmos.color = Color.red;
+        //Check that it is being run in Play Mode, so it doesn't try to draw this in Editor mode
+        //if (m_Started)
+            //Draw a cube where the OverlapBox is (positioned where your GameObject is as well as a size)
+            Gizmos.DrawWireCube(collPosition, collScale/2);
+    }
+
 }

@@ -1265,7 +1265,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1852664655217388}
-  m_LocalRotation: {x: 0, y: -0.9998805, z: 0, w: 0.015461024}
+  m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1273,7 +1273,7 @@ Transform:
   - {fileID: 4583181191530756}
   m_Father: {fileID: 4097083565045360}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
 --- !u!4 &4065466470227928
 Transform:
   m_ObjectHideFlags: 1
@@ -2496,6 +2496,7 @@ MonoBehaviour:
   movingAcc: 2
   airMovingAcc: 0.5
   hardBreakAcc: -90
+  knockbackBreakAcc: -30
   jumpHeight: 2.5
   jumpApexTime: 0.4
   breakJumpForce: 2
@@ -2527,6 +2528,12 @@ MonoBehaviour:
   pickupList: []
   maxPickups: 4
   activePickup: 0
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 65536
+  collPosition: {x: 0, y: 0, z: 1.23}
+  collScale: {x: 0.81, y: 1.58, z: 1.52}
+  rota: {fileID: 4036635015999044}
   myPlayerMovement: {fileID: 114464777488655940}
 --- !u!114 &114707133594277346
 MonoBehaviour:
