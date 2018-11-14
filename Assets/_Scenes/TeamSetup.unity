@@ -562,7 +562,7 @@ MonoBehaviour:
   minNumPlayers: 1
   playerPrefab: {fileID: 1054951319244462, guid: 333555cedcc76b2488c2b178608da6aa,
     type: 2}
-  SiguenteEscena: MasterSceneUMI
+  SiguenteEscena: TrailerScene
   playerPositions:
   - {fileID: 1868183390}
   - {fileID: 2016932723}
@@ -1331,6 +1331,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1374725801}
   - component: {fileID: 1374725800}
+  - component: {fileID: 1374725802}
   m_Layer: 0
   m_Name: WaterReflectionSceneCamera
   m_TagString: Untagged
@@ -1384,13 +1385,21 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1374725799}
-  m_LocalRotation: {x: -0.36016396, y: 0.39104465, z: 0.16972835, w: 0.8297941}
-  m_LocalPosition: {x: -91.74481, y: -144.84584, z: -16.665024}
+  m_LocalRotation: {x: -0.024369577, y: 0, z: 0, w: 0.99970305}
+  m_LocalPosition: {x: 0, y: -7.6000004, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!45 &1374725802
+Skybox:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1374725799}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 0}
 --- !u!1 &1508288469
 GameObject:
   m_ObjectHideFlags: 0
