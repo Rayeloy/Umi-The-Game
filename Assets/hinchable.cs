@@ -15,7 +15,6 @@ public class hinchable : MonoBehaviour
 
 	public void Hinchar (float d)
 	{
-		Debug.Log("Hinchando");
 		lives -= d;
 		float i = Mathf.Lerp(maxSice, 1, lives/MaxLives);
 

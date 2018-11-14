@@ -30,6 +30,8 @@ public class PlayerCombat : MonoBehaviour {
     [HideInInspector]
     public float knockBackSpeed = 30f;
     public Text attackName;
+    [HideInInspector]
+    public bool conHinchador = false;
 
     [HideInInspector]
     public List<string> targetsHit;
@@ -67,7 +69,7 @@ public class PlayerCombat : MonoBehaviour {
     public void KonoUpdate()
     {
         //print("Trigger = " + Input.GetAxis(myPlayerMovement.contName + "LT"));
-        if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && attackStg == attackStage.ready)
+        if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && attackStg == attackStage.ready && !conHinchador)
         {
             if (myPlayerMovement.Actions.Attack1.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
             {
