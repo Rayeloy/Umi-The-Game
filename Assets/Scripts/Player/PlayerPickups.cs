@@ -6,8 +6,17 @@ public class PlayerPickups : MonoBehaviour
 {
 	public List<PickupData> pickupList = new List<PickupData>();//PickupData[] pickupList;
 	public int maxPickups;
+	private int _activePickup = 0;
 	[HideInInspector]
-	public int activePickup = 0;
+	public int activePickup
+	{
+		get{return _activePickup;}
+		set{
+			if (pickupList[activePickup].name == "Hichador")
+				myPlayerCombat.conHinchador = true;
+			_activePickup = value;
+		}
+	}
 
 	[Header("Hinchador")]
 	public LayerMask m_LayerMask; 
@@ -17,6 +26,7 @@ public class PlayerPickups : MonoBehaviour
 
 	[Header ("Referencias")]
 	public PlayerMovement myPlayerMovement;
+	public PlayerCombat myPlayerCombat;
 
 	// Use this for initialization
 	void Start ()
@@ -28,12 +38,31 @@ public class PlayerPickups : MonoBehaviour
 	const float maxCooldownTime = 100;
 	void Update ()
 	{
+		if (pickupList.Count < 1)
+			return;
+
 		//Control cooldown
 		cooldownTime += Time.deltaTime;
 		cooldownTime = Mathf.Clamp(cooldownTime, 0, maxCooldownTime);
 
 		//Si se ha presionado el boton
-		if (myPlayerMovement.Actions.UsePickup.WasPressed) {
+		if (pickupList[activePickup].name == "Hinchador" && myPlayerMovement.Actions.UsePickup.IsPressed)
+		{
+			Collider[] hitColliders = Physics.OverlapBox(rota.position + collPosition, collScale / 2, rota.rotation, m_LayerMask);
+			int i = 0;
+
+			while (i < hitColliders.Length)
+			{
+				hinchable h = hitColliders[i].GetComponent<hinchable>();
+				if (h != null){
+					h.Hinchar(pickupList[activePickup].Daño * Time.deltaTime);
+				}
+
+				i++;
+			}
+		}
+
+		else if (myPlayerMovement.Actions.UsePickup.WasPressed) {
 			//Condiciones para poder usarlo
 			if (cooldownTime >= pickupList[activePickup].Cooldown && pickupList[activePickup].Cantidad > 0){
 				Usar();
@@ -52,16 +81,16 @@ public class PlayerPickups : MonoBehaviour
 		switch (pickupList[activePickup].name)
         {
             case "Hinchador":
-				Collider[] hitColliders = Physics.OverlapBox(rota.position + collPosition, collScale / 2, rota.rotation, m_LayerMask);
-				int i = 0;
-
-				while (i < hitColliders.Length)
-				{
-					hinchable h = hitColliders[i].GetComponent<hinchable>();
-					if (h != null)
-						h.Hinchar(pickupList[activePickup].Daño);
-					i++;
-				}
+//				Collider[] hitColliders = Physics.OverlapBox(rota.position + collPosition, collScale / 2, rota.rotation, m_LayerMask);
+//				int i = 0;
+//
+//				while (i < hitColliders.Length)
+//				{
+//					hinchable h = hitColliders[i].GetComponent<hinchable>();
+//					if (h != null)
+//						h.Hinchar(pickupList[activePickup].Daño);
+//					i++;
+//				}
                 break;
 //            case PickupType.Mele:
 //                //uso de pickup mele
@@ -76,7 +105,7 @@ public class PlayerPickups : MonoBehaviour
 
 	public void equipar (int n)
 	{
-		if (pickupList.Count < 0) return;
+		if (pickupList.Count < 0 || pickupList[activePickup].name == "Hinchador") return;
 
 		if(n < 0){
 			activePickup = ( activePickup + 1 ) % pickupList.Count;
@@ -125,6 +154,10 @@ public class PlayerPickups : MonoBehaviour
 
 		if (pickupList.Count < maxPickups){
 			pickupList.Add(pickupData);
+
+			if (pickupData.name == "Hinchador")
+				activePickup = pickupList.Count - 1;
+
 			return true;
 		}
 
