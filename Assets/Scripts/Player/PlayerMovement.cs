@@ -106,6 +106,7 @@ public class PlayerMovement : MonoBehaviour
     float wallJumpRadius;
     float walJumpConeHeight = 1;
     float lastWallAngle = -1;
+    GameObject lastWall;
     //bool wallJumped = false;
 
     public void SetVelocity(Vector3 vel)
@@ -443,7 +444,8 @@ public class PlayerMovement : MonoBehaviour
 
     void StartWallJump()
     {
-        if (!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal && lastWallAngle != controller.collisions.wallAngle)
+        if (!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal && 
+            (lastWallAngle != controller.collisions.wallAngle|| lastWallAngle == controller.collisions.wallAngle && lastWall != controller.collisions.wall))
         {
             print("WallJump");
             //wallJumped = true;
@@ -454,6 +456,7 @@ public class PlayerMovement : MonoBehaviour
             wallNormal = controller.collisions.wallNormal;
             wallNormal.y = 0;
             lastWallAngle = controller.collisions.wallAngle;
+            lastWall =controller.collisions.wall;
         }
     }
 

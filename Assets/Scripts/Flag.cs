@@ -67,21 +67,24 @@ public class Flag : MonoBehaviour {
     {
         if (!player.haveFlag)
         {
-            if (beingHooked)
+            if(!(currentOwner != null && player.team == currentOwner.GetComponent<PlayerMovement>().team))
             {
-                playerHooking.GetComponent<Hook>().StopHook();
-                playerHooking = player.transform;
-            }
-            else
-            {
-                if (currentOwner != null)
+                if (beingHooked)
                 {
-                    currentOwner.GetComponent<PlayerMovement>().LoseFlag();
-                    currentOwner = null;
+                    playerHooking.GetComponent<Hook>().StopHook();
+                    playerHooking = player.transform;
                 }
-                beingHooked = true;
-                playerHooking = player.transform;
-            }
+                else
+                {
+                    if (currentOwner != null)
+                    {
+                        currentOwner.GetComponent<PlayerMovement>().LoseFlag();
+                        currentOwner = null;
+                    }
+                    beingHooked = true;
+                    playerHooking = player.transform;
+                }
+            }     
         }
     }
 
