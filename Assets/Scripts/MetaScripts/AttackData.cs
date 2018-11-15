@@ -21,6 +21,8 @@ public class AttackData : ScriptableObject
     public float startupTime;
     public float activeTime;
     public float recoveryTime;
+    [Tooltip("Waiting time untill you can use this attack again, starts counting when you finish all the attack phases.")]
+    public float cdTime;
     [Tooltip("Time the attacks leaves the target stunned.")]
     public float stunTime;
     [Tooltip("Limited by maxMoveSpeed.")]
