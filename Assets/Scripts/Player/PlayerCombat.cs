@@ -20,6 +20,8 @@ public class PlayerCombat : MonoBehaviour {
     //List<string> attacks;
     [HideInInspector]
     public int attackIndex = 0;
+    [HideInInspector]
+    public AttackData currentAttack;
     float chargingTime;
     float startupTime;
     float activeTime;
@@ -44,9 +46,6 @@ public class PlayerCombat : MonoBehaviour {
         active=3,
         recovery=4
     }
-    [HideInInspector]
-    public List<AttackInfo> myAttacks;//index: 0 = X; 1 = Y; 2 = B
-    
     public Transform hitboxes;
     Collider hitbox;
     //public Collider hitbox;
@@ -57,14 +56,12 @@ public class PlayerCombat : MonoBehaviour {
         myHook = GetComponent<Hook>();
         attackStg = attackStage.ready;
         targetsHit = new List<string>();
-        myAttacks = new List<AttackInfo>();
     }
 
     private void Start()
     {
-        FillMyAttacks();
         attackIndex = -1;
-        //ChangeAttackType(GameController.instance.attackX);
+        ChangeAttackType(GameController.instance.attackX);
         HideAttackHitBox();
         //ChangeNextAttackType();
     }
@@ -74,20 +71,20 @@ public class PlayerCombat : MonoBehaviour {
         //print("Trigger = " + Input.GetAxis(myPlayerMovement.contName + "LT"));
         if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && attackStg == attackStage.ready && !conHinchador)
         {
-            if (myPlayerMovement.Actions.Attack1.WasPressed && !myAttacks[0].cdStarted)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
+            if (myPlayerMovement.Actions.Attack1.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
             {
-                ChangeAttackType(0);
+                ChangeAttackType(GameController.instance.attackX);
                 StartAttack();
             }
-            if (myPlayerMovement.Actions.Attack2.WasPressed && !myAttacks[1].cdStarted)//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
+            if (myPlayerMovement.Actions.Attack2.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
             {
-                ChangeAttackType(1);
+                ChangeAttackType(GameController.instance.attackY);
                 StartAttack();
                 //ChangeNextAttackType();
             }
-            if (myPlayerMovement.Actions.Attack3.WasPressed && !myAttacks[2].cdStarted)//Input.GetButtonDown(myPlayerMovement.contName + "B"))
+            if (myPlayerMovement.Actions.Attack3.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "B"))
             {
-                ChangeAttackType(2);
+                ChangeAttackType(GameController.instance.attackB);
                 StartAttack();
                 //ChangeNextAttackType();
             }
@@ -102,7 +99,6 @@ public class PlayerCombat : MonoBehaviour {
         }
 
         ProcessAttack();
-        ProcessAttacksCD();
 
         if (myPlayerMovement.Actions.Boost.WasReleased)//Input.GetButtonUp(myPlayerMovement.contName + "RB"))
         {
@@ -123,20 +119,9 @@ public class PlayerCombat : MonoBehaviour {
         }
     }
 
-    public void FillMyAttacks()
+    public void ChangeAttackType(AttackData attack)
     {
-        AttackInfo att = new AttackInfo(GameController.instance.attackX);
-        myAttacks.Add(att);
-        att = new AttackInfo(GameController.instance.attackY);
-        myAttacks.Add(att);
-        att = new AttackInfo(GameController.instance.attackB);
-        myAttacks.Add(att);
-    }
-
-    public void ChangeAttackType(int index)
-    {
-        attackIndex = index;
-        AttackData attack = myAttacks[attackIndex].attack;
+        currentAttack = attack;
         attackName.text = attack.attackName;
         chargingTime = attack.chargingTime;
         startupTime = attack.startupTime;
@@ -243,28 +228,11 @@ public class PlayerCombat : MonoBehaviour {
                         attackStg = attackStage.ready;
                         hitbox.GetComponent<MeshRenderer>().material = hitboxMats[0];
                         HideAttackHitBox();
-
-                        myAttacks[attackIndex].StartCD();
-
                     }
                     break;
             }
         }   
     }
-
-    void ProcessAttacksCD()
-    {
-        for(int i = 0; i < myAttacks.Count; i++)
-        {
-            Debug.LogWarning("Attack "+myAttacks[i].attack.attackName+" in cd? "+myAttacks[i].cdStarted);
-           if(myAttacks[i].cdStarted)
-            {
-                print("Process CD attack + " + i);
-                myAttacks[i].ProcessCD();
-            }
-        }
-    }
-
     [HideInInspector]
     public bool aiming;
     void StartAiming()
@@ -288,41 +256,5 @@ public class PlayerCombat : MonoBehaviour {
             myPlayerWeap.AttachWeapon();
             myPlayerHUD.StopAim();
         }
-    }
-}
-
-public class AttackInfo
-{
-    public AttackData attack;
-    public float cdTime;
-    public bool cdStarted;
-    public AttackInfo(AttackData _attack)
-    {
-        attack = _attack;
-        cdTime = 0;
-        cdStarted = false;
-    }
-    public void StartCD()
-    {
-        cdTime = 0;
-        cdStarted = true;
-        Debug.Log("CD STARTED - ATTACK " + attack.attackName);
-    }
-
-    public void ProcessCD()
-    {
-        Debug.Log("CD PROCESS - ATTACK " + attack.attackName + "; cdTime = " + cdTime);
-        cdTime += Time.deltaTime;
-        if (cdTime >= attack.cdTime)
-        {
-            StopCD();
-        }
-    }
-
-    public void StopCD()
-    {
-        cdTime = 0;
-        cdStarted = false;
-        Debug.Log("CD FINISHED - ATTACK " + attack.attackName);
     }
 }
