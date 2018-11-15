@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4416249074569182}
   - component: {fileID: 114970655814368490}
   - component: {fileID: 65512927876745442}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: "Trampol\xEDn"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 33395362303889812}
   - component: {fileID: 23652766859008210}
   - component: {fileID: 65926909066082320}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: "Trampol\xEDn"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -65,14 +65,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1104585998642406}
-  m_LocalRotation: {x: -0.37989944, y: -0.24607657, z: -0.170534, w: 0.87523764}
-  m_LocalPosition: {x: 92.41, y: -2.19, z: 4.65}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0.027841168, y: -0.29521072, z: -0.04986182, w: 0.95372397}
+  m_LocalPosition: {x: 525.42, y: 9.64, z: -26.35}
+  m_LocalScale: {x: 2.7239, y: 2.7239, z: 2.7239}
   m_Children:
   - {fileID: 4278905793789520}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -48.498, y: -27.033, z: -9.691}
+  m_LocalEulerAnglesHint: {x: 1.3560001, y: -34.474003, z: -6.406}
 --- !u!23 &23652766859008210
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -125,8 +125,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 0.5, z: 1}
-  m_Center: {x: 0, y: 0.25, z: 0}
+  m_Size: {x: 1, y: 0.06576953, z: 1}
+  m_Center: {x: 3.326613e-10, y: 0.032883823, z: 1.7868135e-10}
 --- !u!65 &65926909066082320
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -150,6 +150,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0c5c4b7071673a4b8e73077ddcb92e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Fuerza: 100
-  tiempoStuneado: 1.78
-  playerSpeed: -67.5
+  Fuerza: 30
+  tiempoStuneado: 0.5
+  playerSpeed: -3.7
