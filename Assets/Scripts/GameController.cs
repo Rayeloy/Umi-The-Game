@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class GameController : MonoBehaviour {
-
+public class GameController : MonoBehaviour
+{
+    public Flag _lag;
     public static GameController instance;
     [Tooltip("Number of players in the game")]
     [HideInInspector]
@@ -102,6 +103,7 @@ public class GameController : MonoBehaviour {
 
     }
 
+    public ScoreManager scoreManager;
     // Update is called once per frame
     void Update () {
         if (Input.GetKeyDown(KeyCode.Keypad0))
@@ -123,12 +125,14 @@ public class GameController : MonoBehaviour {
         }
         if (playing)
         {
-        for(int i = 0; i < playerNum; i++)
-        {
-            allPlayers[i].KonoUpdate();
+            for(int i = 0; i < playerNum; i++)
+            {
+                allPlayers[i].KonoUpdate();
+            }
         }
-        }
+        scoreManager.TiempoDeJuego();
 	}
+
     [HideInInspector]
     public bool playing = false;
     public void StartGame()
@@ -145,9 +149,11 @@ public class GameController : MonoBehaviour {
     public void GameOver(Team _winnerTeam)
     {
         print("GAME OVER");
-        playing = false;
-        winnerTeam = _winnerTeam;
-        SwitchGameOverMenu();
+        //playing = false;
+        scoreManager.ScorePoint(_winnerTeam);
+        RespawnFlag (_lag);
+        //winnerTeam = _winnerTeam;
+        //SwitchGameOverMenu();
     }
 
     public Transform blueTeamSpawn;
