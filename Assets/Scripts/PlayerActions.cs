@@ -24,6 +24,9 @@ public class PlayerActions : PlayerActionSet
 	public PlayerAction CamDown;
 	public PlayerTwoAxisAction CamMovement;
 
+	public PlayerAction R3;
+	public PlayerAction L3;
+
 	public PlayerActions()
 	{
 		Boost = CreatePlayerAction( "Boost" );
@@ -46,6 +49,9 @@ public class PlayerActions : PlayerActionSet
 		CamUp = CreatePlayerAction( "CamUp" );
 		CamDown = CreatePlayerAction( "CamDown" );
 		CamMovement = CreateTwoAxisPlayerAction( CamLeft, CamRight, CamDown, CamUp );
+
+		R3 = CreatePlayerAction("R3");
+		L3 = CreatePlayerAction("L3");	
 	}
 	public static PlayerActions CreateWithKeyboardBindings()
 	{
@@ -92,6 +98,9 @@ public class PlayerActions : PlayerActionSet
 		actions.CamDown.AddDefaultBinding( InputControlType.RightStickDown );
 		actions.CamLeft.AddDefaultBinding( InputControlType.RightStickLeft );
 		actions.CamRight.AddDefaultBinding( InputControlType.RightStickRight );
+
+		actions.R3.AddDefaultBinding ( InputControlType.RightStickButton );
+		actions.L3.AddDefaultBinding ( InputControlType.LeftStickButton );
 		return actions;
 	}
 }
