@@ -2425,7 +2425,6 @@ MonoBehaviour:
   LTPulsado: 0
   RTPulsado: 0
   attackIndex: -1
-  currentAttack: {fileID: 11400000, guid: 62b70d52c7fb6024eafbe61034f7d534, type: 2}
   hitboxMats:
   - {fileID: 2100000, guid: 2700333b147dd394c8452531278051f7, type: 2}
   - {fileID: 2100000, guid: 8ef3e573ffcdc814aa37206d968bffe3, type: 2}
@@ -2433,6 +2432,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: b005bf027cdb3d64d88cd0db2ead83d9, type: 2}
   knockBackSpeed: 20
   attackName: {fileID: 0}
+  conHinchador: 0
   targetsHit: []
   attackStg: 0
   hitboxes: {fileID: 4265373239105070}
@@ -2527,14 +2527,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupList: []
   maxPickups: 4
-  activePickup: 0
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 65536
-  collPosition: {x: 0, y: 0, z: 1.23}
-  collScale: {x: 0.81, y: 1.58, z: 1.52}
+  collPosition: {x: 0, y: 0, z: 0.87}
+  collScale: {x: 1.3, y: 3, z: 1.52}
   rota: {fileID: 4036635015999044}
   myPlayerMovement: {fileID: 114464777488655940}
+  myPlayerCombat: {fileID: 0}
 --- !u!114 &114707133594277346
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2578,6 +2578,8 @@ MonoBehaviour:
   precisionHeight: 0.1
   precisionSpaceFromSlideWall: 0.001
   coll: {fileID: 136730111159505118}
+  bigCollRadius: 0
+  smallCollRadius: 0
   showVerticalRays: 0
   showVerticalLimits: 1
   showDistanceCheckRays: 0

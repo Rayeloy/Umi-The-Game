@@ -869,11 +869,16 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region  CHECK WIN ---------------------------------------------
-    void CheckWinGame(Respawn respawn)
+    void CheckScorePoint(Respawn respawn)
     {
         if (haveFlag && team == respawn.team)
         {
-            GameController.instance.GameOver(team);
+            GameController.instance.ScorePoint(team);
+            GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
+            flag.GetComponent<Flag>().currentOwner = null;
+            flag = null;
+            haveFlag = false;
+            print("CURRENT OWNER = NULL");
         }
     }
     #endregion
@@ -912,7 +917,7 @@ public class PlayerMovement : MonoBehaviour
                 break;
             case "Respawn":
                 //print("I'm " + name + " and I touched a respawn");
-                CheckWinGame(col.GetComponent<Respawn>());
+                CheckScorePoint(col.GetComponent<Respawn>());
                 break;
             case "PickUp":
                 myPlayerPickups.CogerPickup(col.gameObject);

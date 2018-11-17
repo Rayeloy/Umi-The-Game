@@ -54,6 +54,8 @@ public class Controller3D : MonoBehaviour
     }
 
     public CapsuleCollider coll;
+    public float bigCollRadius;
+    public float smallCollRadius;
     RaycastOrigins raycastOrigins;
     public CollisionInfo collisions;
 
@@ -65,6 +67,7 @@ public class Controller3D : MonoBehaviour
 
     public void Move(Vector3 vel)
     {
+        AdjustColliderSize(vel);
         UpdateRaycastOrigins();
         collisions.ResetVertical();
         collisions.ResetHorizontal();
@@ -86,6 +89,29 @@ public class Controller3D : MonoBehaviour
         //print("SLOPE TYPE = " + collisions.climbSt+"; slopeAngle = "+collisions.slopeAngle+"; FinalVel = "+ vel.ToString("F5"));
         //print("FinalVel= " + vel.ToString("F5"));
         transform.Translate(vel, Space.World);
+    }
+    bool colliderChanged = false;
+    void AdjustColliderSize(Vector3 vel)
+    {
+        if(vel.x !=0 || vel.z != 0)
+        {
+            if (!colliderChanged)
+            {
+                coll.radius = bigCollRadius;
+                CalculateRaySpacing();
+                colliderChanged = true;
+            }
+
+        }
+        else
+        {
+            if (colliderChanged)
+            {
+                coll.radius = smallCollRadius;
+                CalculateRaySpacing();
+                colliderChanged = false;
+            }
+        }
     }
 
     float GetSlopeAngle(RaycastHit hit)

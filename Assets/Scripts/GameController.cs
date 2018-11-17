@@ -146,14 +146,17 @@ public class GameController : MonoBehaviour
 
     [HideInInspector]
     public Team winnerTeam = Team.blue;
+    public void ScorePoint(Team _winnerTeam)
+    {
+        scoreManager.ScorePoint(_winnerTeam);
+    }
     public void GameOver(Team _winnerTeam)
     {
         print("GAME OVER");
-        //playing = false;
-        scoreManager.ScorePoint(_winnerTeam);
+        playing = false;
         RespawnFlag (_lag);
-        //winnerTeam = _winnerTeam;
-        //SwitchGameOverMenu();
+        winnerTeam = _winnerTeam;
+        SwitchGameOverMenu();
     }
 
     public Transform blueTeamSpawn;
@@ -182,6 +185,8 @@ public class GameController : MonoBehaviour
         //player.myCamera.SwitchCamera(player.myCamera.camMode);
     }
 
+    public Transform blueTeamFlagHome;
+    public Transform redTeamFlagHome;
     public void RespawnFlag(Flag flag)
     {
         print("RESPAWN FLAG"); 

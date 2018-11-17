@@ -103,8 +103,6 @@ public class CameraController : MonoBehaviour
         rotX = rot.x;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-
     }
 
     // Update is called once per frame
@@ -260,6 +258,7 @@ public class CameraController : MonoBehaviour
         currentCamRot = Quaternion.Euler(auxEuler.x, auxEuler.y, auxEuler.z);
         
     }
+
     [HideInInspector]
     public Vector3 targetMyCamPos;
     Vector3 currentMyCamPos;
@@ -303,6 +302,11 @@ public class CameraController : MonoBehaviour
         timeSwitching = 0;
         //switching = true;
         myCamera.GetComponent<CameraCollisions>().ResetData();
+    }
+
+    void LookAtPlayerLookingDirection()
+    {
+        targetCamRot = Quaternion.Euler(transform.localRotation.x,myPlayerMov.rotateObj.localRotation.y, transform.localRotation.z);
     }
 
     void LookAtPlayer()
