@@ -108,6 +108,8 @@ public class PlayerMovement : MonoBehaviour
     float lastWallAngle = -1;
     GameObject lastWall;
     //bool wallJumped = false;
+    [HideInInspector]
+    public bool suddenDead = false;
 
     public void SetVelocity(Vector3 vel)
     {
@@ -843,6 +845,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!inWater)
         {
+            ScoreManager.instance.PlayerEliminado();
             inWater = true;
             jumpedOutOfWater = false;
             myPlayerWeap.AttachWeaponToBack();

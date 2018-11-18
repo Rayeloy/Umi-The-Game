@@ -41,16 +41,6 @@ public class ScoreManager : MonoBehaviour {
 
 		Tiempo -= Time.deltaTime;
 
-		//string elTiempo = "" ;
-		////Minutos
-		//if (Tiempo/60 < 10) elTiempo = "0";
-
-		//elTiempo = elTiempo + Mathf.FloorToInt(Tiempo/60).ToString() + ":";
-		////Segundos
-		//if (Tiempo%60 < 10) elTiempo = elTiempo + "0";
-        //
-        //elTiempo = elTiempo + Mathf.FloorToInt(Tiempo%60).ToString();
-
         for( int i = 0; i < time_Text.Length; i++)
 			time_Text[i].text = timeToString(Tiempo);
 
@@ -120,7 +110,7 @@ public class ScoreManager : MonoBehaviour {
         prorroga = true;
 
         for (int i = 0; i < GameController.instance.allPlayers.Length; i++){
-
+            GameController.instance.allPlayers[i].suddenDead = true;
         }
     }
 
@@ -135,10 +125,12 @@ public class ScoreManager : MonoBehaviour {
     private int nPlayerEliminados = 0;
     public void PlayerEliminado ()
     {
-        nPlayerEliminados++;
+        if (prorroga){
+            nPlayerEliminados++;
 
-        if (nPlayerEliminados >= GameController.instance.playerNum){
-            GameController.instance.GameOver(Team.none);
+            if (nPlayerEliminados >= GameController.instance.playerNum){
+                GameController.instance.GameOver(Team.none);
+            }
         }
     }
 

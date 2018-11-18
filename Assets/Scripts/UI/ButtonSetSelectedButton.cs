@@ -9,4 +9,9 @@ public class ButtonSetSelectedButton : MonoBehaviour
 	{
 		EventSystem.current.SetSelectedGameObject(go);
 	}
+
+	public GameObject StartButton;
+	public void SetStartSelected(){
+		EventSystem.current.SetSelectedGameObject(StartButton);
+	}
 }
