@@ -891,9 +891,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4583181191530756}
+  - component: {fileID: 136947653510150972}
+  - component: {fileID: 114195424409896516}
   m_Layer: 10
   m_Name: Body
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2437,6 +2439,18 @@ MonoBehaviour:
   attackStg: 0
   hitboxes: {fileID: 4265373239105070}
   aiming: 0
+--- !u!114 &114195424409896516
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1715698217228444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfaab20321490e45a08f628f6bca635, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myPlayerMov: {fileID: 114464777488655940}
 --- !u!114 &114452011727701492
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2577,9 +2591,9 @@ MonoBehaviour:
   skinWidthHeight: 0.0001
   precisionHeight: 0.1
   precisionSpaceFromSlideWall: 0.001
-  coll: {fileID: 136730111159505118}
-  bigCollRadius: 0
-  smallCollRadius: 0
+  coll: {fileID: 136947653510150972}
+  bigCollRadius: 0.35
+  smallCollRadius: 0.35
   showVerticalRays: 0
   showVerticalLimits: 1
   showDistanceCheckRays: 0
@@ -2601,6 +2615,19 @@ CapsuleCollider:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1705813512628444}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 0
+  m_Radius: 0.4
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!136 &136947653510150972
+CapsuleCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1715698217228444}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1

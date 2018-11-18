@@ -175,7 +175,7 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector]
     public Vector3 currentMovDir;
     float joystickAngle;
-    float deadzone = 0.15f;
+    float deadzone = 0.2f;
     float joystickSens = 0;
 
     #region MOVEMENT -----------------------------------------------
@@ -220,6 +220,7 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
+                joystickSens = 1;
                 moveSt = MoveState.NotMoving;
                 currentMovDir = Vector3.zero;
             }
@@ -252,10 +253,6 @@ public class PlayerMovement : MonoBehaviour
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
             CalculateMoveDir();//Movement direction
-            if (currentSpeed > maxMoveSpeed)
-            {
-                moveSt = MoveState.MovingBreaking;
-            }
             if (!myPlayerCombat.LTPulsado && !myPlayerCombat.RTPulsado && Actions.Boost.WasPressed)//Input.GetButtonDown(contName + "RB"))
             {
                 myPlayerCombat.RTPulsado = true;
@@ -268,6 +265,10 @@ public class PlayerMovement : MonoBehaviour
             ProcessAiming();
             ProcessHooking();
             currentMaxMoveSpeed = (joystickSens / 1) * maxMoveSpeed2;
+            if (currentSpeed > currentMaxMoveSpeed && moveSt==MoveState.Moving)
+            {
+                moveSt = MoveState.MovingBreaking;
+            }
             //------------------------------- Acceleration -------------------------------
             float actAccel;
             switch (moveSt)
@@ -288,12 +289,13 @@ public class PlayerMovement : MonoBehaviour
             finalMovingAcc = controller.collisions.below ? movingAcc : airMovingAcc; //Turning accleration
             //------------------------------- Speed ------------------------------ -
             currentSpeed = currentSpeed + actAccel * Time.deltaTime;
-            float maxSpeedClamp = moveSt == MoveState.Moving ? maxMoveSpeed : maxKnockbackSpeed;
+            float  maxSpeedClamp= moveSt == MoveState.Moving ? currentMaxMoveSpeed : maxKnockbackSpeed;
             currentSpeed = Mathf.Clamp(currentSpeed, 0, maxSpeedClamp);
         }
         #endregion
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
+        //print("MoveState = " + moveSt+"; speed = "+currentSpeed);
         switch (moveSt)
         {
             case MoveState.Moving:
@@ -303,7 +305,9 @@ public class PlayerMovement : MonoBehaviour
                 {
                     horizontalVel = horizontalVel.normalized * currentMaxMoveSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
+                    currentSpeed = currentVel.magnitude;
                 }
+                //print("Speed = " + currentSpeed+"; currentMaxMoveSpeed = "+currentMaxMoveSpeed);
                 break;
             case MoveState.NotMoving:
                 Vector3 aux = currentVel.normalized * currentSpeed;
@@ -338,7 +342,7 @@ public class PlayerMovement : MonoBehaviour
                     aux = currentVel.normalized * currentSpeed;
                     currentVel = new Vector3(aux.x, currentVel.y, aux.z);
                 }
-                print("vel.y = " + currentVel.y);
+                //print("vel.y = " + currentVel.y);
 
                 break;
             case MoveState.MovingBreaking://FRENADA FUERTE
@@ -368,6 +372,10 @@ public class PlayerMovement : MonoBehaviour
 
     void VerticalMovement()
     {
+        if (!jumpedOutOfWater && !inWater && controller.collisions.below)
+        {
+            jumpedOutOfWater = true;
+        }
         if (lastWallAngle >= 0 && controller.collisions.below)
         {
             lastWallAngle = -1;
@@ -445,7 +453,7 @@ public class PlayerMovement : MonoBehaviour
     void StartWallJump()
     {
         if (!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal && 
-            (lastWallAngle != controller.collisions.wallAngle|| lastWallAngle == controller.collisions.wallAngle && lastWall != controller.collisions.wall))
+            (lastWallAngle != controller.collisions.wallAngle|| lastWallAngle == controller.collisions.wallAngle && lastWall != controller.collisions.wall) && jumpedOutOfWater)
         {
             print("WallJump");
             //wallJumped = true;
@@ -648,7 +656,7 @@ public class PlayerMovement : MonoBehaviour
         //Give FLAG
         if (haveFlag)
         {
-            flag.StealFlag(attacker);
+            flag.DropFlag();
         }
 
         print("STUNNED");
@@ -801,6 +809,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void PutOnFlag(Flag _flag)
     {
+        flag = _flag;
         flag.transform.SetParent(rotateObj);
         flag.transform.localPosition = new Vector3(0, 0, -0.5f);
         flag.transform.localRotation = Quaternion.Euler(0, -90, 0);
@@ -816,7 +825,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (haveFlag)
         {
-            GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
+            flag.SetAway();
             flag.GetComponent<Flag>().currentOwner = null;
             flag = null;
             haveFlag = false;
@@ -828,20 +837,19 @@ public class PlayerMovement : MonoBehaviour
     #region  WATER ---------------------------------------------
     [HideInInspector]
     public bool inWater = false;
+    bool jumpedOutOfWater = true;
 
-    void EnterWater()
+    public void EnterWater()
     {
         if (!inWater)
         {
             inWater = true;
+            jumpedOutOfWater = false;
             myPlayerWeap.AttachWeaponToBack();
             if (haveFlag)
             {
-                GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
-                flag.GetComponent<Flag>().currentOwner = null;
-                flag = null;
-                haveFlag = false;
-                print("CURRENT OWNER = NULL");
+                //GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
+                flag.SetAway();
             }
         }
     }
@@ -858,7 +866,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void ExitWater()
+    public void ExitWater()
     {
         if (inWater)
         {
@@ -869,66 +877,13 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region  CHECK WIN ---------------------------------------------
-    void CheckScorePoint(Respawn respawn)
+    public void CheckScorePoint(FlagHome flagHome)
     {
-        if (haveFlag && team == respawn.team)
+        if (haveFlag && team == flagHome.team)
         {
             GameController.instance.ScorePoint(team);
-            GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
-            flag.GetComponent<Flag>().currentOwner = null;
-            flag = null;
-            haveFlag = false;
+            flag.SetAway();
             print("CURRENT OWNER = NULL");
-        }
-    }
-    #endregion
-
-    #region  TRIGGER COLLISIONS ---------------------------------------------
-    private void OnTriggerStay(Collider col)
-    {
-        switch (col.tag)
-        {
-            case "Water":
-                float waterSurface = col.GetComponent<Collider>().bounds.max.y;
-                if (transform.position.y <= waterSurface)
-                {
-                    EnterWater();
-                }
-                else
-                {
-                    ExitWater();
-                }
-
-
-
-                break;
-        }
-    }
-
-    private void OnTriggerEnter(Collider col)
-    {
-        switch (col.tag)
-        {
-            case "KillTrigger":
-                Die();
-                break;
-            case "Flag":
-                col.GetComponent<Flag>().PickupFlag(this);
-                break;
-            case "Respawn":
-                //print("I'm " + name + " and I touched a respawn");
-                CheckScorePoint(col.GetComponent<Respawn>());
-                break;
-            case "PickUp":
-                myPlayerPickups.CogerPickup(col.gameObject);
-                break;
-        }
-    }
-
-    private void OnTriggerExit(Collider col)
-    {
-        switch (col.tag)
-        {
         }
     }
     #endregion

@@ -6,12 +6,12 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-    public Flag _lag;
     public static GameController instance;
     [Tooltip("Number of players in the game")]
     [HideInInspector]
     [Range(1,4)]
     public int playerNum = 1;
+    public Flag[] flags;
     //public AttackData[] allAttacks;
     public AttackData attackX;
     public AttackData attackY;
@@ -22,6 +22,8 @@ public class GameController : MonoBehaviour
     public GameObject[] allCanvas;
     public CameraController[] allCameraBases;
     public WeaponData[] allWeapons;
+
+    public GameObject flagPrefab;
     private void Awake()
     {
         if (GameInfo.instance == null)
@@ -154,7 +156,10 @@ public class GameController : MonoBehaviour
     {
         print("GAME OVER");
         playing = false;
-        RespawnFlag (_lag);
+        for(int i=0; i < flags.Length; i++)
+        {
+            flags[i].SetAway(true);
+        }
         winnerTeam = _winnerTeam;
         SwitchGameOverMenu();
     }
@@ -187,11 +192,17 @@ public class GameController : MonoBehaviour
 
     public Transform blueTeamFlagHome;
     public Transform redTeamFlagHome;
-    public void RespawnFlag(Flag flag)
+    public void RespawnFlag(Vector3 respawnPos)
     {
-        print("RESPAWN FLAG"); 
-        flag.transform.SetParent(null);
-        flag.transform.position = flag.respawnPos;
+        print("RESPAWN FLAG");
+        if (StoringManager.instance.IsObjectStored(flagPrefab.name))
+        {
+            StoringManager.instance.TakeObjectStored(flagPrefab.name, null, respawnPos, Quaternion.identity);
+        }
+        else
+        {
+            Instantiate(flagPrefab, respawnPos, Quaternion.identity, null);
+        }
     }
 
     bool gameOverMenuOn = false;

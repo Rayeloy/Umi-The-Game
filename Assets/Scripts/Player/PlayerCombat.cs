@@ -256,10 +256,10 @@ public class PlayerCombat : MonoBehaviour {
     {
         for(int i = 0; i < myAttacks.Count; i++)
         {
-            Debug.LogWarning("Attack "+myAttacks[i].attack.attackName+" in cd? "+myAttacks[i].cdStarted);
+            //Debug.LogWarning("Attack "+myAttacks[i].attack.attackName+" in cd? "+myAttacks[i].cdStarted);
            if(myAttacks[i].cdStarted)
             {
-                print("Process CD attack + " + i);
+                //print("Process CD attack + " + i);
                 myAttacks[i].ProcessCD();
             }
         }
@@ -306,12 +306,12 @@ public class AttackInfo
     {
         cdTime = 0;
         cdStarted = true;
-        Debug.Log("CD STARTED - ATTACK " + attack.attackName);
+        //Debug.Log("CD STARTED - ATTACK " + attack.attackName);
     }
 
     public void ProcessCD()
     {
-        Debug.Log("CD PROCESS - ATTACK " + attack.attackName + "; cdTime = " + cdTime);
+        //Debug.Log("CD PROCESS - ATTACK " + attack.attackName + "; cdTime = " + cdTime);
         cdTime += Time.deltaTime;
         if (cdTime >= attack.cdTime)
         {
@@ -323,6 +323,6 @@ public class AttackInfo
     {
         cdTime = 0;
         cdStarted = false;
-        Debug.Log("CD FINISHED - ATTACK " + attack.attackName);
+        //Debug.Log("CD FINISHED - ATTACK " + attack.attackName);
     }
 }

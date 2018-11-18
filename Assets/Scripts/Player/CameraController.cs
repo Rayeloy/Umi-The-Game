@@ -7,7 +7,8 @@ public class CameraController : MonoBehaviour
     public PlayerMovement myPlayerMov;
     public Transform myCamera;
     public Transform myPlayer;
-
+   
+    
     public cameraMode camMode = cameraMode.Fixed;
     public enum cameraMode
     {
@@ -17,7 +18,8 @@ public class CameraController : MonoBehaviour
         Shoulder
     }
     public GameObject cameraFollowObj;
-    Vector3 ollowPOS;
+    [Tooltip("Valor de 0 a 1 que indica la zona muerta del joystick de la camara, siendo 0 una zona muerta nula, y 1 todo el joystick entero.")]
+    public float deadZone = 0.2f;
     [Header("FIXED CAMERA")]
     public float clampAngleMaxFixed=40f;
     public float clampAngleMinFixed = -40f;
@@ -57,16 +59,17 @@ public class CameraController : MonoBehaviour
     private float pitch = 0.0f;
 
     Vector3 targetCamPos;
-    Quaternion targetCamRot;
     Vector3 originalPos;
-    Quaternion originalRot;
     Vector3 currentCamPos;
-    Quaternion currentCamRot;
+
+    Vector3 targetCamRot;
+    Vector3 originalRot;
+    Vector3 currentCamRot;
 
     public void KonoAwake()
     {
         originalPos = myCamera.localPosition;
-        originalRot = myCamera.localRotation;
+        originalRot = myCamera.localRotation.eulerAngles;
         switch (camMode)
         {
             case cameraMode.Fixed:
@@ -92,7 +95,7 @@ public class CameraController : MonoBehaviour
         }
         currentMyCamPos = targetMyCamPos = myCamera.localPosition;
         currentCamPos = targetCamPos = transform.position;
-        currentCamRot = targetCamRot = transform.rotation;
+        currentCamRot = targetCamRot = transform.rotation.eulerAngles;
 
     }
     // Use this for initialization
@@ -112,10 +115,17 @@ public class CameraController : MonoBehaviour
         {
             float inputX = myPlayerMov.Actions.CamMovement.X;//Input.GetAxis(myPlayerMov.contName + "H2");
             float inputZ = -myPlayerMov.Actions.CamMovement.Y;//Input.GetAxis(myPlayerMov.contName + "V2");
-            //mouseX = Input.GetAxis("Mouse X");
+            //mouseX = Input.GetAxis("Mouse X");                                                                             
             //mouseY = Input.GetAxis("Mouse Y");
+            Vector3 input = new Vector2(inputX, inputZ);
+            if (myPlayerMov.Actions.Device!=null && input.magnitude < deadZone)
+            {
+                inputX = 0;
+                inputZ = 0;
+            }
             finalInputX = inputX + mouseX;
             finalInputZ = inputZ + mouseY;
+
             Quaternion localRotation = Quaternion.Euler(0, 0, 0);
             switch (camMode)
             {
@@ -131,10 +141,10 @@ public class CameraController : MonoBehaviour
 
                     localRotation = followObjRot;
                     localRotation = Quaternion.Euler(rotX, myPlayerMov.rotateObj.localRotation.eulerAngles.y, 0);
-                    targetCamRot = localRotation;
+                    targetCamRot = localRotation.eulerAngles;
                     //SmoothRot();
                     currentCamRot = targetCamRot;
-                    transform.rotation = currentCamRot;
+                    transform.rotation = Quaternion.Euler(currentCamRot.x, currentCamRot.y, currentCamRot.z);
 
                     //targetCamPos = myPlayerMov.rotateObj.TransformPoint(originalPos);
                     targetCamPos = cameraFollowObj.transform.position;
@@ -152,7 +162,7 @@ public class CameraController : MonoBehaviour
 
                     localRotation = followObjRot;
                     localRotation = Quaternion.Euler(rotX, myPlayerMov.rotateObj.localRotation.eulerAngles.y, 0);
-                    targetCamRot = localRotation;
+                    targetCamRot = localRotation.eulerAngles;
                     targetCamPos = cameraFollowObj.transform.position;
 
                     if (switching)
@@ -171,40 +181,65 @@ public class CameraController : MonoBehaviour
                         currentCamPos = targetCamPos;
                         currentCamRot = targetCamRot;
                     }
-                    transform.rotation = currentCamRot;
+                    transform.rotation = Quaternion.Euler(currentCamRot.x, currentCamRot.y, currentCamRot.z);
                     transform.position = currentCamPos;
                     //print("myCamera.localPosition = " + myCamera.localPosition);
                     break;
                 case cameraMode.Free:
-                    rotY += finalInputX * inputSensitivity * Time.deltaTime;
-                    rotX += finalInputZ * inputSensitivity * Time.deltaTime;
-
-                    rotX = Mathf.Clamp(rotX, clampAngleMin, clampAngleMax);
-                    localRotation = Quaternion.Euler(rotX, rotY, 0.0f);
-
-                    //currentCamRot = targetCamRot;
-
-                    targetCamPos = cameraFollowObj.transform.position;
-                    float step = cameraMoveSpeed * Time.deltaTime;
-                    targetCamRot = localRotation;
-                    if (switching)
+                    if (myPlayerMov.Actions.R3.WasPressed)
                     {
-                        SmoothRot();
-                        SmoothPos();
-                        timeSwitching += Time.deltaTime;
-                        if (timeSwitching >= smoothPositioningTime+0.5f)
+                        print("R3 pulsado");
+                        StartResetCamera();
+                    }
+                    if ((finalInputX != 0 || finalInputZ != 0) && resetingCamera)
+                    {
+                        print("STOP RESETING CAMERA");
+                        StopResetCamera();
+                    }
+
+                    if (resetingCamera)
+                    {
+                        print("reseting camera");
+                        SmoothRotReset();
+                        targetCamPos = cameraFollowObj.transform.position;
+                        currentCamPos = targetCamPos;
+                        float step = cameraMoveSpeed * Time.deltaTime;
+                        transform.position = Vector3.MoveTowards(transform.position, currentCamPos, step);
+                        //SmoothPos();
+                        if (currentCamRot == targetCamRot)
                         {
-                            switching = false;
+                            print("STOP RESETING CAMERA");
+                            StopResetCamera();
                         }
                     }
                     else
                     {
-                        currentCamPos = targetCamPos;
-                        currentCamRot = targetCamRot;
-                        //print("NOT SWITCHING: targetCamPos= " + targetCamPos + "; currentCamPos = " + currentCamPos);
+                        rotY += finalInputX * inputSensitivity * Time.deltaTime;
+                        rotX += finalInputZ * inputSensitivity * Time.deltaTime;
+                        rotX = Mathf.Clamp(rotX, clampAngleMin, clampAngleMax);
+                        localRotation = Quaternion.Euler(rotX, rotY, 0.0f);
+                        //currentCamRot = targetCamRot;
+                        targetCamRot = localRotation.eulerAngles;
+                        if (switching)
+                        {
+                            SmoothRot();
+                            SmoothPos();
+                            timeSwitching += Time.deltaTime;
+                            if (timeSwitching >= smoothPositioningTime + 0.5f)
+                            {
+                                switching = false;
+                            }
+                        }
+                        else
+                        {
+                            currentCamPos = targetCamPos;
+                            currentCamRot = targetCamRot;
+                        }
+                        targetCamPos = cameraFollowObj.transform.position;
+                        float step = cameraMoveSpeed * Time.deltaTime;
+                        transform.position = Vector3.MoveTowards(transform.position, currentCamPos, step);
                     }
-                    transform.position = Vector3.MoveTowards(transform.position, currentCamPos, step);
-                    transform.rotation = currentCamRot;
+                    transform.rotation = Quaternion.Euler(currentCamRot.x, currentCamRot.y, currentCamRot.z);
                     break;
                 case cameraMode.FixedFree:
                     break;
@@ -231,9 +266,9 @@ public class CameraController : MonoBehaviour
         {
             rotY = myPlayerMov.rotateObj.localRotation.eulerAngles.y;
         }
-        targetCamRot = myPlayerMov.rotateObj.localRotation;
+        targetCamRot = myPlayerMov.rotateObj.localRotation.eulerAngles;
         currentCamRot = targetCamRot;
-        transform.localRotation = currentCamRot;
+        transform.localRotation = Quaternion.Euler(currentCamRot.x, currentCamRot.y, currentCamRot.z); ;
         //print("I'm " + gameObject.name + " and my rotateObj.localRotation = " + myPlayerMov.rotateObj.localRotation.eulerAngles+"; my local rotation = "+transform.localRotation.eulerAngles);
         myCamera.localPosition = originalCamPosFree;
     }
@@ -251,12 +286,18 @@ public class CameraController : MonoBehaviour
     public float smoothRotationTime = 0.2f;
     void SmoothRot()
     {
-        Vector3 auxEuler;
-        auxEuler.x = Mathf.SmoothDamp(currentCamRot.eulerAngles.x, targetCamRot.eulerAngles.x, ref smoothRotSpeedX, smoothRotationTime);
-        auxEuler.y = Mathf.SmoothDamp(currentCamRot.eulerAngles.y, targetCamRot.eulerAngles.y, ref smoothRotSpeedY, smoothRotationTime);
-        auxEuler.z = Mathf.SmoothDamp(currentCamRot.eulerAngles.z, targetCamRot.eulerAngles.z, ref smoothRotSpeedZ, smoothRotationTime);
-        currentCamRot = Quaternion.Euler(auxEuler.x, auxEuler.y, auxEuler.z);
-        
+        currentCamRot.x = Mathf.SmoothDamp(currentCamRot.x, targetCamRot.x, ref smoothRotSpeedX, smoothRotationTime);
+        currentCamRot.y = Mathf.SmoothDamp(currentCamRot.y, targetCamRot.y, ref smoothRotSpeedY, smoothRotationTime);
+        currentCamRot.z = Mathf.SmoothDamp(currentCamRot.z, targetCamRot.z, ref smoothRotSpeedZ, smoothRotationTime);
+    }
+    void SmoothRotReset()
+    {
+        float xRot = TransformCurrentRotationForReset(currentCamRot.x, targetCamRot.x);
+        currentCamRot.x = Mathf.SmoothDamp(xRot, targetCamRot.x, ref smoothRotSpeedX, smoothRotationTime);
+        float yRot = TransformCurrentRotationForReset(currentCamRot.y, targetCamRot.y);
+        currentCamRot.y = Mathf.SmoothDamp(yRot, targetCamRot.y, ref smoothRotSpeedY, smoothRotationTime);
+        currentCamRot.z = Mathf.SmoothDamp(currentCamRot.z, targetCamRot.z, ref smoothRotSpeedZ, smoothRotationTime);
+        print("NEW CURRENT CAM ROT = " + currentCamRot.x + "; TARGET CAM ROT = " + targetCamRot.ToString("F4"));
     }
 
     [HideInInspector]
@@ -304,9 +345,50 @@ public class CameraController : MonoBehaviour
         myCamera.GetComponent<CameraCollisions>().ResetData();
     }
 
-    void LookAtPlayerLookingDirection()
+    bool resetingCamera=false;
+    [Header("Reset Camera")]
+    public float cameraResetVerticalAngle;
+    void StartResetCamera()
     {
-        targetCamRot = Quaternion.Euler(transform.localRotation.x,myPlayerMov.rotateObj.localRotation.y, transform.localRotation.z);
+        float yRot = myPlayerMov.rotateObj.localRotation.eulerAngles.y;
+        targetCamRot = transform.localRotation.eulerAngles;
+        targetCamRot.y = TransformTargetRotationForReset(currentCamRot.y, yRot);
+        targetCamRot.x = TransformTargetRotationForReset(currentCamRot.x, cameraResetVerticalAngle);
+        //targetMyCamPos = originalPos;
+        resetingCamera = true;
+        print("TARGET CAM ROT = " + targetCamRot.ToString("F4")+"; CURRENT CAM ROT = "+currentCamRot.ToString("F4"));
+    }
+    void StopResetCamera()
+    {
+        resetingCamera = false;
+        rotY = currentCamRot.y;
+        rotX = currentCamRot.x;
+    }
+
+    float TransformTargetRotationForReset(float current, float target)
+    {
+        float angleDif = Mathf.Abs(current - target);
+        if (angleDif > 180)
+        {
+            if(current<=180)
+            {
+                return target-360;
+            }
+        }
+        return target;
+    }
+    float TransformCurrentRotationForReset(float current, float target)
+    {
+        float angleDif = current - target;
+        if (angleDif > 180)
+        {
+            if (current > 180)
+            {
+                print("Transforming current angle : " + current + " -> " + (360 - current));
+                return current-360;
+            }
+        }
+        return current;
     }
 
     void LookAtPlayer()

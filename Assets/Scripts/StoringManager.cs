@@ -16,7 +16,11 @@ public class StoringManager : MonoBehaviour {
     {
         objectsStored = new List<Transform>();
     }
-
+    /// <summary>
+    /// Looks for an object that contains(name)
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public bool IsObjectStored(string name)
     {
         bool result = false;

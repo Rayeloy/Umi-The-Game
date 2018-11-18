@@ -136,6 +136,7 @@ MonoBehaviour:
   myPlayer: {fileID: 0}
   camMode: 1
   cameraFollowObj: {fileID: 0}
+  deadZone: 0.15
   clampAngleMaxFixed: 70
   clampAngleMinFixed: -20
   rotSpeed: 120
@@ -161,6 +162,7 @@ MonoBehaviour:
   smoothRotationTime: 0.2
   targetMyCamPos: {x: 0, y: 0, z: 0}
   smoothCamMoveTime: 0.2
+  cameraResetVerticalAngle: 10
 --- !u!114 &114367184426035186
 MonoBehaviour:
   m_ObjectHideFlags: 1

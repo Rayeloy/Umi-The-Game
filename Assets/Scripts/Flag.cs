@@ -11,7 +11,19 @@ public class Flag : MonoBehaviour {
     public Transform currentOwner;
     [HideInInspector]
     public bool beingHooked;
+    [HideInInspector]
     public Transform playerHooking;
+    public float maxTimeLocked;
+    float timeLocked = 0;
+    bool locked = false;
+    public float maxTimeToRespawn;
+    float timeToRespawn = 0;
+    bool respawning = false;
+    [Tooltip("NOT USED YET")]
+    public float maxTimeToPick;
+    float timeToPick = 0;
+
+
 	void Start () {
         respawnPos = transform.position;
         currentOwner = null;
@@ -19,12 +31,41 @@ public class Flag : MonoBehaviour {
         playerHooking = null;
 
     }
+    private void Update()
+    {
+        ProcessLocked();
+        ProcessRespawn();
+    }
+
+    public void StartRespawn()
+    {
+        timeToRespawn = 0;
+        respawning = true;
+        StoringManager.instance.StoreObject(transform);
+    }
+    void ProcessRespawn()
+    {
+        if (respawning)
+        {
+            timeToRespawn += Time.deltaTime;
+            if (timeToRespawn >= maxTimeToRespawn)
+            {
+                FinishRespawn();
+            }
+        }
+    }
+    public void FinishRespawn()
+    {
+        respawning = false;
+        GameController.instance.RespawnFlag(respawnPos);
+    }
     /// <summary>
     /// Allows player to steal flag from another player that already has it from a hit. It also puts it on his back.
     /// </summary>
     /// <param name="player"></param>
     public void StealFlag(PlayerMovement player)//steal from somone who has it already
     {
+        print("StealFlag");
         if (!player.haveFlag)
         {
             if (!beingHooked)
@@ -32,7 +73,7 @@ public class Flag : MonoBehaviour {
                 if (currentOwner != null)
                 {
                     currentOwner.GetComponent<PlayerMovement>().LoseFlag();
-                    currentOwner = player.transform;
+                    ClaimFlag(player);
                     PutFlagOnBack(player);
                 }
                 else
@@ -40,6 +81,10 @@ public class Flag : MonoBehaviour {
                     Debug.LogWarning("Error: " + player.name + " can't steal a flag that is not owned by anyone. Switching to 'PickupFlag'");
                     PickupFlag(player);
                 }
+            }
+            else
+            {
+                Debug.LogError("Error: Can't steal a flag that is being hooked.");
             }
         }
         else
@@ -50,7 +95,8 @@ public class Flag : MonoBehaviour {
 
     public void PickupFlag(PlayerMovement player)//from floor
     {
-        if (!player.haveFlag && currentOwner==null && !beingHooked)
+        print("PickupFlag");
+        if (!player.haveFlag && currentOwner==null && !beingHooked && !locked)
         {
             ClaimFlag(player);
             PutFlagOnBack(player);
@@ -59,16 +105,26 @@ public class Flag : MonoBehaviour {
         else
         {
             Debug.LogWarning("Error: Can't pick up a flag because the player " + (player.name).ToString() +
-                " already has a flag("+ (player.haveFlag).ToString() + ") || the flag has an owner("+ (currentOwner != null).ToString() + ") || the flag is being hooked("+ beingHooked + ").");
+                " already has a flag("+ (player.haveFlag).ToString() + ") || the flag has an owner("+ (currentOwner != null).ToString() + 
+                ") || the flag is being hooked("+ beingHooked + ") || the flag is locked("+locked+").");
         }
     }
 
-    public void HookFlag(PlayerMovement player)
+    public bool HookFlag(PlayerMovement player)
     {
-        if (!player.haveFlag)
+        print("HookFlag");
+        if (!player.haveFlag && !locked)
         {
             if(!(currentOwner != null && player.team == currentOwner.GetComponent<PlayerMovement>().team))
             {
+                if (currentOwner == null)
+                {
+                    print("NO OWNER");
+                }
+                else
+                {
+                    print("current owner = " + currentOwner + "; owner team= " + currentOwner.GetComponent<PlayerMovement>().team + "; hooker team = " + player.team);
+                }
                 if (beingHooked)
                 {
                     playerHooking.GetComponent<Hook>().StopHook();
@@ -84,12 +140,19 @@ public class Flag : MonoBehaviour {
                     beingHooked = true;
                     playerHooking = player.transform;
                 }
-            }     
+                return true;
+            }
         }
+        else
+        {
+            Debug.LogWarning("Error: Can't hook flag because player has already a flag ("+player.haveFlag+") || flag is locked ("+locked+").");
+        }
+        return false;
     }
 
     public void DropFlag()
     {
+        print("DropFlag");
         if (beingHooked)
         {
             playerHooking.GetComponent<Hook>().StopHook();
@@ -109,6 +172,26 @@ public class Flag : MonoBehaviour {
             }
         }
         transform.SetParent(StoringManager.instance.transform);
+        StartLocked();
+    }
+
+    public void SetAway(bool instant=false)
+    {
+        if (currentOwner != null)//solo se puede poner away si se pierde en el agua o se marca un punto, ambos casos con un owner
+        {
+            currentOwner.GetComponent<PlayerMovement>().LoseFlag();
+            currentOwner = null;
+            if (!instant)
+            {
+                StartRespawn();
+            }
+            else
+            {
+                FinishRespawn();
+            }
+
+        }
+
     }
 
     public void StopBeingHooked()
@@ -119,6 +202,7 @@ public class Flag : MonoBehaviour {
 
     public void ClaimFlag(PlayerMovement player)
     {
+        currentOwner = player.transform;
         player.haveFlag = true;
         player.flag = this;
     }
@@ -126,5 +210,26 @@ public class Flag : MonoBehaviour {
     public void PutFlagOnBack(PlayerMovement player) 
     {
         player.PutOnFlag(this);
+    }
+
+    void StartLocked()
+    {
+        locked = true;
+        timeLocked = 0;
+    }
+    void ProcessLocked()
+    {
+        if (locked)
+        {
+            timeLocked += Time.deltaTime;
+            if (timeLocked >= maxTimeLocked)
+            {
+                StopLocked();
+            }
+        }
+    }
+    void StopLocked()
+    {
+        locked = false;
     }
 }

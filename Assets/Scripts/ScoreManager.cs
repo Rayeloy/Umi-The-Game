@@ -49,7 +49,7 @@ public class ScoreManager : MonoBehaviour {
 		foreach(TextMeshProUGUI tM in time_Text)
 			tM.text = elTiempo;
 
-		Debug.Log(elTiempo);
+		//Debug.Log(elTiempo);
 
         if (Tiempo <= 0){
             Team winner;

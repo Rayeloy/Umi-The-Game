@@ -119,7 +119,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1751600940884742}
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 92.73998, y: -0.69999886, z: -49.289986}
+  m_LocalPosition: {x: -0.15001678, y: 0.18000114, z: -0.6899872}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4029018945534160}
@@ -349,6 +349,11 @@ MonoBehaviour:
   respawnPos: {x: 0, y: 0, z: 0}
   flagNumber: 0
   currentOwner: {fileID: 0}
+  beingHooked: 0
+  playerHooking: {fileID: 0}
+  maxTimeLocked: 2
+  maxTimeToRespawn: 5
+  maxTimeToPick: 0
 --- !u!135 &135415561022386018
 SphereCollider:
   m_ObjectHideFlags: 1
@@ -359,5 +364,5 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.7
   m_Center: {x: 0, y: 0, z: 0}

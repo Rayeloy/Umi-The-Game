@@ -180,13 +180,17 @@ public class Hook : MonoBehaviour
     {
         if (canHookSomething)
         {
-            objectHooked = true;
-            hookedObject = item;
             if (item.tag == "Flag")
             {
                 Flag flag = item.GetComponent<Flag>();
-                flag.HookFlag(myPlayerMov);
+                if (!flag.HookFlag(myPlayerMov))
+                {
+                    print("FLAG NOT HOOKED");
+                    return;
+                }
             }
+            objectHooked = true;
+            hookedObject = item;
             print("Current hook = " + currentHook);
             hookedObject.SetParent(currentHook.transform);
             hookedObject.transform.localPosition = Vector3.zero;
@@ -266,6 +270,13 @@ public class Hook : MonoBehaviour
             }
             objectHooked = false;
             hookedObject = null;
+        }
+        if (enemyHooked)
+        {
+            if (enemy.haveFlag)
+            {
+                enemy.flag.StealFlag(myPlayerMov);
+            }
         }
     }
 
