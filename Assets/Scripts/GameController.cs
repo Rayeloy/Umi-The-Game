@@ -244,7 +244,7 @@ public class GameController : MonoBehaviour
     public string sceneLoadedOnReset;
     public void ResetGame()
     {
-        
+        ScoreManager.instance.Reset();
         playing = true;
         SwitchGameOverMenu();
         foreach(PlayerMovement pM in allPlayers)

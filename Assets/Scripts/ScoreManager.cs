@@ -13,6 +13,7 @@ public class ScoreManager : MonoBehaviour {
 
     [Tooltip("Teimpo de juego en segundos")]
     public float Tiempo = 120;
+    private float _Tiempo;
 
 	[HideInInspector]
 	public bool End = false;
@@ -22,6 +23,7 @@ public class ScoreManager : MonoBehaviour {
 	public int _redTeamScore;
 
     public float tiempoProrroga = 0.0f;
+    private float _tiempoProrroga;
     [HideInInspector]
     public bool prorroga = false;
 
@@ -29,6 +31,32 @@ public class ScoreManager : MonoBehaviour {
 	public TextMeshProUGUI[] blueTeamScore_Text;
 	public TextMeshProUGUI[] redTeamScore_Text;
 	public TextMeshProUGUI[] time_Text;
+
+    private void Start(){
+        _Tiempo = tiempoProrroga;
+        _tiempoProrroga = tiempoProrroga;
+    }
+
+    public void Reset(){
+        prorroga = false;
+
+        //Tiempos
+        Tiempo = _Tiempo;
+        tiempoProrroga = _tiempoProrroga;
+        for( int i = 0; i < time_Text.Length; i++)
+			time_Text[i].color = Color.white;
+
+        //Scores
+        _blueTeamScore = 0;
+        for( int i = 0; i < blueTeamScore_Text.Length; i++){
+            blueTeamScore_Text[i].text = _blueTeamScore.ToString();
+        }
+
+        _redTeamScore = 0;
+        for( int i = 0; i < redTeamScore_Text.Length; i++){
+            redTeamScore_Text[i].text = _redTeamScore.ToString();
+        }
+    }
 
     public void TiempoDeJuego (){
 		if(End) return;
@@ -91,15 +119,15 @@ public class ScoreManager : MonoBehaviour {
         string elTiempo = "";
 
         //Minutos
-		if (Tiempo/60 < 10)
+		if (f/60 < 10)
             elTiempo = "0";
 
-		elTiempo = elTiempo + Mathf.FloorToInt(Tiempo/60).ToString() + ":";
+		elTiempo = elTiempo + Mathf.FloorToInt(f/60).ToString() + ":";
 		//Segundos
-		if (Tiempo%60 < 10)
+		if (f%60 < 10)
             elTiempo = elTiempo + "0";
         
-        elTiempo = elTiempo + Mathf.FloorToInt(Tiempo%60).ToString();
+        elTiempo = elTiempo + Mathf.FloorToInt(f%60).ToString();
 
         return elTiempo;
     }
@@ -109,13 +137,15 @@ public class ScoreManager : MonoBehaviour {
     private void SetProrroga(){
         prorroga = true;
 
-//        for (int i = 0; i < GameController.instance.allPlayers.Length; i++){
-//            GameController.instance.allPlayers[i].suddenDead = true;
-//        }
+        for( int i = 0; i < time_Text.Length; i++)
+			time_Text[i].color = Color.red;
     }
 
     private void Prorroga(){
         tiempoProrroga -= Time.deltaTime;
+
+        for( int i = 0; i < time_Text.Length; i++)
+			time_Text[i].text = timeToString(tiempoProrroga);
 
         if (tiempoProrroga <= 0){
             GameController.instance.GameOver(Team.none);
