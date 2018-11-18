@@ -21,6 +21,9 @@ public class ScoreManager : MonoBehaviour {
     public int _blueTeamScore;
 	public int _redTeamScore;
 
+    public float tiempoProrroga = 0.0f;
+    [HideInInspector]
+    public bool prorroga = false;
 
 	[Header("Referencias")]
 	public TextMeshProUGUI[] blueTeamScore_Text;
@@ -30,32 +33,33 @@ public class ScoreManager : MonoBehaviour {
     public void TiempoDeJuego (){
 		if(End) return;
 
+        if (prorroga)
+        {
+            Prorroga();
+            return;
+        }
+
 		Tiempo -= Time.deltaTime;
 
-		string elTiempo;
-		//Minutos
-		if (Tiempo/60 < 10)
-			elTiempo = "0" + Mathf.FloorToInt(Tiempo/60).ToString();
-		else
-			elTiempo = Mathf.FloorToInt(Tiempo/60).ToString();
+		//string elTiempo = "" ;
+		////Minutos
+		//if (Tiempo/60 < 10) elTiempo = "0";
 
-		elTiempo = elTiempo + ":";
-		//Segundos
-		if (Tiempo%60 < 10)
-			elTiempo = elTiempo + "0" + Mathf.FloorToInt(Tiempo%60).ToString();
-		else
-			elTiempo = elTiempo + Mathf.FloorToInt(Tiempo%60).ToString();
+		//elTiempo = elTiempo + Mathf.FloorToInt(Tiempo/60).ToString() + ":";
+		////Segundos
+		//if (Tiempo%60 < 10) elTiempo = elTiempo + "0";
+        //
+        //elTiempo = elTiempo + Mathf.FloorToInt(Tiempo%60).ToString();
 
-		foreach(TextMeshProUGUI tM in time_Text)
-			tM.text = elTiempo;
-
-		//Debug.Log(elTiempo);
+        for( int i = 0; i < time_Text.Length; i++)
+			time_Text[i].text = timeToString(Tiempo);
 
         if (Tiempo <= 0){
             Team winner;
             if (_blueTeamScore == _redTeamScore)
             {
                 //PROGRAMAR EL CASO DE QUE AMBOS ACABEN CON EL MISMO SCORE
+                SetProrroga();
             }
             else
             {
@@ -70,26 +74,73 @@ public class ScoreManager : MonoBehaviour {
         {
             case Team.blue:
                 _blueTeamScore++;
-                foreach (TextMeshProUGUI tM in blueTeamScore_Text)
+                for( int i = 0; i < blueTeamScore_Text.Length; i++)
                 {
-                    tM.text = _blueTeamScore.ToString();
+                    blueTeamScore_Text[i].text = _blueTeamScore.ToString();
                 }
-                if (_blueTeamScore >= maxScore)
+                if (_blueTeamScore >= maxScore || prorroga)
                 {
                     GameController.instance.GameOver(scoringTeam);
                 }
                 break;
             case Team.red:
                 _redTeamScore++;
-                foreach (TextMeshProUGUI tM in redTeamScore_Text)
+                for( int i = 0; i < redTeamScore_Text.Length; i++)//foreach (TextMeshProUGUI tM in redTeamScore_Text)
                 {
-                    tM.text = _redTeamScore.ToString();
+                    redTeamScore_Text[i].text = _redTeamScore.ToString();
                 }
-                if (_redTeamScore >= maxScore)
+                if (_redTeamScore >= maxScore || prorroga)
                 {
                     GameController.instance.GameOver(scoringTeam);
                 }
                 break;
         }
 	}
+
+    private string timeToString(float f){
+        string elTiempo = "";
+
+        //Minutos
+		if (Tiempo/60 < 10)
+            elTiempo = "0";
+
+		elTiempo = elTiempo + Mathf.FloorToInt(Tiempo/60).ToString() + ":";
+		//Segundos
+		if (Tiempo%60 < 10)
+            elTiempo = elTiempo + "0";
+        
+        elTiempo = elTiempo + Mathf.FloorToInt(Tiempo%60).ToString();
+
+        return elTiempo;
+    }
+
+#region Prorroga
+
+    private void SetProrroga(){
+        prorroga = true;
+
+        for (int i = 0; i < GameController.instance.allPlayers.Length; i++){
+
+        }
+    }
+
+    private void Prorroga(){
+        tiempoProrroga -= Time.deltaTime;
+
+        if (tiempoProrroga <= 0){
+            GameController.instance.GameOver(Team.none);
+        }
+    }
+
+    private int nPlayerEliminados = 0;
+    public void PlayerEliminado ()
+    {
+        nPlayerEliminados++;
+
+        if (nPlayerEliminados >= GameController.instance.playerNum){
+            GameController.instance.GameOver(Team.none);
+        }
+    }
+
+#endregion
 }

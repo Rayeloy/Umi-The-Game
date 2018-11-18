@@ -75,6 +75,9 @@ public class PlayerActions : PlayerActionSet
 		actions.CamDown.AddDefaultBinding( Mouse.NegativeY );
 		actions.CamLeft.AddDefaultBinding( Mouse.NegativeX );
 		actions.CamRight.AddDefaultBinding( Mouse.PositiveX );
+
+		actions.L3.AddDefaultBinding( Key.Key4 );
+		actions.R3.AddDefaultBinding( Key.Key5 );
 		return actions;
 	}
 	public static PlayerActions CreateWithJoystickBindings()
