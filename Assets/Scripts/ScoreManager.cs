@@ -109,9 +109,9 @@ public class ScoreManager : MonoBehaviour {
     private void SetProrroga(){
         prorroga = true;
 
-        for (int i = 0; i < GameController.instance.allPlayers.Length; i++){
-            GameController.instance.allPlayers[i].suddenDead = true;
-        }
+//        for (int i = 0; i < GameController.instance.allPlayers.Length; i++){
+//            GameController.instance.allPlayers[i].suddenDead = true;
+//        }
     }
 
     private void Prorroga(){

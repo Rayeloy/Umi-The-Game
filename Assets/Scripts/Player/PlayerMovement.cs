@@ -108,8 +108,6 @@ public class PlayerMovement : MonoBehaviour
     float lastWallAngle = -1;
     GameObject lastWall;
     //bool wallJumped = false;
-    [HideInInspector]
-    public bool suddenDead = false;
 
     public void SetVelocity(Vector3 vel)
     {
