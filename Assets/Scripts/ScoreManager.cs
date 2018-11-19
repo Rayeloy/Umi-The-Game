@@ -39,6 +39,7 @@ public class ScoreManager : MonoBehaviour {
 
     public void Reset(){
         prorroga = false;
+        End = false;
 
         //Tiempos
         Tiempo = _Tiempo;
@@ -149,6 +150,7 @@ public class ScoreManager : MonoBehaviour {
 
         if (tiempoProrroga <= 0){
             GameController.instance.GameOver(Team.none);
+            End = true;
         }
     }
 
