@@ -86,6 +86,9 @@ public class PlayerMovement : MonoBehaviour
     float jumpVelocity;
     float timePressingJump = 0.0f;
     float maxTimePressingJump;
+    public float maxTimeJumpInsurance = 0.2f;
+    float timeJumpInsurance = 0;
+    bool jumpInsurance;
     [Tooltip("How fast the 'stop jump early' stops in the air. This value is multiplied by the gravity and then applied to the vertical speed.")]
     public float breakJumpForce = 2.0f;
     [Tooltip("During how much part of the jump (in time to reach the apex) is the player able to stop the jump. 1 is equals to the whole jump, and 0.5 is equals the half of the jump time.")]
@@ -421,6 +424,7 @@ public class PlayerMovement : MonoBehaviour
         {
             currentVel.y = Mathf.Clamp(currentVel.y, -maxVerticalSpeedInWater, float.MaxValue);
         }
+        ProcessJumpInsurance();
 
     }
     #endregion
@@ -430,7 +434,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!noInput && moveSt != MoveState.Boost)
         {
-            if (controller.collisions.below && (!inWater || inWater && controller.collisions.around))
+            if ((controller.collisions.below||jumpInsurance) && (!inWater || inWater && controller.collisions.around))
             {
                 currentVel.y = jumpVelocity;
                 jumpSt = JumpState.Jumping;
@@ -448,6 +452,29 @@ public class PlayerMovement : MonoBehaviour
     {
         jumpSt = JumpState.none;
         timePressingJump = 0;
+    }
+
+    
+    void ProcessJumpInsurance()
+    {
+        if (!jumpInsurance)
+        {
+            if (controller.collisions.lastBelow && !controller.collisions.below && jumpSt==JumpState.none)
+            {
+                print("Jump Insurance");
+                jumpInsurance = true;
+                timeJumpInsurance = 0;
+            }
+        }
+        else
+        {
+            timeJumpInsurance += Time.deltaTime;
+            if (timeJumpInsurance >= maxTimeJumpInsurance || jumpSt==JumpState.Jumping)
+            {
+                jumpInsurance = false;
+            }
+        }
+
     }
 
     void StartWallJump()
