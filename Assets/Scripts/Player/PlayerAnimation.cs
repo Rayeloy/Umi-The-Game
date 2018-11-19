@@ -45,10 +45,15 @@ public class PlayerAnimation : MonoBehaviour
         ProcessVariableValues();
 
     }
+    
+    public void RestartAnimation()
+    {
+        //print("RESETING ANIMATOR");
+        animator.Rebind();
+    }
 
     void ResetVariables()
     {
-
         if (landing && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1 && !animator.IsInTransition(0))
         {
             landing = false;

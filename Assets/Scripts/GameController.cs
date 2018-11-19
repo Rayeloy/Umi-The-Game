@@ -157,7 +157,7 @@ public class GameController : MonoBehaviour
     }
     public void GameOver(Team _winnerTeam)
     {
-        print("GAME OVER");
+        //print("GAME OVER");
         playing = false;
         for(int i=0; i < flags.Length; i++)
         {
@@ -171,7 +171,7 @@ public class GameController : MonoBehaviour
     public Transform redTeamSpawn;
     public void RespawnPlayer(PlayerMovement player)
     {
-        print("RESPAWN PLAYER");
+        //print("RESPAWN PLAYER");
         player.SetVelocity(Vector3.zero);
         switch (player.team)
         {
@@ -191,6 +191,8 @@ public class GameController : MonoBehaviour
         player.myCamera.InstantRotation();
         //player.myCamera.transform.localRotation = player.rotateObj.transform.localRotation;
         //player.myCamera.SwitchCamera(player.myCamera.camMode);
+        player.ResetPlayer();
+        player.myPlayerAnimation.RestartAnimation();
     }
 
     public Transform blueTeamFlagHome;
@@ -214,10 +216,10 @@ public class GameController : MonoBehaviour
     public GameObject victoryText;
     public void SwitchGameOverMenu()
     {
-        print("GAME OVER MENU");
+        //print("GAME OVER MENU");
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        print("gameOverMenuOn= " + gameOverMenuOn);
+        //print("gameOverMenuOn= " + gameOverMenuOn);
         if (gameOverMenuOn)
         {
             gameOverMenuOn = false;
@@ -227,7 +229,7 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            print("ACTIVATE GAME OVER MENU");
+            //print("ACTIVATE GAME OVER MENU");
             gameOverMenuOn = true;
             gameOverMenu.SetActive(true);
             veil.SetActive(true);

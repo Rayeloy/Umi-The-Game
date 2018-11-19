@@ -14,7 +14,7 @@ public class PlayerMovement : MonoBehaviour
     public Material teamBlueMat;
     public Material teamRedMat;
     PlayerCombat myPlayerCombat;
-    PlayerAnimation myPlayerAnimation;
+    public PlayerAnimation myPlayerAnimation;
     PlayerWeapons myPlayerWeap;
     public PlayerPickups myPlayerPickups;
 
@@ -461,7 +461,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (controller.collisions.lastBelow && !controller.collisions.below && jumpSt==JumpState.none)
             {
-                print("Jump Insurance");
+                //print("Jump Insurance");
                 jumpInsurance = true;
                 timeJumpInsurance = 0;
             }
@@ -915,6 +915,12 @@ public class PlayerMovement : MonoBehaviour
         }
     }
     #endregion
+
+    public void ResetPlayer()
+    {
+        ExitWater();
+        jumpSt = JumpState.none;
+    }
 
     #region  AUXILIAR FUNCTIONS ---------------------------------------------
     public Vector3 RotateVector(float angle, Vector3 vector)

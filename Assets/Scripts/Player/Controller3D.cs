@@ -67,7 +67,7 @@ public class Controller3D : MonoBehaviour
 
     public void Move(Vector3 vel)
     {
-        AdjustColliderSize(vel);
+        //AdjustColliderSize(vel);
         UpdateRaycastOrigins();
         collisions.ResetVertical();
         collisions.ResetHorizontal();
@@ -90,6 +90,7 @@ public class Controller3D : MonoBehaviour
         //print("FinalVel= " + vel.ToString("F5"));
         transform.Translate(vel, Space.World);
     }
+
     bool colliderChanged = false;
     void AdjustColliderSize(Vector3 vel)
     {
@@ -138,7 +139,7 @@ public class Controller3D : MonoBehaviour
             collisions.moveSt = MovingState.climbing;
             collisions.slopeAngle = rayCast.slopeAngle;
             collisions.realSlopeAngle = Mathf.Asin(climbVel.y / climbVel.magnitude) * Mathf.Rad2Deg;
-            print("REAL SLOPE ANGLE = " + collisions.realSlopeAngle);
+            //print("REAL SLOPE ANGLE = " + collisions.realSlopeAngle);
             //print("CLIMBING: Angle = " + rayCast.slopeAngle + "; old Vel= " + horVel.ToString("F5") + "; vel= " + vel.ToString("F5") +
             //    "; old magnitude=" + horVel.magnitude + "; new magnitude = " + vel.magnitude);
             if (!disableAllRays)
@@ -277,10 +278,10 @@ public class Controller3D : MonoBehaviour
         //LEFT OR RIGHT ORIENTATION?
         float ang = Vector3.Angle(slideVel, horVel);
         slideVel = ang > 90 ? -slideVel : slideVel;
-        print("SLIDE ANGLE= " + angle + "; vel = " + vel + "; slideVel = " + slideVel.ToString("F4") + "; a = " + a + "; wallAngle = " + wallAngle + "; distanceToWall = " + rayCast.distance);
+        //print("SLIDE ANGLE= " + angle + "; vel = " + vel + "; slideVel = " + slideVel.ToString("F4") + "; a = " + a + "; wallAngle = " + wallAngle + "; distanceToWall = " + rayCast.distance);
         slideVel *= a;
         SlideState slideSt = ang > 90 ? SlideState.right : SlideState.left;
-        print("------------SLIDE STATE ------------ = " + slideSt);
+        //print("------------SLIDE STATE ------------ = " + slideSt);
 
         collisions.slideSt = slideSt;
         vel = new Vector3(slideVel.x, vel.y, slideVel.z);
@@ -636,7 +637,7 @@ public class Controller3D : MonoBehaviour
         if (collisions.closestHorRaycast.axis != Raycast.Axis.none)//si ha habido una collision horizontal
         {
             MovingState value = collisions.closestHorRaycast.row == 0 ? CheckSlopeType(ref vel, collisions.closestHorRaycast) : MovingState.wall;
-            print("COLLISION HOR: " + value + "; slopeAngle=" + collisions.closestHorRaycast.slopeAngle);
+            //print("COLLISION HOR: " + value + "; slopeAngle=" + collisions.closestHorRaycast.slopeAngle);
             switch (value)//con que tipo de objeto collisionamos? pared/cuesta arriba/cuesta abajo
             {
                 case MovingState.wall:
