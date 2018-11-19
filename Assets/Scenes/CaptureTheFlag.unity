@@ -1756,6 +1756,7 @@ MonoBehaviour:
   flagPrefab: {fileID: 1751600940884742, guid: b65fe97042153d54abc8f26b7532c126, type: 2}
   scoreManager: {fileID: 1135800243}
   playing: 0
+  gamePaused: 0
   winnerTeam: 1
   blueTeamSpawn: {fileID: 1486746128}
   redTeamSpawn: {fileID: 961242477}
@@ -1765,6 +1766,8 @@ MonoBehaviour:
   veil: {fileID: 1275665991}
   victoryText: {fileID: 434641805}
   sceneLoadedOnReset: MasterSceneUMI
+  menuScene: 
+  Button: {fileID: 0}
 --- !u!4 &1135800242
 Transform:
   m_ObjectHideFlags: 0

@@ -7,6 +7,7 @@ public class PlayerAnimation : MonoBehaviour
 	[Header("Referencias")]
 	public Animator animator;
 	public PlayerMovement playerMovement;
+    PlayerCombat myPlayerCombat;
 
     [Header("Animator Variables")]
     AnimatorStateInfo stateInfo;
@@ -22,7 +23,7 @@ public class PlayerAnimation : MonoBehaviour
     bool swimming;
     int runningHash = Animator.StringToHash("Running");
     bool runningValue;
-    int basicSwingHash = Animator.StringToHash("BasicSwingHash");
+    int basicSwingHash = Animator.StringToHash("BasicSwing");
     bool basicSwingValue;
     int endGameHash = Animator.StringToHash ( "EndGame" );
     [Tooltip("Distance to floor at which the landing animation will start")]
@@ -34,7 +35,7 @@ public class PlayerAnimation : MonoBehaviour
 
     private void Awake()
     {
-        
+        myPlayerCombat = GetComponent<PlayerCombat>();
     }
 
     public void KonoUpdate()
@@ -80,11 +81,24 @@ public class PlayerAnimation : MonoBehaviour
             swimmingIdle = false;
             animator.SetBool(swimmingIdleHash, swimmingIdle);
         }
+        if(runningValue && !(playerMovement.currentSpeed != 0 && playerMovement.controller.collisions.below))
+        {
+            runningValue = false;
+            animator.SetBool(runningHash, runningValue);
+        }
+        //COMBAT ANIMATIONS
+        if (myPlayerCombat.attackStg != PlayerCombat.attackStage.ready)
+        {
+            basicSwingValue = false;
+            animator.SetBool(basicSwingHash, basicSwingValue);
+        }
     }
 
     public void ProcessVariableValues()
     {
         stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+
+
 
         if (playerMovement.currentSpeed != 0 && playerMovement.controller.collisions.below)
         {
@@ -149,7 +163,12 @@ public class PlayerAnimation : MonoBehaviour
             swimmingIdle = true;
             animator.SetBool(swimmingIdleHash, swimmingIdle);
         }
-
+        //COMBAT ANIMATIONS
+        if (myPlayerCombat.attackStg == PlayerCombat.attackStage.startup)
+        {
+            basicSwingValue = true;
+            animator.SetBool(basicSwingHash, basicSwingValue);
+        }
     }
 
     public void SetJump(bool _jump)
