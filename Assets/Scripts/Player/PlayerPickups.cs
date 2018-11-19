@@ -165,16 +165,16 @@ public class PlayerPickups : MonoBehaviour
 	}
 #endregion
 
-    void OnDrawGizmos()
-    {
-
-		Matrix4x4 rotationMatrix = Matrix4x4.TRS(rota.position, rota.rotation, rota.lossyScale);
-		Gizmos.matrix = rotationMatrix; 
-        Gizmos.color = Color.red;
-        //Check that it is being run in Play Mode, so it doesn't try to draw this in Editor mode
-        //if (m_Started)
-            //Draw a cube where the OverlapBox is (positioned where your GameObject is as well as a size)
-            Gizmos.DrawWireCube(collPosition, collScale/2);
-    }
+//    void OnDrawGizmos()
+//    {
+//
+//		Matrix4x4 rotationMatrix = Matrix4x4.TRS(rota.position, rota.rotation, rota.lossyScale);
+//		Gizmos.matrix = rotationMatrix; 
+//        Gizmos.color = Color.red;
+//        //Check that it is being run in Play Mode, so it doesn't try to draw this in Editor mode
+//        //if (m_Started)
+//            //Draw a cube where the OverlapBox is (positioned where your GameObject is as well as a size)
+//            Gizmos.DrawWireCube(collPosition, collScale/2);
+//    }
 
 }

@@ -24,6 +24,7 @@ public class PlayerAnimation : MonoBehaviour
     bool runningValue;
     int basicSwingHash = Animator.StringToHash("BasicSwingHash");
     bool basicSwingValue;
+    int endGameHash = Animator.StringToHash ( "EndGame" );
     [Tooltip("Distance to floor at which the landing animation will start")]
     public float maxTimeToLand = 1;
     //-------------
@@ -38,6 +39,12 @@ public class PlayerAnimation : MonoBehaviour
 
     public void LateUpdate()
     {
+        if(ScoreManager.instance.End){
+            animator.SetBool(endGameHash, true);
+            //ResetVariables();
+            return;
+        }
+
 		animator.SetFloat("HorizontalSpeed", playerMovement.currentSpeed);//new Vector2 (playerMovement.currentVel.x, playerMovement.currentVel.z).magnitude);
         animator.SetFloat("VerticalSpeed", playerMovement.currentVel.y);
 		animator.SetBool("OnGround", playerMovement.controller.collisions.below);

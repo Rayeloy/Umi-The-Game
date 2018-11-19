@@ -145,14 +145,14 @@ public class ScoreManager : MonoBehaviour {
     private void Prorroga(){
         tiempoProrroga -= Time.deltaTime;
 
-        for( int i = 0; i < time_Text.Length; i++)
-			time_Text[i].text = timeToString(tiempoProrroga);
-
         if (tiempoProrroga <= 0){
             tiempoProrroga = 0;
             GameController.instance.GameOver(Team.none);
             End = true;
         }
+
+        for( int i = 0; i < time_Text.Length; i++)
+			time_Text[i].text = timeToString(tiempoProrroga);
     }
 
     private int nPlayerEliminados = 0;
