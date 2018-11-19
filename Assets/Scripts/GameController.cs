@@ -112,35 +112,47 @@ public class GameController : MonoBehaviour
     public ScoreManager scoreManager;
     // Update is called once per frame
     void Update () {
-        if (Input.GetKeyDown(KeyCode.Keypad0))
+        print("GAME CONTROLLER UPDATE");
+        if (!gamePaused)
         {
-            if (slowmo==0)
+            if (Input.GetKeyDown(KeyCode.Keypad0))
             {
-                Time.timeScale = 0.25f;
-                slowmo = 1;
+                if (slowmo == 0)
+                {
+                    Time.timeScale = 0.25f;
+                    slowmo = 1;
+                }
+                else if (slowmo == 1)
+                {
+                    Time.timeScale = 0.075f;
+                    slowmo = 2;
+                }
+                else if (slowmo == 2)
+                {
+                    Time.timeScale = 1;
+                    slowmo = 0;
+                }
             }
-            else if(slowmo==1)
+            if (playing)
             {
-                Time.timeScale = 0.075f;
-                slowmo = 2;
-            }else if (slowmo == 2)
-            {
-                Time.timeScale = 1;
-                slowmo = 0;
+                for (int i = 0; i < playerNum; i++)
+                {
+                    allPlayers[i].KonoUpdate();
+                }
             }
+            scoreManager.TiempoDeJuego();
         }
-        if (playing)
+        else
         {
-            for(int i = 0; i < playerNum; i++)
-            {
-                allPlayers[i].KonoUpdate();
-            }
+
         }
-        scoreManager.TiempoDeJuego();
+
 	}
 
     [HideInInspector]
     public bool playing = false;
+    [HideInInspector]
+    public bool gamePaused = false;
     public void StartGame()
     {
         playing = true;
@@ -282,6 +294,7 @@ public class GameController : MonoBehaviour
 
 	public void PauseGame( PlayerActions p){
 		Time.timeScale = 0;
+        gamePaused = true;
 
         veil.SetActive ( true );
         Button.SetActive ( true );
@@ -292,6 +305,7 @@ public class GameController : MonoBehaviour
 
     private void UnPauseGame (){
         Time.timeScale = 1;
+        gamePaused = false;
         veil.SetActive ( false );
         Button.SetActive ( false );
 		StopCoroutine ( coroutine );

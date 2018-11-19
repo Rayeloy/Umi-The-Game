@@ -78,6 +78,13 @@ public class PlayerAnimation : MonoBehaviour
     public void ProcessVariableValues()
     {
         stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+
+        if (playerMovement.currentSpeed != 0 && playerMovement.controller.collisions.below)
+        {
+            runningValue = true;
+            animator.SetBool(runningHash, runningValue);
+        }
+
         if (jump || (!playerMovement.controller.collisions.below && playerMovement.controller.collisions.lastBelow))
         {
             if (jump)

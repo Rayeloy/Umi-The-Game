@@ -657,6 +657,7 @@ public class PlayerMovement : MonoBehaviour
                     float angle = Mathf.Acos(((0 * currentMovDir.x) + (1 * currentMovDir.z)) / (1 * currentMovDir.magnitude)) * Mathf.Rad2Deg;
                     angle = currentMovDir.x < 0 ? -angle : angle;
                     rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
+                    print("Rotate character");
                 }
                 break;
         }
