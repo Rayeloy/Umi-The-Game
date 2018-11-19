@@ -86,13 +86,14 @@ public class PlayerMovement : MonoBehaviour
     float jumpVelocity;
     float timePressingJump = 0.0f;
     float maxTimePressingJump;
-    public float maxTimeJumpInsurance = 0.2f;
-    float timeJumpInsurance = 0;
-    bool jumpInsurance;
     [Tooltip("How fast the 'stop jump early' stops in the air. This value is multiplied by the gravity and then applied to the vertical speed.")]
     public float breakJumpForce = 2.0f;
     [Tooltip("During how much part of the jump (in time to reach the apex) is the player able to stop the jump. 1 is equals to the whole jump, and 0.5 is equals the half of the jump time.")]
     public float pressingJumpActiveProportion = 0.7f;
+    public float maxTimeJumpInsurance = 0.2f;
+    float timeJumpInsurance = 0;
+    bool jumpInsurance;
+    bool jumpingFromWater;
     [Header("WALLJUMP")]
     public float wallJumpVelocity = 10f;
     public float stopWallMaxTime = 0.5f;
@@ -175,6 +176,7 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(currentVel * Time.deltaTime);
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();
+        myPlayerAnimation.KonoUpdate();
     }
 
     [HideInInspector]
@@ -380,6 +382,7 @@ public class PlayerMovement : MonoBehaviour
         if (!jumpedOutOfWater && !inWater && controller.collisions.below)
         {
             jumpedOutOfWater = true;
+            maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
         }
         if (lastWallAngle >= 0 && controller.collisions.below)
         {
@@ -399,7 +402,7 @@ public class PlayerMovement : MonoBehaviour
             case JumpState.Jumping:
                 currentVel.y += gravity * Time.deltaTime;
                 timePressingJump += Time.deltaTime;
-                if (timePressingJump >= maxTimePressingJump - maxTimePressingJump / 3)
+                if (timePressingJump >= maxTimePressingJump)
                 {
                     StopJump();
                 }
@@ -875,6 +878,7 @@ public class PlayerMovement : MonoBehaviour
         {
             inWater = true;
             jumpedOutOfWater = false;
+            maxTimePressingJump = 0f;
             myPlayerWeap.AttachWeaponToBack();
             if (haveFlag)
             {
