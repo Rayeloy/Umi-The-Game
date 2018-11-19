@@ -27,6 +27,11 @@ public class ScoreManager : MonoBehaviour {
     [HideInInspector]
     public bool prorroga = false;
 
+    public GameObject[] orcasRedTeam;
+    private List<GameObject> _orcasRedTeam;
+    public GameObject [] orcasBlueTeam;
+    private List<GameObject> _orcasBlueTeam;
+
 	[Header("Referencias")]
 	public TextMeshProUGUI[] blueTeamScore_Text;
 	public TextMeshProUGUI[] redTeamScore_Text;
@@ -35,6 +40,13 @@ public class ScoreManager : MonoBehaviour {
     public void KonoStart(){
         _Tiempo = tiempoProrroga;
         _tiempoProrroga = tiempoProrroga;
+
+        for( int i = 0; i < orcasRedTeam.Length; i++){
+            _orcasRedTeam.Add(orcasRedTeam[i]);
+        }
+        for( int i = 0; i < orcasBlueTeam.Length; i++){
+            _orcasBlueTeam.Add(orcasBlueTeam[i]);
+        }
     }
 
     public void Reset(){
@@ -42,8 +54,8 @@ public class ScoreManager : MonoBehaviour {
         End = false;
 
         //Tiempos
-        Tiempo = _Tiempo;
-        tiempoProrroga = _tiempoProrroga;
+        _Tiempo = tiempoProrroga;
+        _tiempoProrroga = tiempoProrroga;
         for( int i = 0; i < time_Text.Length; i++)
 			time_Text[i].color = Color.white;
 
@@ -68,12 +80,12 @@ public class ScoreManager : MonoBehaviour {
             return;
         }
 
-		Tiempo -= Time.deltaTime;
+		_Tiempo -= Time.deltaTime;
 
         for( int i = 0; i < time_Text.Length; i++)
-			time_Text[i].text = timeToString(Tiempo);
+			time_Text[i].text = timeToString(_Tiempo);
 
-        if (Tiempo <= 0){
+        if (_Tiempo <= 0){
             Team winner;
             if (_blueTeamScore == _redTeamScore)
             {
@@ -93,6 +105,7 @@ public class ScoreManager : MonoBehaviour {
         {
             case Team.blue:
                 _blueTeamScore++;
+                RandomOrcaSpawn(_orcasBlueTeam);
                 for( int i = 0; i < blueTeamScore_Text.Length; i++)
                 {
                     blueTeamScore_Text[i].text = _blueTeamScore.ToString();
@@ -104,6 +117,7 @@ public class ScoreManager : MonoBehaviour {
                 break;
             case Team.red:
                 _redTeamScore++;
+                RandomOrcaSpawn(_orcasRedTeam);
                 for( int i = 0; i < redTeamScore_Text.Length; i++)//foreach (TextMeshProUGUI tM in redTeamScore_Text)
                 {
                     redTeamScore_Text[i].text = _redTeamScore.ToString();
@@ -115,6 +129,15 @@ public class ScoreManager : MonoBehaviour {
                 break;
         }
 	}
+
+    private void RandomOrcaSpawn (List<GameObject> l){
+        if (l.Count < 0) return;
+
+        int i = Random.Range(0, l.Count - 1);
+        l[i].SetActive( true );
+
+        l.RemoveAt(i);
+    }
 
     private string timeToString(float f){
         string elTiempo = "";
@@ -143,16 +166,16 @@ public class ScoreManager : MonoBehaviour {
     }
 
     private void Prorroga(){
-        tiempoProrroga -= Time.deltaTime;
+        _tiempoProrroga -= Time.deltaTime;
 
-        if (tiempoProrroga <= 0){
-            tiempoProrroga = 0;
+        if (_tiempoProrroga <= 0){
+            _tiempoProrroga = 0;
             GameController.instance.GameOver(Team.none);
             End = true;
         }
 
         for( int i = 0; i < time_Text.Length; i++)
-			time_Text[i].text = timeToString(tiempoProrroga);
+			time_Text[i].text = timeToString(_tiempoProrroga);
     }
 
     private int nPlayerEliminados = 0;

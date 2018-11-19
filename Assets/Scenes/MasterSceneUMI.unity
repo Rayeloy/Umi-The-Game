@@ -5795,8 +5795,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 959634548}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.64579946, y: -2.2355473, z: -67.56176}
+  m_LocalRotation: {x: -0.040597007, y: 0.9221268, z: 0.10082149, w: 0.3713072}
+  m_LocalPosition: {x: 15.068748, y: -5.3148437, z: -67.612114}
   m_LocalScale: {x: 0.32588154, y: 0.32588154, z: 0.32588154}
   m_Children: []
   m_Father: {fileID: 538996555}
@@ -7236,7 +7236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1eeeda205dd7c4549ba5aee88b452379, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Tiempo: 12132131
+  Tiempo: 140
   End: 0
   maxScore: 3
   _blueTeamScore: 0
@@ -7258,6 +7258,8 @@ MonoBehaviour:
   - {fileID: 1552939499}
   - {fileID: 1625165307}
   - {fileID: 1142845289}
+  orcasRedTeam: []
+  orcasBlueTeam: []
 --- !u!1001 &1142845288
 Prefab:
   m_ObjectHideFlags: 0
