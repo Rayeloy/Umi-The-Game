@@ -112,7 +112,6 @@ public class GameController : MonoBehaviour
     public ScoreManager scoreManager;
     // Update is called once per frame
     void Update () {
-        print("GAME CONTROLLER UPDATE");
         if (scoreManager.End) return;
 
         if (!gamePaused)
@@ -146,11 +145,12 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            if (playerActions.Jump.WasPressed){
-                SceneManager.LoadScene(menuScene);
-                UnPauseGame ();
+            if (playerActions.Jump.WasPressed)
+            {
+                GoBackToMenu();
             }
-            else if (playerActions.Attack3.WasPressed){
+            else if (playerActions.Attack3.WasPressed || playerActions.Options.WasPressed)
+            {
                 UnPauseGame ();
             }
         }
@@ -241,11 +241,11 @@ public class GameController : MonoBehaviour
     public void SwitchGameOverMenu()
     {
         //print("GAME OVER MENU");
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
         //print("gameOverMenuOn= " + gameOverMenuOn);
         if (gameOverMenuOn)
         {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
             gameOverMenuOn = false;
             gameOverMenu.SetActive(false);
             veil.SetActive(false);
@@ -254,6 +254,8 @@ public class GameController : MonoBehaviour
         else
         {
             //print("ACTIVATE GAME OVER MENU");
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
             gameOverMenuOn = true;
             gameOverMenu.SetActive(true);
             veil.SetActive(true);
@@ -305,7 +307,10 @@ public class GameController : MonoBehaviour
     private PlayerActions playerActions;
 
 	public void PauseGame( PlayerActions p){
-		Time.timeScale = 0;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        Time.timeScale = 0;
         gamePaused = true;
 
         veil.SetActive ( true );
@@ -317,12 +322,23 @@ public class GameController : MonoBehaviour
 	}
 
     private void UnPauseGame (){
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         Time.timeScale = 1;
         gamePaused = false;
         veil.SetActive ( false );
         Button.SetActive ( false );
 
 		gamePaused = false;
+    }
+
+    public void GoBackToMenu()
+    {
+        UnPauseGame();
+        GameObject inControlManager = GameObject.Find("InControl manager");
+        Destroy(inControlManager);
+        SceneManager.LoadScene(menuScene);
     }
 
 #endregion
