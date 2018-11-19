@@ -20,6 +20,10 @@ public class PlayerAnimation : MonoBehaviour
     bool swimmingIdle;
     int swimmingHash = Animator.StringToHash("Swimming");
     bool swimming;
+    int runningHash = Animator.StringToHash("Running");
+    bool runningValue;
+    int basicSwingHash = Animator.StringToHash("BasicSwingHash");
+    bool basicSwingValue;
     [Tooltip("Distance to floor at which the landing animation will start")]
     public float maxTimeToLand = 1;
     //-------------

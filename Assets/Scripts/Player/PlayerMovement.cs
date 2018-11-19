@@ -434,7 +434,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!noInput && moveSt != MoveState.Boost)
         {
-            if ((controller.collisions.below||jumpInsurance) && (!inWater || inWater && controller.collisions.around))
+            if ((controller.collisions.below||jumpInsurance) && (!inWater || inWater && controller.collisions.around && !ScoreManager.instance.prorroga))
             {
                 currentVel.y = jumpVelocity;
                 jumpSt = JumpState.Jumping;
