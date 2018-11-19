@@ -144,7 +144,13 @@ public class GameController : MonoBehaviour
         }
         else
         {
-
+            if (playerActions.Jump.WasPressed){
+                SceneManager.LoadScene(menuScene);
+                UnPauseGame ();
+            }
+            else if (playerActions.Attack3.WasPressed){
+                UnPauseGame ();
+            }
         }
 
 	}
@@ -288,9 +294,9 @@ public class GameController : MonoBehaviour
     [Header("Pause")]
     public string menuScene;
 
-	private IEnumerator coroutine;
-
     public GameObject Button;
+    
+    private PlayerActions playerActions;
 
 	public void PauseGame( PlayerActions p){
 		Time.timeScale = 0;
@@ -299,8 +305,9 @@ public class GameController : MonoBehaviour
         veil.SetActive ( true );
         Button.SetActive ( true );
 
-		coroutine = Pause ( p );
-		StartCoroutine ( coroutine );
+		playerActions = p;
+
+        gamePaused = true;
 	}
 
     private void UnPauseGame (){
@@ -308,24 +315,9 @@ public class GameController : MonoBehaviour
         gamePaused = false;
         veil.SetActive ( false );
         Button.SetActive ( false );
-		StopCoroutine ( coroutine );
-    }
 
-	private IEnumerator Pause( PlayerActions playerActions)
-    {
-        while (true)
-        {
-			//Debug.Log(myPlayerMovement.Actions.Jump.WasPressed);
-			if (playerActions.Jump.WasPressed){
-				SceneManager.LoadScene(menuScene);
-				UnPauseGame ();
-			}
-			else if (playerActions.Attack3.WasPressed){
-				UnPauseGame ();
-			}
-            yield return null;
-        }
-	}
+		gamePaused = false;
+    }
 
 #endregion
 }
