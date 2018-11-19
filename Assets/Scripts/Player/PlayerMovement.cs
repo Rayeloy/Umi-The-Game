@@ -873,7 +873,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!inWater)
         {
-            ScoreManager.instance.PlayerEliminado();
             inWater = true;
             jumpedOutOfWater = false;
             myPlayerWeap.AttachWeaponToBack();
@@ -889,6 +888,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (inWater)
         {
+            ScoreManager.instance.PlayerEliminado();
             controller.AroundCollisions();
             if (maxMoveSpeed2 > maxSpeedInWater)
             {
