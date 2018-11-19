@@ -38,7 +38,7 @@ public class ScoreManager : MonoBehaviour {
 	public TextMeshProUGUI[] time_Text;
 
     public void KonoStart(){
-        _Tiempo = tiempoProrroga;
+        _Tiempo = Tiempo;
         _tiempoProrroga = tiempoProrroga;
 
         for( int i = 0; i < orcasRedTeam.Length; i++){
@@ -54,7 +54,7 @@ public class ScoreManager : MonoBehaviour {
         End = false;
 
         //Tiempos
-        _Tiempo = tiempoProrroga;
+        _Tiempo = Tiempo;
         _tiempoProrroga = tiempoProrroga;
         for( int i = 0; i < time_Text.Length; i++)
 			time_Text[i].color = Color.white;
