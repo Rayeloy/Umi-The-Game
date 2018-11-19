@@ -13,6 +13,8 @@ public class TeamSetupManager : MonoBehaviour
 	public GameObject playerPrefab;
 
 	public static string SiguenteEscena;
+    public static bool startFromMap = false;
+    public string nextScene;
 
 	const int maxPlayers = 4;
 
@@ -83,7 +85,15 @@ public class TeamSetupManager : MonoBehaviour
 					//Debug.Log(ps.Actions);
 				}
                 GameInfo.instance.nPlayers = players.Count;
-				SceneManager.LoadScene(SiguenteEscena);
+                if (startFromMap)
+                {
+                    SceneManager.LoadScene(SiguenteEscena);
+                }
+                else
+                {
+                    SceneManager.LoadScene(nextScene);
+                }
+
 			}
 		}
 	}
