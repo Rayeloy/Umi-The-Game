@@ -155,6 +155,8 @@ public class PlayerMovement : MonoBehaviour
     int frameCounter = 0;
     public void KonoUpdate()
     {
+        if (Actions.Options.WasPressed) GameController.instance.PauseGame(Actions);
+
         if ((controller.collisions.above || controller.collisions.below) && !hooked)
         {
             currentVel.y = 0;

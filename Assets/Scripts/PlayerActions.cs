@@ -27,6 +27,8 @@ public class PlayerActions : PlayerActionSet
 	public PlayerAction R3;
 	public PlayerAction L3;
 
+	public PlayerAction Options;
+
 	public PlayerActions()
 	{
 		Boost = CreatePlayerAction( "Boost" );
@@ -52,6 +54,8 @@ public class PlayerActions : PlayerActionSet
 
 		R3 = CreatePlayerAction("R3");
 		L3 = CreatePlayerAction("L3");	
+
+		Options = CreatePlayerAction ( "Options" );
 	}
 	public static PlayerActions CreateWithKeyboardBindings()
 	{
@@ -78,6 +82,8 @@ public class PlayerActions : PlayerActionSet
 
 		actions.L3.AddDefaultBinding( Key.Key4 );
 		actions.R3.AddDefaultBinding( Key.Key5 );
+
+		actions.Options.AddDefaultBinding ( Key.Escape );
 		return actions;
 	}
 	public static PlayerActions CreateWithJoystickBindings()
@@ -104,6 +110,8 @@ public class PlayerActions : PlayerActionSet
 
 		actions.R3.AddDefaultBinding ( InputControlType.RightStickButton );
 		actions.L3.AddDefaultBinding ( InputControlType.LeftStickButton );
+
+		actions.Options.AddDefaultBinding (InputControlType.Start);
 		return actions;
 	}
 }

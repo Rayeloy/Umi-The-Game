@@ -271,4 +271,47 @@ public class GameController : MonoBehaviour
         C3,
         C4
     }
+
+#region ---------------------------------------------- Pause ----------------------------------------------
+    [Header("Pause")]
+    public string menuScene;
+
+	private IEnumerator coroutine;
+
+    public GameObject Button;
+
+	public void PauseGame( PlayerActions p){
+		Time.timeScale = 0;
+
+        veil.SetActive ( true );
+        Button.SetActive ( true );
+
+		coroutine = Pause ( p );
+		StartCoroutine ( coroutine );
+	}
+
+    private void UnPauseGame (){
+        Time.timeScale = 1;
+        veil.SetActive ( false );
+        Button.SetActive ( false );
+		StopCoroutine ( coroutine );
+    }
+
+	private IEnumerator Pause( PlayerActions playerActions)
+    {
+        while (true)
+        {
+			//Debug.Log(myPlayerMovement.Actions.Jump.WasPressed);
+			if (playerActions.Jump.WasPressed){
+				SceneManager.LoadScene(menuScene);
+				UnPauseGame ();
+			}
+			else if (playerActions.Attack3.WasPressed){
+				UnPauseGame ();
+			}
+            yield return null;
+        }
+	}
+
+#endregion
 }
