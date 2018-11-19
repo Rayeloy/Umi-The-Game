@@ -31,6 +31,7 @@ public class GameController : MonoBehaviour
             string escena = TeamSetupManager.SiguenteEscena;
             print(escena);
             TeamSetupManager.SiguenteEscena = SceneManager.GetActiveScene().name;
+            TeamSetupManager.startFromMap = true;
             SceneManager.LoadScene("TeamSetup");
             return;
         }
