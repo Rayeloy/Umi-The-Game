@@ -1,16 +1,40 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class PlayerPause : MonoBehaviour {
+public class PlayerPause : MonoBehaviour
+{
+	public string menuScene;
 
-	// Use this for initialization
-	void Start () {
-		
+	private IEnumerator coroutine;
+
+	[Header("Referencias")]
+	public GameObject Canvas;
+	public PlayerMovement myPlayerMovement;
+
+	public void PauseGame(){
+		Time.timeScale = 0;
+
+		coroutine = Pause();
+		StartCoroutine(coroutine);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+
+	private IEnumerator Pause()
+    {
+        while (true)
+        {
+			//Debug.Log(myPlayerMovement.Actions.Jump.WasPressed);
+			if (myPlayerMovement.Actions.Jump.WasPressed){
+				Time.timeScale = 1;
+				SceneManager.LoadScene(menuScene);
+				StopCoroutine(coroutine);
+			}
+			else if (myPlayerMovement.Actions.Attack3.WasPressed){
+				Time.timeScale = 1;
+				StopCoroutine(coroutine);
+			}
+            yield return null;
+        }
 	}
 }
