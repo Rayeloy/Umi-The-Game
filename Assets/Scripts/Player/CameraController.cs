@@ -232,10 +232,11 @@ public class CameraController : MonoBehaviour
                         }
                         else
                         {
+                            targetCamPos = cameraFollowObj.transform.position;
                             currentCamPos = targetCamPos;
                             currentCamRot = targetCamRot;
                         }
-                        targetCamPos = cameraFollowObj.transform.position;
+                        
                         float step = cameraMoveSpeed * Time.deltaTime;
                         transform.position = Vector3.MoveTowards(transform.position, currentCamPos, step);
                     }

@@ -14,7 +14,7 @@ public class Trampolin : MonoBehaviour
     {
 		if (other.tag != "Player") return;
 
-        PlayerMovement pm = other.gameObject.GetComponent<PlayerMovement>();
+        PlayerMovement pm = other.transform.GetComponent<PlayerBody>().myPlayerMov;
 		if (pm != null && pm.currentVel.y <= playerSpeed)
 			pm.StartFixedJump(transform.up * Fuerza, tiempoStuneado);
     }
