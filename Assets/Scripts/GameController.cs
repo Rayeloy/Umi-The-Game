@@ -113,6 +113,8 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update () {
         print("GAME CONTROLLER UPDATE");
+        if (scoreManager.End) return;
+
         if (!gamePaused)
         {
             if (Input.GetKeyDown(KeyCode.Keypad0))
@@ -140,7 +142,7 @@ public class GameController : MonoBehaviour
                     allPlayers[i].KonoUpdate();
                 }
             }
-            scoreManager.TiempoDeJuego();
+            scoreManager.KonoUpdate();
         }
         else
         {
@@ -161,7 +163,9 @@ public class GameController : MonoBehaviour
     public bool gamePaused = false;
     public void StartGame()
     {
+        ScoreManager.instance.KonoStart();
         playing = true;
+        gamePaused = false;
         for (int i = 0; i < playerNum; i++)
         {
             RespawnPlayer(allPlayers[i]);
@@ -178,6 +182,7 @@ public class GameController : MonoBehaviour
     {
         //print("GAME OVER");
         playing = false;
+        gamePaused = true;
         for(int i=0; i < flags.Length; i++)
         {
             flags[i].SetAway(true);
@@ -270,6 +275,7 @@ public class GameController : MonoBehaviour
     {
         ScoreManager.instance.Reset();
         playing = true;
+        gamePaused = false;
         SwitchGameOverMenu();
         foreach(PlayerMovement pM in allPlayers)
         {
@@ -295,7 +301,7 @@ public class GameController : MonoBehaviour
     public string menuScene;
 
     public GameObject Button;
-    
+
     private PlayerActions playerActions;
 
 	public void PauseGame( PlayerActions p){

@@ -32,7 +32,7 @@ public class ScoreManager : MonoBehaviour {
 	public TextMeshProUGUI[] redTeamScore_Text;
 	public TextMeshProUGUI[] time_Text;
 
-    private void Start(){
+    public void KonoStart(){
         _Tiempo = tiempoProrroga;
         _tiempoProrroga = tiempoProrroga;
     }
@@ -59,7 +59,7 @@ public class ScoreManager : MonoBehaviour {
         }
     }
 
-    public void TiempoDeJuego (){
+    public void KonoUpdate (){
 		if(End) return;
 
         if (prorroga)
@@ -149,6 +149,7 @@ public class ScoreManager : MonoBehaviour {
 			time_Text[i].text = timeToString(tiempoProrroga);
 
         if (tiempoProrroga <= 0){
+            tiempoProrroga = 0;
             GameController.instance.GameOver(Team.none);
             End = true;
         }
@@ -161,6 +162,7 @@ public class ScoreManager : MonoBehaviour {
             nPlayerEliminados++;
 
             if (nPlayerEliminados >= GameController.instance.playerNum){
+                End = true;
                 GameController.instance.GameOver(Team.none);
             }
         }
