@@ -6,11 +6,13 @@ using UnityEngine.SceneManagement;
 public class TeamSetupManager : MonoBehaviour
 {
     //public static List<PlayerActions> playerActionsList = new List<PlayerActions>();
+    public static TeamSetupManager instance;
+
     [Range(1,6)]
     public int minNumPlayers;
 	public GameObject playerPrefab;
 
-	public string SiguenteEscena;
+	public static string SiguenteEscena;
 
 	const int maxPlayers = 4;
 
@@ -23,6 +25,7 @@ public class TeamSetupManager : MonoBehaviour
 
     private void Awake()
     {
+        instance = this;
         minNumPlayers = Mathf.Clamp(minNumPlayers, 1, 6);
     }
 

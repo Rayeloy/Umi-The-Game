@@ -28,6 +28,9 @@ public class GameController : MonoBehaviour
     {
         if (GameInfo.instance == null)
         {
+            string escena = TeamSetupManager.SiguenteEscena;
+            print(escena);
+            TeamSetupManager.SiguenteEscena = SceneManager.GetActiveScene().name;
             SceneManager.LoadScene("TeamSetup");
             return;
         }
