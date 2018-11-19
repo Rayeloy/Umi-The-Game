@@ -38,13 +38,16 @@ public class PlayerSelected : MonoBehaviour
 	{
 		if (Actions.Jump.WasPressed)
 			Ready = !Ready;
-		
-		if (Actions.Movement.X < -0.5f && team != Team.blue){
-			changeTeam(Team.blue);
+
+		if (Ready){
+			if (Actions.Movement.X < -0.5f && team != Team.blue){
+				changeTeam(Team.blue);
+			}
+			else if (Actions.Movement.X > 0.5f && team != Team.red){
+				changeTeam(Team.red);
+			}
 		}
-		else if (Actions.Movement.X > 0.5f && team != Team.red){
-			changeTeam(Team.red);
-		}
+
 //		else
 //		{
 //			// Set object material color.
