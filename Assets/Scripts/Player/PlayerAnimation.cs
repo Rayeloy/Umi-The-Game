@@ -40,7 +40,7 @@ public class PlayerAnimation : MonoBehaviour
 
     public void KonoUpdate()
     {
-        if(ScoreManager.instance.End){
+        if(GameController.instance.gameMode==GameController.GameMode.CaptureTheFlag && ScoreManager.instance.End){
             animator.SetBool(endGameHash, true);
             //ResetVariables();
             return;

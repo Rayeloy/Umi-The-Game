@@ -7,6 +7,13 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour
 {
     public static GameController instance;
+    public GameMode gameMode;
+    public enum GameMode
+    {
+        CaptureTheFlag,
+        AirPump,
+        Tutorial
+    }
     [Tooltip("Number of players in the game")]
     [HideInInspector]
     [Range(1,4)]
@@ -112,7 +119,7 @@ public class GameController : MonoBehaviour
     public ScoreManager scoreManager;
     // Update is called once per frame
     void Update () {
-        if (scoreManager.End) return;
+        //if (scoreManager.End) return;
 
         if (!gamePaused)
         {
@@ -141,7 +148,17 @@ public class GameController : MonoBehaviour
                     allPlayers[i].KonoUpdate();
                 }
             }
-            scoreManager.KonoUpdate();
+            switch (gameMode)
+            {
+                case GameMode.CaptureTheFlag:
+                    scoreManager.KonoUpdate();
+                    break;
+                case GameMode.AirPump:
+                    break;
+                case GameMode.Tutorial:
+                    break;
+            }
+
         }
         else
         {
@@ -163,7 +180,17 @@ public class GameController : MonoBehaviour
     public bool gamePaused = false;
     public void StartGame()
     {
-        ScoreManager.instance.KonoStart();
+        switch (gameMode)
+        {
+            case GameMode.CaptureTheFlag:
+                ScoreManager.instance.KonoStart();
+                break;
+            case GameMode.AirPump:
+                break;
+            case GameMode.Tutorial:
+                break;
+        }
+
         playing = true;
         gamePaused = false;
         for (int i = 0; i < playerNum; i++)

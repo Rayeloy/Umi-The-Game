@@ -439,7 +439,9 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!noInput && moveSt != MoveState.Boost)
         {
-            if ((controller.collisions.below||jumpInsurance) && (!inWater || inWater && controller.collisions.around && !ScoreManager.instance.prorroga))
+            if ((controller.collisions.below||jumpInsurance) && (!inWater || (inWater && controller.collisions.around && 
+                ((GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga)||
+                (GameController.instance.gameMode != GameController.GameMode.CaptureTheFlag)))))
             {
                 currentVel.y = jumpVelocity;
                 jumpSt = JumpState.Jumping;
@@ -891,7 +893,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (inWater)
         {
-            ScoreManager.instance.PlayerEliminado();
+            if(GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag)
+            {
+                ScoreManager.instance.PlayerEliminado();
+            }
+
             controller.AroundCollisions();
             if (maxMoveSpeed2 > maxSpeedInWater)
             {

@@ -51,7 +51,7 @@ public class CameraCollisions : MonoBehaviour {
             distance = maxDistance;
         }
         myCamController.targetMyCamPos = dollyDir * distance;
-        print("UPDATE CAM COLL: maxDistance = " + maxDistance + "; dollyDir = " + dollyDir + "; distance = " + distance);
+
     }
 
 
