@@ -28,6 +28,7 @@ public class CameraCollisions : MonoBehaviour {
         maxDistance = myCamController.targetMyCamPos.magnitude;
         dollyDir = myCamController.targetMyCamPos.normalized;
         distance = transform.localPosition.magnitude;
+        print("Camera Collisions: maxDistance = " + maxDistance + "; dollyDir = " + dollyDir + "; distance = " + distance);
     }
 
     public void KonoUpdate()
@@ -50,6 +51,7 @@ public class CameraCollisions : MonoBehaviour {
             distance = maxDistance;
         }
         myCamController.targetMyCamPos = dollyDir * distance;
+        print("UPDATE CAM COLL: maxDistance = " + maxDistance + "; dollyDir = " + dollyDir + "; distance = " + distance);
     }
 
 

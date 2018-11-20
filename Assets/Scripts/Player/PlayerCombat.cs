@@ -95,7 +95,6 @@ public class PlayerCombat : MonoBehaviour {
             {
                 RTPulsado = true;
                 myHook.StartHook();
-                myPlayerHUD.StartThrowHook();
                 //ChangeAttackType(GameController.instance.attackHook);
                 //StartAttack();
 

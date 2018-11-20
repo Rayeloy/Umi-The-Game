@@ -160,7 +160,7 @@ public class Hook : MonoBehaviour
                 }
             }
             print("Current Hook = " + currentHook);
-            
+            myPlayerCombat.myPlayerHUD.StartThrowHook();
         }
     }
 

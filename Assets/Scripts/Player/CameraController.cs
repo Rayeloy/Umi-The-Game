@@ -327,7 +327,7 @@ public class CameraController : MonoBehaviour
                 myPlayerMov.rotateObj.localRotation = Quaternion.Euler(0, transform.localRotation.eulerAngles.y, 0);
                 break;
             case cameraMode.Free:
-                GetComponentInChildren<CameraCollisions>().enabled = false;
+                GetComponentInChildren<CameraCollisions>().enabled = true;
                 //transform.localRotation = myPlayerMov.rotateObj.localRotation;
                 rotY = myPlayerMov.rotateObj.localRotation.eulerAngles.y;
                 targetMyCamPos = originalCamPosFree;
