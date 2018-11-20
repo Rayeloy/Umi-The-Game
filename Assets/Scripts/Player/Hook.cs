@@ -7,6 +7,7 @@ public class Hook : MonoBehaviour
 {
 
     PlayerMovement myPlayerMov;
+    PlayerCombat myPlayerCombat;
 
     GameObject currentHook;
     Transform hookedObject;
@@ -33,6 +34,7 @@ public class Hook : MonoBehaviour
     private void Awake()
     {
         myPlayerMov = GetComponent<PlayerMovement>();
+        myPlayerCombat = GetComponent<PlayerCombat>();
         if (myPlayerMov == null)
         {
             Debug.LogError("PlayerMovement is not on the object where the hook script is. This object is " + gameObject.name);
@@ -158,6 +160,7 @@ public class Hook : MonoBehaviour
                 }
             }
             print("Current Hook = " + currentHook);
+            
         }
     }
 
@@ -249,6 +252,7 @@ public class Hook : MonoBehaviour
             StoringManager.instance.StoreObject(currentHook.transform);
             currentHook = null;
             cdTime = 0;
+            myPlayerCombat.myPlayerHUD.StopThrowHook();
         }
     }
 
