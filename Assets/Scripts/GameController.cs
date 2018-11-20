@@ -29,6 +29,7 @@ public class GameController : MonoBehaviour
     public GameObject[] allCanvas;
     public CameraController[] allCameraBases;
     public WeaponData[] allWeapons;
+    public RectTransform[] contador;
 
     public GameObject flagPrefab;
     private void Awake()
@@ -114,8 +115,18 @@ public class GameController : MonoBehaviour
             allPlayers[i].KonoStart();
         }
         StartGame();
-
     }
+
+    private void SetUpCanvas (){
+        if (playerNum == 2){
+            contador[0].anchoredPosition = new Vector3 (contador[0].anchoredPosition.x, 100, contador[0].anchoredPosition.y);
+            contador[1].anchoredPosition = new Vector3 (contador[1].anchoredPosition.x, 100, contador[1].anchoredPosition.y);
+        }
+        else if (playerNum == 3){
+            contador[2].anchoredPosition = new Vector3 (contador[2].anchoredPosition.x, 100, contador[2].anchoredPosition.y);
+        }
+    }
+
 
     public ScoreManager scoreManager;
     // Update is called once per frame
@@ -200,6 +211,8 @@ public class GameController : MonoBehaviour
         {
             RespawnPlayer(allPlayers[i]);
         }
+
+        SetUpCanvas();
     }
 
     [HideInInspector]
