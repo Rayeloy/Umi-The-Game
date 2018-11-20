@@ -7173,6 +7173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 384e2a8ce393b094bb0754e6774c8dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameMode: 0
   playerNum: 1
   flags: []
   attackX: {fileID: 11400000, guid: 62b70d52c7fb6024eafbe61034f7d534, type: 2}
@@ -7208,7 +7209,8 @@ MonoBehaviour:
   redTeamFlagHome: {fileID: 0}
   gameOverMenu: {fileID: 1980474124}
   veil: {fileID: 1275665991}
-  victoryText: {fileID: 434641805}
+  victoryRed: {fileID: 0}
+  victoryBlue: {fileID: 0}
   sceneLoadedOnReset: MasterSceneUMI
   menuScene: Menus
   Button: {fileID: 1435033117}
@@ -7527,22 +7529,22 @@ Prefab:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114709241509040990, guid: e38cc17c2fe4d7f4f99a2fe6951c0c44,
+    - target: {fileID: 114427721350293064, guid: e38cc17c2fe4d7f4f99a2fe6951c0c44,
         type: 2}
       propertyPath: m_havePropertiesChanged
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114709241509040990, guid: e38cc17c2fe4d7f4f99a2fe6951c0c44,
+    - target: {fileID: 114427721350293064, guid: e38cc17c2fe4d7f4f99a2fe6951c0c44,
         type: 2}
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114427721350293064, guid: e38cc17c2fe4d7f4f99a2fe6951c0c44,
+    - target: {fileID: 114709241509040990, guid: e38cc17c2fe4d7f4f99a2fe6951c0c44,
         type: 2}
       propertyPath: m_havePropertiesChanged
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114427721350293064, guid: e38cc17c2fe4d7f4f99a2fe6951c0c44,
+    - target: {fileID: 114709241509040990, guid: e38cc17c2fe4d7f4f99a2fe6951c0c44,
         type: 2}
       propertyPath: m_isInputParsingRequired
       value: 1

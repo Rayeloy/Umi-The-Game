@@ -36,6 +36,7 @@ public class ScoreManager : MonoBehaviour {
 	public TextMeshProUGUI[] blueTeamScore_Text;
 	public TextMeshProUGUI[] redTeamScore_Text;
 	public TextMeshProUGUI[] time_Text;
+    public RectTransform[] contador;
 
     public void KonoStart(){
         _Tiempo = Tiempo;
@@ -50,6 +51,15 @@ public class ScoreManager : MonoBehaviour {
         for( int i = 0; i < orcasBlueTeam.Length; i++){
             orcasBlueTeam[i].SetActive(false);
             orcasBlueIndex.Add(i);
+        }
+
+        SetUpCanvas();
+    }
+
+    private void SetUpCanvas (){
+        if (GameController.instance.playerNum == 2){
+            contador[0].anchoredPosition = new Vector3 (contador[0].anchoredPosition.x, 100, contador[0].anchoredPosition.y);
+            contador[1].anchoredPosition = new Vector3 (contador[0].anchoredPosition.x, 100, contador[0].anchoredPosition.y);
         }
     }
 
@@ -78,6 +88,7 @@ public class ScoreManager : MonoBehaviour {
     }
 
     public void KonoUpdate (){
+        Debug.Log(contador[0].position);
 		if(End) return;
 
         if (prorroga)
