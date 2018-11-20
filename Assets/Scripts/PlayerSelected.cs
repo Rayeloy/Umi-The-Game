@@ -39,7 +39,7 @@ public class PlayerSelected : MonoBehaviour
 		if (Actions.Jump.WasPressed)
 			Ready = !Ready;
 
-		if (Ready){
+		if (!Ready){
 			if (Actions.Movement.X < -0.5f && team != Team.blue){
 				changeTeam(Team.blue);
 			}
