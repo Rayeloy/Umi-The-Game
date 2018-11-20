@@ -45,7 +45,8 @@ public class GameController : MonoBehaviour
         instance = this;
         gameOverMenu.SetActive(false);
         veil.SetActive(false);
-        victoryText.SetActive(false);
+        victoryRed.gameObject.SetActive(false);
+        victoryBlue.gameObject.SetActive(false);
         gameOverMenuOn = false;
         playerNum = GameInfo.instance.nPlayers;
         playerNum = Mathf.Clamp(playerNum, 1, 4);
@@ -162,16 +163,18 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            if (playerActions.Jump.WasPressed)
+            if (playing)
             {
-                GoBackToMenu();
-            }
-            else if (playerActions.Attack3.WasPressed || playerActions.Options.WasPressed)
-            {
-                UnPauseGame ();
+                if (playerActions.Jump.WasPressed)
+                {
+                    GoBackToMenu();
+                }
+                else if (playerActions.Attack3.WasPressed || playerActions.Options.WasPressed)
+                {
+                    UnPauseGame();
+                }
             }
         }
-
 	}
 
     [HideInInspector]
@@ -264,7 +267,8 @@ public class GameController : MonoBehaviour
     bool gameOverMenuOn = false;
     public GameObject gameOverMenu;
     public GameObject veil;
-    public GameObject victoryText;
+    public Image victoryRed;
+    public Image victoryBlue;
     public void SwitchGameOverMenu()
     {
         //print("GAME OVER MENU");
@@ -276,7 +280,8 @@ public class GameController : MonoBehaviour
             gameOverMenuOn = false;
             gameOverMenu.SetActive(false);
             veil.SetActive(false);
-            victoryText.SetActive(false);
+            victoryRed.gameObject.SetActive(false);
+            victoryBlue.gameObject.SetActive(false);
         }
         else
         {
@@ -286,16 +291,13 @@ public class GameController : MonoBehaviour
             gameOverMenuOn = true;
             gameOverMenu.SetActive(true);
             veil.SetActive(true);
-            victoryText.SetActive(true);
             if (winnerTeam == Team.blue)
             {
-                victoryText.GetComponent<Text>().text = "BLUE TEAM WON";
-                victoryText.GetComponent<Text>().color = Color.blue;
+                victoryBlue.gameObject.SetActive(true);
             }
             else if (winnerTeam == Team.red)
             {
-                victoryText.GetComponent<Text>().text = "RED TEAM WON";
-                victoryText.GetComponent<Text>().color = Color.red;
+                victoryRed.gameObject.SetActive(true);
             }
         }
     }
@@ -353,7 +355,6 @@ public class GameController : MonoBehaviour
         Cursor.visible = false;
 
         Time.timeScale = 1;
-        gamePaused = false;
         veil.SetActive ( false );
         Button.SetActive ( false );
 

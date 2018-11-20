@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Flag : MonoBehaviour {
     [HideInInspector]
@@ -137,6 +138,7 @@ public class Flag : MonoBehaviour {
                         currentOwner.GetComponent<PlayerMovement>().LoseFlag();
                         currentOwner = null;
                     }
+                    print("START BEING HOOKED");
                     beingHooked = true;
                     playerHooking = player.transform;
                 }
@@ -196,6 +198,7 @@ public class Flag : MonoBehaviour {
 
     public void StopBeingHooked()
     {
+        print("Stop being Hooked");
         beingHooked = false;
         playerHooking = null;
     }
@@ -205,6 +208,11 @@ public class Flag : MonoBehaviour {
         currentOwner = player.transform;
         player.haveFlag = true;
         player.flag = this;
+        if (GameController.instance.gameMode == GameController.GameMode.Tutorial)
+        {
+            SceneManager.LoadScene("Menus");
+        }
+
     }
 
     public void PutFlagOnBack(PlayerMovement player) 

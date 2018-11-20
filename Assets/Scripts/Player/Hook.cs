@@ -309,7 +309,7 @@ public class Hook : MonoBehaviour
     {
         get
         {
-            return (!reelingStarted && !enemyHooked && !objectHooked);
+            return (!reelingStarted && !enemyHooked && !objectHooked && doingHook);
         }
     }
     [HideInInspector]
