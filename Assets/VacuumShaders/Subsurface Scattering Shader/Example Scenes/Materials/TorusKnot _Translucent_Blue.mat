@@ -1,0 +1,136 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: TorusKnot _Translucent_Blue
+  m_Shader: {fileID: 4800000, guid: 4a67ac15de494d74bb3bae7d96b8790f, type: 3}
+  m_ShaderKeywords: V_SSS_ADVANCED_TRANSLUSENCY_ON V_SSS_LIGHTCOUNT_ONE V_SSS_NORMALIZE_DIFFUSE_COEF_ON
+    V_SSS_POW_EIGHT V_SSS_RIM_OFF
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+      data:
+        first:
+          name: _MainTex
+        second:
+          m_Texture: {fileID: 2800000, guid: 19555d7d9d114c7f1100f5ab44295342, type: 3}
+          m_Scale: {x: 4, y: 1}
+          m_Offset: {x: .5, y: 0}
+      data:
+        first:
+          name: _BumpMap
+        second:
+          m_Texture: {fileID: 2800000, guid: 4b8d081e9d114c7f1100f5ab44295342, type: 3}
+          m_Scale: {x: 5, y: 1}
+          m_Offset: {x: .5, y: 0}
+      data:
+        first:
+          name: _TransMap
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Cube
+        second:
+          m_Texture: {fileID: 8900000, guid: 5309578fba48ba447a7d57adf15c3c1b, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+    m_Floats:
+      data:
+        first:
+          name: _Cutoff
+        second: .170000002
+      data:
+        first:
+          name: _Shininess
+        second: .128000006
+      data:
+        first:
+          name: _V_MaterialTag
+        second: 0
+      data:
+        first:
+          name: _V_MaterialTitle_Default
+        second: 0
+      data:
+        first:
+          name: _BumpSize
+        second: 2.5
+      data:
+        first:
+          name: _V_MaterialTitle_SSS
+        second: 0
+      data:
+        first:
+          name: _TransDistortion
+        second: .109999999
+      data:
+        first:
+          name: _TransPower
+        second: 8.05000019
+      data:
+        first:
+          name: _TransScale
+        second: 3
+      data:
+        first:
+          name: _TransBackfaceIntensity
+        second: .150000006
+      data:
+        first:
+          name: _TransDirectianalLightStrength
+        second: .200000003
+      data:
+        first:
+          name: _TransOtherLightsStrength
+        second: 2
+      data:
+        first:
+          name: _V_SSS_Emission
+        second: .5
+      data:
+        first:
+          name: _V_SSS_Rim_Pow
+        second: 1.4375
+      data:
+        first:
+          name: V_SSS_LIGHTCOUNT
+        second: 0
+      data:
+        first:
+          name: V_SSS_POW
+        second: 3
+      data:
+        first:
+          name: V_SSS_RIM
+        second: 0
+    m_Colors:
+      data:
+        first:
+          name: _Color
+        second: {r: .941176474, g: .0692041591, b: .448060095, a: 1}
+      data:
+        first:
+          name: _SpecColor
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _TransColor
+        second: {r: .0418468714, g: .385760963, b: .948529422, a: 1}
+      data:
+        first:
+          name: _V_SSS_Rim_Color
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _ReflectColor
+        second: {r: .970588207, g: .956314862, b: .956314862, a: 1}

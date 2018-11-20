@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Tess_3
+  m_Shader: {fileID: 4800000, guid: 3e8b17c9618a41944a3deda5b33df764, type: 3}
+  m_ShaderKeywords: V_SSS_ADVANCED_TRANSLUSENCY_ON V_SSS_NORMALIZE_DIFFUSE_COEF_ON
+    V_SSS_RIM_OFF
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: 8cfcf3c635dc91f45918c2a76cd6d1fb, type: 3}
+        m_Scale: {x: 20, y: 2}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: f95ea3425e4991e4a8f6ea1d94ff4d21, type: 3}
+        m_Scale: {x: 20, y: 2}
+        m_Offset: {x: 0, y: 0}
+    - _TransMap:
+        m_Texture: {fileID: 2800000, guid: c623859d0a11a044cb042e40f5c86505, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _V_SSS_DisplaceTex:
+        m_Texture: {fileID: 2800000, guid: c623859d0a11a044cb042e40f5c86505, type: 3}
+        m_Scale: {x: 20, y: 2}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BumpSize: 5
+    - _LightAttenuationStrength: 2
+    - _NormalizeLightVector: 1
+    - _Shininess: 0.17165528
+    - _TransBackfaceIntensity: 0
+    - _TransDirectianalLightStrength: 0.2
+    - _TransDistortion: 0.1875
+    - _TransOtherLightsStrength: 1
+    - _TransPower: 2
+    - _TransScale: 4
+    - _V_MaterialTag: 0
+    - _V_MaterialTitle_: 0
+    - _V_MaterialTitle_DX11: 0
+    - _V_MaterialTitle_Default: 0
+    - _V_MaterialTitle_SSS: 0
+    - _V_SSS_Displacement: -0.18
+    - _V_SSS_Emission: 0
+    - _V_SSS_Rim_Pow: 6.794643
+    - _V_SSS_Tessellation: 12.625
+    - _V_SSS_Tessellation_MaxDistance: 25
+    - _V_SSS_Tessellation_MinDistance: 1
+    m_Colors:
+    - _Color: {r: 0.9338235, g: 0.30211937, b: 0.30211937, a: 1}
+    - _SpecColor: {r: 0.3529412, g: 0.25539994, b: 0.22560553, a: 1}
+    - _TransColor: {r: 0.05536332, g: 0.20808975, b: 0.9411765, a: 1}
+    - _V_SSS_Rim_Color: {r: 0.106617644, g: 0.2661764, b: 0.85294116, a: 1}
