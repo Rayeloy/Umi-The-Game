@@ -676,7 +676,7 @@ public class Controller3D : MonoBehaviour
                     {
                         if (collisions.wallAngleOld != collisions.closestHorRaycast.wallAngle)
                         {
-                            print("APPROACHING WALL: " + "distance = " + collisions.closestHorRaycast.distance);
+                            //print("APPROACHING WALL: " + "distance = " + collisions.closestHorRaycast.distance);
                             horVel = horVel * (collisions.closestHorRaycast.distance - skinWidth);
                             vel = new Vector3(horVel.x, vel.y, horVel.z);
                             collisions.wallAngle = collisions.closestHorRaycast.wallAngle;
