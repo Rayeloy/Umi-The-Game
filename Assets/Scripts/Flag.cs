@@ -210,7 +210,7 @@ public class Flag : MonoBehaviour {
         player.flag = this;
         if (GameController.instance.gameMode == GameController.GameMode.Tutorial)
         {
-            SceneManager.LoadScene("Menus");
+            GameController.instance.GoBackToMenu();
         }
 
     }
