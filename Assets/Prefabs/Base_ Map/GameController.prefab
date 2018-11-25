@@ -148,12 +148,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1eeeda205dd7c4549ba5aee88b452379, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Tiempo: 500
+  Tiempo: 300
   End: 0
   maxScore: 3
   _blueTeamScore: 0
   _redTeamScore: 0
-  tiempoProrroga: 10
+  tiempoProrroga: 60
   prorroga: 0
   orcasRedTeam:
   - {fileID: 0}
@@ -226,6 +226,11 @@ MonoBehaviour:
   allWeapons:
   - {fileID: 11400000, guid: 62e907f90cd3a02418417962b53df879, type: 2}
   - {fileID: 11400000, guid: 15b874004fd9fc843b3dd52a1a5b0c17, type: 2}
+  contador:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   flagPrefab: {fileID: 1751600940884742, guid: b65fe97042153d54abc8f26b7532c126, type: 2}
   scoreManager: {fileID: 114010027320582548}
   playing: 0

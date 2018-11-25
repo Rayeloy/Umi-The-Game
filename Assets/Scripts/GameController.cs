@@ -290,6 +290,8 @@ public class GameController : MonoBehaviour
         //print("gameOverMenuOn= " + gameOverMenuOn);
         if (gameOverMenuOn)
         {
+            //GameObject incontrol = GameObject.Find("InControl manager");
+            //Destroy(incontrol);
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
             gameOverMenuOn = false;
@@ -319,6 +321,7 @@ public class GameController : MonoBehaviour
     public string sceneLoadedOnReset;
     public void ResetGame()
     {
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         ScoreManager.instance.Reset();
         playing = true;
         gamePaused = false;
