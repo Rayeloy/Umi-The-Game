@@ -46,8 +46,11 @@ public class GameController : MonoBehaviour
         instance = this;
         gameOverMenu.SetActive(false);
         veil.SetActive(false);
-        victoryRed.gameObject.SetActive(false);
-        victoryBlue.gameObject.SetActive(false);
+        if (gameMode != GameMode.Tutorial)
+        {
+            victoryRed.gameObject.SetActive(false);
+            victoryBlue.gameObject.SetActive(false);
+        }
         gameOverMenuOn = false;
         playerNum = GameInfo.instance.nPlayers;
         playerNum = Mathf.Clamp(playerNum, 1, 4);
@@ -71,7 +74,7 @@ public class GameController : MonoBehaviour
                 Debug.Log(GameInfo.instance.playerActionsList[i]);
                 allPlayers[i].Actions = GameInfo.instance.playerActionsList[i];
                 if (GameInfo.instance.playerTeamList[i] == Team.none)
-                    GameInfo.instance.playerTeamList[i] = GameInfo.instance.noneTeamSelect();
+                    GameInfo.instance.playerTeamList[i] = GameInfo.instance.NoneTeamSelect();
                 
                 allPlayers[i].team = GameInfo.instance.playerTeamList[i];
             }

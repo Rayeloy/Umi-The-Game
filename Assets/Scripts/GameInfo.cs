@@ -19,7 +19,7 @@ public class GameInfo : MonoBehaviour
 
     }
     
-    public Team noneTeamSelect()
+    public Team NoneTeamSelect()
     {
         int nAzul = 0;
         int nRojo = 0;

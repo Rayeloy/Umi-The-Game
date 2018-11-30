@@ -489,16 +489,21 @@ public class PlayerMovement : MonoBehaviour
         if (!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal && 
             (lastWallAngle != controller.collisions.wallAngle|| lastWallAngle == controller.collisions.wallAngle && lastWall != controller.collisions.wall) && jumpedOutOfWater)
         {
-            print("WallJump");
-            //wallJumped = true;
-            stopWallTime = 0;
-            currentVel = Vector3.zero;
-            wallJumping = true;
-            anchorPoint = transform.position;
-            wallNormal = controller.collisions.wallNormal;
-            wallNormal.y = 0;
-            lastWallAngle = controller.collisions.wallAngle;
-            lastWall =controller.collisions.wall;
+            GameObject wall = controller.collisions.wall;
+            if (wall.GetComponent<StageScript>() == null || wall.GetComponent<StageScript>().wallJumpable)
+            {
+                print("WallJump");
+                //wallJumped = true;
+                stopWallTime = 0;
+                currentVel = Vector3.zero;
+                wallJumping = true;
+                anchorPoint = transform.position;
+                wallNormal = controller.collisions.wallNormal;
+                wallNormal.y = 0;
+                lastWallAngle = controller.collisions.wallAngle;
+                lastWall = wall;
+            }
+
         }
     }
 
