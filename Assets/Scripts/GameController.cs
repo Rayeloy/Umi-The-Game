@@ -281,6 +281,20 @@ public class GameController : MonoBehaviour
             Instantiate(flagPrefab, respawnPos, Quaternion.identity, null);
         }
     }
+    public void RespawnFlag()
+    {
+        print("RESPAWN FLAG");
+        Transform flag = StoringManager.instance.LookForObjectStoredTag("Flag");
+        Vector3 respawnPos = flag.GetComponent<Flag>().respawnPos;
+        if (StoringManager.instance.IsObjectStored(flagPrefab.name))
+        {
+            StoringManager.instance.TakeObjectStored(flagPrefab.name, null, respawnPos, Quaternion.identity);
+        }
+        else
+        {
+            Instantiate(flagPrefab, respawnPos, Quaternion.identity, null);
+        }
+    }
 
     bool gameOverMenuOn = false;
     public GameObject gameOverMenu;
@@ -333,6 +347,8 @@ public class GameController : MonoBehaviour
         {
             pM.Die();
         }
+        RespawnFlag();
+
         //SceneManager.LoadScene(sceneLoadedOnReset);
     }
     public void ExitGame()

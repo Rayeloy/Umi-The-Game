@@ -9,6 +9,7 @@ public class Hook : MonoBehaviour
     PlayerMovement myPlayerMov;
     PlayerCombat myPlayerCombat;
 
+    public LayerMask collisionMask;
     GameObject currentHook;
     Transform hookedObject;
     public GameObject hookPrefab;
@@ -19,14 +20,21 @@ public class Hook : MonoBehaviour
     Vector3 hookPos;
     public float hookFowardSpeed;
     public float hookBackwardsSpeed;
+    public float hookGrapplingSpeed;
     public float hookMinDistance;//Distance the hook stops when bringing the enemy
     public float cdMaxTime;
     float cdTime;
-    bool hookReady;
     Vector3 reelingVel;
 
-    bool doingHook;
-    bool reelingStarted;
+    HookState hookSt;
+    public enum HookState
+    {
+        ready,
+        throwing,
+        reeling,
+        grappling,
+        cd
+    }
     bool enemyHooked;
     bool objectHooked;// item 
     PlayerMovement enemy;
@@ -39,14 +47,13 @@ public class Hook : MonoBehaviour
         {
             Debug.LogError("PlayerMovement is not on the object where the hook script is. This object is " + gameObject.name);
         }
-        hookReady = true;
+        hookSt = HookState.ready;
     }
 
     private void Update()
     {
-        if (doingHook)
+        if (hookSt != HookState.ready && hookSt != HookState.cd)
         {
-
             UpdateDistance();
             if (currentDistance >= hookMaxDistance)
             {
@@ -58,12 +65,15 @@ public class Hook : MonoBehaviour
             {
                 StopHook();
             }
-            if (!reelingStarted)//TIRANDO HOOK
-            {
+        }
+
+        Vector3 reelingDir;
+        switch (hookSt)
+        {
+            case HookState.throwing:
                 MoveHook(reelingVel);
-            }
-            else//RECOGIENDO EL HOOK
-            {
+                break;
+            case HookState.reeling:
                 if (currentDistance <= hookMinDistance)
                 {
                     FinishHook();
@@ -71,7 +81,7 @@ public class Hook : MonoBehaviour
                 else
                 {
                     //Calculate dir to owner
-                    Vector3 reelingDir = (originPos - hookPos).normalized;
+                    reelingDir = (originPos - hookPos).normalized;
                     //move with speed to owner
                     reelingVel = reelingDir * hookBackwardsSpeed;
                     //Calculate rotation
@@ -90,16 +100,47 @@ public class Hook : MonoBehaviour
 
                     //check for collisions
                 }
-            }
+                break;
+            case HookState.grappling:
+                if (currentDistance <= hookMinDistance)
+                {
+                    FinishHook();
+                }
+                else
+                {
+                    reelingDir = (hookPos - originPos).normalized;
+                    //move with speed to hook
+                    reelingVel = reelingDir * hookGrapplingSpeed;
+                    myPlayerMov.currentVel = reelingVel;
+                    myPlayerMov.currentSpeed = hookGrapplingSpeed;
+                }
+                break;
+            case HookState.cd:
+                cdTime += Time.deltaTime;
+                if (cdTime >= cdMaxTime)
+                {
+                    hookSt = HookState.ready;
+                }
+                break;
+
         }
-        else if (!hookReady)
-        {
-            cdTime += Time.deltaTime;
-            if (cdTime >= cdMaxTime)
-            {
-                hookReady = true;
-            }
-        }
+        //if (doingHook)
+        //{
+
+
+        //    if (!reelingStarted)//TIRANDO HOOK
+        //    {
+
+        //    }
+        //    else//RECOGIENDO EL HOOK
+        //    {
+
+        //    }
+        //}
+        //else if (!hookReady)
+        //{
+
+        //}
     }
 
     void MoveHook(Vector3 vel)
@@ -108,17 +149,14 @@ public class Hook : MonoBehaviour
         currentHook.transform.Translate(finalVel, Space.World);
     }
 
-    public LayerMask collisionMask;
     public void StartHook()
     {
-        if (!doingHook && hookReady)
+        if (hookSt == HookState.ready)
         {
             //VARIABLES
-            hookReady = false;
-            doingHook = true;
             enemy = null;
             hookedObject = null;
-            reelingStarted = false;
+            hookSt = HookState.throwing;
             objectHooked = false;
             enemyHooked = false;
             currentDistance = 0;
@@ -203,10 +241,10 @@ public class Hook : MonoBehaviour
 
     public void StartReeling()
     {
-        if (!reelingStarted)
+        if (hookSt == HookState.throwing)
         {
             print("START REELING");
-            reelingStarted = true;
+            hookSt = HookState.reeling;
         }
     }
 
@@ -241,19 +279,49 @@ public class Hook : MonoBehaviour
 
     public void FinishHook()
     {
-        if (doingHook)
+        print("FINISH HOOK");
+        switch (hookSt)
         {
-            print("FINISH HOOK");
-            doingHook = false;
-            myPlayerMov.StopHooking();
-            HandinObject();
-            StopHook();
-            reelingStarted = false;
-            StoringManager.instance.StoreObject(currentHook.transform);
-            currentHook = null;
-            cdTime = 0;
-            myPlayerCombat.myPlayerHUD.StopThrowHook();
+            case HookState.reeling:
+                hookSt = HookState.cd;
+                myPlayerMov.StopHooking();
+                HandinObject();
+                StopHook();
+                StoringManager.instance.StoreObject(currentHook.transform);
+                currentHook = null;
+                cdTime = 0;
+                if (myPlayerCombat.aiming)
+                {
+                    myPlayerCombat.myPlayerHUD.StopThrowHook();
+                }
+                break;
+            case HookState.grappling:
+                FinishGrapple();
+                break;
         }
+    }
+
+    Vector3 grappleOrigin;
+    public void StartGrappling()
+    {
+        if (hookSt == HookState.throwing)
+        {
+            hookSt = HookState.grappling;
+            //grappleOrigin = currentHook.transform.position;
+            myPlayerMov.StopHooking();
+            myPlayerMov.StartHooked();
+            myPlayerCombat.myPlayerHUD.StopAim();
+        }
+    }
+
+    void FinishGrapple()
+    {
+        hookSt = HookState.cd;
+        myPlayerMov.StopHooked();
+        StoringManager.instance.StoreObject(currentHook.transform);
+        currentHook = null;
+        cdTime = 0;
+
     }
 
     void HandinObject()
@@ -302,6 +370,7 @@ public class Hook : MonoBehaviour
         }
         dirToHook = (hookPos - originPos);
         currentDistance = dirToHook.magnitude;
+        print("currentDistance = " + currentDistance);
     }
 
     [HideInInspector]
@@ -309,7 +378,7 @@ public class Hook : MonoBehaviour
     {
         get
         {
-            return (!reelingStarted && !enemyHooked && !objectHooked && doingHook);
+            return (hookSt == HookState.throwing && !enemyHooked && !objectHooked);
         }
     }
     [HideInInspector]

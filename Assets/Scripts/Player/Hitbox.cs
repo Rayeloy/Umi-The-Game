@@ -32,27 +32,38 @@ public class Hitbox : MonoBehaviour
             {
                 if (myHook.canHookSomething)
                 {
-                    if (col.tag == "Flag")
+                    switch (col.tag)
                     {
-                        myHook.HookObject(col.transform);
-                    }
-                    if (col.tag == "Player")
-                    {
-                        PlayerMovement otherPlayer = col.GetComponent<PlayerBody>().myPlayerMov;
-                        if (myPlayerMov.team != otherPlayer.team)// IF ENEMY
-                        {
-                            if (!otherPlayer.inWater)// OUTSIDE WATER
+                        case "Flag":
+                            myHook.HookObject(col.transform);
+                            break;
+                        case "Player":
+                            PlayerMovement otherPlayer = col.GetComponent<PlayerBody>().myPlayerMov;
+                            if (myPlayerMov.team != otherPlayer.team)// IF ENEMY
                             {
-                                myHook.HookPlayer(otherPlayer);
+                                if (!otherPlayer.inWater)// OUTSIDE WATER
+                                {
+                                    myHook.HookPlayer(otherPlayer);
+                                }
                             }
-                        }
-                        else
-                        {
-                            if (otherPlayer.inWater)//IF ALLY IN WATER
+                            else
                             {
-                                myHook.HookPlayer(otherPlayer);
+                                if (otherPlayer.inWater)//IF ALLY IN WATER
+                                {
+                                    myHook.HookPlayer(otherPlayer);
+                                }
                             }
-                        }
+                            break;
+                        case "Stage":
+                            StageScript stage = col.GetComponent<StageScript>();
+                            if (stage != null)
+                            {
+                                if (stage.hookable)
+                                {
+                                    myHook.StartGrappling();
+                                }
+                            }
+                            break;
                     }
                 }
             }

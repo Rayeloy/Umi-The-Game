@@ -47,6 +47,19 @@ public class StoringManager : MonoBehaviour {
         return result;
     }
 
+    public Transform LookForObjectStoredTag(string tag)
+    {
+        Transform result = null;
+        foreach (Transform transf in objectsStored)
+        {
+            if (transf.tag.Contains(name))
+            {
+                return transf;
+            }
+        }
+        return result;
+    }
+
     /// <summary>
     /// Takes the object stored in the StoringManager that contains "name", puts "newParent" as parent, positions as "newPos" and rotation as "newRot", 
     /// then it removes object's transform from objectsStored list;
