@@ -71,7 +71,6 @@ public class GameController : MonoBehaviour
                 allPlayers[i].gameObject.SetActive(true);
                 allPlayers[i].myCamera = allCameraBases[i];
                 allPlayers[i].GetComponent<PlayerCombat>().attackName = allCanvas[i].transform.GetChild(0).GetComponent<Text>();
-                Debug.Log(GameInfo.instance.playerActionsList[i]);
                 allPlayers[i].Actions = GameInfo.instance.playerActionsList[i];
                 if (GameInfo.instance.playerTeamList[i] == Team.none)
                     GameInfo.instance.playerTeamList[i] = GameInfo.instance.NoneTeamSelect();

@@ -190,14 +190,9 @@ public class Hook : MonoBehaviour
             {
                 currentHook = Instantiate(hookPrefab, originPos, Quaternion.identity, StoringManager.instance.transform);
             }
-            for (int i = 0; i < currentHook.transform.childCount; i++)
-            {
-                if (currentHook.transform.GetChild(i).tag.Contains("Hook"))
-                {
-                    currentHook.transform.GetChild(i).GetComponent<Hitbox>().KonoAwake(myPlayerMov, this);
-                }
-            }
-            print("Current Hook = " + currentHook);
+            currentHook.transform.GetComponentInChildren<HitboxHookBig>().KonoAwake(myPlayerMov, this);
+            currentHook.transform.GetComponentInChildren<HitboxHookSmall>().KonoAwake(myPlayerMov, this);
+            print("hookHBsmall= " + currentHook.transform.GetComponentInChildren<HitboxHookSmall>() + "; hookHBBig = " + currentHook.transform.GetComponentInChildren<HitboxHookBig>());
             myPlayerCombat.myPlayerHUD.StartThrowHook();
         }
     }
@@ -206,7 +201,7 @@ public class Hook : MonoBehaviour
     {
         if (canHookSomething)
         {
-            print("HOOK PLAYER");
+            //print("HOOK PLAYER");
             enemyHooked = true;
             enemy = player;
             enemy.StartHooked();
@@ -243,13 +238,14 @@ public class Hook : MonoBehaviour
     {
         if (hookSt == HookState.throwing)
         {
-            print("START REELING");
+            //print("START REELING");
             hookSt = HookState.reeling;
         }
     }
 
     public void StopHook()
     {
+        print("STOP HOOK");
         StartReeling();
         if (somethingHooked)
         {
@@ -279,7 +275,7 @@ public class Hook : MonoBehaviour
 
     public void FinishHook()
     {
-        print("FINISH HOOK");
+        //print("FINISH HOOK");
         switch (hookSt)
         {
             case HookState.reeling:
@@ -370,7 +366,6 @@ public class Hook : MonoBehaviour
         }
         dirToHook = (hookPos - originPos);
         currentDistance = dirToHook.magnitude;
-        print("currentDistance = " + currentDistance);
     }
 
     [HideInInspector]

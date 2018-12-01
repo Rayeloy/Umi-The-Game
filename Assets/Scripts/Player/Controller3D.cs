@@ -177,14 +177,11 @@ public class Controller3D : MonoBehaviour
     {
         Vector3 horVel = new Vector3(rayCast.vel.x, 0, rayCast.vel.z);
         Vector3 wallHorNormal = new Vector3(rayCast.ray.normal.x, 0, rayCast.ray.normal.z).normalized;
-        float moveDistance = Mathf.Abs(horVel.magnitude);
         Vector3 movementNormal = new Vector3(wallHorNormal.z, 0, -wallHorNormal.x).normalized;
         Vector3 slipDir = Vector3.Cross(rayCast.ray.normal, movementNormal).normalized;
-        float xz = vel.y * Mathf.Cos(rayCast.slopeAngle * Mathf.Deg2Rad);
         Vector3 slipVel = (slipDir * vel.y) + horVel;
         //slipVel.y = vel.y;
-
-        float angWithWall = Vector3.Angle(wallHorNormal, horVel);
+        //float angWithWall = Vector3.Angle(wallHorNormal, horVel);
 
         vel = slipVel;
         collisions.below = false;
@@ -269,7 +266,6 @@ public class Controller3D : MonoBehaviour
     {
         Vector3 horVel = new Vector3(rayCast.vel.x, 0, rayCast.vel.z);
         float wallAngle = Vector3.Angle(rayCast.ray.normal, Vector3.forward);
-        float moveDistance = Mathf.Abs(horVel.magnitude);
         Vector3 normal = -new Vector3(rayCast.ray.normal.x, 0, rayCast.ray.normal.z).normalized;
         float angle = Vector3.Angle(normal, horVel);
         float a = Mathf.Sin(angle * Mathf.Deg2Rad) * horVel.magnitude;
@@ -297,7 +293,6 @@ public class Controller3D : MonoBehaviour
     {
         Vector3 horVel = new Vector3(originalVel.x, 0, originalVel.z);
         float wallAngle = Vector3.Angle(rayCast.ray.normal, Vector3.forward);
-        float moveDistance = Mathf.Abs(horVel.magnitude);
         Vector3 normal = -new Vector3(rayCast.ray.normal.x, 0, rayCast.ray.normal.z).normalized;
         float angle = Vector3.Angle(normal, horVel);
         float a = Mathf.Sin(angle * Mathf.Deg2Rad) * horVel.magnitude;
@@ -976,7 +971,6 @@ public class Controller3D : MonoBehaviour
     public int horizontalRaysPerRow;
     float horizontalRowSpacing;
     float horizontalRaySpacing;
-    float horizontalRadius;
 
     [Header("In Water Collisions")]
     public bool showWaterRays;
@@ -1004,8 +998,6 @@ public class Controller3D : MonoBehaviour
 
         bounds.Expand(skinWidth * -2);
         //-------------------
-
-        horizontalRadius = Mathf.Abs(bounds.size.x / 2);
 
         aroundCircles = Mathf.Clamp(aroundCircles, 3, int.MaxValue);
         aroundRaysPerCircle = Mathf.Clamp(aroundRaysPerCircle, 3, int.MaxValue);

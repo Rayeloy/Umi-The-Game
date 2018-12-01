@@ -96,11 +96,11 @@ public class StoringManager : MonoBehaviour {
     /// <returns></returns>
     public Transform TakeObjectStored(string name, Vector3 newPos, Quaternion newRot)
     {
-        print("Looking for Object Stored " + name);
+        //print("Looking for Object Stored " + name);
         Transform result = null;
         for (int i = 0; i < objectsStored.Count; i++)
         {
-            print("Checking Object Stord with name " + objectsStored[i].name);
+            //print("Checking Object Stord with name " + objectsStored[i].name);
             if (objectsStored[i].name.Contains(name))
             {
                 result = objectsStored[i];

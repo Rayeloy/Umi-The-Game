@@ -45,11 +45,5 @@ public class PlayerBody : MonoBehaviour {
         }
     }
 
-    private void OnTriggerExit(Collider col)
-    {
-        switch (col.tag)
-        {
-        }
-    }
     #endregion
 }

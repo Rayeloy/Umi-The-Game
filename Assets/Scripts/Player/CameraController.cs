@@ -55,9 +55,6 @@ public class CameraController : MonoBehaviour
     public float speedH = 2.0f;
     public float speedV = 2.0f;
 
-    private float yaw = 0.0f;
-    private float pitch = 0.0f;
-
     Vector3 targetCamPos;
     Vector3 originalPos;
     Vector3 currentCamPos;
