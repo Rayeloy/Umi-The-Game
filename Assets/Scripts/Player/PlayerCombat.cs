@@ -6,17 +6,13 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(PlayerMovement))]
-[RequireComponent(typeof(Hook))]
+[RequireComponent(typeof(PlayerHook))]
 public class PlayerCombat : MonoBehaviour {
     PlayerMovement myPlayerMovement;
     PlayerWeapons myPlayerWeap;
-    Hook myHook;
+    PlayerHook myHook;
     public PlayerHUD myPlayerHUD;
     public float triggerDeadZone=0.15f;
-    [HideInInspector]
-    public bool LTPulsado = false;
-    [HideInInspector]
-    public bool RTPulsado = false;
     //List<string> attacks;
     [HideInInspector]
     public int attackIndex = 0;
@@ -54,7 +50,7 @@ public class PlayerCombat : MonoBehaviour {
     {
         myPlayerMovement = GetComponent<PlayerMovement>();
         myPlayerWeap = GetComponent<PlayerWeapons>();
-        myHook = GetComponent<Hook>();
+        myHook = GetComponent<PlayerHook>();
         attackStg = attackStage.ready;
         targetsHit = new List<string>();
         myAttacks = new List<AttackInfo>();
@@ -91,9 +87,8 @@ public class PlayerCombat : MonoBehaviour {
                 StartAttack();
                 //ChangeNextAttackType();
             }
-            if (LTPulsado && !RTPulsado && myPlayerMovement.Actions.Boost.WasPressed)// HOOK      //Input.GetButtonDown(myPlayerMovement.contName + "RB"))
+            if (aiming && myPlayerMovement.Actions.Boost.WasPressed)// HOOK      //Input.GetButtonDown(myPlayerMovement.contName + "RB"))
             {
-                RTPulsado = true;
                 myHook.StartHook();
                 //ChangeAttackType(GameController.instance.attackHook);
                 //StartAttack();
@@ -104,21 +99,12 @@ public class PlayerCombat : MonoBehaviour {
         ProcessAttack();
         ProcessAttacksCD();
 
-        if (myPlayerMovement.Actions.Boost.WasReleased)//Input.GetButtonUp(myPlayerMovement.contName + "RB"))
+        if (myPlayerMovement.Actions.Aim.WasPressed)
         {
-            RTPulsado = false;
-        }
-
-        if (myPlayerMovement.Actions.Aim.WasPressed/*Input.GetButtonDown(myPlayerMovement.contName + "LB")*/ && !LTPulsado)
-        {
-            print("startAiming");
-            LTPulsado = true;
             StartAiming();
         }
-        if (myPlayerMovement.Actions.Aim.WasReleased/*Input.GetButtonUp(myPlayerMovement.contName + "LB")*/ && LTPulsado)
+        if (myPlayerMovement.Actions.Aim.WasReleased)
         {
-            print("stopAiming");
-            LTPulsado = false;
             StopAiming();
         }
     }
@@ -267,10 +253,11 @@ public class PlayerCombat : MonoBehaviour {
 
     [HideInInspector]
     public bool aiming;
-    void StartAiming()
+    public void StartAiming()
     {
         if(!aiming)
         {
+            print("startAiming");
             aiming = true;
             myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Shoulder);
             myPlayerWeap.AttachWeaponToBack();
@@ -279,10 +266,11 @@ public class PlayerCombat : MonoBehaviour {
         }
     }
 
-    void StopAiming()
+    public void StopAiming()
     {
         if (aiming)
         {
+            print("stopAiming");
             aiming = false;
             myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Free);
             myPlayerWeap.AttachWeapon();

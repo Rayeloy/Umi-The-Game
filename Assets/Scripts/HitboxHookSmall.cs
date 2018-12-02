@@ -5,9 +5,9 @@ using UnityEngine;
 public class HitboxHookSmall : MonoBehaviour
 {
     PlayerMovement myPlayerMov;
-    Hook myHook;
+    PlayerHook myHook;
 
-    public void KonoAwake(PlayerMovement playerMov, Hook hook)
+    public void KonoAwake(PlayerMovement playerMov, PlayerHook hook)
     {
         myPlayerMov = playerMov;
         myHook = hook;

@@ -260,9 +260,8 @@ public class PlayerMovement : MonoBehaviour
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
             CalculateMoveDir();//Movement direction
-            if (!myPlayerCombat.LTPulsado && !myPlayerCombat.RTPulsado && Actions.Boost.WasPressed)//Input.GetButtonDown(contName + "RB"))
+            if (!myPlayerCombat.aiming && Actions.Boost.WasPressed)//Input.GetButtonDown(contName + "RB"))
             {
-                myPlayerCombat.RTPulsado = true;
                 StartBoost();
             }
             ProcessBoost();

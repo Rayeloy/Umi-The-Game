@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovement))]
-public class Hook : MonoBehaviour
+public class PlayerHook : MonoBehaviour
 {
 
     PlayerMovement myPlayerMov;
@@ -11,6 +11,7 @@ public class Hook : MonoBehaviour
 
     public LayerMask collisionMask;
     GameObject currentHook;
+    Transform hookRopeEnd;
     Transform hookedObject;
     public GameObject hookPrefab;
     public Vector3 hookLocalOrigin;
@@ -59,9 +60,10 @@ public class Hook : MonoBehaviour
             {
                 StartReeling();
             }
-            Debug.DrawLine(originPos, hookPos, Color.red);
+            Vector3 hookRopeEndPos = hookRopeEnd.position;
+            Debug.DrawLine(originPos, hookRopeEndPos, Color.red);
             RaycastHit hit;
-            if (Physics.Linecast(originPos, hookPos, out hit, collisionMask, QueryTriggerInteraction.Ignore))
+            if (Physics.Linecast(originPos, hookRopeEndPos, out hit, collisionMask, QueryTriggerInteraction.Ignore))
             {
                 StopHook();
             }
@@ -124,23 +126,6 @@ public class Hook : MonoBehaviour
                 break;
 
         }
-        //if (doingHook)
-        //{
-
-
-        //    if (!reelingStarted)//TIRANDO HOOK
-        //    {
-
-        //    }
-        //    else//RECOGIENDO EL HOOK
-        //    {
-
-        //    }
-        //}
-        //else if (!hookReady)
-        //{
-
-        //}
     }
 
     void MoveHook(Vector3 vel)
@@ -190,8 +175,8 @@ public class Hook : MonoBehaviour
             {
                 currentHook = Instantiate(hookPrefab, originPos, Quaternion.identity, StoringManager.instance.transform);
             }
-            currentHook.transform.GetComponentInChildren<HitboxHookBig>().KonoAwake(myPlayerMov, this);
-            currentHook.transform.GetComponentInChildren<HitboxHookSmall>().KonoAwake(myPlayerMov, this);
+            currentHook.transform.GetComponentInChildren<Hook>().KonoAwake(myPlayerMov, this);
+            hookRopeEnd = currentHook.GetComponent<Hook>().hookRopeEnd;
             print("hookHBsmall= " + currentHook.transform.GetComponentInChildren<HitboxHookSmall>() + "; hookHBBig = " + currentHook.transform.GetComponentInChildren<HitboxHookBig>());
             myPlayerCombat.myPlayerHUD.StartThrowHook();
         }
@@ -306,7 +291,8 @@ public class Hook : MonoBehaviour
             //grappleOrigin = currentHook.transform.position;
             myPlayerMov.StopHooking();
             myPlayerMov.StartHooked();
-            myPlayerCombat.myPlayerHUD.StopAim();
+            myPlayerCombat.StopAiming();
+
         }
     }
 
@@ -317,6 +303,10 @@ public class Hook : MonoBehaviour
         StoringManager.instance.StoreObject(currentHook.transform);
         currentHook = null;
         cdTime = 0;
+        if (myPlayerMov.Actions.Aim.IsPressed)
+        {
+            myPlayerCombat.StartAiming();
+        }
 
     }
 

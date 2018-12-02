@@ -128,7 +128,7 @@ public class Flag : MonoBehaviour {
                 }
                 if (beingHooked)
                 {
-                    playerHooking.GetComponent<Hook>().StopHook();
+                    playerHooking.GetComponent<PlayerHook>().StopHook();
                     playerHooking = player.transform;
                 }
                 else
@@ -157,7 +157,7 @@ public class Flag : MonoBehaviour {
         print("DropFlag");
         if (beingHooked)
         {
-            playerHooking.GetComponent<Hook>().StopHook();
+            playerHooking.GetComponent<PlayerHook>().StopHook();
             playerHooking = null;
             beingHooked = false;
             if (currentOwner != null)
