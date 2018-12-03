@@ -21,25 +21,37 @@ public class GameInfo : MonoBehaviour
     
     public Team NoneTeamSelect()
     {
+        Debug.Break();
         int nAzul = 0;
         int nRojo = 0;
         foreach (Team t in playerTeamList)
         {
             if (t == Team.blue)
                 nAzul++;
-            else if (t == Team.blue)
+            else if (t == Team.red)
                 nRojo++;
         }
-        if (nAzul > nRojo)
-            return Team.red;
-        else if (nAzul < nRojo)
-            return Team.blue;
-        else
+        if(nAzul == nRojo)
         {
             if (Random.value < 0.5f)
                 return Team.blue;
             else
                 return Team.red;
         }
+       else if (nAzul > nRojo)
+           return Team.red;
+       else 
+           return Team.blue;
+//       else
+//       {
+//           if (Random.value < 0.5f){
+//               Debug.Log("Random Azul");
+//               return Team.blue;
+//           }
+//           else{
+//               Debug.Log("Random Rojo");
+//               return Team.red;
+//           }
+//       }
     }
 }

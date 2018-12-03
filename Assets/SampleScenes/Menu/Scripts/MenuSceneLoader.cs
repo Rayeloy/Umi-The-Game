@@ -7,11 +7,11 @@ public class MenuSceneLoader : MonoBehaviour
 
     private GameObject m_Go;
 
-	void Awake ()
-	{
-	    if (m_Go == null)
-	    {
-	        m_Go = Instantiate(menuUI);
-	    }
-	}
+	//void Awake ()
+	//{
+	//    if (m_Go == null)
+	//    {
+	//        m_Go = Instantiate(menuUI);
+	//    }
+	//}
 }
