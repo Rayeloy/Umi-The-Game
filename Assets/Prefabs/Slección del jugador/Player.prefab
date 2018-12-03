@@ -2160,7 +2160,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1054951319244462}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -2, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -2272,6 +2272,18 @@ MonoBehaviour:
   teamNeutralMat: {fileID: 2100000, guid: c56a34f67ef78e048b06da48343c1ae0, type: 2}
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
+  playerSelecionUI:
+    TeamSelect: {fileID: 0}
+    FlechaDerecha: {fileID: 0}
+    FlechaIzquierda: {fileID: 0}
+    AcctionsText: {fileID: 0}
+  PlayerSelectRandom: {fileID: 21300000, guid: 234d9d36df2a9394abef0ca91206fe45, type: 3}
+  PlayerSelectBlue: {fileID: 21300000, guid: 1efa70ee0e6c8714cbb7c4ec84cd4565, type: 3}
+  PlayerSelectRed: {fileID: 21300000, guid: d50e7f438b9f5e3478392bfd6b2854d3, type: 3}
+  PlayerSelectedRandom: {fileID: 21300000, guid: 0af00681551d8d146903b9c4a1856769,
+    type: 3}
+  PlayerSelectedBlue: {fileID: 21300000, guid: c88faac8c1e7f6c48be48fd19df70190, type: 3}
+  PlayerSelectedRed: {fileID: 21300000, guid: 90b3795fc7d168349af1106524a1217e, type: 3}
   animator: {fileID: 95805948225056446}
 --- !u!137 &137202940207378408
 SkinnedMeshRenderer:

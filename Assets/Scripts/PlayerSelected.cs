@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using InControl;
+using UnityEngine.UI;
+using TMPro;
 
 public class PlayerSelected : MonoBehaviour
 {
@@ -31,6 +33,16 @@ public class PlayerSelected : MonoBehaviour
         }
     }
 
+    [Header("Referencias")]
+    [HideInInspector]
+    public PlayerSelecionUI playerSelecionUI;
+    public Sprite PlayerSelectRandom;
+    public Sprite PlayerSelectBlue;
+    public Sprite PlayerSelectRed;
+    public Sprite PlayerSelectedRandom;
+    public Sprite PlayerSelectedBlue;
+    public Sprite PlayerSelectedRed;
+
     //public bool Ready = false;
     [Header("Referencias")]
     public Animator animator;
@@ -38,7 +50,7 @@ public class PlayerSelected : MonoBehaviour
     void Update()
     {
         if (Actions.Jump.WasPressed)
-            Ready = !Ready;
+            SetReady ();
 
         if (!Ready)
         {
@@ -85,31 +97,6 @@ public class PlayerSelected : MonoBehaviour
     }
     bool joystickNeutral = true;
 
-    //	Color GetColorFromInput()
-    //	{
-    //		if (Actions.Jump)
-    //		{
-    //			return Color.green;
-    //		}
-    //
-    //		if (Actions.Attack3)
-    //		{
-    //			return Color.red;
-    //		}
-    //
-    //		if (Actions.Attack1)
-    //		{
-    //			return Color.blue;
-    //		}
-    //
-    //		if (Actions.Attack2)
-    //		{
-    //			return Color.yellow;
-    //		}
-    //
-    //		return Color.white;
-    //	}
-
     private void changeTeam(Team t)
     {
         team = t;
@@ -117,13 +104,57 @@ public class PlayerSelected : MonoBehaviour
         {
             case Team.blue:
                 Body.material = teamBlueMat;
+                playerSelecionUI.TeamSelect.sprite = PlayerSelectBlue;
                 break;
             case Team.red:
                 Body.material = teamRedMat;
+                playerSelecionUI.TeamSelect.sprite = PlayerSelectRed;
                 break;
             case Team.none:
                 Body.material = teamNeutralMat;
+                playerSelecionUI.TeamSelect.sprite = PlayerSelectRandom;
                 break;
+        }
+    }
+
+    private void SetReady ()
+    {
+        Ready = !Ready;
+
+        playerSelecionUI.FlechaIzquierda.enabled = !playerSelecionUI.FlechaIzquierda.enabled;
+        playerSelecionUI.FlechaDerecha.enabled = !playerSelecionUI.FlechaDerecha.enabled;
+
+        if (Ready)
+        {
+            playerSelecionUI.AcctionsText.text = "B to back";
+            switch (team)
+            {
+                case Team.blue:
+                    playerSelecionUI.TeamSelect.sprite = PlayerSelectedBlue;
+                    break;
+                case Team.red:
+                    playerSelecionUI.TeamSelect.sprite = PlayerSelectedRed;
+                    break;
+                case Team.none:
+                    playerSelecionUI.TeamSelect.sprite = PlayerSelectedRandom;
+                    break;
+            }
+        }
+        else
+        {
+            playerSelecionUI.AcctionsText.text = "Press to choose";
+            switch (team)
+            {
+                case Team.blue:
+                    playerSelecionUI.TeamSelect.sprite = PlayerSelectBlue;
+                    break;
+                case Team.red:
+                    playerSelecionUI.TeamSelect.sprite = PlayerSelectRed;
+                    break;
+                case Team.none:
+                    playerSelecionUI.TeamSelect.sprite = PlayerSelectRandom;
+                    break;
+            }
         }
     }
 }

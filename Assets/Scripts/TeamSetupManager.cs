@@ -2,6 +2,8 @@
 using UnityEngine;
 using InControl;
 using UnityEngine.SceneManagement;
+using TMPro;
+using UnityEngine.UI;
 
 public class TeamSetupManager : MonoBehaviour
 {
@@ -15,15 +17,24 @@ public class TeamSetupManager : MonoBehaviour
 	public static string SiguenteEscena;
     public static bool startFromMap = false;
     public string nextScene;
+	private bool ready = false;
 
 	const int maxPlayers = 4;
 
 	public List<Transform> playerPositions = new List<Transform>();
 
-	List<PlayerSelected> players = new List<PlayerSelected>( maxPlayers );
+	List<PlayerSelected> players = new List<PlayerSelected>( maxPlayers);
+
+	public PlayerSelecionUI[] pUI;
 
 	PlayerActions keyboardListener;
 	PlayerActions joystickListener;
+
+	public float tiempoParaReady = 10.0f;
+
+	[Header("Referencias")]
+	public Animator animator;
+	public GameObject ReadyButton;
 
     private void Awake()
     {
@@ -46,9 +57,31 @@ public class TeamSetupManager : MonoBehaviour
 		keyboardListener.Destroy();
 	}
 
-
+	private float contador = 0;
 	void Update()
 	{
+		if (ready){
+			if (contador < tiempoParaReady){
+				contador += Time.deltaTime;
+				return;			
+			}
+
+			ReadyButton.SetActive(true);
+			foreach(PlayerSelected ps in players){
+				if (ps.Actions.Jump.WasPressed){
+					if (startFromMap)
+					{
+						SceneManager.LoadScene(SiguenteEscena);
+					}
+					else
+					{
+						SceneManager.LoadScene(nextScene);
+					}
+				}
+			}
+			return;
+		}
+
 		if (JoinButtonWasPressedOnListener( joystickListener ))
 		{
 			InputDevice inputDevice = InputManager.ActiveDevice;
@@ -75,6 +108,7 @@ public class TeamSetupManager : MonoBehaviour
 				}
 			}
 			if (contador == players.Count){
+				ready = true;
 				//GameInfo.playerActionsList = new PlayerActions[players.Count];
 				//GameInfo.playerActionsList = new List<PlayerActions>();
 				//for(int i = 0; i < players.Count; i++){
@@ -85,15 +119,18 @@ public class TeamSetupManager : MonoBehaviour
 					//Debug.Log(ps.Actions);
 				}
                 GameInfo.instance.nPlayers = players.Count;
-                if (startFromMap)
-                {
-                    SceneManager.LoadScene(SiguenteEscena);
-                }
-                else
-                {
-                    SceneManager.LoadScene(nextScene);
-                }
-
+				if (SiguenteEscena != "Tutorial")
+					animator.SetBool("Ready", true);
+				else{
+					if (startFromMap)
+					{
+						SceneManager.LoadScene(SiguenteEscena);
+					}
+					else
+					{
+						SceneManager.LoadScene(nextScene);
+					}
+				}
 			}
 		}
 	}
@@ -191,6 +228,8 @@ public class TeamSetupManager : MonoBehaviour
 			}
 
 			players.Add( player );
+			player.playerSelecionUI = pUI[players.Count - 1];
+			pUI[players.Count - 1].panel.SetActive(true);
 
 			return player;
 		}
@@ -208,18 +247,27 @@ public class TeamSetupManager : MonoBehaviour
 	}
 
 
-	void OnGUI()
-	{
-		const float h = 22.0f;
-		float y = 10.0f;
-
-		GUI.Label( new Rect( 10, y, 300, y + h ), "Active players: " + players.Count + "/" + maxPlayers );
-		y += h;
-
-		if (players.Count < maxPlayers)
-		{
-			GUI.Label( new Rect( 10, y, 300, y + h ), "Press a button or a/s/d/f key to join!" );
-			y += h;
-		}
-	}
+	//void OnGUI()
+	//{
+	//	const float h = 22.0f;
+	//	float y = 10.0f;
+//
+	//	GUI.Label( new Rect( 10, y, 300, y + h ), "Active players: " + players.Count + "/" + maxPlayers );
+	//	y += h;
+//
+	//	if (players.Count < maxPlayers)
+	//	{
+	//		GUI.Label( new Rect( 10, y, 300, y + h ), "Press a button or a/s/d/f key to join!" );
+	//		y += h;
+	//	}
+	//}
+}
+[System.Serializable]
+public struct PlayerSelecionUI
+{
+	public GameObject panel;
+	public Image TeamSelect;
+	public Image FlechaDerecha;
+	public Image FlechaIzquierda;
+	public TextMeshProUGUI AcctionsText;
 }
