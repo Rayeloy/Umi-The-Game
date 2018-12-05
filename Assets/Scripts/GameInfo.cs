@@ -21,7 +21,6 @@ public class GameInfo : MonoBehaviour
     
     public Team NoneTeamSelect()
     {
-        Debug.Break();
         int nAzul = 0;
         int nRojo = 0;
         foreach (Team t in playerTeamList)

@@ -116,11 +116,13 @@ public class Flag : MonoBehaviour
         rayOrigin = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
         rayLength = heightFromFloor + skinWidth;
     }
+
     void Fall()
     {
         Vector3 vel = Vector3.down * fallSpeed * Time.deltaTime;
         transform.Translate(vel, Space.World);
     }
+
     void StartIdleAnimation()
     {
         if (!idleAnimStarted)
@@ -133,6 +135,7 @@ public class Flag : MonoBehaviour
             idleAnimUp = true;
         }
     }
+    
     bool idleAnimUp = true;
     float progress = 0;
     void ProcessIdleAnimation()
@@ -160,6 +163,7 @@ public class Flag : MonoBehaviour
             }
         }
     }
+    
     void StopIdleAnimation()
     {
         idleAnimStarted = false;
@@ -179,6 +183,7 @@ public class Flag : MonoBehaviour
             Debug.LogError("Error: can't start a respawn process for the flag since there is one already happening.");
         }
     }
+    
     public void StartRespawn(bool respawnFromGoal = false)
     {
         if (!respawning)
@@ -190,6 +195,7 @@ public class Flag : MonoBehaviour
         }
 
     }
+    
     void ProcessRespawn()
     {
         if (respawning)
@@ -201,12 +207,14 @@ public class Flag : MonoBehaviour
             }
         }
     }
+    
     public void FinishRespawn()
     {
         respawning = false;
         GameController.instance.RespawnFlag(respawnPos);
         grounded = false;
     }
+    
     void SpawnFakeFlag()
     {
         print("SPAWN FAKE FLAG");
@@ -361,6 +369,7 @@ public class Flag : MonoBehaviour
         playerHooking = null;
     }
 
+    public static int flagsCaptured = 0;
     public void ClaimFlag(PlayerMovement player)
     {
         currentOwner = player.transform;
@@ -368,7 +377,10 @@ public class Flag : MonoBehaviour
         player.flag = this;
         if (GameController.instance.gameMode == GameController.GameMode.Tutorial)
         {
-            GameController.instance.GoBackToMenu();
+            flagsCaptured ++;
+            currentOwner.gameObject.GetComponent<PlayerMovement>().noInput = true;
+            if( flagsCaptured >= GameController.instance.playerNum)
+                GameController.instance.GoBackToMenu();
         }
 
     }
