@@ -24,7 +24,7 @@ public class PlayerMovement : MonoBehaviour
     public Team team = Team.blue;
     [HideInInspector]
     public Controller3D controller;
-    public PlayerHUD playerHUD;
+    public PlayerHUD myPlayerHUD;
 
     [HideInInspector]
     public MoveState moveSt = MoveState.NotMoving;
@@ -74,7 +74,7 @@ public class PlayerMovement : MonoBehaviour
     	get{return _boostTime;}
     	set
         {
-            playerHUD.setBoostUI( _boostTime/boostCD );
+            myPlayerHUD.setBoostUI( _boostTime/boostCD );
             _boostTime = value;
         }
     }

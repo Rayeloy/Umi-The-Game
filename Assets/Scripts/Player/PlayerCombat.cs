@@ -11,7 +11,7 @@ public class PlayerCombat : MonoBehaviour {
     PlayerMovement myPlayerMovement;
     PlayerWeapons myPlayerWeap;
     PlayerHook myHook;
-    public PlayerHUD myPlayerHUD;
+    PlayerHUD myPlayerHUD;
     public float triggerDeadZone=0.15f;
     //List<string> attacks;
     [HideInInspector]
@@ -51,6 +51,7 @@ public class PlayerCombat : MonoBehaviour {
         myPlayerMovement = GetComponent<PlayerMovement>();
         myPlayerWeap = GetComponent<PlayerWeapons>();
         myHook = GetComponent<PlayerHook>();
+        myPlayerHUD = myPlayerMovement.myPlayerHUD;
         attackStg = attackStage.ready;
         targetsHit = new List<string>();
         myAttacks = new List<AttackInfo>();
