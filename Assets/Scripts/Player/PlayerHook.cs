@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerHook : MonoBehaviour
 {
-
     PlayerMovement myPlayerMov;
     PlayerCombat myPlayerCombat;
 
@@ -24,7 +24,21 @@ public class PlayerHook : MonoBehaviour
     public float hookGrapplingSpeed;
     public float hookMinDistance;//Distance the hook stops when bringing the enemy
     public float cdMaxTime;
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerHook.cs
     float cdTime;
+=======
+    public float cdTime
+    {
+    	get{return _cdTime;}
+    	set
+        {
+            hookUI.fillAmount = Mathf.Clamp01( _cdTime/cdMaxTime );
+            _cdTime = value;
+        }
+    }
+    float _cdTime;
+    bool hookReady;
+>>>>>>> Menu:Assets/Scripts/Player/Hook.cs
     Vector3 reelingVel;
 
     HookState hookSt;
@@ -39,6 +53,12 @@ public class PlayerHook : MonoBehaviour
     bool enemyHooked;
     bool objectHooked;// item 
     PlayerMovement enemy;
+
+    [Space]
+    public LayerMask collisionMask;
+
+    [Header("Referencias")]
+    public Image hookUI;
 
     private void Awake()
     {
