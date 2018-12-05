@@ -16,7 +16,6 @@ public class HitboxHookSmall : MonoBehaviour
     {
         if (col.gameObject != myPlayerMov.gameObject)
         {
-            print("SMALL HOOK HB");
             if (col.tag == "Stage")
             {
                 myHook.StopHook();

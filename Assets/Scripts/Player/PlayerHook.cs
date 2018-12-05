@@ -27,7 +27,7 @@ public class PlayerHook : MonoBehaviour
     	get{return _cdTime;}
     	set
         {
-            playerHUD.setHookUI( _cdTime/cdMaxTime );
+            myPlayerHUD.setHookUI( _cdTime/cdMaxTime );
             _cdTime = value;
         }
     }
@@ -52,7 +52,7 @@ public class PlayerHook : MonoBehaviour
     public LayerMask collisionMask;
 
     [Header("Referencias")]
-    public PlayerHUD playerHUD;
+    PlayerHUD myPlayerHUD;
 
     private void Awake()
     {
@@ -62,6 +62,7 @@ public class PlayerHook : MonoBehaviour
         {
             Debug.LogError("PlayerMovement is not on the object where the hook script is. This object is " + gameObject.name);
         }
+        myPlayerHUD = myPlayerMov.playerHUD;
         hookSt = HookState.ready;
     }
 
