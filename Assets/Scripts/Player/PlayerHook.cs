@@ -13,7 +13,6 @@ public class PlayerHook : MonoBehaviour
     GameObject currentHook;
     Transform hookRopeEnd;
     Transform hookedObject;
-    public GameObject hookPrefab;
     public Vector3 hookLocalOrigin;
     public float hookMaxDistance;
     float currentDistance;
@@ -165,16 +164,10 @@ public class PlayerHook : MonoBehaviour
                 endPoint = rayOrigin + (myPlayerMov.currentCamFacingDir * hookMaxDistance);
             }
             reelingVel = (endPoint - originPos).normalized * hookFowardSpeed;
+
             //Instantiate hook
             Quaternion rotation = Quaternion.LookRotation(reelingVel);
-            if (StoringManager.instance.IsObjectStored(hookPrefab.name))
-            {
-                currentHook = StoringManager.instance.TakeObjectStored(hookPrefab.name, originPos, rotation).gameObject;
-            }
-            else
-            {
-                currentHook = Instantiate(hookPrefab, originPos, Quaternion.identity, StoringManager.instance.transform);
-            }
+            currentHook = StoringManager.instance.Spawn(StoringManager.instance.hookPrefab, originPos, rotation).gameObject;
             currentHook.transform.GetComponentInChildren<Hook>().KonoAwake(myPlayerMov, this);
             hookRopeEnd = currentHook.GetComponent<Hook>().hookRopeEnd;
             print("hookHBsmall= " + currentHook.transform.GetComponentInChildren<HitboxHookSmall>() + "; hookHBBig = " + currentHook.transform.GetComponentInChildren<HitboxHookBig>());

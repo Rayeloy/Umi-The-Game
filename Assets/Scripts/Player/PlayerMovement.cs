@@ -863,7 +863,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (haveFlag)
         {
-            flag.SetAway();
+            flag.SetAway(false);
             flag.GetComponent<Flag>().currentOwner = null;
             flag = null;
             haveFlag = false;
@@ -888,7 +888,7 @@ public class PlayerMovement : MonoBehaviour
             if (haveFlag)
             {
                 //GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
-                flag.SetAway();
+                flag.SetAway(false);
             }
         }
     }
@@ -926,7 +926,7 @@ public class PlayerMovement : MonoBehaviour
         if (haveFlag && team == flagHome.team)
         {
             GameController.instance.ScorePoint(team);
-            flag.SetAway();
+            flag.SetAway(true);
             print("CURRENT OWNER = NULL");
         }
     }

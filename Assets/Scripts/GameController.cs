@@ -31,7 +31,6 @@ public class GameController : MonoBehaviour
     public WeaponData[] allWeapons;
     public RectTransform[] contador;
 
-    public GameObject flagPrefab;
     private void Awake()
     {
         if (GameInfo.instance == null)
@@ -271,28 +270,14 @@ public class GameController : MonoBehaviour
     public void RespawnFlag(Vector3 respawnPos)
     {
         print("RESPAWN FLAG");
-        if (StoringManager.instance.IsObjectStored(flagPrefab.name))
-        {
-            StoringManager.instance.TakeObjectStored(flagPrefab.name, null, respawnPos, Quaternion.identity);
-        }
-        else
-        {
-            Instantiate(flagPrefab, respawnPos, Quaternion.identity, null);
-        }
+        StoringManager.instance.Spawn(StoringManager.instance.flagPrefab, respawnPos, Quaternion.identity);
     }
     public void RespawnFlag()
     {
         print("RESPAWN FLAG");
         Transform flag = StoringManager.instance.LookForObjectStoredTag("Flag");
         Vector3 respawnPos = flag.GetComponent<Flag>().respawnPos;
-        if (StoringManager.instance.IsObjectStored(flagPrefab.name))
-        {
-            StoringManager.instance.TakeObjectStored(flagPrefab.name, null, respawnPos, Quaternion.identity);
-        }
-        else
-        {
-            Instantiate(flagPrefab, respawnPos, Quaternion.identity, null);
-        }
+        StoringManager.instance.Spawn(StoringManager.instance.flagPrefab, respawnPos, Quaternion.identity);
     }
 
     bool gameOverMenuOn = false;

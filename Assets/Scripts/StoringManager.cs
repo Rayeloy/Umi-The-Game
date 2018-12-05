@@ -6,6 +6,9 @@ public class StoringManager : MonoBehaviour {
 
     public static StoringManager instance;
     public List<Transform> objectsStored;
+    public GameObject hookPrefab;
+    public GameObject flagPrefab;
+    public GameObject fakeFlagPrefab;
 
     private void Awake()
     {
@@ -58,6 +61,33 @@ public class StoringManager : MonoBehaviour {
             }
         }
         return result;
+    }
+
+
+    public Transform Spawn(GameObject prefab, Vector3 newPos, Quaternion newRot)
+    {
+        string name = prefab.name;
+        if (IsObjectStored(name))
+        {
+            return TakeObjectStored(name, newPos, newRot);
+        }
+        else
+        {
+            return Instantiate(prefab, newPos, newRot, transform).transform;
+        }
+    }
+
+    public Transform Spawn(GameObject prefab, Transform newParent, Vector3 newPos, Quaternion newRot)
+    {
+        string name = prefab.name;
+        if (IsObjectStored(name))
+        {
+            return TakeObjectStored(name, newParent, newPos, newRot);
+        }
+        else
+        {
+            return Instantiate(prefab, newPos, newRot, transform).transform;
+        }
     }
 
     /// <summary>

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Flag : MonoBehaviour {
+public class Flag : MonoBehaviour
+{
     [HideInInspector]
     public Vector3 respawnPos;
     [Tooltip("Not used yet. Can be used to differentiate flags")]
@@ -14,18 +15,56 @@ public class Flag : MonoBehaviour {
     public bool beingHooked;
     [HideInInspector]
     public Transform playerHooking;
+
+    [Header("Flag Times")]
     public float maxTimeLocked;
     float timeLocked = 0;
     bool locked = false;
-    public float maxTimeToRespawn;
+    public float maxTimeToRespawnFall;
+    public float maxTimeToRespawnGoal;
+    float maxTimeToRespawn;
     float timeToRespawn = 0;
     bool respawning = false;
     [Tooltip("NOT USED YET")]
     public float maxTimeToPick;
     float timeToPick = 0;
 
+    //FLAG FALLING WHEN DROPPED ("FLAG PHYSICS")
+    [Header("Flag Physics")]
+    [Tooltip("Speed at which the flag falls when dropped by a player.")]
+    public float fallSpeed;
+    public LayerMask collisionMask;
+    [Tooltip("Vertical distance you want the orca to be 'levitating' over the floor")]
+    public float heightFromFloor;
+    public bool grounded = false;
+    Vector3 rayOrigin;
+    float rayLength;
+    Collider myCol;
+    float skinWidth = 0.1f;
+    public float timeToDespawnInWater;
 
-	void Start () {
+    [Header("Idle Animation Param")]
+    [Tooltip("Distance from the middle (default) position to the max height and min height. The total distance of the animation will be the double of this value")]
+    public float idleAnimVertDist;
+    [Tooltip("Not in use yet")]
+    public float idleAnimHorDist;
+    [Tooltip("How much seconds per half animation cycle (i.e. from bottom to top height). The shorter the time, the faster the animation.")]
+    public float idleAnimFrequency;
+    float idleAnimTime = 0;
+    float maxHeight, minHeight;
+    //Vector3 bodyOriginalLocalPos;
+    bool idleAnimStarted = false;
+
+
+    private void Awake()
+    {
+        myCol = GetComponent<SphereCollider>();
+        grounded = false;
+        skinWidth = myCol.bounds.extents.y;
+        //bodyOriginalLocalPos= new Vector3(-0.016f, -0.303f, 0);
+    }
+    void Start()
+    {
         respawnPos = transform.position;
         currentOwner = null;
         beingHooked = false;
@@ -36,13 +75,120 @@ public class Flag : MonoBehaviour {
     {
         ProcessLocked();
         ProcessRespawn();
+
+        if (currentOwner == null && !beingHooked && !respawning)
+        {
+            if (!grounded)//fall
+            {
+                Fall();
+                UpdateRayParameters();
+                Debug.DrawRay(rayOrigin, Vector3.down * rayLength, Color.yellow);
+                RaycastHit hit;
+                if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayLength, collisionMask, QueryTriggerInteraction.Collide))
+                {
+                    if(hit.transform.tag != "Water")
+                    {
+                        grounded = true;
+                        float distToDesiredHeight = heightFromFloor - hit.distance;
+                        transform.position = new Vector3(transform.position.x, transform.position.y + distToDesiredHeight, transform.position.z);
+                        StartIdleAnimation();
+                    }
+                    else
+                    {
+                        if(hit.distance <= myCol.bounds.extents.y)
+                        {
+                            SetAway(false);
+                        }
+                    }
+                }
+            }
+            else//animation
+            {
+                ProcessIdleAnimation();
+            }
+        }
     }
 
-    public void StartRespawn()
+    void UpdateRayParameters()
     {
-        timeToRespawn = 0;
-        respawning = true;
-        StoringManager.instance.StoreObject(transform);
+        Bounds bounds = myCol.bounds;
+        bounds.Expand(skinWidth * -2);
+        rayOrigin = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
+        rayLength = heightFromFloor + skinWidth;
+    }
+    void Fall()
+    {
+        Vector3 vel = Vector3.down * fallSpeed * Time.deltaTime;
+        transform.Translate(vel, Space.World);
+    }
+    void StartIdleAnimation()
+    {
+        if (!idleAnimStarted)
+        {
+            idleAnimStarted = true;
+            idleAnimTime = 0;
+            maxHeight = transform.position.y + idleAnimVertDist;
+            minHeight = transform.position.y - idleAnimVertDist;
+            progress = 0.5f;
+            idleAnimUp = true;
+        }
+    }
+    bool idleAnimUp = true;
+    float progress = 0;
+    void ProcessIdleAnimation()
+    {
+        if (idleAnimStarted)
+        {
+            idleAnimTime += Time.deltaTime;
+            progress = idleAnimTime / idleAnimFrequency;
+            progress = Mathf.Clamp01(progress);
+            float newY = 0;
+            if (idleAnimUp)
+            {
+                newY = EasingFunction.EaseInOutQuad(minHeight, maxHeight, progress);
+            }
+            else
+            {
+                newY = EasingFunction.EaseInOutQuad(maxHeight, minHeight, progress);
+            }
+            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+
+            if (idleAnimTime >= idleAnimFrequency)
+            {
+                idleAnimTime = 0;
+                idleAnimUp = !idleAnimUp;
+            }
+        }
+    }
+    void StopIdleAnimation()
+    {
+        idleAnimStarted = false;
+    }
+
+    public void StartRespawn(float respawnTime)
+    {
+        if (!respawning)
+        {
+            timeToRespawn = 0;
+            respawning = true;
+            StoringManager.instance.StoreObject(transform);
+            maxTimeToRespawn = respawnTime;
+        }
+        else
+        {
+            Debug.LogError("Error: can't start a respawn process for the flag since there is one already happening.");
+        }
+    }
+    public void StartRespawn(bool respawnFromGoal = false)
+    {
+        if (!respawning)
+        {
+            timeToRespawn = 0;
+            respawning = true;
+            StoringManager.instance.StoreObject(transform);
+            maxTimeToRespawn = respawnFromGoal ? maxTimeToRespawnGoal : maxTimeToRespawnFall;
+        }
+
     }
     void ProcessRespawn()
     {
@@ -59,7 +205,16 @@ public class Flag : MonoBehaviour {
     {
         respawning = false;
         GameController.instance.RespawnFlag(respawnPos);
+        grounded = false;
     }
+    void SpawnFakeFlag()
+    {
+        print("SPAWN FAKE FLAG");
+        Transform fakeFlag = StoringManager.instance.Spawn(StoringManager.instance.fakeFlagPrefab, StoringManager.instance.transform, transform.position, transform.rotation);
+        fakeFlag.GetComponent<FakeFlag>().KonoAwake(timeToDespawnInWater,fallSpeed);
+
+    }
+
     /// <summary>
     /// Allows player to steal flag from another player that already has it from a hit. It also puts it on his back.
     /// </summary>
@@ -90,15 +245,16 @@ public class Flag : MonoBehaviour {
         }
         else
         {
-            Debug.LogError("Error: Can't steal a flag because the player "+player.name+" already has a flag");
+            Debug.LogError("Error: Can't steal a flag because the player " + player.name + " already has a flag");
         }
     }
 
     public void PickupFlag(PlayerMovement player)//from floor
     {
         print("PickupFlag");
-        if (!player.haveFlag && currentOwner==null && !beingHooked && !locked)
+        if (!player.haveFlag && currentOwner == null && !beingHooked && !locked)
         {
+            StopIdleAnimation();
             ClaimFlag(player);
             PutFlagOnBack(player);
 
@@ -106,8 +262,8 @@ public class Flag : MonoBehaviour {
         else
         {
             Debug.LogWarning("Error: Can't pick up a flag because the player " + (player.name).ToString() +
-                " already has a flag("+ (player.haveFlag).ToString() + ") || the flag has an owner("+ (currentOwner != null).ToString() + 
-                ") || the flag is being hooked("+ beingHooked + ") || the flag is locked("+locked+").");
+                " already has a flag(" + (player.haveFlag).ToString() + ") || the flag has an owner(" + (currentOwner != null).ToString() +
+                ") || the flag is being hooked(" + beingHooked + ") || the flag is locked(" + locked + ").");
         }
     }
 
@@ -116,16 +272,8 @@ public class Flag : MonoBehaviour {
         print("HookFlag");
         if (!player.haveFlag && !locked)
         {
-            if(!(currentOwner != null && player.team == currentOwner.GetComponent<PlayerMovement>().team))
+            if (!(currentOwner != null && player.team == currentOwner.GetComponent<PlayerMovement>().team))//si no hemos enganchado la bandera de un compañero de equipo
             {
-                if (currentOwner == null)
-                {
-                    print("NO OWNER");
-                }
-                else
-                {
-                    print("current owner = " + currentOwner + "; owner team= " + currentOwner.GetComponent<PlayerMovement>().team + "; hooker team = " + player.team);
-                }
                 if (beingHooked)
                 {
                     playerHooking.GetComponent<PlayerHook>().StopHook();
@@ -141,13 +289,14 @@ public class Flag : MonoBehaviour {
                     print("START BEING HOOKED");
                     beingHooked = true;
                     playerHooking = player.transform;
+                    StopIdleAnimation();
                 }
                 return true;
             }
         }
         else
         {
-            Debug.LogWarning("Error: Can't hook flag because player has already a flag ("+player.haveFlag+") || flag is locked ("+locked+").");
+            Debug.LogWarning("Error: Can't hook flag because player has already a flag (" + player.haveFlag + ") || flag is locked (" + locked + ").");
         }
         return false;
     }
@@ -173,25 +322,34 @@ public class Flag : MonoBehaviour {
                 currentOwner = null;
             }
         }
+        grounded = false;
         transform.SetParent(StoringManager.instance.transform);
         StartLocked();
     }
 
-    public void SetAway(bool instant=false)
+    public void SetAway(bool respawnFromGoal, bool instant = false)
     {
-        if (currentOwner != null)//solo se puede poner away si se pierde en el agua o se marca un punto, ambos casos con un owner
+        //solo se puede poner away si se pierde en el agua o se marca un punto
+        if (currentOwner != null)
         {
             currentOwner.GetComponent<PlayerMovement>().LoseFlag();
             currentOwner = null;
-            if (!instant)
-            {
-                StartRespawn();
-            }
-            else
-            {
-                FinishRespawn();
-            }
+        }
 
+        if (!respawnFromGoal)
+        {
+            grounded = true;
+            StopIdleAnimation();
+            SpawnFakeFlag();
+        }
+
+        if (!instant)
+        {
+            StartRespawn(respawnFromGoal);
+        }
+        else
+        {
+            FinishRespawn();
         }
 
     }
@@ -215,7 +373,7 @@ public class Flag : MonoBehaviour {
 
     }
 
-    public void PutFlagOnBack(PlayerMovement player) 
+    public void PutFlagOnBack(PlayerMovement player)
     {
         player.PutOnFlag(this);
     }
@@ -240,4 +398,13 @@ public class Flag : MonoBehaviour {
     {
         locked = false;
     }
+
+
+    //private void OnTriggerEnter(Collider col)
+    //{
+    //    if (col.tag == "Water")
+    //    {
+    //    }
+
+    //}
 }
