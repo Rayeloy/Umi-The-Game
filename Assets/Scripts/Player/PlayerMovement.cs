@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Controller3D))]
 [RequireComponent(typeof(PlayerCombat))]
@@ -66,7 +67,17 @@ public class PlayerMovement : MonoBehaviour
     public float boostSpeed = 20f;
     public float boostCD = 5f;
     public float boostDuration = 1f;
-    float boostTime = 0f;
+    public Image boostUI;
+    float _boostTime = 0f;
+    public float boostTime
+    {
+    	get{return _boostTime;}
+    	set
+        {
+            boostUI.fillAmount = Mathf.Clamp01( _boostTime/boostCD );
+            _boostTime = value;
+        }
+    }
     bool boostReady = true;
     Vector3 boostDir;
     [Header("ACCELERATIONS")]
