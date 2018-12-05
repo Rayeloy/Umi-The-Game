@@ -258,20 +258,18 @@ public class PlayerCombat : MonoBehaviour {
     {
         if(!aiming)
         {
-            print("startAiming");
             aiming = true;
             myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Shoulder);
             myPlayerWeap.AttachWeaponToBack();
             myPlayerHUD.StartAim();
             //ChangeAttackType(GameController.instance.attackHook);
-        }
+        }  
     }
 
     public void StopAiming()
     {
         if (aiming)
         {
-            print("stopAiming");
             aiming = false;
             myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Free);
             myPlayerWeap.AttachWeapon();

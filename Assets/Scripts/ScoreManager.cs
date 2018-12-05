@@ -11,7 +11,7 @@ public class ScoreManager : MonoBehaviour {
         instance = this;
     }
 
-    [Tooltip("Teimpo de juego en segundos")]
+    [Tooltip("Tiempo de juego en segundos")]
     public float Tiempo = 120;
     private float _Tiempo;
 

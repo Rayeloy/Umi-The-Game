@@ -9,22 +9,24 @@ using UnityEngine.UI;
 [RequireComponent(typeof(PlayerWeapons))]
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Referencias")]
     public CameraController myCamera;
+    public PlayerPickups myPlayerPickups;
+    public PlayerAnimation myPlayerAnimation;
+    public PlayerHUD myPlayerHUD;
+    [HideInInspector]
+    public Controller3D controller;
+    PlayerCombat myPlayerCombat;
+    PlayerWeapons myPlayerWeap;
+
     public Transform rotateObj;
     public SkinnedMeshRenderer Body;
     public Material teamBlueMat;
     public Material teamRedMat;
-    PlayerCombat myPlayerCombat;
-    public PlayerAnimation myPlayerAnimation;
-    PlayerWeapons myPlayerWeap;
-    public PlayerPickups myPlayerPickups;
 
     //public GameController.controllerName contName;
     public PlayerActions Actions { get; set; }
     public Team team = Team.blue;
-    [HideInInspector]
-    public Controller3D controller;
-    public PlayerHUD myPlayerHUD;
 
     [HideInInspector]
     public MoveState moveSt = MoveState.NotMoving;

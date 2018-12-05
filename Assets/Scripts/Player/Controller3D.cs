@@ -747,7 +747,7 @@ public class Controller3D : MonoBehaviour
                                 y = Mathf.Tan(collisions.realSlopeAngle * Mathf.Deg2Rad) * horVelAux.magnitude;
                             }
                             vel = new Vector3(horVelAux.x, y, horVelAux.z);
-                            print("HIT NEW SLOPE/Wall with angle = " + slopeAngle);
+                            //print("HIT NEW SLOPE/Wall with angle = " + slopeAngle);
                             //vel = new Vector3(horVelAux.x, vel.y, horVelAux.z);
                             collisions.slopeAngle = slopeAngle;
                         }

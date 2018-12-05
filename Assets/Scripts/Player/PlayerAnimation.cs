@@ -89,7 +89,6 @@ public class PlayerAnimation : MonoBehaviour
         //COMBAT ANIMATIONS
         if (basicSwingValue && myPlayerCombat.attackStg == PlayerCombat.attackStage.ready)
         {
-            Debug.LogWarning("FINISH GOLPE");
             basicSwingValue = false;
             animator.SetBool(basicSwingHash, basicSwingValue);
         }
@@ -167,7 +166,6 @@ public class PlayerAnimation : MonoBehaviour
         //COMBAT ANIMATIONS
         if (!basicSwingValue && myPlayerCombat.attackStg == PlayerCombat.attackStage.startup)
         {
-            Debug.LogWarning("START GOLPE");
             basicSwingValue = true;
             animator.SetBool(basicSwingHash, basicSwingValue);
         }

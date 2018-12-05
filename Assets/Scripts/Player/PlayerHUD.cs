@@ -9,11 +9,40 @@ public class PlayerHUD : MonoBehaviour {
     public Image crosshairReduced;
     public Image Hook;
     public Image Boost;
+    public Slider flagSlider;
+    Vector3 blueFlagHomePos;
+    Vector3 redFlagHomePos;
+    Transform flag;
+    Vector3 flagPos;
 
     private void Start()
     {
         crosshair.enabled = false;
         crosshairReduced.enabled = false;
+        flag = GameController.instance.flags[0].transform;
+        blueFlagHomePos = GameController.instance.blueTeamFlagHome.position;
+        redFlagHomePos = GameController.instance.redTeamFlagHome.position;
+        blueFlagHomePos.y = 0;
+        redFlagHomePos.y = 0;
+    }
+
+    private void Update()
+    {
+        UpdateFlagSlider();
+    }
+
+    void UpdateFlagSlider()
+    {
+        flagPos = flag.position;
+        flagPos.y = 0;
+        float distFromBlue = (blueFlagHomePos-flagPos).magnitude;
+        float distFromRed = (redFlagHomePos - flagPos).magnitude;
+        float diff = distFromBlue - distFromRed;
+        float totalDist = (blueFlagHomePos - redFlagHomePos).magnitude;
+        float coef = diff + totalDist / 2;
+        float progress = Mathf.Clamp01(coef / totalDist);
+        flagSlider.value = progress;
+        print("totalDist = " + totalDist + "; distFromBlue = " + distFromBlue + "; distFromRed = " + distFromRed + "; diff = " + diff + "; coef = " + coef + "; progress = " + progress);
     }
 
     public void StartAim()

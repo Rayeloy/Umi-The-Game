@@ -186,7 +186,6 @@ public class PlayerHook : MonoBehaviour
             currentHook = StoringManager.instance.Spawn(StoringManager.instance.hookPrefab, originPos, rotation).gameObject;
             currentHook.transform.GetComponentInChildren<Hook>().KonoAwake(myPlayerMov, this);
             hookRopeEnd = currentHook.GetComponent<Hook>().hookRopeEnd;
-            print("hookHBsmall= " + currentHook.transform.GetComponentInChildren<HitboxHookSmall>() + "; hookHBBig = " + currentHook.transform.GetComponentInChildren<HitboxHookBig>());
             myPlayerHUD.StartThrowHook();
         }
     }
@@ -239,13 +238,13 @@ public class PlayerHook : MonoBehaviour
 
     public void StopHook()
     {
-        print("STOP HOOK");
+        //print("STOP HOOK");
         StartReeling();
         if (somethingHooked)
         {
             if (enemyHooked)
             {
-                print("DROP ENEMY FROM HOOK");
+                //print("DROP ENEMY FROM HOOK");
                 enemyHooked = false;
                 enemy.StopHooked();
                 enemy = null;
@@ -253,7 +252,7 @@ public class PlayerHook : MonoBehaviour
             }
             else if (objectHooked)
             {
-                print("DROP OBJECT FROM HOOK");
+                //print("DROP OBJECT FROM HOOK");
                 if (hookedObject.tag == "Flag")
                 {
                     Flag flag = hookedObject.GetComponent<Flag>();
@@ -325,7 +324,7 @@ public class PlayerHook : MonoBehaviour
         {
             if (hookedObject.tag == "Flag")
             {
-                print("Recieve flag with hook");
+                //print("Recieve flag with hook");
                 Flag flag = hookedObject.GetComponent<Flag>();
                 flag.StopBeingHooked();
                 flag.PickupFlag(myPlayerMov);
