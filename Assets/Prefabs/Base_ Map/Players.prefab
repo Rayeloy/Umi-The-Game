@@ -9672,10 +9672,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 264b8cf1ef769c948a0a19b7ff58980d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 22016
-  hookPrefab: {fileID: 1929792848688554, guid: a6854d43b57b2bd4c939845b09db9437, type: 2}
   hookLocalOrigin: {x: -0.2, y: 0.381, z: 0.511}
   hookMaxDistance: 20
   hookFowardSpeed: 45
@@ -9683,6 +9679,10 @@ MonoBehaviour:
   hookGrapplingSpeed: 30
   hookMinDistance: 1
   cdMaxTime: 2
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 22016
+  playerHUD: {fileID: 0}
 --- !u!114 &114116495764646908
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -9710,8 +9710,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myPlayerHUD: {fileID: 0}
   triggerDeadZone: 0.15
-  LTPulsado: 0
-  RTPulsado: 0
   attackIndex: -1
   hitboxMats:
   - {fileID: 2100000, guid: 2700333b147dd394c8452531278051f7, type: 2}
@@ -9802,6 +9800,7 @@ MonoBehaviour:
   myPlayerPickups: {fileID: 114332052327846394}
   team: 1
   controller: {fileID: 114060524879294602}
+  playerHUD: {fileID: 0}
   moveSt: 1
   jumpSt: 2
   noInput: 0
@@ -9826,7 +9825,7 @@ MonoBehaviour:
   jumpApexTime: 0.4
   breakJumpForce: 1.5
   pressingJumpActiveProportion: 0.7
-  maxTimeJumpInsurance: 0.4
+  maxTimeJumpInsurance: 0.3
   wallJumpVelocity: 15
   stopWallMaxTime: 0.1
   wallJumpAngle: 25.5
@@ -9851,10 +9850,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 264b8cf1ef769c948a0a19b7ff58980d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 22016
-  hookPrefab: {fileID: 1929792848688554, guid: a6854d43b57b2bd4c939845b09db9437, type: 2}
   hookLocalOrigin: {x: -0.2, y: 0.381, z: 0.511}
   hookMaxDistance: 20
   hookFowardSpeed: 45
@@ -9862,6 +9857,10 @@ MonoBehaviour:
   hookGrapplingSpeed: 30
   hookMinDistance: 1
   cdMaxTime: 2
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 22016
+  playerHUD: {fileID: 0}
 --- !u!114 &114233595048039500
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -9882,6 +9881,7 @@ MonoBehaviour:
   myPlayerPickups: {fileID: 114258672445477336}
   team: 1
   controller: {fileID: 114601224516174664}
+  playerHUD: {fileID: 0}
   moveSt: 1
   jumpSt: 2
   noInput: 0
@@ -9906,7 +9906,7 @@ MonoBehaviour:
   jumpApexTime: 0.4
   breakJumpForce: 1.5
   pressingJumpActiveProportion: 0.7
-  maxTimeJumpInsurance: 0.4
+  maxTimeJumpInsurance: 0.3
   wallJumpVelocity: 15
   stopWallMaxTime: 0.1
   wallJumpAngle: 25.5
@@ -9933,8 +9933,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myPlayerHUD: {fileID: 0}
   triggerDeadZone: 0.15
-  LTPulsado: 0
-  RTPulsado: 0
   attackIndex: -1
   hitboxMats:
   - {fileID: 2100000, guid: 2700333b147dd394c8452531278051f7, type: 2}
@@ -9989,6 +9987,7 @@ MonoBehaviour:
   myPlayerPickups: {fileID: 114812184630198940}
   team: 1
   controller: {fileID: 114777648818286286}
+  playerHUD: {fileID: 0}
   moveSt: 1
   jumpSt: 2
   noInput: 0
@@ -10013,7 +10012,7 @@ MonoBehaviour:
   jumpApexTime: 0.4
   breakJumpForce: 1.5
   pressingJumpActiveProportion: 0.7
-  maxTimeJumpInsurance: 0.4
+  maxTimeJumpInsurance: 0.3
   wallJumpVelocity: 15
   stopWallMaxTime: 0.1
   wallJumpAngle: 25.5
@@ -10061,8 +10060,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myPlayerHUD: {fileID: 0}
   triggerDeadZone: 0.15
-  LTPulsado: 0
-  RTPulsado: 0
   attackIndex: -1
   hitboxMats:
   - {fileID: 2100000, guid: 2700333b147dd394c8452531278051f7, type: 2}
@@ -10087,10 +10084,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 264b8cf1ef769c948a0a19b7ff58980d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 22016
-  hookPrefab: {fileID: 1929792848688554, guid: a6854d43b57b2bd4c939845b09db9437, type: 2}
   hookLocalOrigin: {x: -0.2, y: 0.381, z: 0.511}
   hookMaxDistance: 20
   hookFowardSpeed: 45
@@ -10098,6 +10091,10 @@ MonoBehaviour:
   hookGrapplingSpeed: 30
   hookMinDistance: 1
   cdMaxTime: 2
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 22016
+  playerHUD: {fileID: 0}
 --- !u!114 &114409586900883520
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -10124,10 +10121,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 264b8cf1ef769c948a0a19b7ff58980d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 22016
-  hookPrefab: {fileID: 1929792848688554, guid: a6854d43b57b2bd4c939845b09db9437, type: 2}
   hookLocalOrigin: {x: -0.2, y: 0.381, z: 0.511}
   hookMaxDistance: 20
   hookFowardSpeed: 45
@@ -10135,6 +10128,10 @@ MonoBehaviour:
   hookGrapplingSpeed: 30
   hookMinDistance: 1
   cdMaxTime: 2
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 22016
+  playerHUD: {fileID: 0}
 --- !u!114 &114601224516174664
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -10212,6 +10209,7 @@ MonoBehaviour:
   myPlayerPickups: {fileID: 114876998237275496}
   team: 1
   controller: {fileID: 114164421012068102}
+  playerHUD: {fileID: 0}
   moveSt: 1
   jumpSt: 2
   noInput: 0
@@ -10236,7 +10234,7 @@ MonoBehaviour:
   jumpApexTime: 0.4
   breakJumpForce: 1.5
   pressingJumpActiveProportion: 0.7
-  maxTimeJumpInsurance: 0.4
+  maxTimeJumpInsurance: 0.3
   wallJumpVelocity: 15
   stopWallMaxTime: 0.1
   wallJumpAngle: 25.5
@@ -10278,8 +10276,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myPlayerHUD: {fileID: 0}
   triggerDeadZone: 0.15
-  LTPulsado: 0
-  RTPulsado: 0
   attackIndex: -1
   hitboxMats:
   - {fileID: 2100000, guid: 2700333b147dd394c8452531278051f7, type: 2}

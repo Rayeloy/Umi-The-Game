@@ -24,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
     public Team team = Team.blue;
     [HideInInspector]
     public Controller3D controller;
+    public PlayerHUD playerHUD;
 
     [HideInInspector]
     public MoveState moveSt = MoveState.NotMoving;
@@ -67,14 +68,13 @@ public class PlayerMovement : MonoBehaviour
     public float boostSpeed = 20f;
     public float boostCD = 5f;
     public float boostDuration = 1f;
-    public Image boostUI;
     float _boostTime = 0f;
     public float boostTime
     {
     	get{return _boostTime;}
     	set
         {
-            boostUI.fillAmount = Mathf.Clamp01( _boostTime/boostCD );
+            playerHUD.setBoostUI( _boostTime/boostCD );
             _boostTime = value;
         }
     }

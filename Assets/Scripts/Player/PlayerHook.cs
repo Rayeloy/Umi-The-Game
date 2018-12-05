@@ -27,7 +27,7 @@ public class PlayerHook : MonoBehaviour
     	get{return _cdTime;}
     	set
         {
-            hookUI.fillAmount = Mathf.Clamp01( _cdTime/cdMaxTime );
+            playerHUD.setHookUI( _cdTime/cdMaxTime );
             _cdTime = value;
         }
     }
@@ -52,7 +52,7 @@ public class PlayerHook : MonoBehaviour
     public LayerMask collisionMask;
 
     [Header("Referencias")]
-    public Image hookUI;
+    public PlayerHUD playerHUD;
 
     private void Awake()
     {
