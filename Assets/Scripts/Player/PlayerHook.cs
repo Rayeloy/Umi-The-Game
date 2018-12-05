@@ -62,7 +62,7 @@ public class PlayerHook : MonoBehaviour
         {
             Debug.LogError("PlayerMovement is not on the object where the hook script is. This object is " + gameObject.name);
         }
-        myPlayerHUD = myPlayerMov.playerHUD;
+        myPlayerHUD = myPlayerMov.myPlayerHUD;
         hookSt = HookState.ready;
     }
 
@@ -187,7 +187,7 @@ public class PlayerHook : MonoBehaviour
             currentHook.transform.GetComponentInChildren<Hook>().KonoAwake(myPlayerMov, this);
             hookRopeEnd = currentHook.GetComponent<Hook>().hookRopeEnd;
             print("hookHBsmall= " + currentHook.transform.GetComponentInChildren<HitboxHookSmall>() + "; hookHBBig = " + currentHook.transform.GetComponentInChildren<HitboxHookBig>());
-            myPlayerCombat.myPlayerHUD.StartThrowHook();
+            myPlayerHUD.StartThrowHook();
         }
     }
 
@@ -282,7 +282,7 @@ public class PlayerHook : MonoBehaviour
                 cdTime = 0;
                 if (myPlayerCombat.aiming)
                 {
-                    myPlayerCombat.myPlayerHUD.StopThrowHook();
+                    myPlayerHUD.StopThrowHook();
                 }
                 break;
             case HookState.grappling:
