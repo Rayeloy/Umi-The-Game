@@ -9,7 +9,6 @@ public class PlayerHook : MonoBehaviour
     PlayerMovement myPlayerMov;
     PlayerCombat myPlayerCombat;
 
-    public LayerMask collisionMask;
     GameObject currentHook;
     Transform hookRopeEnd;
     Transform hookedObject;
@@ -23,9 +22,6 @@ public class PlayerHook : MonoBehaviour
     public float hookGrapplingSpeed;
     public float hookMinDistance;//Distance the hook stops when bringing the enemy
     public float cdMaxTime;
-<<<<<<< HEAD:Assets/Scripts/Player/PlayerHook.cs
-    float cdTime;
-=======
     public float cdTime
     {
     	get{return _cdTime;}
@@ -37,7 +33,6 @@ public class PlayerHook : MonoBehaviour
     }
     float _cdTime;
     bool hookReady;
->>>>>>> Menu:Assets/Scripts/Player/Hook.cs
     Vector3 reelingVel;
 
     HookState hookSt;
