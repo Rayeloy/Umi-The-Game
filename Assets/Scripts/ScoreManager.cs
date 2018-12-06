@@ -37,6 +37,8 @@ public class ScoreManager : MonoBehaviour {
 	public TextMeshProUGUI[] redTeamScore_Text;
 	public TextMeshProUGUI[] time_Text;
     //public RectTransform[] contador;
+    public ParticleSystem bluePS;
+    public ParticleSystem redPS;
 
     public void KonoStart(){
         _Tiempo = Tiempo;
@@ -113,6 +115,7 @@ public class ScoreManager : MonoBehaviour {
             case Team.blue:
                 _blueTeamScore++;
                 RandomOrcaSpawn(Team.blue);
+                bluePS.Play(true);
                 for( int i = 0; i < blueTeamScore_Text.Length; i++)
                 {
                     blueTeamScore_Text[i].text = _blueTeamScore.ToString();
@@ -125,6 +128,7 @@ public class ScoreManager : MonoBehaviour {
             case Team.red:
                 _redTeamScore++;
                 RandomOrcaSpawn(Team.red);
+                redPS.Play(true);
                 for( int i = 0; i < redTeamScore_Text.Length; i++)//foreach (TextMeshProUGUI tM in redTeamScore_Text)
                 {
                     redTeamScore_Text[i].text = _redTeamScore.ToString();

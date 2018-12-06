@@ -30,6 +30,7 @@ public class GameController : MonoBehaviour
     public CameraController[] allCameraBases;
     public WeaponData[] allWeapons;
     public RectTransform[] contador;
+    public RectTransform[] powerUpPanel;
 
     private void Awake()
     {
@@ -118,16 +119,48 @@ public class GameController : MonoBehaviour
         StartGame();
     }
 
+    [Header("Escala UI")]
+    public float scaleDos = 1.25f;
+    public float scaleCuatro = 1.25f;
     private void SetUpCanvas (){
-        if (playerNum >= 2){
+        if (playerNum >= 2)
+        {
             contador[0].anchoredPosition = new Vector3 (contador[0].anchoredPosition.x, 100, contador[0].anchoredPosition.y);
             contador[1].anchoredPosition = new Vector3 (contador[1].anchoredPosition.x, 100, contador[1].anchoredPosition.y);
             contador[2].anchoredPosition = new Vector3 (contador[2].anchoredPosition.x, 100, contador[2].anchoredPosition.y);
             contador[3].anchoredPosition = new Vector3 (contador[3].anchoredPosition.x, 100, contador[3].anchoredPosition.y);
         }
-//        else if (playerNum == 3){
-//            contador[2].anchoredPosition = new Vector3 (contador[2].anchoredPosition.x, 100, contador[2].anchoredPosition.y);
-//        }
+
+        if (playerNum == 2)
+        {
+            contador[0].localScale /= scaleDos;
+            contador[1].localScale /= scaleDos;
+
+            powerUpPanel[0].localScale /= scaleDos;
+            powerUpPanel[1].localScale /= scaleDos;
+        }
+        else if (playerNum == 3)
+        {
+            contador[0].localScale /= scaleCuatro;
+            contador[1].localScale /= scaleCuatro;
+            contador[2].localScale /= scaleDos;
+
+            powerUpPanel[0].localScale /= scaleCuatro;
+            powerUpPanel[1].localScale /= scaleCuatro;
+            powerUpPanel[2].localScale /= scaleDos;
+        }
+        else
+        {
+            contador[0].localScale /= scaleCuatro;
+            contador[1].localScale /= scaleCuatro;
+            contador[2].localScale /= scaleCuatro;
+            contador[3].localScale /= scaleCuatro;
+
+            powerUpPanel[0].localScale /= scaleCuatro;
+            powerUpPanel[1].localScale /= scaleCuatro;
+            powerUpPanel[2].localScale /= scaleCuatro;
+            powerUpPanel[3].localScale /= scaleCuatro;
+        }
     }
 
 
