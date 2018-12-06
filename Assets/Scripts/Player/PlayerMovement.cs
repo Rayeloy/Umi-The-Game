@@ -451,8 +451,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!noInput && moveSt != MoveState.Boost)
         {
-            if ((controller.collisions.below||jumpInsurance) && (!inWater || (inWater && controller.collisions.around && 
-                ((GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga)||
+            if ((controller.collisions.below || jumpInsurance) && (!inWater || (inWater && controller.collisions.around &&
+                ((GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) ||
                 (GameController.instance.gameMode != GameController.GameMode.CaptureTheFlag)))))
             {
                 currentVel.y = jumpVelocity;
@@ -462,8 +462,17 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
+                Debug.LogWarning("Warning: Can't jump because: controller.collisions.below || jumpInsurance ("+ (controller.collisions.below || jumpInsurance)+
+                    ") / !inWater || (inWater && controller.collisions.around && ((GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) || (GameController.instance.gameMode != GameController.GameMode.CaptureTheFlag))) ("+
+                    (!inWater || (inWater && controller.collisions.around &&
+                ((GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) ||
+                (GameController.instance.gameMode != GameController.GameMode.CaptureTheFlag))))+")");
                 StartWallJump();
             }
+        }
+        else
+        {
+            Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + moveSt != MoveState.Boost + ")");
         }
     }
 
@@ -472,13 +481,12 @@ public class PlayerMovement : MonoBehaviour
         jumpSt = JumpState.none;
         timePressingJump = 0;
     }
-
     
     void ProcessJumpInsurance()
     {
         if (!jumpInsurance)
         {
-            if (controller.collisions.lastBelow && !controller.collisions.below && jumpSt==JumpState.none)
+            if (controller.collisions.lastBelow && !controller.collisions.below && jumpSt==JumpState.none && jumpedOutOfWater)
             {
                 //print("Jump Insurance");
                 jumpInsurance = true;
@@ -504,7 +512,7 @@ public class PlayerMovement : MonoBehaviour
             GameObject wall = controller.collisions.wall;
             if (wall.GetComponent<StageScript>() == null || wall.GetComponent<StageScript>().wallJumpable)
             {
-                print("WallJump");
+                print("Wall jump");
                 //wallJumped = true;
                 stopWallTime = 0;
                 currentVel = Vector3.zero;
@@ -940,7 +948,6 @@ public class PlayerMovement : MonoBehaviour
         {
             GameController.instance.ScorePoint(team);
             flag.SetAway(true);
-            print("CURRENT OWNER = NULL");
         }
     }
     #endregion

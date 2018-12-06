@@ -21,6 +21,7 @@ public class Controller3D : MonoBehaviour
     public float skinWidthHeight = 0.0001f;
     public float precisionHeight = 0.01f;
     public float precisionSpaceFromSlideWall = 0.001f;
+    public float rayExtraLengthPeak = 0.1f;
 
     public struct Raycast
     {
@@ -86,8 +87,12 @@ public class Controller3D : MonoBehaviour
             NewVerticalCollisions2(ref vel);
         }
         VerticalCollisionsDistanceCheck(ref vel);
-        //print("SLOPE TYPE = " + collisions.climbSt+"; slopeAngle = "+collisions.slopeAngle+"; FinalVel = "+ vel.ToString("F5"));
+        //print("SLOPE TYPE = " + collisions.moveSt+"; slopeAngle = "+collisions.slopeAngle+"; FinalVel = "+ vel.ToString("F5"));
         //print("FinalVel= " + vel.ToString("F5"));
+        //if (!collisions.below)
+        //{
+        //    Debug.Log("NO COLLISIONS BELOW at pos = " + transform.position.ToString("F4"));
+        //}
         transform.Translate(vel, Space.World);
     }
 
@@ -722,7 +727,7 @@ public class Controller3D : MonoBehaviour
                     vel = new Vector3(horVel.x, vel.y, horVel.z);
                     //--------------------- CHECK FOR NEXT SLOPE/WALL -------------------------------------
                     Vector3 horVelAux = new Vector3(vel.x, 0, vel.z);
-                    rayLength = (horVelAux.magnitude + skinWidth);
+                    rayLength = (horVelAux.magnitude + skinWidth+ 0.1f);
                     Vector3 rayOrigin = collisions.closestHorRaycast.origin + Vector3.up * vel.y;
                     RaycastHit hit;
                     if (!disableAllRays)
@@ -752,6 +757,12 @@ public class Controller3D : MonoBehaviour
                             collisions.slopeAngle = slopeAngle;
                         }
                     }
+                    else
+                    {
+                        //Debug.LogWarning("Climbing slope finished!");
+                        collisions.finishedClimbing = true;
+                    }
+
                     break;
                 case MovingState.descending:
                     break;
@@ -766,6 +777,10 @@ public class Controller3D : MonoBehaviour
         // ---------------------- 3D "Cube" -------------------
         float directionY = Mathf.Sign(vel.y);
         float rayLength = Mathf.Abs(vel.y) + skinWidth;
+        if (collisions.lastFinishedClimbing || collisions.lastMoveSt == MovingState.crossingPeak)
+        {
+            rayLength += rayExtraLengthPeak;
+        }
         Vector3 rowsOrigin = directionY == -1 ? raycastOrigins.BottomLFCornerReal : raycastOrigins.TopLFCornerReal;
         Vector3 rowOrigin = rowsOrigin;
         Vector3 wallNormal = new Vector3(collisions.wallNormal.x, 0, collisions.wallNormal.z).normalized;
@@ -773,6 +788,9 @@ public class Controller3D : MonoBehaviour
         {
             rowOrigin += wallNormal * 0.01f;
         }
+        //Check for peak under
+        bool peak = false;
+        MovingState lastSlopeType = MovingState.none;
         //print("----------NEW SET OF RAYS------------");
         for (int i = 0; i < verticalRows; i++)
         {
@@ -796,10 +814,10 @@ public class Controller3D : MonoBehaviour
 
                 if (Physics.Raycast(rayOrigin, Vector3.up * directionY, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
                 {
+                    float slopeAngle = GetSlopeAngle(hit);
                     //print("Vertical Hit");
                     if (hit.distance < collisions.closestVerRaycast.distance)
                     {
-                        float slopeAngle = GetSlopeAngle(hit);
                         if (directionY == 1)
                         {
                             slopeAngle = slopeAngle == 180 ? slopeAngle = 0 : slopeAngle - 90;
@@ -807,22 +825,41 @@ public class Controller3D : MonoBehaviour
                         float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
                         collisions.closestVerRaycast = new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, wallAngle, Raycast.Axis.Y, i);
                     }
+                    MovingState slopeType = CheckSlopeType(ref vel, new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, 0, Raycast.Axis.Y,i));
+                    if(slopeType==MovingState.climbing || slopeType == MovingState.descending)
+                    {
+                        if (lastSlopeType == MovingState.none)
+                        {
+                            lastSlopeType = slopeType;
+                        }
+                        else if(lastSlopeType!=slopeType)
+                        {
+                            peak = true;
+                            //Debug.LogWarning("I'm on a peak");
+                        }
+                    }
+
                 }
             }
         }
-        if (collisions.closestVerRaycast.axis != Raycast.Axis.none)//si ha habido una collision horizontal
+        if (collisions.closestVerRaycast.axis != Raycast.Axis.none)//si ha habido una collision vertical
         {
             MovingState value = CheckSlopeType(ref vel, collisions.closestVerRaycast);
             //print("COLLISION VER: " + value + "; slopeAngle=" + collisions.closestVerRaycast.slopeAngle);
-            if (value == MovingState.climbing)
+            if (!peak)
             {
-                value = MovingState.none;
+                value = value == MovingState.climbing ? MovingState.none : value;
             }
+            else
+            {
+                value = MovingState.crossingPeak;
+            }
+
             switch (value)//con que tipo de objeto collisionamos? suelo/cuesta arriba/cuesta abajo
             {
                 case MovingState.none:
                     vel.y = (collisions.closestVerRaycast.distance - skinWidth) * directionY;
-                    rayLength = collisions.closestVerRaycast.distance;
+                    //rayLength = collisions.closestVerRaycast.distance;
                     if (collisions.moveSt == MovingState.climbing)//Subiendo chocamos con un techo
                     {
                         Vector3 horVel = new Vector3(vel.x, 0, vel.z);
@@ -840,10 +877,8 @@ public class Controller3D : MonoBehaviour
                     if (collisions.moveSt != MovingState.climbing)
                     {
                         float distanceToSlopeStart = 0;
-                        //print("NEW SLOPE DESCENDING slope angle= " + collisions.closestVerRaycast.slopeAngle + "; hit point =" + collisions.closestVerRaycast.ray.point.ToString("F4"));
                         distanceToSlopeStart = collisions.closestVerRaycast.distance - skinWidth;
                         vel.y -= distanceToSlopeStart * -1;
-                        //print("DESCEND SLOPE");
                         DescendSlope(ref vel, collisions.closestVerRaycast);
                         vel.y += distanceToSlopeStart * -1;
                     }
@@ -859,19 +894,27 @@ public class Controller3D : MonoBehaviour
                     if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
                     {
                         float slopeAngle = GetSlopeAngle(hit);
-                        //+print("HIT  with angle = " + slopeAngle);
                         if (!disableAllRays)
                         {
                             Debug.DrawRay(rayOrigin, Vector3.down * rayLength, Color.magenta, 4);
                         }
                         if (slopeAngle != collisions.slopeAngle)
                         {
-                            //print("HIT NEW SLOPE/FLOOR with angle = " + slopeAngle);
                             vel.y = -(hit.distance - skinWidth);
-                            //vel = new Vector3(horVelAux.x, vel.y, horVelAux.z);
                             collisions.slopeAngle = slopeAngle;
                         }
                     }
+                    break;
+                case MovingState.crossingPeak:
+                    if (collisions.moveSt == MovingState.climbing)
+                    {
+                    }
+                    else
+                    {
+                        vel.y = 0;
+                    }
+                    collisions.moveSt = MovingState.crossingPeak;
+                    collisions.below = true;
                     break;
             }
         }
@@ -1030,8 +1073,8 @@ public class Controller3D : MonoBehaviour
         wall,
         climbing,
         descending,
-        sliping
-
+        sliping,
+        crossingPeak
     }
 
     public enum SlideState
@@ -1055,6 +1098,7 @@ public class Controller3D : MonoBehaviour
             set { }
         }
         public bool around;
+        public bool finishedClimbing, lastFinishedClimbing;
 
         public MovingState moveSt;
         public MovingState lastMoveSt;
@@ -1092,6 +1136,8 @@ public class Controller3D : MonoBehaviour
             startVel = Vector3.zero;
             closestHorRaycast = new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
             closestHorRaycastSlide = new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
+            lastFinishedClimbing = finishedClimbing;
+            finishedClimbing = false;
         }
         public void ResetAround()
         {

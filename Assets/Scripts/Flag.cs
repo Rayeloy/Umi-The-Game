@@ -5,6 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class Flag : MonoBehaviour
 {
+    [Header("Referencias")]
+    public Transform flagCamera;
+    public Transform flagCameraLocalParent;
     [HideInInspector]
     public Vector3 respawnPos;
     [Tooltip("Not used yet. Can be used to differentiate flags")]
@@ -168,7 +171,10 @@ public class Flag : MonoBehaviour
     {
         idleAnimStarted = false;
     }
-
+    /// <summary>
+    /// Sobrecarga para introducir cantidad al gusto de tiempo de respawn, no se usa normalmente.
+    /// </summary>
+    /// <param name="respawnTime"></param>
     public void StartRespawn(float respawnTime)
     {
         if (!respawning)
@@ -177,6 +183,9 @@ public class Flag : MonoBehaviour
             respawning = true;
             StoringManager.instance.StoreObject(transform);
             maxTimeToRespawn = respawnTime;
+            flagCamera.SetParent(GameController.instance.centerCameraParent);
+            flagCamera.localPosition = Vector3.zero;
+            flagCamera.localRotation = Quaternion.identity;
         }
         else
         {
@@ -192,8 +201,10 @@ public class Flag : MonoBehaviour
             respawning = true;
             StoringManager.instance.StoreObject(transform);
             maxTimeToRespawn = respawnFromGoal ? maxTimeToRespawnGoal : maxTimeToRespawnFall;
+            flagCamera.SetParent(GameController.instance.centerCameraParent);
+            flagCamera.localPosition = Vector3.zero;
+            flagCamera.localRotation = Quaternion.identity;
         }
-
     }
     
     void ProcessRespawn()
@@ -213,6 +224,9 @@ public class Flag : MonoBehaviour
         respawning = false;
         GameController.instance.RespawnFlag(respawnPos);
         grounded = false;
+        flagCamera.SetParent(flagCameraLocalParent);
+        flagCamera.localPosition = Vector3.zero;
+        flagCamera.localRotation = Quaternion.identity;
     }
     
     void SpawnFakeFlag()

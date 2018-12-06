@@ -28,9 +28,11 @@ public class GameController : MonoBehaviour
     public PlayerMovement[] allPlayers;
     public GameObject[] allCanvas;
     public CameraController[] allCameraBases;
+    public Camera[] allUICameras;
     public WeaponData[] allWeapons;
     public RectTransform[] contador;
     public RectTransform[] powerUpPanel;
+    public Transform centerCameraParent;
 
     private void Awake()
     {
@@ -67,7 +69,7 @@ public class GameController : MonoBehaviour
             {
                 allCanvas[i].SetActive(true);
                 allCameraBases[i].gameObject.SetActive(true);
-                allCanvas[i].GetComponent<Canvas>().worldCamera = allCameraBases[i].myCamera.GetComponent<Camera>();
+                allCanvas[i].GetComponent<Canvas>().worldCamera = allUICameras[i];
                 allPlayers[i].gameObject.SetActive(true);
                 allPlayers[i].myCamera = allCameraBases[i];
                 allPlayers[i].GetComponent<PlayerCombat>().attackName = allCanvas[i].transform.GetChild(0).GetComponent<Text>();
@@ -82,27 +84,38 @@ public class GameController : MonoBehaviour
                 allPlayers[i].gameObject.SetActive(false);
                 allCanvas[i].SetActive(false);
                 allCameraBases[i].gameObject.SetActive(false);
+                allUICameras[i].gameObject.SetActive(false);
             }
         }
         switch (playerNum)
         {
             case 1:
                 allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+                allUICameras[0].rect = new Rect(0, 0, 1, 1);
                 break;
             case 2:
                 allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1, 0.5f);
                 allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
+                allUICameras[0].rect = new Rect(0, 0.5f, 1, 0.5f);
+                allUICameras[1].rect = new Rect(0, 0, 1, 0.5f);
                 break;
             case 3:
                 allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
                 allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
                 allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
+                allUICameras[0].rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                allUICameras[1].rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                allUICameras[2].rect = new Rect(0, 0, 1, 0.5f);
                 break;
             case 4:
                 allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
                 allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
                 allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 0.5f);
                 allCameraBases[3].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 0.5f);
+                allUICameras[0].rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                allUICameras[1].rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                allUICameras[2].rect = new Rect(0, 0, 0.5f, 0.5f);
+                allUICameras[3].rect = new Rect(0.5f, 0, 0.5f, 0.5f);
                 break;
         }
         for(int i=0; i < allCameraBases.Length; i++)
@@ -149,7 +162,7 @@ public class GameController : MonoBehaviour
             powerUpPanel[1].localScale /= scaleCuatro;
             powerUpPanel[2].localScale /= scaleDos;
         }
-        else
+        else if(playerNum == 4)
         {
             contador[0].localScale /= scaleCuatro;
             contador[1].localScale /= scaleCuatro;
@@ -162,7 +175,6 @@ public class GameController : MonoBehaviour
             powerUpPanel[3].localScale /= scaleCuatro;
         }
     }
-
 
     public ScoreManager scoreManager;
     // Update is called once per frame

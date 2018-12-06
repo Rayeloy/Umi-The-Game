@@ -11,6 +11,22 @@ Prefab:
   m_SourcePrefab: {fileID: 0}
   m_RootGameObject: {fileID: 1751600940884742}
   m_IsPrefabAsset: 1
+--- !u!1 &1171013427398450
+GameObject:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4311460072199482}
+  - component: {fileID: 20965851012652142}
+  m_Layer: 12
+  m_Name: FlagCamera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1702166191607472
 GameObject:
   m_ObjectHideFlags: 0
@@ -19,9 +35,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4189269213358626}
-  - component: {fileID: 20965851012652142}
   m_Layer: 12
-  m_Name: FlagCamera
+  m_Name: FlagCameraPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -100,16 +115,30 @@ Transform:
   m_LocalRotation: {x: 0.111564055, y: 0.6982503, z: -0.111564085, w: 0.6982503}
   m_LocalPosition: {x: -2.88, y: 0.9800005, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 4311460072199482}
   m_Father: {fileID: 4141633901875070}
   m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 18.156, y: 90.00001, z: 0}
+--- !u!4 &4311460072199482
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1171013427398450}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4189269213358626}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 18.156, y: 90.00001, z: 0}
 --- !u!20 &20965851012652142
 Camera:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1702166191607472}
+  m_GameObject: {fileID: 1171013427398450}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
@@ -215,6 +244,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcac93b32194f764ca34ad98c8c2d1de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flagCamera: {fileID: 4311460072199482}
+  flagCameraLocalParent: {fileID: 4189269213358626}
   respawnPos: {x: 0, y: 0, z: 0}
   flagNumber: 0
   currentOwner: {fileID: 0}
@@ -228,10 +259,10 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 512
-  heightFromFloor: 2.5
+  heightFromFloor: 2
   grounded: 0
   timeToDespawnInWater: 4
-  idleAnimVertDist: 1.5
+  idleAnimVertDist: 1
   idleAnimHorDist: 0
   idleAnimFrequency: 2
 --- !u!135 &135415561022386018

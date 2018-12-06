@@ -8,6 +8,7 @@ public class PlayerHook : MonoBehaviour
 {
     PlayerMovement myPlayerMov;
     PlayerCombat myPlayerCombat;
+    Hook myHook;
 
     GameObject currentHook;
     Transform hookRopeEnd;
@@ -76,6 +77,7 @@ public class PlayerHook : MonoBehaviour
                 StartReeling();
             }
             Vector3 hookRopeEndPos = hookRopeEnd.position;
+            myHook.UpdateRopeLine(originPos, hookRopeEndPos);
             Debug.DrawLine(originPos, hookRopeEndPos, Color.red);
             RaycastHit hit;
             if (Physics.Linecast(originPos, hookRopeEndPos, out hit, collisionMask, QueryTriggerInteraction.Ignore))
@@ -184,8 +186,10 @@ public class PlayerHook : MonoBehaviour
             //Instantiate hook
             Quaternion rotation = Quaternion.LookRotation(reelingVel);
             currentHook = StoringManager.instance.Spawn(StoringManager.instance.hookPrefab, originPos, rotation).gameObject;
-            currentHook.transform.GetComponentInChildren<Hook>().KonoAwake(myPlayerMov, this);
-            hookRopeEnd = currentHook.GetComponent<Hook>().hookRopeEnd;
+            myHook = currentHook.GetComponent<Hook>();
+            myHook.GetComponent<LineRenderer>().enabled = true;
+            myHook.KonoAwake(myPlayerMov, this);
+            hookRopeEnd = myHook.hookRopeEnd;
             myPlayerHUD.StartThrowHook();
         }
     }
@@ -288,6 +292,7 @@ public class PlayerHook : MonoBehaviour
                 FinishGrapple();
                 break;
         }
+        myHook.GetComponent<LineRenderer>().enabled = false;
     }
 
     Vector3 grappleOrigin;

@@ -24,12 +24,12 @@ public class StoringManager : MonoBehaviour {
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    public bool IsObjectStored(string name)
+    public bool IsObjectStored(string tag)
     {
         bool result = false;
         foreach (Transform transf in objectsStored)
         {
-            if (transf.name.Contains(name))
+            if (transf.tag == tag)
             {
                 return true;
             }
@@ -37,12 +37,12 @@ public class StoringManager : MonoBehaviour {
         return result;
     }
 
-    public Transform LookForObjectStored(string name)
+    public Transform LookForObjectStored(string tag)
     {
         Transform result = null;
         foreach (Transform transf in objectsStored)
         {
-            if (transf.name.Contains(name))
+            if (transf.tag == tag)
             {
                 return transf;
             }
@@ -55,7 +55,7 @@ public class StoringManager : MonoBehaviour {
         Transform result = null;
         foreach (Transform transf in objectsStored)
         {
-            if (transf.tag.Contains(name))
+            if (transf.tag == tag)
             {
                 return transf;
             }
@@ -63,13 +63,12 @@ public class StoringManager : MonoBehaviour {
         return result;
     }
 
-
     public Transform Spawn(GameObject prefab, Vector3 newPos, Quaternion newRot)
     {
-        string name = prefab.name;
-        if (IsObjectStored(name))
+        string tag = prefab.tag;
+        if (IsObjectStored(tag))
         {
-            return TakeObjectStored(name, newPos, newRot);
+            return TakeObjectStored(tag, newPos, newRot);
         }
         else
         {
@@ -79,10 +78,10 @@ public class StoringManager : MonoBehaviour {
 
     public Transform Spawn(GameObject prefab, Transform newParent, Vector3 newPos, Quaternion newRot)
     {
-        string name = prefab.name;
-        if (IsObjectStored(name))
+        string tag = prefab.tag;
+        if (IsObjectStored(tag))
         {
-            return TakeObjectStored(name, newParent, newPos, newRot);
+            return TakeObjectStored(tag, newParent, newPos, newRot);
         }
         else
         {
@@ -99,12 +98,12 @@ public class StoringManager : MonoBehaviour {
     /// <param name="newPos"></param>
     /// <param name="newRot"></param>
     /// <returns></returns>
-    public Transform TakeObjectStored(string name,Transform newParent, Vector3 newPos, Quaternion newRot)
+    public Transform TakeObjectStored(string tag,Transform newParent, Vector3 newPos, Quaternion newRot)
     {
         Transform result = null;
         for (int i=0; i < objectsStored.Count; i++)
         {
-            if(objectsStored[i].name.Contains(name))
+            if(objectsStored[i].tag == tag)
             {
                 result = objectsStored[i];
                 objectsStored.RemoveAt(i);
@@ -124,14 +123,14 @@ public class StoringManager : MonoBehaviour {
     /// <param name="newPos"></param>
     /// <param name="newRot"></param>
     /// <returns></returns>
-    public Transform TakeObjectStored(string name, Vector3 newPos, Quaternion newRot)
+    public Transform TakeObjectStored(string tag, Vector3 newPos, Quaternion newRot)
     {
         //print("Looking for Object Stored " + name);
         Transform result = null;
         for (int i = 0; i < objectsStored.Count; i++)
         {
             //print("Checking Object Stord with name " + objectsStored[i].name);
-            if (objectsStored[i].name.Contains(name))
+            if (objectsStored[i].tag == tag)
             {
                 result = objectsStored[i];
                 objectsStored.RemoveAt(i);

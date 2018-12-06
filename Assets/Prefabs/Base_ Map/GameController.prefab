@@ -48,7 +48,7 @@ AudioSource:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1455702828168332}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 127af93d8db13704b93fb73b8aafa0f9, type: 3}
@@ -190,6 +190,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  bluePS: {fileID: 0}
+  redPS: {fileID: 0}
 --- !u!114 &114663382381092684
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -203,7 +205,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameMode: 0
   playerNum: 1
-  flags: []
+  flags:
+  - {fileID: 0}
   attackX: {fileID: 11400000, guid: 62b70d52c7fb6024eafbe61034f7d534, type: 2}
   attackY: {fileID: 11400000, guid: f966ce84c6d7ddd4f8ee9bf2d3992d62, type: 2}
   attackB: {fileID: 11400000, guid: 62b70d52c7fb6024eafbe61034f7d534, type: 2}
@@ -223,6 +226,11 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  allUICameras:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   allWeapons:
   - {fileID: 11400000, guid: 62e907f90cd3a02418417962b53df879, type: 2}
   - {fileID: 11400000, guid: 15b874004fd9fc843b3dd52a1a5b0c17, type: 2}
@@ -231,7 +239,14 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  flagPrefab: {fileID: 1751600940884742, guid: b65fe97042153d54abc8f26b7532c126, type: 2}
+  powerUpPanel:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  centerCameraParent: {fileID: 0}
+  scaleDos: 1.25
+  scaleCuatro: 1.25
   scoreManager: {fileID: 114010027320582548}
   playing: 0
   gamePaused: 0

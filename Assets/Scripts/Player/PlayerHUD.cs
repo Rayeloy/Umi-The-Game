@@ -19,6 +19,23 @@ public class PlayerHUD : MonoBehaviour {
     {
         crosshair.enabled = false;
         crosshairReduced.enabled = false;
+        if (GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag)
+        {
+            SetupFlagSlider();
+        }
+    }
+
+    private void Update()
+    {
+        if (GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag)
+        {
+            UpdateFlagSlider();
+        }
+
+    }
+
+    void SetupFlagSlider()
+    {
         flag = GameController.instance.flags[0].transform;
         blueFlagHomePos = GameController.instance.blueTeamFlagHome.position;
         redFlagHomePos = GameController.instance.redTeamFlagHome.position;
@@ -26,23 +43,25 @@ public class PlayerHUD : MonoBehaviour {
         redFlagHomePos.y = 0;
     }
 
-    private void Update()
-    {
-        UpdateFlagSlider();
-    }
-
     void UpdateFlagSlider()
     {
         flagPos = flag.position;
         flagPos.y = 0;
-        float distFromBlue = (blueFlagHomePos-flagPos).magnitude;
+        Vector3 blueToFlagDir = blueFlagHomePos - flagPos;
+        float distFromBlue = blueToFlagDir.magnitude;
+        Vector3 union = (blueFlagHomePos - redFlagHomePos).normalized;
+        float angle = Vector3.Angle(blueToFlagDir.normalized, union);
+        //cos(angle) = finalDist/distFromBlue
+        float currentDist = Mathf.Cos(angle * Mathf.Deg2Rad) * distFromBlue;
+        float totalDist = (blueFlagHomePos - redFlagHomePos).magnitude;
+        float progress = Mathf.Clamp01(currentDist / totalDist);
+        flagSlider.value = progress;
+        /*
         float distFromRed = (redFlagHomePos - flagPos).magnitude;
         float diff = distFromBlue - distFromRed;
-        float totalDist = (blueFlagHomePos - redFlagHomePos).magnitude;
         float coef = diff + totalDist / 2;
-        float progress = Mathf.Clamp01(coef / totalDist);
-        flagSlider.value = progress;
-        print("totalDist = " + totalDist + "; distFromBlue = " + distFromBlue + "; distFromRed = " + distFromRed + "; diff = " + diff + "; coef = " + coef + "; progress = " + progress);
+        */
+        //print("totalDist = " + totalDist + "; distFromBlue = " + distFromBlue + "; distFromRed = " + distFromRed + "; diff = " + diff + "; coef = " + coef + "; progress = " + progress);
     }
 
     public void StartAim()
