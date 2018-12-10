@@ -89,7 +89,7 @@ public class Flag : MonoBehaviour
                 RaycastHit hit;
                 if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayLength, collisionMask, QueryTriggerInteraction.Collide))
                 {
-                    if(hit.transform.tag != "Water")
+                    if (hit.transform.tag != "Water")
                     {
                         grounded = true;
                         float distToDesiredHeight = heightFromFloor - hit.distance;
@@ -98,7 +98,7 @@ public class Flag : MonoBehaviour
                     }
                     else
                     {
-                        if(hit.distance <= myCol.bounds.extents.y)
+                        if (hit.distance <= myCol.bounds.extents.y)
                         {
                             SetAway(false);
                         }
@@ -138,7 +138,7 @@ public class Flag : MonoBehaviour
             idleAnimUp = true;
         }
     }
-    
+
     bool idleAnimUp = true;
     float progress = 0;
     void ProcessIdleAnimation()
@@ -166,7 +166,7 @@ public class Flag : MonoBehaviour
             }
         }
     }
-    
+
     void StopIdleAnimation()
     {
         idleAnimStarted = false;
@@ -177,12 +177,24 @@ public class Flag : MonoBehaviour
     /// <param name="respawnTime"></param>
     public void StartRespawn(float respawnTime)
     {
+        StartRespawnIssho(respawnTime);
+    }
+
+    public void StartRespawn(bool respawnFromGoal = false)
+    {
+        float respawnTime = respawnFromGoal ? maxTimeToRespawnGoal : maxTimeToRespawnFall;
+        StartRespawnIssho(respawnTime);
+    }
+
+
+    void StartRespawnIssho(float _maxTimeToRespawn)
+    {
         if (!respawning)
         {
+            maxTimeToRespawn = _maxTimeToRespawn;
             timeToRespawn = 0;
             respawning = true;
             StoringManager.instance.StoreObject(transform);
-            maxTimeToRespawn = respawnTime;
             flagCamera.SetParent(GameController.instance.centerCameraParent);
             flagCamera.localPosition = Vector3.zero;
             flagCamera.localRotation = Quaternion.identity;
@@ -192,21 +204,8 @@ public class Flag : MonoBehaviour
             Debug.LogError("Error: can't start a respawn process for the flag since there is one already happening.");
         }
     }
-    
-    public void StartRespawn(bool respawnFromGoal = false)
-    {
-        if (!respawning)
-        {
-            timeToRespawn = 0;
-            respawning = true;
-            StoringManager.instance.StoreObject(transform);
-            maxTimeToRespawn = respawnFromGoal ? maxTimeToRespawnGoal : maxTimeToRespawnFall;
-            flagCamera.SetParent(GameController.instance.centerCameraParent);
-            flagCamera.localPosition = Vector3.zero;
-            flagCamera.localRotation = Quaternion.identity;
-        }
-    }
-    
+
+
     void ProcessRespawn()
     {
         if (respawning)
@@ -218,22 +217,17 @@ public class Flag : MonoBehaviour
             }
         }
     }
-    
+
     public void FinishRespawn()
     {
-        respawning = false;
-        GameController.instance.RespawnFlag(respawnPos);
-        grounded = false;
-        flagCamera.SetParent(flagCameraLocalParent);
-        flagCamera.localPosition = Vector3.zero;
-        flagCamera.localRotation = Quaternion.identity;
+        ResetFlag();
     }
-    
+
     void SpawnFakeFlag()
     {
         print("SPAWN FAKE FLAG");
         Transform fakeFlag = StoringManager.instance.Spawn(StoringManager.instance.fakeFlagPrefab, StoringManager.instance.transform, transform.position, transform.rotation);
-        fakeFlag.GetComponent<FakeFlag>().KonoAwake(timeToDespawnInWater,fallSpeed);
+        fakeFlag.GetComponent<FakeFlag>().KonoAwake(timeToDespawnInWater, fallSpeed);
 
     }
 
@@ -360,6 +354,7 @@ public class Flag : MonoBehaviour
 
         if (!respawnFromGoal)
         {
+            print("RESPAWN FROM FALLING TO WATER");
             grounded = true;
             StopIdleAnimation();
             SpawnFakeFlag();
@@ -391,9 +386,9 @@ public class Flag : MonoBehaviour
         player.flag = this;
         if (GameController.instance.gameMode == GameController.GameMode.Tutorial)
         {
-            flagsCaptured ++;
+            flagsCaptured++;
             currentOwner.gameObject.GetComponent<PlayerMovement>().noInput = true;
-            if( flagsCaptured >= GameController.instance.playerNum)
+            if (flagsCaptured >= GameController.instance.playerNum)
                 GameController.instance.GoBackToMenu();
         }
 
@@ -409,6 +404,7 @@ public class Flag : MonoBehaviour
         locked = true;
         timeLocked = 0;
     }
+
     void ProcessLocked()
     {
         if (locked)
@@ -420,10 +416,33 @@ public class Flag : MonoBehaviour
             }
         }
     }
+
     void StopLocked()
     {
         locked = false;
     }
+
+    public void ResetFlag()
+    {
+        if (respawning)
+        {
+            StoringManager.instance.UnstoreObject(transform);
+        }
+        respawning = false;
+        currentOwner = null;
+        beingHooked = false;
+        playerHooking = null;
+        locked = false;
+
+        transform.position = respawnPos;
+        transform.rotation = Quaternion.identity;
+        flagCamera.SetParent(flagCameraLocalParent);
+        flagCamera.localPosition = Vector3.zero;
+        flagCamera.localRotation = Quaternion.identity;
+
+        grounded = false;
+    }
+
 
 
     //private void OnTriggerEnter(Collider col)

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class GameController : MonoBehaviour
 {
     public static GameController instance;
+    public ScoreManager scoreManager;
     public GameMode gameMode;
     public enum GameMode
     {
@@ -47,6 +49,7 @@ public class GameController : MonoBehaviour
         }
         instance = this;
         gameOverMenu.SetActive(false);
+        gameOverPressStart.enabled = false;
         veil.SetActive(false);
         if (gameMode != GameMode.Tutorial)
         {
@@ -175,8 +178,6 @@ public class GameController : MonoBehaviour
             powerUpPanel[3].localScale /= scaleCuatro;
         }
     }
-
-    public ScoreManager scoreManager;
     // Update is called once per frame
     void Update () {
         //if (scoreManager.End) return;
@@ -208,6 +209,7 @@ public class GameController : MonoBehaviour
                     allPlayers[i].KonoUpdate();
                 }
             }
+
             switch (gameMode)
             {
                 case GameMode.CaptureTheFlag:
@@ -231,6 +233,20 @@ public class GameController : MonoBehaviour
                 else if (playerActions.Attack3.WasPressed || playerActions.Options.WasPressed)
                 {
                     UnPauseGame();
+                }
+            }
+            else
+            {
+                if (gameOverStarted && !gameOverMenuOn)
+                {
+                    for (int i = 0; i < playerNum; i++)
+                    {
+                        if (allPlayers[i].Actions.Options.WasPressed)
+                        {
+                            SwitchGameOverMenu();
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -279,7 +295,66 @@ public class GameController : MonoBehaviour
             flags[i].SetAway(true);
         }
         winnerTeam = _winnerTeam;
-        SwitchGameOverMenu();
+        StartGameOver();
+    }
+
+    bool gameOverMenuOn = false;
+    bool gameOverStarted = false;
+    public GameObject gameOverMenu;
+    public GameObject veil;
+    public Image victoryRed;
+    public Image victoryBlue;
+    public Text gameOverPressStart;
+    void StartGameOver()
+    {
+        if (!gameOverStarted)
+        {
+            gameOverStarted = true;
+            veil.SetActive(true);
+            if (winnerTeam == Team.blue)
+            {
+                victoryBlue.gameObject.SetActive(true);
+            }
+            else if (winnerTeam == Team.red)
+            {
+                victoryRed.gameObject.SetActive(true);
+            }
+            gameOverPressStart.enabled = true;
+        }
+    }
+
+    public GameObject gameOverFirstButton;
+    public void SwitchGameOverMenu()
+    {
+        //print("GAME OVER MENU");
+        //print("gameOverMenuOn= " + gameOverMenuOn);
+        if (gameOverStarted)
+        {
+            if (gameOverMenuOn)
+            {
+                //GameObject incontrol = GameObject.Find("InControl manager");
+                //Destroy(incontrol);
+                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = false;
+                gameOverMenuOn = false;
+                gameOverMenu.SetActive(false);
+                veil.SetActive(false);
+                victoryRed.gameObject.SetActive(false);
+                victoryBlue.gameObject.SetActive(false);
+                gameOverPressStart.enabled = false;
+                gameOverStarted = false;
+            }
+            else
+            {
+                //print("ACTIVATE GAME OVER MENU");
+                //Cursor.lockState = CursorLockMode.None;
+                //Cursor.visible = true;
+                gameOverMenuOn = true;
+                gameOverMenu.SetActive(true);
+                gameOverPressStart.enabled = false;
+                EventSystem.current.SetSelectedGameObject(gameOverFirstButton);
+            }
+        }
     }
 
     public Transform blueTeamSpawn;
@@ -315,55 +390,28 @@ public class GameController : MonoBehaviour
     public void RespawnFlag(Vector3 respawnPos)
     {
         print("RESPAWN FLAG");
-        StoringManager.instance.Spawn(StoringManager.instance.flagPrefab, respawnPos, Quaternion.identity);
+        RespawnFlagIssho(respawnPos);
     }
     public void RespawnFlag()
     {
         print("RESPAWN FLAG");
         Transform flag = StoringManager.instance.LookForObjectStoredTag("Flag");
         Vector3 respawnPos = flag.GetComponent<Flag>().respawnPos;
-        StoringManager.instance.Spawn(StoringManager.instance.flagPrefab, respawnPos, Quaternion.identity);
+        RespawnFlagIssho(respawnPos);
+    }
+    void RespawnFlagIssho(Vector3 respawnPos)
+    {
+        
     }
 
-    bool gameOverMenuOn = false;
-    public GameObject gameOverMenu;
-    public GameObject veil;
-    public Image victoryRed;
-    public Image victoryBlue;
-    public void SwitchGameOverMenu()
+    public void RespawnFlags()
     {
-        //print("GAME OVER MENU");
-        //print("gameOverMenuOn= " + gameOverMenuOn);
-        if (gameOverMenuOn)
+        for(int i = 0; i < flags.Length; i++)
         {
-            //GameObject incontrol = GameObject.Find("InControl manager");
-            //Destroy(incontrol);
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-            gameOverMenuOn = false;
-            gameOverMenu.SetActive(false);
-            veil.SetActive(false);
-            victoryRed.gameObject.SetActive(false);
-            victoryBlue.gameObject.SetActive(false);
-        }
-        else
-        {
-            //print("ACTIVATE GAME OVER MENU");
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-            gameOverMenuOn = true;
-            gameOverMenu.SetActive(true);
-            veil.SetActive(true);
-            if (winnerTeam == Team.blue)
-            {
-                victoryBlue.gameObject.SetActive(true);
-            }
-            else if (winnerTeam == Team.red)
-            {
-                victoryRed.gameObject.SetActive(true);
-            }
+            flags[i].ResetFlag();
         }
     }
+
     public string sceneLoadedOnReset;
     public void ResetGame()
     {
@@ -376,7 +424,7 @@ public class GameController : MonoBehaviour
         {
             pM.Die();
         }
-        RespawnFlag();
+        RespawnFlags();
 
         //SceneManager.LoadScene(sceneLoadedOnReset);
     }

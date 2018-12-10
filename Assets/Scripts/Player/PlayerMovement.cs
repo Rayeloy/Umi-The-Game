@@ -885,9 +885,6 @@ public class PlayerMovement : MonoBehaviour
         if (haveFlag)
         {
             flag.SetAway(false);
-            flag.GetComponent<Flag>().currentOwner = null;
-            flag = null;
-            haveFlag = false;
         }
         GameController.instance.RespawnPlayer(this);
     }
@@ -947,7 +944,10 @@ public class PlayerMovement : MonoBehaviour
         if (haveFlag && team == flagHome.team)
         {
             GameController.instance.ScorePoint(team);
-            flag.SetAway(true);
+            if (flag != null)
+            {
+                flag.SetAway(true);
+            }
         }
     }
     #endregion

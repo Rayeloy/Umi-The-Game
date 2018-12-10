@@ -2923,11 +2923,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4388269746882816, guid: ac33cbcf20ba21e49adda3ca905f5466,
     type: 2}
   m_PrefabInternal: {fileID: 714267961}
---- !u!224 &328408952 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 224012861464335848, guid: db5b27289b2ae654594a261674608804,
-    type: 2}
-  m_PrefabInternal: {fileID: 2018827671}
 --- !u!1 &328944105
 GameObject:
   m_ObjectHideFlags: 0
@@ -10889,11 +10884,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!224 &1141880931 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 224660626599101788, guid: db5b27289b2ae654594a261674608804,
-    type: 2}
-  m_PrefabInternal: {fileID: 2018827671}
 --- !u!114 &1142845289 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 114117492216435978, guid: db5b27289b2ae654594a261674608804,
@@ -11755,6 +11745,17 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33eeb6fa2bbcb3d4491123a1132bfe2c, type: 2}
   m_IsPrefabAsset: 0
+--- !u!1 &1234179133 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1859272038377910, guid: 33eeb6fa2bbcb3d4491123a1132bfe2c,
+    type: 2}
+  m_PrefabInternal: {fileID: 1234179132}
+--- !u!114 &1234179134 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114885493670956596, guid: 33eeb6fa2bbcb3d4491123a1132bfe2c,
+    type: 2}
+  m_PrefabInternal: {fileID: 1234179132}
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 --- !u!1 &1242367645
 GameObject:
   m_ObjectHideFlags: 0
@@ -14692,17 +14693,27 @@ Prefab:
         type: 2}
       propertyPath: powerUpPanel.Array.data[1]
       value: 
-      objectReference: {fileID: 328408952}
+      objectReference: {fileID: 0}
     - target: {fileID: 114663382381092684, guid: 628c52ed92b0d0b43b4372eb3c38c75a,
         type: 2}
       propertyPath: powerUpPanel.Array.data[2]
       value: 
-      objectReference: {fileID: 1705210331}
+      objectReference: {fileID: 0}
     - target: {fileID: 114663382381092684, guid: 628c52ed92b0d0b43b4372eb3c38c75a,
         type: 2}
       propertyPath: powerUpPanel.Array.data[3]
       value: 
-      objectReference: {fileID: 1141880931}
+      objectReference: {fileID: 0}
+    - target: {fileID: 114663382381092684, guid: 628c52ed92b0d0b43b4372eb3c38c75a,
+        type: 2}
+      propertyPath: gameOverPressStart
+      value: 
+      objectReference: {fileID: 1234179134}
+    - target: {fileID: 114663382381092684, guid: 628c52ed92b0d0b43b4372eb3c38c75a,
+        type: 2}
+      propertyPath: gameOverFirstButton
+      value: 
+      objectReference: {fileID: 1234179133}
     m_RemovedComponents:
     - {fileID: 114010027320582548, guid: 628c52ed92b0d0b43b4372eb3c38c75a, type: 2}
   m_SourcePrefab: {fileID: 100100000, guid: 628c52ed92b0d0b43b4372eb3c38c75a, type: 2}
@@ -16375,11 +16386,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1691428228}
   m_Mesh: {fileID: 4300178, guid: dc308b4c818c32f4fb181ca3d6d94f05, type: 3}
---- !u!224 &1705210331 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 224495204716828056, guid: db5b27289b2ae654594a261674608804,
-    type: 2}
-  m_PrefabInternal: {fileID: 2018827671}
 --- !u!1 &1726024722
 GameObject:
   m_ObjectHideFlags: 0

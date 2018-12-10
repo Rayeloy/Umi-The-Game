@@ -46,10 +46,16 @@ public class PlayerSelected : MonoBehaviour
     //public bool Ready = false;
     [Header("Referencias")]
     public Animator animator;
+    [HideInInspector]
+    public bool isAReleased = true;
 
     void Update()
     {
-        if (Actions.Jump.WasPressed)
+        if(!isAReleased && Actions.Jump.WasReleased)
+        {
+            isAReleased = true;
+        }
+        if (Actions.Jump.WasPressed && isAReleased)
             SetReady ();
 
         if (!Ready)

@@ -138,7 +138,7 @@ public class TeamSetupManager : MonoBehaviour
 
 	bool JoinButtonWasPressedOnListener( PlayerActions actions )
 	{
-		return actions.Attack1.WasPressed || actions.Attack2.WasPressed || actions.Attack3.WasPressed;
+		return actions.Attack1.WasPressed || actions.Attack2.WasPressed || actions.Attack3.WasPressed || (actions != keyboardListener && actions.Jump.WasPressed);
 	}
 
 
@@ -225,7 +225,8 @@ public class TeamSetupManager : MonoBehaviour
 
                 //GameInfo.instance.playerActionsList.Add(actions);
                 player.Actions = actions;
-			}
+                player.isAReleased = false;
+            }
 
 			players.Add( player );
 			player.playerSelecionUI = pUI[players.Count - 1];

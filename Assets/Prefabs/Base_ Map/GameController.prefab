@@ -203,6 +203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 384e2a8ce393b094bb0754e6774c8dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scoreManager: {fileID: 114010027320582548}
   gameMode: 0
   playerNum: 1
   flags:
@@ -247,18 +248,19 @@ MonoBehaviour:
   centerCameraParent: {fileID: 0}
   scaleDos: 1.25
   scaleCuatro: 1.25
-  scoreManager: {fileID: 114010027320582548}
   playing: 0
   gamePaused: 0
   winnerTeam: 1
-  blueTeamSpawn: {fileID: 0}
-  redTeamSpawn: {fileID: 0}
-  blueTeamFlagHome: {fileID: 0}
-  redTeamFlagHome: {fileID: 0}
   gameOverMenu: {fileID: 0}
   veil: {fileID: 0}
   victoryRed: {fileID: 0}
   victoryBlue: {fileID: 0}
+  gameOverPressStart: {fileID: 0}
+  gameOverFirstButton: {fileID: 0}
+  blueTeamSpawn: {fileID: 0}
+  redTeamSpawn: {fileID: 0}
+  blueTeamFlagHome: {fileID: 0}
+  redTeamFlagHome: {fileID: 0}
   sceneLoadedOnReset: MasterSceneUMI
   menuScene: Menus
   Button: {fileID: 0}

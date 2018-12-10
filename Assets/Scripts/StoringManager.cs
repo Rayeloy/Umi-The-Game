@@ -151,6 +151,20 @@ public class StoringManager : MonoBehaviour {
         objectsStored.Add(newObject);
     }
 
+    public void UnstoreObject(Transform oldObject)
+    {
+        if (IsObjectStored(oldObject.tag))
+        {
+            for (int i = 0; i < objectsStored.Count; i++)
+            {
+                if (objectsStored[i].tag == tag)
+                {
+                    objectsStored.RemoveAt(i);
+                }
+            }  
+        }
+    }
+
     [HideInInspector]
     public bool isEmpty
     {
