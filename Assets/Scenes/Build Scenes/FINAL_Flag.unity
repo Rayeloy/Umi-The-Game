@@ -1232,6 +1232,71 @@ Prefab:
       propertyPath: myPlayerHUD
       value: 
       objectReference: {fileID: 1575917992}
+    - target: {fileID: 114260343630689058, guid: 3817e08935163864ab8bc5a1b2743fa6,
+        type: 2}
+      propertyPath: airMovingAcc
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114260343630689058, guid: 3817e08935163864ab8bc5a1b2743fa6,
+        type: 2}
+      propertyPath: maxHookingSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114260343630689058, guid: 3817e08935163864ab8bc5a1b2743fa6,
+        type: 2}
+      propertyPath: maxAimingSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114777648818286286, guid: 3817e08935163864ab8bc5a1b2743fa6,
+        type: 2}
+      propertyPath: smallCollRadius
+      value: 0.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 114184647358533232, guid: 3817e08935163864ab8bc5a1b2743fa6,
+        type: 2}
+      propertyPath: maxAimingSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114184647358533232, guid: 3817e08935163864ab8bc5a1b2743fa6,
+        type: 2}
+      propertyPath: maxHookingSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114184647358533232, guid: 3817e08935163864ab8bc5a1b2743fa6,
+        type: 2}
+      propertyPath: airMovingAcc
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114233595048039500, guid: 3817e08935163864ab8bc5a1b2743fa6,
+        type: 2}
+      propertyPath: maxAimingSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114233595048039500, guid: 3817e08935163864ab8bc5a1b2743fa6,
+        type: 2}
+      propertyPath: maxHookingSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114233595048039500, guid: 3817e08935163864ab8bc5a1b2743fa6,
+        type: 2}
+      propertyPath: airMovingAcc
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114626277579186962, guid: 3817e08935163864ab8bc5a1b2743fa6,
+        type: 2}
+      propertyPath: maxAimingSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114626277579186962, guid: 3817e08935163864ab8bc5a1b2743fa6,
+        type: 2}
+      propertyPath: maxHookingSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114626277579186962, guid: 3817e08935163864ab8bc5a1b2743fa6,
+        type: 2}
+      propertyPath: airMovingAcc
+      value: 0.7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3817e08935163864ab8bc5a1b2743fa6, type: 2}
   m_IsPrefabAsset: 0
@@ -5759,6 +5824,38 @@ Prefab:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1636106266714408, guid: 0c15d21af29a0d74e88b412a80235314, type: 2}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1175785018110492, guid: 0c15d21af29a0d74e88b412a80235314, type: 2}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1948863711122982, guid: 0c15d21af29a0d74e88b412a80235314, type: 2}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1932175219509498, guid: 0c15d21af29a0d74e88b412a80235314, type: 2}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1642652117143128, guid: 0c15d21af29a0d74e88b412a80235314, type: 2}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1073729969610318, guid: 0c15d21af29a0d74e88b412a80235314, type: 2}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1837195186762228, guid: 0c15d21af29a0d74e88b412a80235314, type: 2}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1635738322084080, guid: 0c15d21af29a0d74e88b412a80235314, type: 2}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c15d21af29a0d74e88b412a80235314, type: 2}
   m_IsPrefabAsset: 0
@@ -6438,8 +6535,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 943952753}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -199.31, y: 177.04, z: -83.99994}
+  m_LocalRotation: {x: -0.0436972, y: -0.71790737, z: -0.04532503, w: 0.6932858}
+  m_LocalPosition: {x: 25.548788, y: -37.481945, z: 65.91573}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1950236225}
