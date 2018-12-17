@@ -11,18 +11,20 @@ public class ScoreManager : MonoBehaviour {
         instance = this;
     }
 
-    [Tooltip("Tiempo de juego en segundos")]
-    public float Tiempo = 120;
+    [Tooltip("Tiempo de juego en segundos")][SerializeField]
+    private float Tiempo = 120;
     private float _Tiempo;
 
 	[HideInInspector]
 	public bool End = false;
 
-    public int maxScore;
-    public int _blueTeamScore;
-	public int _redTeamScore;
+    [SerializeField]
+    private int maxScore;
+    private int _blueTeamScore;
+	private int _redTeamScore;
 
-    public float tiempoProrroga = 0.0f;
+    [SerializeField]
+    private float tiempoProrroga = 0.0f;
     private float _tiempoProrroga;
     [HideInInspector]
     public bool prorroga = false;
@@ -76,6 +78,8 @@ public class ScoreManager : MonoBehaviour {
         for( int i = 0; i < redTeamScore_Text.Length; i++){
             redTeamScore_Text[i].text = _redTeamScore.ToString();
         }
+
+        nPlayerEliminados = 0;
 
         ResetOrcas();
     }
@@ -229,6 +233,7 @@ public class ScoreManager : MonoBehaviour {
         if (prorroga){
             nPlayerEliminados++;
 
+            Debug.Log(nPlayerEliminados + " " + GameController.instance.playerNum);
             if (nPlayerEliminados >= GameController.instance.playerNum){
                 End = true;
                 GameController.instance.GameOver(Team.none);

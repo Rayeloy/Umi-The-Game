@@ -908,6 +908,11 @@ public class PlayerMovement : MonoBehaviour
                 //GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
                 flag.SetAway(false);
             }
+            //Desactivar al jugadro si se esta en la prorroga.
+            if(GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag)
+            {
+                ScoreManager.instance.PlayerEliminado();
+            }
         }
     }
 
@@ -915,11 +920,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (inWater)
         {
-            if(GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag)
-            {
-                ScoreManager.instance.PlayerEliminado();
-            }
-
             controller.AroundCollisions();
             if (maxMoveSpeed2 > maxSpeedInWater)
             {
