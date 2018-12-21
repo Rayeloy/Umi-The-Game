@@ -427,6 +427,8 @@ public class GameController : MonoBehaviour
         RespawnFlags();
 
         //SceneManager.LoadScene(sceneLoadedOnReset);
+        if (gamePaused)
+            UnPauseGame();
     }
     public void ExitGame()
     {
@@ -449,6 +451,8 @@ public class GameController : MonoBehaviour
 
     private PlayerActions playerActions;
 
+    [SerializeField]
+    private GameObject ResetButton;
 	public void PauseGame( PlayerActions p){
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -462,6 +466,8 @@ public class GameController : MonoBehaviour
 		playerActions = p;
 
         gamePaused = true;
+
+        EventSystem.current.SetSelectedGameObject(ResetButton);
 	}
 
     private void UnPauseGame (){
