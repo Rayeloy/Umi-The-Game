@@ -941,7 +941,7 @@ public class PlayerMovement : MonoBehaviour
     #region  CHECK WIN ---------------------------------------------
     public void CheckScorePoint(FlagHome flagHome)
     {
-        if (haveFlag && team == flagHome.team)
+        if (haveFlag && team == flagHome.team && this.moveSt != MoveState.Hooked)
         {
             GameController.instance.ScorePoint(team);
             if (flag != null)
