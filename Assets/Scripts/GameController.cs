@@ -244,7 +244,7 @@ public class GameController : MonoBehaviour
                         if (allPlayers[i].Actions.Options.WasPressed)
                         {
                             SwitchGameOverMenu();
-                            break;
+                            i = playerNum;//BREAK
                         }
                     }
                 }

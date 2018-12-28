@@ -9,7 +9,11 @@ public class Hook : MonoBehaviour {
     public HitboxHookSmall myHitboxSmall;
     LineRenderer myLineRenderer;
 
+    /*public Hook()
+    {
 
+    }*/
+    
     public void KonoAwake(PlayerMovement playerMov, PlayerHook playerHook)
     {
         myHitboxBig.KonoAwake(playerMov, playerHook);

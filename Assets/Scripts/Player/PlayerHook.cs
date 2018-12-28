@@ -55,6 +55,22 @@ public class PlayerHook : MonoBehaviour
     [Header("Referencias")]
     PlayerHUD myPlayerHUD;
 
+    /*public PlayerHook()
+    {
+        myPlayerMov = new PlayerMovement();
+        myPlayerCombat = new PlayerCombat();
+        myPlayerHUD = new PlayerHUD();
+        hookSt = new HookState();
+        currentHook = new GameObject();
+        originPos = new Vector3();
+        hookLocalOrigin = new Vector3();
+
+        hookReady = false;
+        enemyHooked = false;
+        objectHooked = false;
+
+    }*/
+
     private void Awake()
     {
         myPlayerMov = GetComponent<PlayerMovement>();
