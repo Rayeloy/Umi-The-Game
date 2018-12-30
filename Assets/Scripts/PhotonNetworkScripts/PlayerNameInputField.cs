@@ -12,7 +12,7 @@ namespace UMI.Multiplayer
     {
         #region Private Constants
 
-        const string playerNamePerfkey = "UmiBoy";
+        const string playerNamePerfkey = "PlayerName";
 
         #endregion
 
@@ -49,9 +49,11 @@ namespace UMI.Multiplayer
             if (string.IsNullOrEmpty(value))
             {
                 Debug.LogError("El nombre del jugador es inválido o está vacío");
+                //value = "UMI_Boy";
                 return;
             }
-            PhotonNetwork.NickName = value();
+            Debug.Log("Conectando con nombre: "+value);
+            PhotonNetwork.NickName = value;
 
             PlayerPrefs.SetString(playerNamePerfkey, value);
         }
