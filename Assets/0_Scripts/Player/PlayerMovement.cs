@@ -58,6 +58,8 @@ public class PlayerMovement : MonoBehaviour
     public float maxMoveSpeed = 10.0f;
     float maxMoveSpeed2; // is the max speed from which we aply the joystick sensitivity value
     float currentMaxMoveSpeed = 10.0f; // its the final max speed, after the joyjoystick sensitivity value
+
+
     [Tooltip("Maximum speed that you can travel at horizontally when hit by someone")]
     public float maxKnockbackSpeed = 300f;
     public float maxAimingSpeed = 5f;

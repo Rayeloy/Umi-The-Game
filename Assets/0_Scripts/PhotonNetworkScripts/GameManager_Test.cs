@@ -9,6 +9,39 @@ namespace UMI.Multiplayer
 {
     public class GameManager_Test : MonoBehaviourPunCallbacks
     {
+
+        #region Variables
+
+        /// WARNING: Always make sure prefabs that are supposed to be instantiated over the network are within a Resources folder, this is a Photon requirement.
+        [Tooltip("Prefab used to represent the player, player_online prefab for this case")]
+        public GameObject playerPrefab;
+
+        #endregion
+
+        #region MonoBehaviour Callbacks
+
+        public void Start()
+        {
+            if (playerPrefab == null)
+            {
+                Debug.Log("<Color=Red><a>Missing playerprefab reference</a></color>: Script "+ this +" is missing playerprefab property player can't be loaded in the room");
+            }
+            else
+            {
+                if (PlayerCombat_Online.LocalPlayerInstance == null)
+                {
+                    Debug.LogFormat("Localplayer is being Instantiated in the scene {0}", SceneManagerHelper.ActiveSceneName);
+                    PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 5f, 0f), Quaternion.identity, 0); // Juan: cargamos el jugador por ahora en un spawn fijo no determinado
+                }
+                else
+                {
+                    Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
+                }
+            }
+        }
+
+        #endregion
+
         #region Photon Callbacks
 
         /// llamaremos a esta función cuando el usuario se desconecte de la sala
