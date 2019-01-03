@@ -114,7 +114,7 @@ namespace UMI.Multiplayer
 
                 ///#Critical
                 ///Cargamos el nivel
-                PhotonNetwork.LoadLevel("Room for 1");
+                PhotonNetwork.LoadLevel("FINAL_Flag");
             }
         }
 
