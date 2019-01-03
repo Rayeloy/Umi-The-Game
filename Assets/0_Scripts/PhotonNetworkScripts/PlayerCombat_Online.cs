@@ -109,9 +109,35 @@ public class PlayerCombat_Online : MonoBehaviourPunCallbacks, IPunObservable
                 HideAttackHitBox();
                 //ChangeNextAttackType();
             }
+        #if UNITY_5_4_OR_NEWER
+            // Unity 5.4 has a new scene management. register a method to call CalledOnLevelWasLoaded.
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += (scene, loadingMode) =>
+            {
+                CalledOnLevelWasLoaded(scene.buildIndex);
+            };
+        #endif
+        #if !UNITY_5_4_OR_NEWER
+        /// <summary>See CalledOnLevelWasLoaded. Outdated in Unity 5.4.</summary>
+            void OnLevelWasLoaded(int level)
+            {
+            this.CalledOnLevelWasLoaded(level);
+            }
+        #endif
+
+
+
         }
 
-        public void KonoUpdate()
+    void CalledOnLevelWasLoaded(int level)
+    {
+        // check if we are outside the Arena and if it's the case, spawn around the center of the arena in a safe zone
+        if (!Physics.Raycast(transform.position, -Vector3.up, 5f))
+        {
+            transform.position = new Vector3(0f, 5f, 0f);
+        }
+    }
+
+    public void KonoUpdate()
         {
             if (photonView.IsMine)
             {
