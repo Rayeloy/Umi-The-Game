@@ -12,7 +12,7 @@ using Photon.Realtime;
 public class PlayerMovement_Online : MonoBehaviourPun
 {
     [Header("Referencias")]
-    public CameraController myCamera;
+    public CameraController_Online myCamera;
     public PlayerPickups myPlayerPickups;
     public PlayerAnimation_Online myPlayerAnimation;
     public PlayerHUD myPlayerHUD;
@@ -226,13 +226,13 @@ public class PlayerMovement_Online : MonoBehaviourPun
                 currentMovDir.Normalize();
                 switch (myCamera.camMode)
                 {
-                    case CameraController.cameraMode.Fixed:
+                    case CameraController_Online.cameraMode.Fixed:
                         currentMovDir = RotateVector(-facingAngle, temp);
                         break;
-                    case CameraController.cameraMode.Shoulder:
+                    case CameraController_Online.cameraMode.Shoulder:
                         currentMovDir = RotateVector(-facingAngle, temp);
                         break;
-                    case CameraController.cameraMode.Free:
+                    case CameraController_Online.cameraMode.Free:
                         Vector3 camDir = (transform.position - myCamera.transform.GetChild(0).position).normalized;
                         camDir.y = 0;
                         // ANGLE OF JOYSTICK
@@ -648,7 +648,7 @@ public class PlayerMovement_Online : MonoBehaviourPun
     {
         switch (myCamera.camMode)
         {
-            case CameraController.cameraMode.Fixed:
+            case CameraController_Online.cameraMode.Fixed:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 //Calculate looking dir of camera
                 Vector3 camPos = myCamera.transform.GetChild(0).position;
@@ -656,13 +656,13 @@ public class PlayerMovement_Online : MonoBehaviourPun
                 currentFacingDir = new Vector3(myPos.x - camPos.x, 0, myPos.z - camPos.z).normalized;
                 currentCamFacingDir = myCamera.myCamera.transform.forward.normalized;
                 break;
-            case CameraController.cameraMode.Shoulder:
+            case CameraController_Online.cameraMode.Shoulder:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 currentFacingDir = RotateVector(-myCamera.transform.localRotation.eulerAngles.y, Vector3.forward).normalized;
                 currentCamFacingDir = myCamera.myCamera.transform.forward.normalized;
                 //print("CurrentFacingDir = " + currentFacingDir);
                 break;
-            case CameraController.cameraMode.Free:
+            case CameraController_Online.cameraMode.Free:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 currentFacingDir = RotateVector(-rotateObj.localRotation.eulerAngles.y, Vector3.forward).normalized;
                 currentCamFacingDir = (myCamera.cameraFollowObj.transform.position - myCamera.myCamera.transform.position).normalized;
@@ -676,19 +676,19 @@ public class PlayerMovement_Online : MonoBehaviourPun
     {
         switch (myCamera.camMode)
         {
-            case CameraController.cameraMode.Fixed:
+            case CameraController_Online.cameraMode.Fixed:
                 Vector3 point1 = transform.position;
                 Vector3 point2 = new Vector3(point1.x, point1.y + 1, point1.z);
                 Vector3 dir = new Vector3(point2.x - point1.x, point2.y - point1.y, point2.z - point1.z);
                 rotateObj.Rotate(dir, rotSpeed * Time.deltaTime);
                 break;
-            case CameraController.cameraMode.Shoulder:
+            case CameraController_Online.cameraMode.Shoulder:
                 point1 = transform.position;
                 point2 = new Vector3(point1.x, point1.y + 1, point1.z);
                 dir = new Vector3(point2.x - point1.x, point2.y - point1.y, point2.z - point1.z);
                 rotateObj.Rotate(dir, rotSpeed * Time.deltaTime);
                 break;
-            case CameraController.cameraMode.Free:
+            case CameraController_Online.cameraMode.Free:
                 if (currentMovDir != Vector3.zero)
                 {
                     float angle = Mathf.Acos(((0 * currentMovDir.x) + (1 * currentMovDir.z)) / (1 * currentMovDir.magnitude)) * Mathf.Rad2Deg;
@@ -871,9 +871,9 @@ public class PlayerMovement_Online : MonoBehaviourPun
     [HideInInspector]
     public bool haveFlag = false;
     [HideInInspector]
-    public Flag flag = null;
+    public Flag_Online flag = null;
 
-    public void PutOnFlag(Flag _flag)
+    public void PutOnFlag(Flag_Online _flag)
     {
         flag = _flag;
         flag.transform.SetParent(rotateObj);

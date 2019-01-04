@@ -9,6 +9,18 @@ namespace UMI.Multiplayer
 {
     //setup for UMI launcher
 
+    ///Juan:
+    ///por ahora cargará el único juego que tenemos y ese será el punto central del UMI actual pero se deberá rehacer parte del código del Launcher en un futuro
+    ///Ideas planteadas para futuro:
+    ///·Crear una aplicación servidora, un nuevo ejecutable que carga la escena y siempre es el master del lobby y se encarga de redirigir a los jugadores
+    ///de forma interna sin que ellos lo sepan a los matches de los respectivos juegos
+    ///·Crear la conexión directamente antes de cargar el menú principal para comprobar el usuario cotejando con una base de datos, si existe información te lleva
+    ///al menú principal para empezar el juego, si no entonces te lleva al menú de creación de personaje.
+    ///·Crear una base de datos y almacenar toda la información posible mediante seeds.
+    ///·Crear un sistema de modificación del personaje basado en seeds sencillo para el usuario y ligero para la base de datos.
+    ///·Estudiar cómo incluir una tienda de skins en la aplicación.
+    ///y más...
+
     public class Launcher : MonoBehaviourPunCallbacks
     {
         #region Private Serializable Fields
@@ -18,6 +30,9 @@ namespace UMI.Multiplayer
         [Tooltip("Objeto que informa al usuario que la conexión está en progreso")]
         [SerializeField]
         private GameObject progressLabel;
+        [Tooltip("Nombre de la escena que carga el menú, default = 'TeamSetup_Online'")]
+        [SerializeField]
+        private string loadLevelName = "TeamSetup_Online";
 
 
         [Tooltip("El número máximo de jugadores por sala")]
@@ -42,11 +57,7 @@ namespace UMI.Multiplayer
             // Mostramos el menú que se encuentra en "controlPanel" y ocultamos el texto de "conectando"
             progressLabel.SetActive(false);
             controlPanel.SetActive(true);
-
-            /// hecho para conocer el número de la escena de menu_online el index de dicha escena es 4
-            /// es principalmente relevante para el GameManager y poder volver al menú principal en caso de desconexión
-            //Scene thisScene = SceneManager.GetActiveScene();
-            //Debug.Log("El número de escena es: "+thisScene.buildIndex);
+            
         }
 
         void Awake()
@@ -73,6 +84,7 @@ namespace UMI.Multiplayer
 
             if (PhotonNetwork.IsConnected) // si estamos conectados intentamos unirnos a la sala
             {
+                //Si queremos construir un sistema de elo en el futuro debería cambiarse este "joinRandomRoom" en otra cosa
                 PhotonNetwork.JoinRandomRoom();
             }
             else // sino nos conectamos al servidor
@@ -101,30 +113,36 @@ namespace UMI.Multiplayer
         public override void OnJoinRandomFailed(short returnCode, string message)
         {
             Debug.Log("UMI Launcher: OnJoinRandomFailed() la conexión con una sala aleatoria ha fallado, crearemos una sala nueva pues no existe alguna actualmente en el servidor");
-            PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = MaxPlayersPerRoom });
+            string roomName = null;
+            if (PhotonNetwork.NickName != null)
+            {
+                roomName = "Room of " + PhotonNetwork.NickName;
+                // Juan: si el usuario tiene un nickname la sala se llamará "Room of nickname" ya que la idea es que cada nick sea único, sino el server generará un nombre random al dejarlo como null
+            }
+            PhotonNetwork.CreateRoom(roomName, new RoomOptions { MaxPlayers = MaxPlayersPerRoom });
         }
 
         public override void OnJoinedRoom()
         {
-            Debug.Log("UMI Launcher: OnJoinedRoom(), ahora el cliente se encuentra en una sala");
+            Debug.Log("UMI Launcher: OnJoinedRoom(), ahora el cliente se encuentra en la sala "+ PhotonNetwork.CurrentRoom.Name);
+            
 
             if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
             {
-                Debug.Log("Vamos a cargar la sala para 1");
+                Debug.Log("UMI Launcher: Vamos a cargar el juego al que te vas a unir");
 
                 ///#Critical
                 ///Cargamos el nivel
-                PhotonNetwork.LoadLevel("FINAL_Flag");
+                PhotonNetwork.LoadLevel(loadLevelName);
             }
         }
 
         public override void OnDisconnected(DisconnectCause cause)
         {
-            /// por ahora lo dejamos así pero en el momento de la desconexión debería volver a la escena y no solo reestablecer la UI a los parámetros base
             progressLabel.SetActive(false);
             controlPanel.SetActive(true);
 
-            Debug.LogWarningFormat("UMI Launcher: OnDisconnected() nos hemos desconectado del servidor, razón {0}", cause);
+            Debug.LogWarningFormat("UMI Launcher: OnDisconnected() nos hemos desconectado del servidor, razón {0}, así que volvemos al menú principal.", cause);
         }
 
         #endregion

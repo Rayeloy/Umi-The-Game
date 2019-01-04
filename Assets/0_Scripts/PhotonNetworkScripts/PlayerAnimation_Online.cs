@@ -1,13 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-/// <summary>
-///  Juan: añadidas las librerias de photon al duplicado del script de animación para poder 
-/// </summary>
-
 using Photon.Pun;
-using Photon.Realtime;
+
+
+///Juan:
+///
+/// 
+///PhotonAnimatorView and Triggers
+///If you use Trigger parameters in animator controllers and want to synchronize them using "PhotonAnimatorView", it's important to consider how this is handled to avoid issues.
+///
+///·Due to the nature of the Trigger(s), it is only enabled when the animation event starts and disabled immediately before the next Update()
+///·Components on a GameObject are executed in the same order as they are declared
+///·Editing the Order of Execution Settings will affect execution order on the GameObject's components
+///
+///It essential that the "PhotonAnimatorView" component is executed after the code that raises the Trigger(s). So it's safer to put it at the bottom of the stack, or at least
+///below the component(s) that will be responsible for raising the Trigger(s) using Animator.SetTrigger(...).
+///
+///The "PhotonAnimatorView" Inspector shows the various paramaters current values.A good way to check even before publishing is that the Trigger is properly raised to true
+///when it should.If you don't see it happening, chances are this particular Trigger won't be synchronized over the network.
+///
+
 
 public class PlayerAnimation_Online : MonoBehaviourPun
 {

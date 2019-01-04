@@ -17,12 +17,13 @@ using UnityEngine.EventSystems;
 #endregion
 
 #region Playercombat Class
+
 public class PlayerCombat_Online : MonoBehaviourPunCallbacks, IPunObservable
 {
     #region Variables
         PlayerMovement_Online myPlayerMovement;
         PlayerWeapons myPlayerWeap;
-        PlayerHook myHook;
+        PlayerHook_Online myHook;
         PlayerHUD myPlayerHUD;
         public float triggerDeadZone=0.15f;
         //List<string> attacks;
@@ -91,7 +92,7 @@ public class PlayerCombat_Online : MonoBehaviourPunCallbacks, IPunObservable
             PlayerCombat_Online.LocalPlayerInstance = this.gameObject;
             myPlayerMovement = GetComponent<PlayerMovement_Online>();
             myPlayerWeap = GetComponent<PlayerWeapons>();
-            myHook = GetComponent<PlayerHook>();
+            myHook = GetComponent<PlayerHook_Online>();
             myPlayerHUD = myPlayerMovement.myPlayerHUD;
             attackStg = attackStage.ready;
             targetsHit = new List<string>();
@@ -208,11 +209,11 @@ public class PlayerCombat_Online : MonoBehaviourPunCallbacks, IPunObservable
     #region Functions
         public void FillMyAttacks()
         {
-            AttackInfo_Online att = new AttackInfo_Online(GameController.instance.attackX);
+            AttackInfo_Online att = new AttackInfo_Online(GameController_Online.instance.attackX);
             myAttacks.Add(att);
-            att = new AttackInfo_Online(GameController.instance.attackY);
+            att = new AttackInfo_Online(GameController_Online.instance.attackY);
             myAttacks.Add(att);
-            att = new AttackInfo_Online(GameController.instance.attackB);
+            att = new AttackInfo_Online(GameController_Online.instance.attackB);
             myAttacks.Add(att);
         }
 
@@ -355,7 +356,7 @@ public class PlayerCombat_Online : MonoBehaviourPunCallbacks, IPunObservable
             if(!aiming)
             {
                 aiming = true;
-                myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Shoulder);
+                myPlayerMovement.myCamera.SwitchCamera(CameraController_Online.cameraMode.Shoulder);
                 myPlayerWeap.AttachWeaponToBack();
                 myPlayerHUD.StartAim();
                 //ChangeAttackType(GameController.instance.attackHook);
@@ -367,7 +368,7 @@ public class PlayerCombat_Online : MonoBehaviourPunCallbacks, IPunObservable
             if (aiming)
             {
                 aiming = false;
-                myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Free);
+                myPlayerMovement.myCamera.SwitchCamera(CameraController_Online.cameraMode.Free);
                 myPlayerWeap.AttachWeapon();
                 myPlayerHUD.StopAim();
             }
