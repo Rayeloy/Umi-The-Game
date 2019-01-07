@@ -7,7 +7,7 @@ public class PlayerFunctions
 {
     #region PlayerMovement
 
-    public void MovementUpdate(Controller3D controller, Vector3 currentVel, bool noInput, bool hooked)
+    public static void MovementUpdate(Controller3D controller, Vector3 currentVel, bool noInput, bool hooked)
     {
         if ((controller.collisions.above || controller.collisions.below) && !hooked)
         {
