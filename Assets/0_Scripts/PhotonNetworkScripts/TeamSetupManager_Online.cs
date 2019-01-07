@@ -13,7 +13,7 @@ using Photon.Realtime;
 /// a todos los efectos actúa como el launcher hasta que sepamos el número exacto de jugadores que van a participar en el juego
 /// </summary>
 
-public class TeamSetupManager_Online : MonoBehaviourPunCallbacks
+public class TeamSetupManager_Online : MonoBehaviourPunCallbacks, IPunObservable
 {
     #region Variables
 
@@ -22,18 +22,8 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks
     
     [Tooltip("Prefab used to represent the player")]
     public GameObject playerPrefab;
-    
-    public static string SiguenteEscena;
-    public static bool startFromMap = false;
-    public string nextScene;
-	private bool ready = false;
-    
-
-	public List<Transform> playerPositions = new List<Transform>();
-
-	List<PlayerSelected> players = new List<PlayerSelected>(4);
-
-	public PlayerSelecionUI[] pUI;
+    public List<Transform> playerPositions = new List<Transform>();
+    public PlayerSelecionUI[] pUI;
 
 	PlayerActions keyboardListener;
 	PlayerActions joystickListener;
@@ -44,14 +34,20 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks
 	public Animator animator;
 	public GameObject ReadyButton;
 
-    //Juan: mis variables
+    //Juan: Los siguientes valores almacenan la información sobre si el jugador está o no listo para comenzar la partida
     [HideInInspector]
-    bool allPlayersReady = false;
     bool myPlayerIsReady = false;
+    [HideInInspector]
+    bool areAllPlayersReady = false;
+    
+
+    //Juan: Lista de los objetos jugador en la escena para activarlos o desactivarlos.
+    List<PlayerSelected> players = new List<PlayerSelected>(4);
 
     //Juan: los siguientes valores guardan información al respecto de la cantidad máxima de jugadores posibles y la cantidad de jugadores conectados actualmente en la sala
-    [HideInInspector]
-    int maxPlayers = PhotonNetwork.CurrentRoom.MaxPlayers;
+    int maxPlayers = 4;
+    [SerializeField]
+    private const int maxPlayersInspector = 4;
 
     //Juan: los siguientes valores contienen información sobre las escenas del juego y los menús
     [Tooltip("Nombre de la escena del juego, default = 'FINAL_Flag_Online'")]
@@ -65,9 +61,7 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks
     private void Awake()
     {
         instance = this;
-        maxPlayers = PhotonNetwork.CurrentRoom.MaxPlayers;
     }
-
 
     void OnEnable()
 	{
@@ -75,7 +69,6 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks
 		keyboardListener = PlayerActions.CreateWithKeyboardBindings();
 		joystickListener = PlayerActions.CreateWithJoystickBindings();
 	}
-
 
 	void OnDisable()
 	{
@@ -85,106 +78,28 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks
 	}
 
 	private float contador = 0;
+
 	void Update()
 	{
-		if (ready){
+        if (PhotonNetwork.CurrentRoom.MaxPlayers != null)
+        {
+            ///Juan:
+            ///A veces en el awake no se hace correctamente y no sé porqué así que lo haremos en el update,
+            ///en el fondo que se compruebe que esta variable no solo no es un problema sino que es hasta recomendable
+            maxPlayers = PhotonNetwork.CurrentRoom.MaxPlayers;
+        }
+        if (areAllPlayersReady){
 			if (contador < tiempoParaReady){
 				contador += Time.deltaTime;
 				return;			
 			}
-
-			ReadyButton.SetActive(true);
-			foreach(PlayerSelected ps in players){
-				if (ps.Actions.Jump.WasPressed){
-					if (startFromMap)
-					{
-						SceneManager.LoadScene(SiguenteEscena);
-					}
-					else
-					{
-						SceneManager.LoadScene(nextScene);
-					}
-				}
-			}
-			return;
-		}
-
-		if (JoinButtonWasPressedOnListener( joystickListener ))
-		{
-			InputDevice inputDevice = InputManager.ActiveDevice;
-
-			if (ThereIsNoPlayerUsingJoystick( inputDevice ))
-			{
-				CreatePlayer( inputDevice );
-			}
-		}
-
-		if (JoinButtonWasPressedOnListener( keyboardListener ))
-		{
-			if (ThereIsNoPlayerUsingKeyboard())
-			{
-				CreatePlayer( null );
-			}
-		}
-
-		if (players.Count >=4){ //minNumPlayers){
-			int contador = 0;
-			foreach(PlayerSelected ps in players){
-				if (ps.Ready){
-					contador++;
-				}
-			}
-			if (contador == players.Count){
-				ready = true;
-				//GameInfo.playerActionsList = new PlayerActions[players.Count];
-				//GameInfo.playerActionsList = new List<PlayerActions>();
-				//for(int i = 0; i < players.Count; i++){
-				foreach(PlayerSelected ps in players){
-					//GameInfo.playerActionsList[i] = players[i].Actions;
-					GameInfo.instance.playerActionsList.Add(ps.Actions);
-					GameInfo.instance.playerTeamList.Add(ps.team);
-					//Debug.Log(ps.Actions);
-				}
-                GameInfo.instance.nPlayers = players.Count;
-				if (SiguenteEscena != "Tutorial")
-					animator.SetBool("Ready", true);
-				else{
-					if (startFromMap)
-					{
-						SceneManager.LoadScene(SiguenteEscena);
-					}
-					else
-					{
-						SceneManager.LoadScene(nextScene);
-					}
-				}
-			}
-		}
-	}
-
-
-    //Juan: esto queda comentado por ahora pero aquí se debe producir de forma ordenada la instanciación de los jugadores que ya están en la sala
-    /*
-    public void Start()
-    {
-        if (playerPrefab == null)
-        {
-            Debug.Log("<Color=Red><a>Missing playerprefab reference</a></color>: Script " + this + " is missing playerprefab property player can't be loaded in the room");
-        }
-        else
-        {
-            if (PlayerCombat_Online.LocalPlayerInstance == null)
-            {
-                Debug.LogFormat("Localplayer is being Instantiated in the scene {0}", SceneManagerHelper.ActiveSceneName);
-                PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 5f, 0f), Quaternion.identity, 0); // Juan: cargamos el jugador por ahora en un spawn fijo no determinado
-            }
             else
             {
-                Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
+                LoadGame();
             }
-        }
-    }*/
-
+		}
+	}
+    
     #endregion
 
     #region Pun Callbacks
@@ -198,17 +113,18 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player other)
     {
         Debug.LogFormat("{0} ha entrado en la sala", other.NickName);
-        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount == maxPlayers)
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount == maxPlayers && areAllPlayersReady)
         {
             //Juan: ya estamos todos, esperamos un rato e iniciamos la partida
-            Debug.LogFormat("TeamSetupManager: Hemos llegado al número máximo de jugadores que es {0}, así que vamos a iniciar la carga del juego desde el master que es {1}", PhotonNetwork.CurrentRoom.PlayerCount, PhotonNetwork.IsMasterClient);
-            LoadGame();
+            Debug.LogFormat("TeamSetupManager: Hemos llegado al número máximo de jugadores que es {0}, estamos listos para iniciar la carga del juego desde el master que es {1}", PhotonNetwork.CurrentRoom.PlayerCount, PhotonNetwork.IsMasterClient);
         }
         else
         {
             //Juan: aun no estamos todos, así que vamos a cargar al jugador que acaba de entrar para que salga en la selección de personaje :)
-            
-            SetPlayer();
+            for (int i = 0; i < PhotonNetwork.CurrentRoom.PlayerCount; i++)
+            {
+                CreatePlayerInNetwork();
+            }
         }
     }
 
@@ -285,61 +201,30 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks
 
     #region Player Functions
 
-    PlayerSelected CreatePlayer( InputDevice inputDevice )
-	{
-		if (PhotonNetwork.CurrentRoom.PlayerCount <= maxPlayers)
-		{
-			// Pop a position off the list. We'll add it back if the player is removed.
-			Vector3 playerPosition = playerPositions[0].position;
-			playerPositions.RemoveAt( 0 );
+    PlayerSelected CreatePlayerInNetwork()
+    {
+        if (PhotonNetwork.CurrentRoom.PlayerCount <= maxPlayers)
+        {
+            Vector3 playerPosition = playerPositions[0].position;
+            playerPositions.RemoveAt(0);
 
-			GameObject gameObject = Instantiate( playerPrefab, playerPosition, Quaternion.identity );
+            GameObject gameObject = Instantiate(playerPrefab, playerPosition, Quaternion.identity);
             ///Juan: No necesita ser un player instanciado en la red ya que la información que se comparte es pequeña y sólo referente a si está listo para empezar el juego o no.
-            
-			PlayerSelected player = gameObject.GetComponent<PlayerSelected>();
+            PlayerSelected player = gameObject.GetComponent<PlayerSelected>();
+            players.Add(player);
+            player.playerSelecionUI = pUI[players.Count - 1];
+            pUI[players.Count - 1].panel.SetActive(true);
 
-			if (inputDevice == null)
-			{
-                // We could create a new instance, but might as well reuse the one we have
-                // and it lets us easily find the keyboard player.
-
-                //GameInfo.instance.playerActionsList.Add(keyboardListener);
-                //GameInfo.instance.playerActionUno = keyboardListener;
-                player.Actions = PlayerActions.CreateWithKeyboardBindings();
-			}
-			else
-			{
-				// Create a new instance and specifically set it to listen to the
-				// given input device (joystick).
-				PlayerActions actions = PlayerActions.CreateWithJoystickBindings();
-				actions.Device = inputDevice;
-
-                //GameInfo.instance.playerActionsList.Add(actions);
-                player.Actions = actions;
-                player.isAReleased = false;
-            }
-
-			players.Add( player );
-			player.playerSelecionUI = pUI[players.Count - 1];
-			pUI[players.Count - 1].panel.SetActive(true);
-
-			return player;
+            return player;
         }
         else
         {
             //Juan: qué haces en esta sala supuestamente llena?, fuera
-            Debug.Log("TeamSetupManager: <color=Red><a>CRITICAL ERROR</a></color> you're trying to create a new player even if the room is full, you'll be kicked from the room");
+            Debug.Log("TeamSetupManager: <color=Red><a>CRITICAL ERROR</a></color> you're trying to create a new player with SetPlayer() function even if the room is full, you'll be kicked from the room");
             LeaveRoom();
         }
-
-		return null;
-	}
-
-    void SetPlayer()
-    {
-        
+        return null;
     }
-
 
 	void RemovePlayer( PlayerSelected player )
 	{
@@ -383,7 +268,58 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks
         Debug.LogFormat("TeamSetupManager: Cargando el juego ya que hemos alcanzado el máximo de jugadores por sala que es: {0}", PhotonNetwork.CurrentRoom.PlayerCount);
         PhotonNetwork.LoadLevel(gameSceneName);
     }
-       
+
+
+    private bool arePlayersReady(PhotonStream stream)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if ((bool)stream.ReceiveNext() && myPlayerIsReady)// haremos peticiones hasta recibir 3 y luego que la nuestra sea true
+            {
+                if (i == 2) // si recibimos 3 trues seguidos entonces todos los jugadores están listos
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    #endregion
+
+
+    #region IPUNObservable imp
+
+    /// <summary>
+    /// Called by PUN several times per second, so that your script can write and read synchronization data for the PhotonView.
+    /// </summary>
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            ///The isWriting property will be true if this client is the "owner" of the PhotonView (and thus the GameObject).
+            ///Add data to the stream and it's sent via the server to the other players in a room.
+            ///On the receiving side, isWriting is false and the data should be read.
+
+            //Juan: En tal caso en este lado del If manejaremos los datos que deseamos enviar a otros jugadores
+            if (myPlayerIsReady)
+            {
+                stream.SendNext(true);
+                // Juan: enviaremos la información sólo si estamos listos así no sobrecargamos la red
+                areAllPlayersReady = arePlayersReady(stream);
+            }
+        }
+        else
+        {
+            //Juan: Y en este lado daremos valor a las cosas que recibimos
+            areAllPlayersReady = arePlayersReady(stream);
+        }
+    }
+
     #endregion
 }
 

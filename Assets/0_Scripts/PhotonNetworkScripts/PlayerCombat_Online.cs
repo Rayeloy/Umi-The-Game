@@ -395,7 +395,7 @@ public class PlayerCombat_Online : MonoBehaviourPunCallbacks, IPunObservable
             }
         else
             {
-                 //Juan: Y en este lado daremos valor a las cosas que recivimos
+                 //Juan: Y en este lado daremos valor a las cosas que recibimos
                 this.attackRecievedSerialized = (NetworkAttack)stream.ReceiveNext(); // Juan: para recibir los datos siempre usaremos el enum de recibir.
             }
         }
