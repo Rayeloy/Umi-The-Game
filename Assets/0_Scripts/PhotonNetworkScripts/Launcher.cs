@@ -106,7 +106,11 @@ namespace UMI.Multiplayer
             {
                 // #Crítico: si se falla en la conexión al unirse a una sala aleatoria significa que o no existe o hace falta crear una
                 // en tal caso crearemos una sala más abajo en la función OnJounRandomFailed()
-                PhotonNetwork.JoinRandomRoom();
+                if (PhotonNetwork.JoinRandomRoom())
+                {
+                    Debug.Log("UMI Launcher: OnJoinedRoom(), ahora te encuentras en la sala como cliente");
+                    Debug.Log("UMI Launcher: Vamos a cargar el lobby al que te vas a unir");
+                }
             }
         }
 
@@ -129,7 +133,7 @@ namespace UMI.Multiplayer
 
             if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
             {
-                Debug.Log("UMI Launcher: Vamos a cargar el juego al que te vas a unir");
+                Debug.Log("UMI Launcher: Vamos a cargar el lobby al que te vas a unir");
 
                 ///#Critical
                 ///Cargamos el nivel

@@ -97,7 +97,7 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks, IPunObservable
             {
                 LoadGame();
             }
-		}
+		}        
 	}
     
     #endregion
@@ -203,27 +203,17 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks, IPunObservable
 
     PlayerSelected CreatePlayerInNetwork()
     {
-        if (PhotonNetwork.CurrentRoom.PlayerCount <= maxPlayers)
-        {
-            Vector3 playerPosition = playerPositions[0].position;
-            playerPositions.RemoveAt(0);
+        Vector3 playerPosition = playerPositions[0].position;
+        playerPositions.RemoveAt(0);
 
-            GameObject gameObject = Instantiate(playerPrefab, playerPosition, Quaternion.identity);
-            ///Juan: No necesita ser un player instanciado en la red ya que la información que se comparte es pequeña y sólo referente a si está listo para empezar el juego o no.
-            PlayerSelected player = gameObject.GetComponent<PlayerSelected>();
-            players.Add(player);
-            player.playerSelecionUI = pUI[players.Count - 1];
-            pUI[players.Count - 1].panel.SetActive(true);
+        GameObject gameObject = Instantiate(playerPrefab, playerPosition, Quaternion.identity);
+        ///Juan: No necesita ser un player instanciado en la red ya que la información que se comparte es pequeña y sólo referente a si está listo para empezar el juego o no.
+        PlayerSelected player = gameObject.GetComponent<PlayerSelected>();
+        players.Add(player);
+        player.playerSelecionUI = pUI[players.Count - 1];
+        pUI[players.Count - 1].panel.SetActive(true);
 
-            return player;
-        }
-        else
-        {
-            //Juan: qué haces en esta sala supuestamente llena?, fuera
-            Debug.Log("TeamSetupManager: <color=Red><a>CRITICAL ERROR</a></color> you're trying to create a new player with SetPlayer() function even if the room is full, you'll be kicked from the room");
-            LeaveRoom();
-        }
-        return null;
+        return player;
     }
 
 	void RemovePlayer( PlayerSelected player )
@@ -263,9 +253,10 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            Debug.LogError("TeamSetupManager: No somos el dueño de la sala");
+            Debug.LogError("TeamSetupManager: We're not the master client so we load nothing");
+            return;
         }
-        Debug.LogFormat("TeamSetupManager: Cargando el juego ya que hemos alcanzado el máximo de jugadores por sala que es: {0}", PhotonNetwork.CurrentRoom.PlayerCount);
+        Debug.LogFormat("TeamSetupManager: Loading game since we're {0} players connected", PhotonNetwork.CurrentRoom.PlayerCount);
         PhotonNetwork.LoadLevel(gameSceneName);
     }
 
@@ -278,11 +269,13 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks, IPunObservable
             {
                 if (i == 2) // si recibimos 3 trues seguidos entonces todos los jugadores están listos
                 {
+                    Debug.Log("TeamSetupManager: All players are ready to begin the game");
                     return true;
                 }
             }
             else
             {
+                Debug.Log("TeamSetupManager: not all players are ready to begin the game");
                 return false;
             }
         }
@@ -297,6 +290,7 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks, IPunObservable
     /// <summary>
     /// Called by PUN several times per second, so that your script can write and read synchronization data for the PhotonView.
     /// </summary>
+    
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
@@ -309,6 +303,7 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks, IPunObservable
             if (myPlayerIsReady)
             {
                 stream.SendNext(true);
+                Debug.Log("TeamSetupManager: I'm sending that I'm ready to begin");
                 // Juan: enviaremos la información sólo si estamos listos así no sobrecargamos la red
                 areAllPlayersReady = arePlayersReady(stream);
             }
