@@ -13,7 +13,7 @@ using Photon.Realtime;
 /// a todos los efectos actúa como el launcher hasta que sepamos el número exacto de jugadores que van a participar en el juego
 /// </summary>
 
-public class TeamSetupManager_Online : MonoBehaviourPunCallbacks, IPunObservable
+public class TeamSetupManager_Online : MonoBehaviourPunCallbacks//, IPunObservable
 {
     #region Variables
 
@@ -39,6 +39,8 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks, IPunObservable
     bool myPlayerIsReady = false;
     [HideInInspector]
     bool areAllPlayersReady = false;
+    [HideInInspector]
+    bool myPlayerIsSet = false;
     
 
     //Juan: Lista de los objetos jugador en la escena para activarlos o desactivarlos.
@@ -79,6 +81,7 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks, IPunObservable
 
 	private float contador = 0;
 
+    int entro = 0;
 	void Update()
 	{
         if (PhotonNetwork.CurrentRoom.MaxPlayers != null)
@@ -97,35 +100,36 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks, IPunObservable
             {
                 LoadGame();
             }
-		}        
+		}
+        if (Input.anyKeyDown && !myPlayerIsSet)
+        {
+            myPlayerIsSet = true;
+            CreatePlayerInNetwork(null);
+        }
 	}
     
     #endregion
 
     #region Pun Callbacks
-        
+     
+    //Juan: no sé porqué pero no se llama a ninguno de estos métodos
+
     public override void OnLeftRoom()
     {
         /// volvemos al menú principal, el cual es la escena menu_online
+        Debug.Log("TeamSetupManager: Nos salimos de la sala enfadaos");
         SceneManager.LoadScene(menuSceneName);
     }
 
     public override void OnPlayerEnteredRoom(Player other)
     {
-        Debug.LogFormat("{0} ha entrado en la sala", other.NickName);
-        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount == maxPlayers && areAllPlayersReady)
+        Debug.LogFormat("TeamSetupManager: {0} ha entrado en la sala", other.NickName);
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount == maxPlayers)
         {
             //Juan: ya estamos todos, esperamos un rato e iniciamos la partida
-            Debug.LogFormat("TeamSetupManager: Hemos llegado al número máximo de jugadores que es {0}, estamos listos para iniciar la carga del juego desde el master que es {1}", PhotonNetwork.CurrentRoom.PlayerCount, PhotonNetwork.IsMasterClient);
+            Debug.LogFormat("TeamSetupManager: Hemos llegado al número máximo de jugadores que es {0}, estamos casi listos para iniciar la carga del juego desde el master que es {1}", PhotonNetwork.CurrentRoom.PlayerCount, PhotonNetwork.IsMasterClient);
         }
-        else
-        {
-            //Juan: aun no estamos todos, así que vamos a cargar al jugador que acaba de entrar para que salga en la selección de personaje :)
-            for (int i = 0; i < PhotonNetwork.CurrentRoom.PlayerCount; i++)
-            {
-                CreatePlayerInNetwork();
-            }
-        }
+        CreatePlayerInNetwork(null);               
     }
 
     public override void OnPlayerLeftRoom(Player other)
@@ -201,19 +205,35 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks, IPunObservable
 
     #region Player Functions
 
-    PlayerSelected CreatePlayerInNetwork()
+    void CreatePlayerInNetwork(InputDevice inputDevice)
     {
+        
         Vector3 playerPosition = playerPositions[0].position;
         playerPositions.RemoveAt(0);
 
         GameObject gameObject = Instantiate(playerPrefab, playerPosition, Quaternion.identity);
         ///Juan: No necesita ser un player instanciado en la red ya que la información que se comparte es pequeña y sólo referente a si está listo para empezar el juego o no.
         PlayerSelected player = gameObject.GetComponent<PlayerSelected>();
+
+        if (inputDevice == null)
+        {
+            player.Actions = PlayerActions.CreateWithKeyboardBindings();
+        }
+        else
+        {
+            // Create a new instance and specifically set it to listen to the
+            // given input device (joystick).
+            PlayerActions actions = PlayerActions.CreateWithJoystickBindings();
+            actions.Device = inputDevice;
+
+            //GameInfo.instance.playerActionsList.Add(actions);
+            player.Actions = actions;
+            player.isAReleased = false;
+        }
+
         players.Add(player);
         player.playerSelecionUI = pUI[players.Count - 1];
-        pUI[players.Count - 1].panel.SetActive(true);
-
-        return player;
+        pUI[players.Count - 1].panel.SetActive(true);        
     }
 
 	void RemovePlayer( PlayerSelected player )
@@ -265,13 +285,10 @@ public class TeamSetupManager_Online : MonoBehaviourPunCallbacks, IPunObservable
     {
         for (int i = 0; i < 3; i++)
         {
-            if ((bool)stream.ReceiveNext() && myPlayerIsReady)// haremos peticiones hasta recibir 3 y luego que la nuestra sea true
+            if ((bool)stream.ReceiveNext() && myPlayerIsReady && i==2)// haremos peticiones hasta recibir 3 true seguidos además del nuestro
             {
-                if (i == 2) // si recibimos 3 trues seguidos entonces todos los jugadores están listos
-                {
-                    Debug.Log("TeamSetupManager: All players are ready to begin the game");
-                    return true;
-                }
+                Debug.Log("TeamSetupManager: All players are ready to begin the game");
+                return true;              
             }
             else
             {
