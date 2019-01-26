@@ -10,6 +10,7 @@ using UnityEngine.UI;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Referencias")]
+    public GameControllerBase gC;
     public CameraController myCamera;
     public PlayerPickups myPlayerPickups;
     public PlayerAnimation myPlayerAnimation;
