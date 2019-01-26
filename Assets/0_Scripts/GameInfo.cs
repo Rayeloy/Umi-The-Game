@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using InControl;
 
+//Esta clase es para guardar datos del juego entre escenas
 public class GameInfo : MonoBehaviour
 {
     public static GameInfo instance;
     public List<PlayerActions> playerActionsList;
     public List<Team> playerTeamList;
     public int nPlayers;
-
 
     private void Awake()
     {

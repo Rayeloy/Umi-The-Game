@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameController_FlagMode : GameControllerBase
 {
+    [Header(" --- FLAG MODE --- ")]
     public Flag[] flags;
     //Posiciones de las porterias
     public Transform blueTeamFlagHome;

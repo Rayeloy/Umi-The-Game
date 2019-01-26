@@ -24,10 +24,25 @@ public class GameControllerBase : MonoBehaviour
     [Range(1, 4)]
     public int playerNum = 1;
 
-    public PlayerMovement[] allPlayers;//Array que contiene a los PlayerMovement
-    public CameraController[] allCameraBases;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
-    public Camera[] allUICameras;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
+    //PREFABS
+    [Header(" --- PLAYER COMPONENTS PREFABS ---")]
+    public GameObject playerPrefab;
+    public GameObject playerCanvasPrefab;
+    public GameObject playerCameraPrefab;
+    public GameObject playerUICameraPrefab;
+
+    [Header(" --- PLAYER COMPONENTS PARENTS ---")]
+    public Transform playersParent;
+    public Transform playersCanvasParent;
+    public Transform playersCamerasParent;
+    public Transform playersUICamerasParent;
+
+    [Header(" --- 'ALL' PLAYER LISTS ---")]
+    protected PlayerMovement[] allPlayers;//Array que contiene a los PlayerMovement
+    protected CameraController[] allCameraBases;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
+    protected Camera[] allUICameras;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
     public WeaponData[] allWeapons;//Array que contendrá las armas utilizadas, solo util en Pantalla Dividida, SIN USAR
+    public GameObject[] allCanvas;//Array que contiene los objetos de los canvas de cada jugador, solo util en Pantalla Dividida
 
     //public AttackData[] allAttacks; //este array seria otra manera de organizar los distintos ataques. En el caso de haber muchos en vez de 3 puede que usemos algo como esto.
     //Estos son los ataques de los jugadores, seguramente en un futuro vayan adheridos al jugador, o a su arma. Si no, será un mega array (arriba)
@@ -36,13 +51,13 @@ public class GameControllerBase : MonoBehaviour
     public AttackData attackB;
     public AttackData attackHook;
 
+    [Header(" --- SPAWN POSITIONS ---")]
     //Posiciones de los spawns
     public Transform blueTeamSpawn;
     public Transform redTeamSpawn;
 
     //Variables de HUDS
     [Header(" --- VARIABLES DE LA UI --- ")]
-    public GameObject[] allCanvas;//Array que contiene los objetos de los canvas de cada jugador, solo util en Pantalla Dividida
     public RectTransform[] contador;//Array que contiene todos los contadores de tiempo, solo util en Pantalla Dividida
     public RectTransform[] powerUpPanel;//Array que contiene los objetos del dash y el hook en el HUD, solo util en Pantalla Dividida
     [Header("Escala UI")]
@@ -50,6 +65,7 @@ public class GameControllerBase : MonoBehaviour
     public float scaleCuatro = 1.25f;//escala para 3 jugadores y 4 jugadores
 
     //GAME OVER MENU
+    [Header("Game Over Menu")]
     bool gameOverMenuOn = false;
     public GameObject gameOverMenu;
     public GameObject veil;
@@ -75,8 +91,6 @@ public class GameControllerBase : MonoBehaviour
     [HideInInspector]
     public Team winnerTeam = Team.blue;
     bool gameOverStarted = false;
-
-
     #endregion
 
     #region Funciones de Monobehaviour
@@ -186,6 +200,47 @@ public class GameControllerBase : MonoBehaviour
         //inicializa jugador
         //inicializa camara
         //inicializa canvas
+    }
+
+    public void CreatePlayer()
+    {
+        playerNum++;
+        PlayerMovement newPlayer = Instantiate(playerPrefab,playersParent).GetComponent<PlayerMovement>();
+        GameObject newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
+        CameraController newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
+        Camera newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
+
+        for(int i=0; i < allPlayers.Length; i++)
+        {
+            if (allPlayers[i] == null)
+            {
+                //guarda jugador
+                allPlayers[i] = newPlayer;
+                allCanvas[i] = newPlayerCanvas;
+                allCameraBases[i] = newPlayerCamera;
+                allUICameras[i] = newPlayerUICamera;
+                return;
+            }
+        }
+    }
+
+    public void DeletePlayer(PlayerMovement _pM)
+    {
+        for (int i = 0; i < allPlayers.Length; i++)
+        {
+            if (allPlayers[i] == _pM)
+            {
+                //guarda jugador
+                Destroy(allPlayers[i].gameObject);
+                Destroy(allCanvas[i]);
+                Destroy(allCameraBases[i].gameObject);
+                Destroy(allUICameras[i].gameObject);
+                allPlayers[i] = null;
+                allCanvas[i] = null;
+                allCameraBases[i] = null;
+                allUICameras[i] = null;
+            }
+        }
     }
 
     /// <summary>
