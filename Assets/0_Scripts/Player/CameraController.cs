@@ -4,20 +4,15 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    #region Variables
+    [Header("Referencias")]
     public PlayerMovement myPlayerMov;
-    public Transform myCamera;
     public Transform myPlayer;
-   
-    
+    public Transform cameraFollowObj;
+    public Transform myCamera;
+
     public cameraMode camMode = cameraMode.Fixed;
-    public enum cameraMode
-    {
-        Fixed,
-        Free,
-        FixedFree,
-        Shoulder
-    }
-    public GameObject cameraFollowObj;
+
     [Tooltip("Valor de 0 a 1 que indica la zona muerta del joystick de la camara, siendo 0 una zona muerta nula, y 1 todo el joystick entero.")]
     public float deadZone = 0.2f;
     [Header("FIXED CAMERA")]
@@ -50,8 +45,6 @@ public class CameraController : MonoBehaviour
     private float rotX = 0.0f;
     //------------------------
 
-
-
     public float speedH = 2.0f;
     public float speedV = 2.0f;
 
@@ -63,6 +56,32 @@ public class CameraController : MonoBehaviour
     Vector3 originalRot;
     Vector3 currentCamRot;
 
+    //For the camera inside CameraBase (the real camera)
+    [Header("Camera inside CameraBase")]
+    [HideInInspector]
+    public Vector3 targetMyCamPos;
+    Vector3 currentMyCamPos;
+    float smoothMyCamX, smoothMyCamY, smoothMyCamZ;
+    public float smoothCamMoveTime = 0.2f;
+
+    [Header("Smoothing")]
+    float smoothPosSpeedX, smoothPosSpeedY, smoothPosSpeedZ;
+    public float smoothPositioningTime = 0.2f;
+    float smoothRotSpeedX, smoothRotSpeedY, smoothRotSpeedZ;
+    public float smoothRotationTime = 0.2f;
+
+    //reset camera pos and rot "R3"
+    [Header("Reset Camera")]
+    bool resetingCamera = false;
+    public float cameraResetVerticalAngle;
+
+    //Switch camera
+    bool switching = false;
+    float timeSwitching;
+
+    #endregion
+
+    #region Funciones de MonoBehaviour
     public void KonoAwake()
     {
         originalPos = myCamera.localPosition;
@@ -108,7 +127,7 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     public void LateUpdate()
     {
-        if (GameController.instance.playing)
+        if (myPlayerMov.gC.playing)
         {
             float inputX = myPlayerMov.Actions.CamMovement.X;//Input.GetAxis(myPlayerMov.contName + "H2");
             float inputZ = -myPlayerMov.Actions.CamMovement.Y;//Input.GetAxis(myPlayerMov.contName + "V2");
@@ -130,7 +149,7 @@ public class CameraController : MonoBehaviour
                     //yaw += speedH * Input.GetAxis(myPlayerMov.contName + "H2");
                     //pitch -= speedV * Input.GetAxis(myPlayerMov.contName + "V2");
 
-                    Quaternion followObjRot = cameraFollowObj.transform.rotation;
+                    Quaternion followObjRot = cameraFollowObj.rotation;
                     rotX += finalInputZ * rotSpeed * Time.deltaTime;
                     rotX = Mathf.Clamp(rotX, clampAngleMinFixed, clampAngleMaxFixed);
 
@@ -144,14 +163,14 @@ public class CameraController : MonoBehaviour
                     transform.rotation = Quaternion.Euler(currentCamRot.x, currentCamRot.y, currentCamRot.z);
 
                     //targetCamPos = myPlayerMov.rotateObj.TransformPoint(originalPos);
-                    targetCamPos = cameraFollowObj.transform.position;
+                    targetCamPos = cameraFollowObj.position;
                     //SmoothPos();
                     currentCamPos = targetCamPos;
                     transform.position = currentCamPos;
                     //print("myCamera.localPosition = " + myCamera.localPosition);
                     break;
                 case cameraMode.Shoulder:
-                    followObjRot = cameraFollowObj.transform.rotation;
+                    followObjRot = cameraFollowObj.rotation;
                     rotX += finalInputZ * rotSpeed * Time.deltaTime;
                     rotX = Mathf.Clamp(rotX, clampAngleMinSho, clampAngleMaxSho);
 
@@ -160,7 +179,7 @@ public class CameraController : MonoBehaviour
                     localRotation = followObjRot;
                     localRotation = Quaternion.Euler(rotX, myPlayerMov.rotateObj.localRotation.eulerAngles.y, 0);
                     targetCamRot = localRotation.eulerAngles;
-                    targetCamPos = cameraFollowObj.transform.position;
+                    targetCamPos = cameraFollowObj.position;
 
                     if (switching)
                     {  
@@ -198,7 +217,7 @@ public class CameraController : MonoBehaviour
                     {
                         print("reseting camera");
                         SmoothRotReset();
-                        targetCamPos = cameraFollowObj.transform.position;
+                        targetCamPos = cameraFollowObj.position;
                         currentCamPos = targetCamPos;
                         float step = cameraMoveSpeed * Time.deltaTime;
                         transform.position = Vector3.MoveTowards(transform.position, currentCamPos, step);
@@ -229,7 +248,7 @@ public class CameraController : MonoBehaviour
                         }
                         else
                         {
-                            targetCamPos = cameraFollowObj.transform.position;
+                            targetCamPos = cameraFollowObj.position;
                             currentCamPos = targetCamPos;
                             currentCamRot = targetCamRot;
                         }
@@ -250,10 +269,14 @@ public class CameraController : MonoBehaviour
             //print("I'm " + gameObject.name + " and my local rotation = " + transform.localRotation.eulerAngles);
         }
     }
+    #endregion
 
+    #region Funciones
+
+    #region Instant Position/Rotation
     public void InstantPositioning()
     {
-        targetCamPos = cameraFollowObj.transform.position;
+        targetCamPos = cameraFollowObj.position;
         currentCamPos = targetCamPos;
         transform.position = currentCamPos;
     }
@@ -270,9 +293,10 @@ public class CameraController : MonoBehaviour
         //print("I'm " + gameObject.name + " and my rotateObj.localRotation = " + myPlayerMov.rotateObj.localRotation.eulerAngles+"; my local rotation = "+transform.localRotation.eulerAngles);
         myCamera.localPosition = originalCamPosFree;
     }
+    #endregion
 
-    float smoothPosSpeedX, smoothPosSpeedY, smoothPosSpeedZ;
-    public float smoothPositioningTime = 0.2f;
+    #region Smoothing
+
     void SmoothPos()
     {
         currentCamPos.x = Mathf.SmoothDamp(currentCamPos.x, targetCamPos.x, ref smoothPosSpeedX, smoothPositioningTime);
@@ -280,29 +304,13 @@ public class CameraController : MonoBehaviour
         currentCamPos.z = Mathf.SmoothDamp(currentCamPos.z, targetCamPos.z, ref smoothPosSpeedZ, smoothPositioningTime);
     }
 
-    float smoothRotSpeedX, smoothRotSpeedY, smoothRotSpeedZ;
-    public float smoothRotationTime = 0.2f;
     void SmoothRot()
     {
         currentCamRot.x = Mathf.SmoothDamp(currentCamRot.x, targetCamRot.x, ref smoothRotSpeedX, smoothRotationTime);
         currentCamRot.y = Mathf.SmoothDamp(currentCamRot.y, targetCamRot.y, ref smoothRotSpeedY, smoothRotationTime);
         currentCamRot.z = Mathf.SmoothDamp(currentCamRot.z, targetCamRot.z, ref smoothRotSpeedZ, smoothRotationTime);
     }
-    void SmoothRotReset()
-    {
-        float xRot = TransformCurrentRotationForReset(currentCamRot.x, targetCamRot.x);
-        currentCamRot.x = Mathf.SmoothDamp(xRot, targetCamRot.x, ref smoothRotSpeedX, smoothRotationTime);
-        float yRot = TransformCurrentRotationForReset(currentCamRot.y, targetCamRot.y);
-        currentCamRot.y = Mathf.SmoothDamp(yRot, targetCamRot.y, ref smoothRotSpeedY, smoothRotationTime);
-        currentCamRot.z = Mathf.SmoothDamp(currentCamRot.z, targetCamRot.z, ref smoothRotSpeedZ, smoothRotationTime);
-        print("NEW CURRENT CAM ROT = " + currentCamRot.x + "; TARGET CAM ROT = " + targetCamRot.ToString("F4"));
-    }
 
-    [HideInInspector]
-    public Vector3 targetMyCamPos;
-    Vector3 currentMyCamPos;
-    float smoothMyCamX, smoothMyCamY, smoothMyCamZ;
-    public float smoothCamMoveTime = 0.2f;
     void SmoothCameraMove()//para la camara de dentro
     {
         currentMyCamPos.x = Mathf.SmoothDamp(currentMyCamPos.x, targetMyCamPos.x, ref smoothMyCamX, smoothCamMoveTime);
@@ -310,9 +318,8 @@ public class CameraController : MonoBehaviour
         currentMyCamPos.z = Mathf.SmoothDamp(currentMyCamPos.z, targetMyCamPos.z, ref smoothMyCamZ, smoothCamMoveTime);
         myCamera.localPosition = currentMyCamPos;
     }
+    #endregion
 
-    bool switching = false;
-    float timeSwitching;
     public void SwitchCamera(cameraMode cameraMode)
     {
         camMode = cameraMode;
@@ -343,9 +350,7 @@ public class CameraController : MonoBehaviour
         myCamera.GetComponent<CameraCollisions>().ResetData();
     }
 
-    bool resetingCamera=false;
-    [Header("Reset Camera")]
-    public float cameraResetVerticalAngle;
+    #region Reset Camera
     void StartResetCamera()
     {
         float yRot = myPlayerMov.rotateObj.localRotation.eulerAngles.y;
@@ -356,11 +361,22 @@ public class CameraController : MonoBehaviour
         resetingCamera = true;
         print("TARGET CAM ROT = " + targetCamRot.ToString("F4")+"; CURRENT CAM ROT = "+currentCamRot.ToString("F4"));
     }
+
     void StopResetCamera()
     {
         resetingCamera = false;
         rotY = currentCamRot.y;
         rotX = currentCamRot.x;
+    }
+
+    void SmoothRotReset()
+    {
+        float xRot = TransformCurrentRotationForReset(currentCamRot.x, targetCamRot.x);
+        currentCamRot.x = Mathf.SmoothDamp(xRot, targetCamRot.x, ref smoothRotSpeedX, smoothRotationTime);
+        float yRot = TransformCurrentRotationForReset(currentCamRot.y, targetCamRot.y);
+        currentCamRot.y = Mathf.SmoothDamp(yRot, targetCamRot.y, ref smoothRotSpeedY, smoothRotationTime);
+        currentCamRot.z = Mathf.SmoothDamp(currentCamRot.z, targetCamRot.z, ref smoothRotSpeedZ, smoothRotationTime);
+        print("NEW CURRENT CAM ROT = " + currentCamRot.x + "; TARGET CAM ROT = " + targetCamRot.ToString("F4"));
     }
 
     float TransformTargetRotationForReset(float current, float target)
@@ -375,6 +391,7 @@ public class CameraController : MonoBehaviour
         }
         return target;
     }
+
     float TransformCurrentRotationForReset(float current, float target)
     {
         float angleDif = current - target;
@@ -389,6 +406,8 @@ public class CameraController : MonoBehaviour
         return current;
     }
 
+    #endregion
+
     void LookAtPlayer()
     {
         //vector to player
@@ -397,4 +416,13 @@ public class CameraController : MonoBehaviour
         //Vector3 lookPoint = new Vector3(playerPoint.x, playerPoint.y + 1, playerPoint.z);
         //transform.LookAt(playerPoint);
     }
+    #endregion
+}
+
+public enum cameraMode
+{
+    Fixed,
+    Free,
+    FixedFree,
+    Shoulder
 }

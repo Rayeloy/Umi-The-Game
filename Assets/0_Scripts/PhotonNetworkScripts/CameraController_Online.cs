@@ -12,6 +12,7 @@ using Photon.Realtime;
 public class CameraController_Online : MonoBehaviourPun
 {
     #region Variables
+    [Header("Referencias")]
     public PlayerMovement myPlayerMov;
     public Transform myCamera;
     public Transform myPlayer;
@@ -124,7 +125,7 @@ public class CameraController_Online : MonoBehaviourPun
     // Update is called once per frame
     public void LateUpdate()
     {
-        if (GameController.instance.playing && photonView.IsMine)  // Juan: si no es la cámara del jugador que está ejecutando este código no quiero saber nada de ella
+        if (myPlayerMov.gC.playing && photonView.IsMine)  // Juan: si no es la cámara del jugador que está ejecutando este código no quiero saber nada de ella
         {
             float inputX = myPlayerMov.Actions.CamMovement.X;//Input.GetAxis(myPlayerMov.contName + "H2");
             float inputZ = -myPlayerMov.Actions.CamMovement.Y;//Input.GetAxis(myPlayerMov.contName + "V2");

@@ -12,6 +12,7 @@ using Photon.Realtime;
 public class PlayerMovement_Online : MonoBehaviourPun
 {
     [Header("Referencias")]
+    public GameControllerBase gC;
     public CameraController_Online myCamera;
     public PlayerPickups myPlayerPickups;
     public PlayerAnimation_Online myPlayerAnimation;
@@ -176,7 +177,7 @@ public class PlayerMovement_Online : MonoBehaviourPun
     int frameCounter = 0;
     public void KonoUpdate()
     {
-        if (Actions.Options.WasPressed) GameController.instance.PauseGame(Actions);
+        if (Actions.Options.WasPressed) gC.PauseGame(Actions);
 
         if ((controller.collisions.above || controller.collisions.below) && !hooked)
         {
@@ -459,8 +460,8 @@ public class PlayerMovement_Online : MonoBehaviourPun
         if (!noInput && moveSt != MoveState.Boost)
         {
             if ((controller.collisions.below || jumpInsurance) && (!inWater || (inWater && controller.collisions.around &&
-                ((GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) ||
-                (GameController.instance.gameMode != GameController.GameMode.CaptureTheFlag)))))
+                ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).scoreManager.prorroga) ||
+                (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
                 currentVel.y = jumpVelocity;
                 jumpSt = JumpState.Jumping;
@@ -472,8 +473,8 @@ public class PlayerMovement_Online : MonoBehaviourPun
                 Debug.LogWarning("Warning: Can't jump because: controller.collisions.below || jumpInsurance ("+ (controller.collisions.below || jumpInsurance)+
                     ") / !inWater || (inWater && controller.collisions.around && ((GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) || (GameController.instance.gameMode != GameController.GameMode.CaptureTheFlag))) ("+
                     (!inWater || (inWater && controller.collisions.around &&
-                ((GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) ||
-                (GameController.instance.gameMode != GameController.GameMode.CaptureTheFlag))))+")");
+                ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).scoreManager.prorroga) ||
+                (gC.gameMode != GameMode.CaptureTheFlag))))+")");
                 StartWallJump();
             }
         }
@@ -917,9 +918,9 @@ public class PlayerMovement_Online : MonoBehaviourPun
                 flag.SetAway(false);
             }
             //Desactivar al jugadro si se esta en la prorroga.
-            if(GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag)
+            if(gC.gameMode == GameMode.CaptureTheFlag)
             {
-                ScoreManager.instance.PlayerEliminado();
+                (gC as GameController_FlagMode).scoreManager.PlayerEliminado();
             }
         }
     }

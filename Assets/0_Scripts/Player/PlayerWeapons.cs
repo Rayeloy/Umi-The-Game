@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class PlayerWeapons : MonoBehaviour {
 
+    [Header("Referencias")]
     public PlayerAnimation myPlayerAnim;
+    public PlayerMovement myPlayerMovement;
     [Header("WEAPONS ATTACH")]
     public Transform senaka;//ESPALDA
     public Transform rightHand;
@@ -13,17 +15,24 @@ public class PlayerWeapons : MonoBehaviour {
     WeaponData currentWeapon;
     Transform currentWeapObject;
 
+    public void KonoAwake()
+    {
+        myPlayerMovement = GetComponent<PlayerMovement>();
+        myPlayerAnim = GetComponent<PlayerAnimation>();
+    }
+
 
     public WeaponData SearchWeapon(string name)
     {
-        WeaponData[] allWeap = GameController.instance.allWeapons;
-        foreach (WeaponData wp in allWeap)
+        List<WeaponData> allWeap = myPlayerMovement.gC.allWeapons;
+        for (int i=0; i< allWeap.Count;i++)
         {
-            if (name == wp.weaponName)
+            if (name == allWeap[i].weaponName)
             {
-                return wp;
+                return allWeap[i];
             }
         }
+        Debug.LogError("Error: Could not find the weapon with the name " + name);
         return null;
     }
 

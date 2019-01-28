@@ -28,7 +28,7 @@ public class TeamSetupManager : MonoBehaviour
     public int minNumPlayers;
 	public GameObject playerPrefab;
 
-	public static string SiguenteEscena;
+	public static string siguienteEscena;
     public static bool startFromMap = false;
     public string nextScene;
 	private bool ready = false;
@@ -74,22 +74,29 @@ public class TeamSetupManager : MonoBehaviour
 	private float contador = 0;
 	void Update()
 	{
-		if (ready){
-			if (contador < tiempoParaReady){
+		if (ready)
+        {
+			if (contador < tiempoParaReady)
+            {
 				contador += Time.deltaTime;
 				return;			
 			}
 
 			ReadyButton.SetActive(true);
-			foreach(PlayerSelected ps in players){
-				if (ps.Actions.Jump.WasPressed){
+			foreach(PlayerSelected ps in players)
+            {
+				if (ps.Actions.Jump.WasPressed)
+                {
+                    Debug.Log("LOAD GAME ");
 					if (startFromMap)
 					{
-						SceneManager.LoadScene(SiguenteEscena);
+                        Debug.Log("Start from map: "+siguienteEscena);
+						SceneManager.LoadScene(siguienteEscena);
 					}
 					else
 					{
-						SceneManager.LoadScene(nextScene);
+                        Debug.Log("Start from menu");
+                        SceneManager.LoadScene(nextScene);
 					}
 				}
 			}
@@ -121,24 +128,29 @@ public class TeamSetupManager : MonoBehaviour
 					contador++;
 				}
 			}
-			if (contador == players.Count){
+			if (contador == players.Count)
+            {
 				ready = true;
 				//GameInfo.playerActionsList = new PlayerActions[players.Count];
 				//GameInfo.playerActionsList = new List<PlayerActions>();
 				//for(int i = 0; i < players.Count; i++){
-				foreach(PlayerSelected ps in players){
+				foreach(PlayerSelected ps in players)
+                {
 					//GameInfo.playerActionsList[i] = players[i].Actions;
 					GameInfo.instance.playerActionsList.Add(ps.Actions);
 					GameInfo.instance.playerTeamList.Add(ps.team);
 					//Debug.Log(ps.Actions);
 				}
                 GameInfo.instance.nPlayers = players.Count;
-				if (SiguenteEscena != "Tutorial")
-					animator.SetBool("Ready", true);
-				else{
+				if (siguienteEscena != "Tutorial")
+                {
+                    animator.SetBool("Ready", true);
+                }
+				else
+                {
 					if (startFromMap)
 					{
-						SceneManager.LoadScene(SiguenteEscena);
+						SceneManager.LoadScene(siguienteEscena);
 					}
 					else
 					{

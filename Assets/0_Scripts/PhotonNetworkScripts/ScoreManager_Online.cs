@@ -4,10 +4,12 @@ using UnityEngine;
 using TMPro;
 
 public class ScoreManager_Online : MonoBehaviour {
+    public GameController_FlagMode gC;
     public static ScoreManager_Online instance;
 	// Use this for initialization
-    private void Awake()
+    public void KonoAwake(GameController_FlagMode _gC)
     {
+        gC = _gC;
         instance = this;
     }
 
@@ -108,7 +110,7 @@ public class ScoreManager_Online : MonoBehaviour {
             else
             {
                 winner = _blueTeamScore > _redTeamScore ? Team.blue : Team.red;
-                GameController.instance.GameOver(winner);
+                gC.StartGameOver(winner);
             }
         }
     }
@@ -126,7 +128,7 @@ public class ScoreManager_Online : MonoBehaviour {
                 }
                 if (_blueTeamScore >= maxScore || prorroga)
                 {
-                    GameController.instance.GameOver(scoringTeam);
+                    gC.StartGameOver(scoringTeam);
                 }
                 break;
             case Team.red:
@@ -139,7 +141,7 @@ public class ScoreManager_Online : MonoBehaviour {
                 }
                 if (_redTeamScore >= maxScore || prorroga)
                 {
-                    GameController.instance.GameOver(scoringTeam);
+                    gC.StartGameOver(scoringTeam);
                 }
                 break;
         }
@@ -219,7 +221,7 @@ public class ScoreManager_Online : MonoBehaviour {
 
         if (_tiempoProrroga <= 0){
             _tiempoProrroga = 0;
-            GameController.instance.GameOver(Team.none);
+            gC.StartGameOver(Team.none);
             End = true;
         }
 
@@ -233,10 +235,10 @@ public class ScoreManager_Online : MonoBehaviour {
         if (prorroga){
             nPlayerEliminados++;
 
-            Debug.Log(nPlayerEliminados + " " + GameController.instance.playerNum);
-            if (nPlayerEliminados >= GameController.instance.playerNum){
+            Debug.Log(nPlayerEliminados + " " + gC.playerNum);
+            if (nPlayerEliminados >= gC.playerNum){
                 End = true;
-                GameController.instance.GameOver(Team.none);
+                gC.StartGameOver(Team.none);
             }
         }
     }

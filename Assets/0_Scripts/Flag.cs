@@ -8,6 +8,7 @@ public class Flag : MonoBehaviour
     [Header("Referencias")]
     public Transform flagCamera;
     public Transform flagCameraLocalParent;
+    public GameControllerBase gC;
     [HideInInspector]
     public Vector3 respawnPos;
     [Tooltip("Not used yet. Can be used to differentiate flags")]
@@ -195,7 +196,7 @@ public class Flag : MonoBehaviour
             timeToRespawn = 0;
             respawning = true;
             StoringManager.instance.StoreObject(transform);
-            flagCamera.SetParent(GameController.instance.centerCameraParent);
+            flagCamera.SetParent((gC as GameController_FlagMode).centerCameraParent);
             flagCamera.localPosition = Vector3.zero;
             flagCamera.localRotation = Quaternion.identity;
         }
@@ -384,12 +385,12 @@ public class Flag : MonoBehaviour
         currentOwner = player.transform;
         player.haveFlag = true;
         player.flag = this;
-        if (GameController.instance.gameMode == GameController.GameMode.Tutorial)
+        if (gC.gameMode == GameMode.Tutorial)
         {
             flagsCaptured++;
             currentOwner.gameObject.GetComponent<PlayerMovement>().noInput = true;
-            if (flagsCaptured >= GameController.instance.playerNum)
-                GameController.instance.GoBackToMenu();
+            if (flagsCaptured >= gC.playerNum)
+                gC.GoBackToMenu();
         }
 
     }

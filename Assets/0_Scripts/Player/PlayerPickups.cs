@@ -28,14 +28,9 @@ public class PlayerPickups : MonoBehaviour
 	public PlayerMovement myPlayerMovement;
 	public PlayerCombat myPlayerCombat;
 
-	// Use this for initialization
-	void Start ()
-	{
-		
-	}
-	
 	float cooldownTime = 0;
 	const float maxCooldownTime = 100;
+
 	void Update ()
 	{
 		if (pickupList.Count < 1)

@@ -5,22 +5,43 @@ using UnityEngine;
 public class GameController_FlagMode : GameControllerBase
 {
     [Header(" --- FLAG MODE --- ")]
-    public Flag[] flags;
+    public ScoreManager scoreManager;
+    public GameObject flagPrefab;
+    public Transform flagsParent;
+    [HideInInspector]
+    public List<Flag> flags;
     //Posiciones de las porterias
     public Transform blueTeamFlagHome;
     public Transform redTeamFlagHome;
+    public Transform centerCameraParent;
 
     protected override void Awake()
     {
         base.Awake();
 
     }
+    protected override void AllAwakes()
+    {
+        base.AllAwakes();
+        scoreManager.KonoAwake(this as GameController_FlagMode);
+    }
+
+    public override void StartGame()
+    {
+        scoreManager.KonoStart();
+        base.StartGame();
+    }
+
+    protected override void UpdateModeExclusiveClasses()
+    {
+        scoreManager.KonoUpdate();
+    }
 
     public override void StartGameOver(Team _winnerTeam)
     {
         base.StartGameOver(_winnerTeam);
         //quitar banderas (mandarlas al store manager)
-        for (int i = 0; i < flags.Length; i++)
+        for (int i = 0; i < flags.Count; i++)
         {
             flags[i].SetAway(true);
         }
@@ -32,6 +53,21 @@ public class GameController_FlagMode : GameControllerBase
     }
 
     #region FLAG FUNCTIONS
+
+    public void CreateFlag()
+    {
+        Flag newFlag = Instantiate(flagPrefab,flagsParent).GetComponent<Flag>();
+        newFlag.gC = this;
+        for(int i=0; i < flags.Count; i++)
+        {
+            flags.Add(newFlag);
+        }
+    }
+
+    public void RemoveFlag(Flag _flag)
+    {
+        flags.Remove(_flag);
+    }
 
     #region No se usa
     //Respawnea bandera en la posicion dada
@@ -59,7 +95,7 @@ public class GameController_FlagMode : GameControllerBase
 
     public void RespawnFlags()
     {
-        for (int i = 0; i < flags.Length; i++)
+        for (int i = 0; i < flags.Count; i++)
         {
             flags[i].ResetFlag();
         }
@@ -70,7 +106,7 @@ public class GameController_FlagMode : GameControllerBase
     public override void ResetGame()
     {
         base.ResetGame();
-        ScoreManager.instance.Reset();
+        scoreManager.Reset();
         RespawnFlags();
     }
 }

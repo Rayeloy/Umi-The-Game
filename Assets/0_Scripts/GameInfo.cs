@@ -10,9 +10,11 @@ public class GameInfo : MonoBehaviour
     public List<PlayerActions> playerActionsList;
     public List<Team> playerTeamList;
     public int nPlayers;
+    public bool offline;
 
     private void Awake()
     {
+        DontDestroyOnLoad(this);
         instance = this;
         playerActionsList = new List<PlayerActions>();
         playerTeamList = new List<Team>();
@@ -30,16 +32,16 @@ public class GameInfo : MonoBehaviour
             else if (t == Team.red)
                 nRojo++;
         }
-        if(nAzul == nRojo)
+        if(nAzul == nRojo) //Mismo num de jugadores rojos que azules, random
         {
             if (Random.value < 0.5f)
                 return Team.blue;
             else
                 return Team.red;
         }
-       else if (nAzul > nRojo)
+       else if (nAzul > nRojo)  //mas numero de jugadores azules
            return Team.red;
-       else 
+       else                     //mas numero de jugadores rojos
            return Team.blue;
 //       else
 //       {

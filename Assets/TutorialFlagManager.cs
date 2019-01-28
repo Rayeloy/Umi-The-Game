@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class TutorialFlagManager : MonoBehaviour
 {
+    public GameController_Tutorial gC;
 	public GameObject[] flags;
+
 	void Start ()
 	{
-		for(int i = 0; i < GameController.instance.playerNum; i++){
+		for(int i = 0; i < gC.playerNum; i++){
 			flags[i].SetActive( true );
 		}
 	}

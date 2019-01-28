@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class PlayerHUD : MonoBehaviour {
 
+    [Header("Referencias")]
+    public GameControllerBase gC;
+
     public Image crosshair;
     public Image crosshairReduced;
     public Image Hook;
@@ -19,7 +22,7 @@ public class PlayerHUD : MonoBehaviour {
     {
         crosshair.enabled = false;
         crosshairReduced.enabled = false;
-        if (GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag)
+        if (gC.gameMode == GameMode.CaptureTheFlag)
         {
             SetupFlagSlider();
         }
@@ -27,18 +30,17 @@ public class PlayerHUD : MonoBehaviour {
 
     private void Update()
     {
-        if (GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag)
+        if (gC.gameMode == GameMode.CaptureTheFlag)
         {
             UpdateFlagSlider();
         }
-
     }
 
     void SetupFlagSlider()
     {
-        flag = GameController.instance.flags[0].transform;
-        blueFlagHomePos = GameController.instance.blueTeamFlagHome.position;
-        redFlagHomePos = GameController.instance.redTeamFlagHome.position;
+        flag = (gC as GameController_FlagMode).flags[0].transform;
+        blueFlagHomePos = (gC as GameController_FlagMode).blueTeamFlagHome.position;
+        redFlagHomePos = (gC as GameController_FlagMode).redTeamFlagHome.position;
         blueFlagHomePos.y = 0;
         redFlagHomePos.y = 0;
     }
