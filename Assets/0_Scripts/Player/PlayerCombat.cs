@@ -46,7 +46,7 @@ public class PlayerCombat : MonoBehaviour {
     public Transform hitboxes;
     Collider hitbox;
     //public Collider hitbox;
-    private void Awake()
+    public void KonoAwake()
     {
         myPlayerMovement = GetComponent<PlayerMovement>();
         myPlayerWeap = GetComponent<PlayerWeapons>();
@@ -61,7 +61,7 @@ public class PlayerCombat : MonoBehaviour {
     {
         FillMyAttacks();
         attackIndex = -1;
-        //ChangeAttackType(GameController.instance.attackX);
+        //ChangeAttackType(gC.attackX);
         HideAttackHitBox();
         //ChangeNextAttackType();
     }
@@ -91,7 +91,7 @@ public class PlayerCombat : MonoBehaviour {
             if (aiming && myPlayerMovement.Actions.Boost.WasPressed)// HOOK      //Input.GetButtonDown(myPlayerMovement.contName + "RB"))
             {
                 myHook.StartHook();
-                //ChangeAttackType(GameController.instance.attackHook);
+                //ChangeAttackType(gC.attackHook);
                 //StartAttack();
 
             }
@@ -112,11 +112,11 @@ public class PlayerCombat : MonoBehaviour {
 
     public void FillMyAttacks()
     {
-        AttackInfo att = new AttackInfo(GameController.instance.attackX);
+        AttackInfo att = new AttackInfo(myPlayerMovement.gC.attackX);
         myAttacks.Add(att);
-        att = new AttackInfo(GameController.instance.attackY);
+        att = new AttackInfo(myPlayerMovement.gC.attackY);
         myAttacks.Add(att);
-        att = new AttackInfo(GameController.instance.attackB);
+        att = new AttackInfo(myPlayerMovement.gC.attackB);
         myAttacks.Add(att);
     }
 
@@ -259,7 +259,7 @@ public class PlayerCombat : MonoBehaviour {
         if(!aiming)
         {
             aiming = true;
-            myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Shoulder);
+            myPlayerMovement.myCamera.SwitchCamera(cameraMode.Shoulder);
             myPlayerWeap.AttachWeaponToBack();
             myPlayerHUD.StartAim();
             //ChangeAttackType(GameController.instance.attackHook);
@@ -271,7 +271,7 @@ public class PlayerCombat : MonoBehaviour {
         if (aiming)
         {
             aiming = false;
-            myPlayerMovement.myCamera.SwitchCamera(CameraController.cameraMode.Free);
+            myPlayerMovement.myCamera.SwitchCamera(cameraMode.Free);
             myPlayerWeap.AttachWeapon();
             myPlayerHUD.StopAim();
         }

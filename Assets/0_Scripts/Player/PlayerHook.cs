@@ -71,7 +71,7 @@ public class PlayerHook : MonoBehaviour
 
     }*/
 
-    private void Awake()
+    public void KonoAwake()
     {
         myPlayerMov = GetComponent<PlayerMovement>();
         myPlayerCombat = GetComponent<PlayerCombat>();

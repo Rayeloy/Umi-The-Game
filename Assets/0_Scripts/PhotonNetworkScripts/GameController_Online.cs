@@ -50,9 +50,9 @@ public class GameController_Online : MonoBehaviourPunCallbacks
     {
         if (GameInfo.instance == null)
         {
-            string escena = TeamSetupManager.SiguenteEscena;
+            string escena = TeamSetupManager.siguienteEscena;
             print(escena);
-            TeamSetupManager.SiguenteEscena = SceneManager.GetActiveScene().name;
+            TeamSetupManager.siguienteEscena = SceneManager.GetActiveScene().name;
             TeamSetupManager.startFromMap = true;
             SceneManager.LoadScene("TeamSetup_Online");
             return;
@@ -368,7 +368,7 @@ public class GameController_Online : MonoBehaviourPunCallbacks
         switch (gameMode)
         {
             case GameMode.CaptureTheFlag:
-                ScoreManager.instance.KonoStart();
+               //Juan: el scoreManager se lo paso ahora por referencia a la clase hija GameController_FlagMode ScoreManager.instance.KonoStart();
                 break;
             case GameMode.AirPump:
                 break;
@@ -495,7 +495,8 @@ public class GameController_Online : MonoBehaviourPunCallbacks
     public void ResetGame()
     {
         //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        ScoreManager.instance.Reset();
+        //Juan: el scoreManager se lo paso ahora por referencia a la clase hija GameController_FlagMode ScoreManager.instance.KonoStart();
+        //ScoreManager.instance.Reset();
         playing = true;
         gamePaused = false;
         SwitchGameOverMenu();

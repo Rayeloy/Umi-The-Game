@@ -27,7 +27,7 @@ public class PlayerAnimation_Online : MonoBehaviourPun
     #region Referencias
     [Header("Referencias")]
 	public Animator animator;
-	public PlayerMovement playerMovement;
+	public PlayerMovement myPlayerMovement;
     PlayerCombat myPlayerCombat;
     #endregion
 
@@ -72,18 +72,18 @@ public class PlayerAnimation_Online : MonoBehaviourPun
             return;
         }
 
-        if(GameController.instance.gameMode==GameController.GameMode.CaptureTheFlag && ScoreManager.instance.End){
+        if(myPlayerMovement.gC.gameMode==GameMode.CaptureTheFlag && (myPlayerMovement.gC as GameController_FlagMode).scoreManager.End){
             animator.SetBool(endGameHash, true);
             //ResetVariables();
             return;
         }
 
-		animator.SetFloat("HorizontalSpeed", playerMovement.currentSpeed);//new Vector2 (playerMovement.currentVel.x, playerMovement.currentVel.z).magnitude);
-        animator.SetFloat("VerticalSpeed", playerMovement.currentVel.y);
-		animator.SetBool("OnGround", playerMovement.controller.collisions.below);
-		if (playerMovement.wallJumpAnim){
+		animator.SetFloat("HorizontalSpeed", myPlayerMovement.currentSpeed);//new Vector2 (playerMovement.currentVel.x, playerMovement.currentVel.z).magnitude);
+        animator.SetFloat("VerticalSpeed", myPlayerMovement.currentVel.y);
+		animator.SetBool("OnGround", myPlayerMovement.controller.collisions.below);
+		if (myPlayerMovement.wallJumpAnim){
 			animator.SetTrigger("WallJump");
-			playerMovement.wallJumpAnim = false;
+            myPlayerMovement.wallJumpAnim = false;
 		}
         ResetVariables();
         ProcessVariableValues();
@@ -116,17 +116,17 @@ public class PlayerAnimation_Online : MonoBehaviourPun
             landing = false;
             animator.SetBool(landHash, landing);
         }
-        if (swimming && !playerMovement.inWater)
+        if (swimming && !myPlayerMovement.inWater)
         {
             swimming = false;
             animator.SetBool(swimmingHash, swimming);
         }
-        if(swimmingIdle && !playerMovement.inWater)
+        if(swimmingIdle && !myPlayerMovement.inWater)
         {
             swimmingIdle = false;
             animator.SetBool(swimmingIdleHash, swimmingIdle);
         }
-        if(runningValue && !(playerMovement.currentSpeed != 0 && playerMovement.controller.collisions.below))
+        if(runningValue && !(myPlayerMovement.currentSpeed != 0 && myPlayerMovement.controller.collisions.below))
         {
             runningValue = false;
             animator.SetBool(runningHash, runningValue);
@@ -145,13 +145,13 @@ public class PlayerAnimation_Online : MonoBehaviourPun
 
 
 
-        if (playerMovement.currentSpeed != 0 && playerMovement.controller.collisions.below)
+        if (myPlayerMovement.currentSpeed != 0 && myPlayerMovement.controller.collisions.below)
         {
             runningValue = true;
             animator.SetBool(runningHash, runningValue);
         }
 
-        if (jump || (!playerMovement.controller.collisions.below && playerMovement.controller.collisions.lastBelow))
+        if (jump || (!myPlayerMovement.controller.collisions.below && myPlayerMovement.controller.collisions.lastBelow))
         {
             if (jump)
             {
@@ -172,10 +172,10 @@ public class PlayerAnimation_Online : MonoBehaviourPun
             animator.SetBool(jumpingHash, jumpingValue);
         }
 
-        float timeToLand = playerMovement.controller.collisions.distanceToFloor / Mathf.Abs(playerMovement.currentVel.y);
+        float timeToLand = myPlayerMovement.controller.collisions.distanceToFloor / Mathf.Abs(myPlayerMovement.currentVel.y);
         //Debug.LogWarning("vel.y = " + playerMovement.currentVel.y + "; below = " + playerMovement.controller.collisions.below + "; distance to floor = " + playerMovement.controller.collisions.distanceToFloor + "; timeToLand = " + timeToLand);
-        if ((playerMovement.currentVel.y<0 && !playerMovement.controller.collisions.below && timeToLand <= maxTimeToLand) 
-            || (jumpingValue && playerMovement.controller.collisions.below))
+        if ((myPlayerMovement.currentVel.y<0 && !myPlayerMovement.controller.collisions.below && timeToLand <= maxTimeToLand) 
+            || (jumpingValue && myPlayerMovement.controller.collisions.below))
         {
             if (jumpingValue)
             {
@@ -187,7 +187,7 @@ public class PlayerAnimation_Online : MonoBehaviourPun
             animator.SetBool(landHash,landing);
         }
 
-        if(playerMovement.inWater && playerMovement.currentSpeed > 0)
+        if(myPlayerMovement.inWater && myPlayerMovement.currentSpeed > 0)
         {
             if (swimmingIdle)
             {
@@ -198,7 +198,7 @@ public class PlayerAnimation_Online : MonoBehaviourPun
             animator.SetBool(swimmingHash, swimming);
         }
 
-        if (playerMovement.inWater && playerMovement.currentSpeed == 0)
+        if (myPlayerMovement.inWater && myPlayerMovement.currentSpeed == 0)
         {
             if (swimming)
             {

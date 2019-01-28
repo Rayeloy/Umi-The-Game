@@ -81,18 +81,12 @@ public class Controller3D : MonoBehaviour
             NewHorizontalCollisions2(ref vel);
         }
 
-
         if (vel.y != 0 || vel.x != 0 || vel.z != 0)
         {
             NewVerticalCollisions2(ref vel);
         }
+
         VerticalCollisionsDistanceCheck(ref vel);
-        //print("SLOPE TYPE = " + collisions.moveSt+"; slopeAngle = "+collisions.slopeAngle+"; FinalVel = "+ vel.ToString("F5"));
-        //print("FinalVel= " + vel.ToString("F5"));
-        //if (!collisions.below)
-        //{
-        //    Debug.Log("NO COLLISIONS BELOW at pos = " + transform.position.ToString("F4"));
-        //}
         transform.Translate(vel, Space.World);
     }
 

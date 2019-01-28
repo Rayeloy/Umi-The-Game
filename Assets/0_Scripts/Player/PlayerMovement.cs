@@ -10,10 +10,18 @@ using UnityEngine.UI;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Referencias")]
+    public GameControllerBase gC;
     public CameraController myCamera;
-    public PlayerPickups myPlayerPickups;
-    public PlayerAnimation myPlayerAnimation;
+    [HideInInspector]
+    public Camera myUICamera;
     public PlayerHUD myPlayerHUD;
+    [HideInInspector]
+    public PlayerPickups myPlayerPickups;
+    [HideInInspector]
+    public PlayerAnimation myPlayerAnimation;
+    [HideInInspector]
+    public PlayerHook myPlayerHook;
+    public Transform cameraFollow;
     [HideInInspector]
     public Controller3D controller;
     PlayerCombat myPlayerCombat;
@@ -134,7 +142,7 @@ public class PlayerMovement : MonoBehaviour
         currentVel = objectiveVel;
     }
 
-    private void Awake()
+    public void KonoAwake()
     {
         currentSpeed = 0;
         noInput = false;
@@ -142,7 +150,14 @@ public class PlayerMovement : MonoBehaviour
         myPlayerCombat = GetComponent<PlayerCombat>();
         myPlayerAnimation = GetComponent<PlayerAnimation>();
         myPlayerWeap = GetComponent<PlayerWeapons>();
+        myPlayerHook = GetComponent<PlayerHook>();
+        myPlayerPickups = GetComponent<PlayerPickups>();
         lastWallAngle = 0;
+        //todos los konoAwakes
+        myPlayerCombat.KonoAwake();
+        myPlayerAnimation.KonoAwake();
+        myPlayerHook.KonoAwake();
+        myPlayerWeap.KonoAwake();
     }
     public void KonoStart()
     {
@@ -171,7 +186,7 @@ public class PlayerMovement : MonoBehaviour
     int frameCounter = 0;
     public void KonoUpdate()
     {
-        if (Actions.Options.WasPressed) GameController.instance.PauseGame(Actions);
+        if (Actions.Options.WasPressed) gC.PauseGame(Actions);
 
         if ((controller.collisions.above || controller.collisions.below) && !hooked)
         {
@@ -221,13 +236,13 @@ public class PlayerMovement : MonoBehaviour
                 currentMovDir.Normalize();
                 switch (myCamera.camMode)
                 {
-                    case CameraController.cameraMode.Fixed:
+                    case cameraMode.Fixed:
                         currentMovDir = RotateVector(-facingAngle, temp);
                         break;
-                    case CameraController.cameraMode.Shoulder:
+                    case cameraMode.Shoulder:
                         currentMovDir = RotateVector(-facingAngle, temp);
                         break;
-                    case CameraController.cameraMode.Free:
+                    case cameraMode.Free:
                         Vector3 camDir = (transform.position - myCamera.transform.GetChild(0).position).normalized;
                         camDir.y = 0;
                         // ANGLE OF JOYSTICK
@@ -454,8 +469,8 @@ public class PlayerMovement : MonoBehaviour
         if (!noInput && moveSt != MoveState.Boost)
         {
             if ((controller.collisions.below || jumpInsurance) && (!inWater || (inWater && controller.collisions.around &&
-                ((GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) ||
-                (GameController.instance.gameMode != GameController.GameMode.CaptureTheFlag)))))
+                ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).scoreManager.prorroga) ||
+                (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
                 currentVel.y = jumpVelocity;
                 jumpSt = JumpState.Jumping;
@@ -465,10 +480,10 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 Debug.LogWarning("Warning: Can't jump because: controller.collisions.below || jumpInsurance ("+ (controller.collisions.below || jumpInsurance)+
-                    ") / !inWater || (inWater && controller.collisions.around && ((GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) || (GameController.instance.gameMode != GameController.GameMode.CaptureTheFlag))) ("+
+                    ") / !inWater || (inWater && controller.collisions.around && ((gC.gameMode == GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) || (gC.gameMode != GameController.GameMode.CaptureTheFlag))) ("+
                     (!inWater || (inWater && controller.collisions.around &&
-                ((GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) ||
-                (GameController.instance.gameMode != GameController.GameMode.CaptureTheFlag))))+")");
+                ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).scoreManager.prorroga) ||
+                (gC.gameMode != GameMode.CaptureTheFlag))))+")");
                 StartWallJump();
             }
         }
@@ -643,7 +658,7 @@ public class PlayerMovement : MonoBehaviour
     {
         switch (myCamera.camMode)
         {
-            case CameraController.cameraMode.Fixed:
+            case cameraMode.Fixed:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 //Calculate looking dir of camera
                 Vector3 camPos = myCamera.transform.GetChild(0).position;
@@ -651,16 +666,16 @@ public class PlayerMovement : MonoBehaviour
                 currentFacingDir = new Vector3(myPos.x - camPos.x, 0, myPos.z - camPos.z).normalized;
                 currentCamFacingDir = myCamera.myCamera.transform.forward.normalized;
                 break;
-            case CameraController.cameraMode.Shoulder:
+            case cameraMode.Shoulder:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 currentFacingDir = RotateVector(-myCamera.transform.localRotation.eulerAngles.y, Vector3.forward).normalized;
                 currentCamFacingDir = myCamera.myCamera.transform.forward.normalized;
                 //print("CurrentFacingDir = " + currentFacingDir);
                 break;
-            case CameraController.cameraMode.Free:
+            case cameraMode.Free:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 currentFacingDir = RotateVector(-rotateObj.localRotation.eulerAngles.y, Vector3.forward).normalized;
-                currentCamFacingDir = (myCamera.cameraFollowObj.transform.position - myCamera.myCamera.transform.position).normalized;
+                currentCamFacingDir = (cameraFollow.position - myCamera.myCamera.transform.position).normalized;
                 break;
         }
         //print("currentFacingDir = " + currentFacingDir + "; currentCamFacingDir = " + currentCamFacingDir);
@@ -671,19 +686,19 @@ public class PlayerMovement : MonoBehaviour
     {
         switch (myCamera.camMode)
         {
-            case CameraController.cameraMode.Fixed:
+            case cameraMode.Fixed:
                 Vector3 point1 = transform.position;
                 Vector3 point2 = new Vector3(point1.x, point1.y + 1, point1.z);
                 Vector3 dir = new Vector3(point2.x - point1.x, point2.y - point1.y, point2.z - point1.z);
                 rotateObj.Rotate(dir, rotSpeed * Time.deltaTime);
                 break;
-            case CameraController.cameraMode.Shoulder:
+            case cameraMode.Shoulder:
                 point1 = transform.position;
                 point2 = new Vector3(point1.x, point1.y + 1, point1.z);
                 dir = new Vector3(point2.x - point1.x, point2.y - point1.y, point2.z - point1.z);
                 rotateObj.Rotate(dir, rotSpeed * Time.deltaTime);
                 break;
-            case CameraController.cameraMode.Free:
+            case cameraMode.Free:
                 if (currentMovDir != Vector3.zero)
                 {
                     float angle = Mathf.Acos(((0 * currentMovDir.x) + (1 * currentMovDir.z)) / (1 * currentMovDir.magnitude)) * Mathf.Rad2Deg;
@@ -888,7 +903,7 @@ public class PlayerMovement : MonoBehaviour
         {
             flag.SetAway(false);
         }
-        GameController.instance.RespawnPlayer(this);
+        gC.RespawnPlayer(this);
     }
     #endregion
 
@@ -907,13 +922,13 @@ public class PlayerMovement : MonoBehaviour
             myPlayerWeap.AttachWeaponToBack();
             if (haveFlag)
             {
-                //GameController.instance.RespawnFlag(flag.GetComponent<Flag>());
+                //gC.RespawnFlag(flag.GetComponent<Flag>());
                 flag.SetAway(false);
             }
             //Desactivar al jugadro si se esta en la prorroga.
-            if(GameController.instance.gameMode == GameController.GameMode.CaptureTheFlag)
+            if(gC.gameMode == GameMode.CaptureTheFlag)
             {
-                ScoreManager.instance.PlayerEliminado();
+                (gC as GameController_FlagMode).scoreManager.PlayerEliminado();
             }
         }
     }
@@ -945,7 +960,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (haveFlag && team == flagHome.team && this.moveSt != MoveState.Hooked)
         {
-            GameController.instance.ScorePoint(team);
+            (gC as GameController_FlagMode).ScorePoint(team);
             if (flag != null)
             {
                 flag.SetAway(true);

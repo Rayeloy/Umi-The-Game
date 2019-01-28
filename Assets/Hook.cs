@@ -8,11 +8,6 @@ public class Hook : MonoBehaviour {
     public HitboxHookBig myHitboxBig;
     public HitboxHookSmall myHitboxSmall;
     LineRenderer myLineRenderer;
-
-    /*public Hook()
-    {
-
-    }*/
     
     public void KonoAwake(PlayerMovement playerMov, PlayerHook playerHook)
     {
