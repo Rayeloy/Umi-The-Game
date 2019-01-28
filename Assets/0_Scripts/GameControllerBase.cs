@@ -4,23 +4,31 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class GameControllerBase : MonoBehaviour
+#region ----[ PUBLIC ENUMS ]----
+public enum GameMode
 {
-    #region Variables
+    CaptureTheFlag,
+    AirPump,
+    Tutorial
+}
+#endregion
+
+public class GameControllerBase : MonoBehaviourPunCallbacks
+{
+
+    #region ----[ HEADER REFERENCES ]----
 
     //referencias
     [Header(" --- Referencias --- ")]
-
     //este parámetro es para poner slowmotion al juego (como estados: 0=normal,1=slowmo,2=slowestmo),
     // solo se debe usar para testeo, hay que QUITARLO para la build "comercial".
     [Header(" --- Variables generales ---")]
     public GameMode gameMode;
     public bool offline;
     int slowmo = 0;
-    //Number of players in the game. In online it will start at 0 and add +1 every time a player joins. In offline it stays constant since the game scene starts
-    [HideInInspector]
-    public int playerNum = 1;
 
     //PREFABS
     [Header(" --- Player components prefabs ---")]
@@ -36,17 +44,11 @@ public class GameControllerBase : MonoBehaviour
     public Transform playersUICamerasParent;
 
     [Header(" --- 'All' Player lists ---")]
+    public List<WeaponData> allWeapons;//Array que contendrá las armas utilizadas, solo util en Pantalla Dividida, SIN USAR
     protected List<PlayerMovement> allPlayers;//Array que contiene a los PlayerMovement
     protected List<CameraController> allCameraBases;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
     protected List<GameObject> allCanvas;//Array que contiene los objetos de los canvas de cada jugador, solo util en Pantalla Dividida
     protected List<Camera> allUICameras;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
-    public List<WeaponData> allWeapons;//Array que contendrá las armas utilizadas, solo util en Pantalla Dividida, SIN USAR
-
-    //public AttackData[] allAttacks; //este array seria otra manera de organizar los distintos ataques. En el caso de haber muchos en vez de 3 puede que usemos algo como esto.
-    //Estos son los ataques de los jugadores, seguramente en un futuro vayan adheridos al jugador, o a su arma. Si no, será un mega array (arriba)
-    public AttackData attackX;
-    public AttackData attackY;
-    public AttackData attackB;
 
     [Header(" --- Spawn positions ---")]
     //Posiciones de los spawns
@@ -63,8 +65,6 @@ public class GameControllerBase : MonoBehaviour
 
     //GAME OVER MENU
     bool gameOverMenuOn = false;
-    [HideInInspector]
-    public Team winnerTeam = Team.blue;
     bool gameOverStarted = false;
     [Header(" --- Game Over Menu --- ")]
     public GameObject gameOverMenu;
@@ -77,21 +77,40 @@ public class GameControllerBase : MonoBehaviour
     private GameObject ResetButton;
     public string sceneLoadedOnReset;
 
-    //Pause Menu
-    [HideInInspector]
-    public bool gamePaused = false;
     [Header(" --- Pause --- ")]
     public string menuScene;
     public GameObject Button;
     private PlayerActions playerActions;
 
+    #endregion
+
+    #region ----[ PROPERTIES ]----
+
+    //Number of players in the game. In online it will start at 0 and add +1 every time a player joins. In offline it stays constant since the game scene starts
+    [HideInInspector]
+    public int playerNum = 1;
+    [HideInInspector]
+    public Team winnerTeam = Team.blue;
+    //Pause Menu
+    [HideInInspector]
+    public bool gamePaused = false;
     //variables globales de la partida
     [HideInInspector]
     public bool playing = false;
 
     #endregion
 
-    #region Funciones de Monobehaviour
+    #region ----[ VARIABLES ]----
+
+    //public AttackData[] allAttacks; //este array seria otra manera de organizar los distintos ataques. En el caso de haber muchos en vez de 3 puede que usemos algo como esto.
+    //Estos son los ataques de los jugadores, seguramente en un futuro vayan adheridos al jugador, o a su arma. Si no, será un mega array (arriba)
+    public AttackData attackX;
+    public AttackData attackY;
+    public AttackData attackB;
+
+    #endregion
+
+    #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
 
     #region Awake
     protected virtual void Awake()
@@ -151,6 +170,100 @@ public class GameControllerBase : MonoBehaviour
         Debug.Log("Game Controller Awake terminado");
     }
 
+    
+    #endregion
+
+    #region Start
+    private void Start()
+    {
+        StartPlayers();
+        StartGame();
+        Debug.Log("GameController Start terminado");
+    }
+
+    //Funcion que llama al Start de los jugadores. Eloy: Juan, ¿solo pantalla dividida?
+    void StartPlayers()
+    {
+        for (int i = 0; i < playerNum; i++)
+        {
+            allPlayers[i].KonoStart();
+        }
+    }
+
+    //Funcion que se llama al comenzar la partida, que inicicia las variables necesarias, y que posiciona a los jugadores y ¿bandera?
+    public virtual void StartGame()
+    {
+        playing = true;
+        gamePaused = false;
+        for (int i = 0; i < playerNum; i++)
+        {
+            RespawnPlayer(allPlayers[i]);
+        }
+    }
+    #endregion
+
+    #region Update
+    void Update()
+    {
+        //if (scoreManager.End) return;
+
+        if (!gamePaused)
+        {
+
+            if (playing)
+            {
+                UpdatePlayers();
+                UpdateModeExclusiveClasses();
+            }
+        }
+        else
+        {
+            if (playing)
+            {
+                if (playerActions.Jump.WasPressed)
+                {
+                    GoBackToMenu();
+                }
+                else if (playerActions.Attack3.WasPressed || playerActions.Options.WasPressed)
+                {
+                    UnPauseGame();
+                }
+            }
+            else
+            {
+                if (gameOverStarted && !gameOverMenuOn)
+                {
+                    for (int i = 0; i < playerNum; i++)
+                    {
+                        if (allPlayers[i].Actions.Options.WasPressed)
+                        {
+                            SwitchGameOverMenu();
+                            i = playerNum;//BREAK
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void UpdatePlayers()
+    {
+        for (int i = 0; i < playerNum; i++)
+        {
+            allPlayers[i].KonoUpdate();
+        }
+    }
+
+    protected virtual void UpdateModeExclusiveClasses()
+    {
+    }
+    #endregion
+
+    #endregion
+
+    #region ----[ CLASS FUNCTIONS ]----
+
+    #region AWAKE AND CREATE PLAYERS
     /// <summary>
     /// Funcion que Inicializa valores de todos los jugadores y sus cámaras.
     /// </summary>
@@ -325,97 +438,9 @@ public class GameControllerBase : MonoBehaviour
             }
         }
     }
-    #endregion
-
-    #region Start
-    private void Start()
-    {
-        StartPlayers();
-        StartGame();
-        Debug.Log("GameController Start terminado");
-    }
-
-    //Funcion que llama al Start de los jugadores. Eloy: Juan, ¿solo pantalla dividida?
-    void StartPlayers()
-    {
-        for (int i = 0; i < playerNum; i++)
-        {
-            allPlayers[i].KonoStart();
-        }
-    }
-
-    //Funcion que se llama al comenzar la partida, que inicicia las variables necesarias, y que posiciona a los jugadores y ¿bandera?
-    public virtual void StartGame()
-    {
-        playing = true;
-        gamePaused = false;
-        for (int i = 0; i < playerNum; i++)
-        {
-            RespawnPlayer(allPlayers[i]);
-        }
-    }
-    #endregion
-
-    #region Update
-    void Update()
-    {
-        //if (scoreManager.End) return;
-
-        if (!gamePaused)
-        {
-
-            if (playing)
-            {
-                UpdatePlayers();
-                UpdateModeExclusiveClasses();
-            }
-        }
-        else
-        {
-            if (playing)
-            {
-                if (playerActions.Jump.WasPressed)
-                {
-                    GoBackToMenu();
-                }
-                else if (playerActions.Attack3.WasPressed || playerActions.Options.WasPressed)
-                {
-                    UnPauseGame();
-                }
-            }
-            else
-            {
-                if (gameOverStarted && !gameOverMenuOn)
-                {
-                    for (int i = 0; i < playerNum; i++)
-                    {
-                        if (allPlayers[i].Actions.Options.WasPressed)
-                        {
-                            SwitchGameOverMenu();
-                            i = playerNum;//BREAK
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    void UpdatePlayers()
-    {
-        for (int i = 0; i < playerNum; i++)
-        {
-            allPlayers[i].KonoUpdate();
-        }
-    }
-
-    protected virtual void UpdateModeExclusiveClasses()
-    {
-    }
-    #endregion
 
     #endregion
 
-    #region Funciones
     void SlowMotion()
     {
         if (Input.GetKeyDown(KeyCode.Keypad0))
@@ -575,14 +600,18 @@ public class GameControllerBase : MonoBehaviour
         Destroy(inControlManager);
         SceneManager.LoadScene(menuScene);
     }
-
     #endregion
     #endregion
-}
 
-public enum GameMode
-{
-    CaptureTheFlag,
-    AirPump,
-    Tutorial
+    #region ----[ PUN CALLBACKS ]----
+    #endregion
+
+    #region ----[ RPC ]----
+    #endregion
+
+    #region ----[ NETWORK FUNCTIONS ]----
+    #endregion
+
+    #region ----[ IPUNOBSERVABLE ]----
+    #endregion
 }
