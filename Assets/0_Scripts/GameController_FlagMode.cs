@@ -18,7 +18,7 @@ public class GameController_FlagMode : GameControllerBase
     protected override void Awake()
     {
         base.Awake();
-
+        CreateFlag();
     }
     protected override void AllAwakes()
     {
@@ -58,10 +58,7 @@ public class GameController_FlagMode : GameControllerBase
     {
         Flag newFlag = Instantiate(flagPrefab,flagsParent).GetComponent<Flag>();
         newFlag.gC = this;
-        for(int i=0; i < flags.Count; i++)
-        {
-            flags.Add(newFlag);
-        }
+        flags.Add(newFlag);
     }
 
     public void RemoveFlag(Flag _flag)
