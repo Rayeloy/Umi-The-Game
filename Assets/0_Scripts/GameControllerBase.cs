@@ -27,7 +27,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     // solo se debe usar para testeo, hay que QUITARLO para la build "comercial".
     [Header(" --- Variables generales ---")]
     public GameMode gameMode;
-    public bool offline;
     int slowmo = 0;
 
     //PREFABS
@@ -97,6 +96,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     //variables globales de la partida
     [HideInInspector]
     public bool playing = false;
+    [HideInInspector]
+    public bool offline = !PhotonNetwork.IsConnected;
 
     #endregion
 
@@ -176,12 +177,22 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region Start
     private void Start()
     {
-        StartPlayers();
-        StartGame();
-        Debug.Log("GameController Start terminado");
+        if (offline)
+        {
+            StartPlayers();
+            StartGame();
+            Debug.Log("GameController Start terminado");
+        }
+        else
+        {
+            if (photonView.IsMine)
+            {
+                CreatePlayer();
+            }
+        }
     }
 
-    //Funcion que llama al Start de los jugadores. Eloy: Juan, ¿solo pantalla dividida?
+    //Funcion que llama al Start de los jugadores. Eloy: Juan, ¿solo pantalla dividida?, JUAN: Sí Eloy, sólo pantalla dividida.
     void StartPlayers()
     {
         for (int i = 0; i < playerNum; i++)
@@ -330,7 +341,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
-    public void CreatePlayer(int playerNumber = 0)
+    public void CreatePlayer()
     {
         if (offline)
         {
