@@ -64,7 +64,7 @@ namespace Photon.Pun
     public static partial class PhotonNetwork
     {
         /// <summary>Version number of PUN. Used in the AppVersion, which separates your playerbase in matchmaking.</summary>
-        public const string PunVersion = "2.5";
+        public const string PunVersion = "2.6";
 
         /// <summary>Version number of your game. Setting this updates the AppVersion, which separates your playerbase in matchmaking.</summary>
         /// <remarks>
@@ -247,6 +247,7 @@ namespace Photon.Pun
 
         /// <summary>
         /// The lobby that will be used when PUN joins a lobby or creates a game.
+        /// This is defined when joining a lobby or creating rooms
         /// </summary>
         /// <remarks>
         /// The default lobby uses an empty string as name.
@@ -258,7 +259,6 @@ namespace Photon.Pun
         public static TypedLobby CurrentLobby
         {
             get { return NetworkingClient.CurrentLobby; }
-            set { NetworkingClient.CurrentLobby = value; }
         }
 
         /// <summary>
@@ -421,6 +421,10 @@ namespace Photon.Pun
                 }
                 else
                 {
+                    if (offlineModeRoom != null)
+                    {
+                        LeftRoomCleanup();
+                    }
                     offlineModeRoom = null;
                     NetworkingClient.ChangeLocalID(-1);
                 }
@@ -612,11 +616,21 @@ namespace Photon.Pun
         {
             get
             {
+                if (UnityEngine.Time.frameCount == frame)
+                {
+                    return frametime;
+                }
+
                 uint u = (uint)ServerTimestamp;
                 double t = u;
-                return t / 1000;
+                frametime =  t / 1000.0d;
+                frame = UnityEngine.Time.frameCount;
+                return frametime;
             }
         }
+
+        private static double frametime;
+        private static int frame;
 
         /// <summary>
         /// The current server's millisecond timestamp.
@@ -964,6 +978,12 @@ namespace Photon.Pun
 														{
 										                	LeftRoomCleanup();
 														}
+
+                                                        if (state == ClientState.ConnectedToMasterserver && _cachedRegionHandler != null)
+                                                        {
+                                                            BestRegionSummaryInPreferences = _cachedRegionHandler.SummaryToCache;
+                                                            _cachedRegionHandler = null;
+                                                        }
                                                     };
 
 
@@ -1034,16 +1054,24 @@ namespace Photon.Pun
                 return false;
             }
 
+            SetupLogging();
 
-            // apply the AppSettings.Protocol
-            #if UNITY_WEBGL
-            if (PhotonServerSettings.AppSettings.Protocol == ConnectionProtocol.WebSocket || PhotonServerSettings.AppSettings.Protocol == ConnectionProtocol.WebSocketSecure)
-            {
-                NetworkingClient.LoadBalancingPeer.TransportProtocol = PhotonServerSettings.AppSettings.Protocol;
-            }
-            #else
+
             NetworkingClient.LoadBalancingPeer.TransportProtocol = PhotonServerSettings.AppSettings.Protocol;
+
+            #if UNITY_WEBGL
+            if (NetworkingClient.LoadBalancingPeer.TransportProtocol != ConnectionProtocol.WebSocket && NetworkingClient.LoadBalancingPeer.TransportProtocol != ConnectionProtocol.WebSocketSecure)
+            {
+                NetworkingClient.DebugReturn(DebugLevel.WARNING, "WebGL requires WebSockets. Switching TransportProtocol to WebSocketSecure.");
+                NetworkingClient.LoadBalancingPeer.TransportProtocol = ConnectionProtocol.WebSocketSecure;
+                //SocketWebTcp.SerializationProtocol = Enum.GetName(typeof(SerializationProtocol), this.LoadBalancingPeer.SerializationProtocolType);
+            }
             #endif
+
+
+            IsMessageQueueRunning = true;
+            NetworkingClient.AppId = PhotonServerSettings.AppSettings.AppIdRealtime;
+            GameVersion = PhotonServerSettings.AppSettings.AppVersion;
 
 
             if (PhotonServerSettings.StartInOfflineMode)
@@ -1060,12 +1088,7 @@ namespace Photon.Pun
             }
 
 
-            IsMessageQueueRunning = true;
-            NetworkingClient.AppId = PhotonServerSettings.AppSettings.AppIdRealtime;
-            GameVersion = PhotonServerSettings.AppSettings.AppVersion;
             NetworkingClient.EnableLobbyStatistics = PhotonNetwork.PhotonServerSettings.AppSettings.EnableLobbyStatistics;
-
-            SetupLogging();
 
 
             if (PhotonServerSettings.AppSettings.IsMasterServerAddress)
@@ -1507,7 +1530,7 @@ namespace Photon.Pun
             }
             if (NetworkingClient.Server != ServerConnection.MasterServer || !IsConnectedAndReady)
             {
-                Debug.LogError("JoinRandomRoom failed. Client is not on Master Server or not yet ready to call operations. Wait for callback: OnJoinedLobby or OnConnectedToMaster.");
+                Debug.LogError("JoinRandomRoom failed. Client is on "+ NetworkingClient.Server+ " (must be Master Server for matchmaking)" + (IsConnectedAndReady ? " and ready" : " but not ready for operations (State: "+ NetworkingClient.State + ")") + ". Wait for callback: OnJoinedLobby or OnConnectedToMaster.");
                 return false;
             }
 
@@ -1564,7 +1587,7 @@ namespace Photon.Pun
             }
             if (NetworkingClient.Server != ServerConnection.MasterServer || !IsConnectedAndReady)
             {
-                Debug.LogError("CreateRoom failed. Client is not on Master Server or not yet ready to call operations. Wait for callback: OnJoinedLobby or OnConnectedToMaster.");
+                Debug.LogError("CreateRoom failed. Client is on " + NetworkingClient.Server + " (must be Master Server for matchmaking)" + (IsConnectedAndReady ? " and ready" : "but not ready for operations (State: " + NetworkingClient.State + ")") + ". Wait for callback: OnJoinedLobby or OnConnectedToMaster.");
                 return false;
             }
 
@@ -1632,7 +1655,7 @@ namespace Photon.Pun
             }
             if (NetworkingClient.Server != ServerConnection.MasterServer || !IsConnectedAndReady)
             {
-                Debug.LogError("JoinOrCreateRoom failed. Client is not on Master Server or not yet ready to call operations. Wait for callback: OnJoinedLobby or OnConnectedToMaster.");
+                Debug.LogError("JoinOrCreateRoom failed. Client is on " + NetworkingClient.Server + " (must be Master Server for matchmaking)" + (IsConnectedAndReady ? " and ready" : "but not ready for operations (State: " + NetworkingClient.State + ")") + ". Wait for callback: OnJoinedLobby or OnConnectedToMaster.");
                 return false;
             }
             if (string.IsNullOrEmpty(roomName))
@@ -1698,7 +1721,7 @@ namespace Photon.Pun
             }
             if (NetworkingClient.Server != ServerConnection.MasterServer || !IsConnectedAndReady)
             {
-                Debug.LogError("JoinRoom failed. Client is not on Master Server or not yet ready to call operations. Wait for callback: OnJoinedLobby or OnConnectedToMaster.");
+                Debug.LogError("JoinRoom failed. Client is on " + NetworkingClient.Server + " (must be Master Server for matchmaking)" + (IsConnectedAndReady ? " and ready" : "but not ready for operations (State: " + NetworkingClient.State + ")") + ". Wait for callback: OnJoinedLobby or OnConnectedToMaster.");
                 return false;
             }
             if (string.IsNullOrEmpty(roomName))
@@ -1745,7 +1768,7 @@ namespace Photon.Pun
             }
             if (NetworkingClient.Server != ServerConnection.MasterServer || !IsConnectedAndReady)
             {
-                Debug.LogError("RejoinRoom failed. Client is not on Master Server or not yet ready to call operations. Wait for callback: OnJoinedLobby or OnConnectedToMaster.");
+                Debug.LogError("RejoinRoom failed. Client is on " + NetworkingClient.Server + " (must be Master Server for matchmaking)" + (IsConnectedAndReady ? " and ready" : "but not ready for operations (State: " + NetworkingClient.State + ")") + ". Wait for callback: OnJoinedLobby or OnConnectedToMaster.");
                 return false;
             }
             if (string.IsNullOrEmpty(roomName))
@@ -2468,7 +2491,7 @@ namespace Photon.Pun
 
             SendInstantiateRaiseEventOptions.CachingOption = (sceneObject) ? EventCaching.AddToRoomCacheGlobal : EventCaching.AddToRoomCache;
 
-            return PhotonNetwork.RaiseEventInternal(PunEvent.Instantiation, SendInstantiateEvHashtable, SendInstantiateRaiseEventOptions, new SendOptions() { Reliability = true });
+            return PhotonNetwork.RaiseEventInternal(PunEvent.Instantiation, SendInstantiateEvHashtable, SendInstantiateRaiseEventOptions, SendOptions.SendReliable);
         }
 
 
@@ -2864,9 +2887,9 @@ namespace Photon.Pun
         ///     // and so on
         /// }</pre>
         /// </example>
-        public static bool WebRpc(string name, object parameters)
+        public static bool WebRpc(string name, object parameters, bool sendAuthCookie = false)
         {
-            return NetworkingClient.OpWebRpc(name, parameters);
+            return NetworkingClient.OpWebRpc(name, parameters, sendAuthCookie);
         }
 
         /// <summary>

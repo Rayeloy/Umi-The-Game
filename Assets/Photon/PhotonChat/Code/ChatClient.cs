@@ -404,7 +404,7 @@ namespace Photon.Chat
                 { ChatParameterCode.HistoryLength, -1 } // server will decide how many messages to send to client
             };
 
-            return this.chatPeer.SendOperation(ChatOperationCode.Subscribe, opParameters, new SendOptions { Reliability = true });
+            return this.chatPeer.SendOperation(ChatOperationCode.Subscribe, opParameters, SendOptions.SendReliable);
         }
 
         /// <summary>
@@ -633,7 +633,7 @@ namespace Photon.Chat
                 parameters[ChatParameterCode.Message] = message;
             }
 
-            return this.chatPeer.SendOperation(ChatOperationCode.UpdateStatus, parameters, new SendOptions() { Reliability = true });
+            return this.chatPeer.SendOperation(ChatOperationCode.UpdateStatus, parameters, SendOptions.SendReliable);
         }
 
         /// <summary>Sets the user's status without changing your status-message.</summary>
@@ -729,7 +729,7 @@ namespace Photon.Chat
                     { ChatParameterCode.Friends, friends },
                 };
 
-            return this.chatPeer.SendOperation(ChatOperationCode.AddFriends, parameters, new SendOptions() { Reliability = true });
+            return this.chatPeer.SendOperation(ChatOperationCode.AddFriends, parameters, SendOptions.SendReliable);
         }
 
         /// <summary>
@@ -807,7 +807,7 @@ namespace Photon.Chat
                     { ChatParameterCode.Friends, friends },
                 };
 
-            return this.chatPeer.SendOperation(ChatOperationCode.RemoveFriends, parameters, new SendOptions() { Reliability = true });
+            return this.chatPeer.SendOperation(ChatOperationCode.RemoveFriends, parameters, SendOptions.SendReliable);
         }
 
         /// <summary>
@@ -1014,7 +1014,7 @@ namespace Photon.Chat
                 opParameters.Add((byte)ChatParameterCode.HistoryLength, historyLength);
             }
 
-            return this.chatPeer.SendOperation(operation, opParameters, new SendOptions() { Reliability = true });
+            return this.chatPeer.SendOperation(operation, opParameters, SendOptions.SendReliable);
         }
 
         private void HandlePrivateMessageEvent(EventData eventData)
@@ -1245,7 +1245,7 @@ namespace Photon.Chat
                 else
                 {
                     Dictionary<byte, object> opParameters = new Dictionary<byte, object> { { (byte)ChatParameterCode.Secret, this.AuthValues.Token } };
-                    return this.chatPeer.SendOperation(ChatOperationCode.Authenticate, opParameters, new SendOptions() { Reliability = true });
+                    return this.chatPeer.SendOperation(ChatOperationCode.Authenticate, opParameters, SendOptions.SendReliable);
                 }
             }
             else
