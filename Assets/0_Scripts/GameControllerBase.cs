@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using Photon.Pun;
-using Photon.Realtime;
 
 #region ----[ PUBLIC ENUMS ]----
 public enum GameMode
@@ -97,7 +96,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     [HideInInspector]
     public bool playing = false;
     [HideInInspector]
-    public bool offline;
+    public bool offline; //= !PhotonNetwork.IsConnected; JUAN: No se puede inicializar el valor porque tira un error chungo, THX UNITY, está inicializado en el Awake
 
     #endregion
 
@@ -116,6 +115,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region Awake
     protected virtual void Awake()
     {
+        offline = !PhotonNetwork.IsConnected;
         Debug.Log("GameController Awake empezado");
 #if UNITY_EDITOR //Esto es para no entrar en escenas cuando no tenemos los controles hechos en el editor. Te devuelve a seleccion de equipo
         if (GameInfo.instance == null)
@@ -128,7 +128,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             return;
         }
 #endif
-        //offline = !PhotonNetwork.IsConnected;
         offline = GameInfo.instance.offline;
 
         //initialize lists
@@ -153,7 +152,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             playerNum = Mathf.Clamp(playerNum, 1, 4);
             for (int i = 0; i < playerNum; i++)
             {
-                CreatePlayer(i + 1);
+                CreatePlayer();
             }
 
             //AUTOMATIC PLAYERS & CAMERAS/CANVAS SETUP
@@ -188,7 +187,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         {
             if (photonView.IsMine)
             {
-                CreatePlayer();
+                CreatePlayer(); // JUAN: Este se llamará sólo si es el maestro del juego ya que es el poseedor del GameController.
             }
         }
     }
@@ -342,14 +341,14 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
-    public virtual void CreatePlayer(int playerNum =0)
+    public void CreatePlayer()
     {
+        PlayerMovement newPlayer;
+        GameObject newPlayerCanvas;
+        CameraController newPlayerCamera;
+        Camera newPlayerUICamera;
         if (offline)
         {
-            PlayerMovement newPlayer;
-            GameObject newPlayerCanvas;
-            CameraController newPlayerCamera;
-            Camera newPlayerUICamera;
 
             //playerNum++;
             newPlayer = Instantiate(playerPrefab, playersParent).GetComponent<PlayerMovement>();
@@ -358,7 +357,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
 
             //nombrado de objetos nuevos
-            newPlayer.gameObject.name = "Player" + playerNum;
+            newPlayer.gameObject.name = "Player";
+            newPlayer.gameObject.name = newPlayer.gameObject.name + playerNum;
 
             //Inicializar referencias
             //Player
@@ -381,9 +381,23 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             allCameraBases.Add(newPlayerCamera);
             allUICameras.Add(newPlayerUICamera);
         }
+        else
+        {
+            if(playerPrefab == null)
+            {
+                Debug.Log("GamerControllerBase: Color=Red><a>Missing playerPrefab Reference in GameController</a></Color>");
+            }
+            else
+            {
+                Debug.Log("GameControllerBase: Instantiating player over the network");
+                //JUAN: WARNING!!, el objeto que se instancie debe estar siempre en la carpeta de Resources de Photon, o ir al método de instantiate para cambiarlo
+                //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
+                PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0,0,0), Quaternion.identity, 0);
+            }
+        }
     }
 
-    public virtual void RemovePlayer(PlayerMovement _pM)//solo para online
+    public void RemovePlayer(PlayerMovement _pM)//solo para online
     {
         for (int i = 0; i < allPlayers.Count; i++)
         {

@@ -126,7 +126,7 @@ namespace Photon.Realtime
         None,
         /// <summary>OnStatusChanged: The server is not available or the address is wrong. Make sure the port is provided and the server is up.</summary>
         ExceptionOnConnect,
-        /// <summary>OnStatusChanged: Some internal exception caused the socket code to fail. Contact Exit Games.</summary>
+        /// <summary>OnStatusChanged: Some internal exception caused the socket code to fail. This may happen if you attempt to connect locally but the server is not available. In doubt: Contact Exit Games.</summary>
         Exception,
 
         /// <summary>OnStatusChanged: The server disconnected this client due to timing out (missing acknowledgements from the client).</summary>
@@ -186,9 +186,13 @@ namespace Photon.Realtime
         /// </summary>
         PayloadEncryption,
         /// <summary>
-        /// With this encryption mode for UDP, the connection gets setup and all further datagrams get encrypted almost entirely. On-demand message encryption (like in PayloadEncryption) is skipped.
+        /// With this encryption mode for UDP, the connection gets setup and all further datagrams get encrypted almost entirely. On-demand message encryption (like in PayloadEncryption) is unavailable.
         /// </summary>
         DatagramEncryption = 10,
+        /// <summary>
+        /// With this encryption mode for UDP, the connection gets setup with random sequence numbers and all further datagrams get encrypted almost entirely. On-demand message encryption (like in PayloadEncryption) is unavailable.
+        /// </summary>
+        DatagramEncryptionRandomSequence = 11,
     }
 
 
@@ -457,8 +461,8 @@ namespace Photon.Realtime
         /// <remarks>This is used to re-set this.State, when joining/creating a room fails.</remarks>
         public bool InLobby { get; private set; }
 
-        /// <summary>The lobby this client currently uses.</summary>
-        public TypedLobby CurrentLobby { get; set; }
+        /// <summary>The lobby this client currently uses. Defined when joining a lobby or creating rooms</summary>
+        public TypedLobby CurrentLobby { get; internal set; }
 
         /// <summary>
         /// If enabled, the client will get a list of available lobbies from the Master Server.
@@ -517,7 +521,8 @@ namespace Photon.Realtime
         /// By convention, set this ID before you connect, not while being connected.
         /// There is no error but the ID won't change while being connected.
         /// </remarks>
-        public string UserId {
+        public string UserId
+        {
             get
             {
                 if (this.AuthValues != null)
@@ -855,9 +860,9 @@ namespace Photon.Realtime
                 return false;
             }
 
-            if (this.AuthValues == null )
+            if (this.AuthValues == null)
             {
-               this.AuthValues = new AuthenticationValues();
+                this.AuthValues = new AuthenticationValues();
             }
             this.AuthValues.Token = this.tokenCache;
 
@@ -1343,7 +1348,7 @@ namespace Photon.Realtime
         ///
         /// This method will fail on the server, when the room does not exist, can't be loaded (persistent rooms) or
         /// when the userId is not in the player list of this room. This will lead to a callback OnJoinRoomFailed.
-        /// 
+        ///
         /// Rejoining room will not send any player properties. Instead client will receive up-to-date ones from server.
         /// If you want to set new player properties, do it once rejoined.
         /// </remarks>
@@ -1818,6 +1823,10 @@ namespace Photon.Realtime
         /// <remarks>This method is not responsible to keep up the state of a LoadBalancingClient. Calling base.DebugReturn on overrides is optional.</remarks>
         public virtual void DebugReturn(DebugLevel level, string message)
         {
+            if (this.LoadBalancingPeer.DebugOut != DebugLevel.ALL && level > this.LoadBalancingPeer.DebugOut)
+            {
+                return;
+            }
             #if !SUPPORTED_UNITY
             Debug.WriteLine(message);
             #else
@@ -2005,7 +2014,7 @@ namespace Photon.Realtime
 
                                 this.enterRoomParamsCache.PlayerProperties = allProps;
                             }
-                            
+
                             this.enterRoomParamsCache.OnGameServer = true;
 
                             if (this.lastJoinType == JoinType.JoinRoom || this.lastJoinType == JoinType.JoinRandomRoom || this.lastJoinType == JoinType.JoinOrCreateRoom)
@@ -2085,7 +2094,7 @@ namespace Photon.Realtime
                         }
                         else
                         {
-                            this.GameServerAddress = (string) operationResponse[ParameterCode.Address];
+                            this.GameServerAddress = (string)operationResponse[ParameterCode.Address];
                             if (this.LoadBalancingPeer.TransportProtocol == ConnectionProtocol.Udp && this.UseAlternativeUdpPorts)
                             {
                                 this.GameServerAddress = this.GameServerAddress.Replace("5058", "27000").Replace("5055", "27001").Replace("5056", "27002");
@@ -2103,12 +2112,13 @@ namespace Photon.Realtime
                     break;
 
                 case OperationCode.GetGameList:
-                    if (operationResponse.ReturnCode != 0) {
-                        this.DebugReturn (DebugLevel.ERROR, "GetGameList failed: " + operationResponse.ToStringFull ());
+                    if (operationResponse.ReturnCode != 0)
+                    {
+                        this.DebugReturn(DebugLevel.ERROR, "GetGameList failed: " + operationResponse.ToStringFull());
                         break;
                     }
 
-                    List<RoomInfo> _RoomInfoList = new List<RoomInfo> ();
+                    List<RoomInfo> _RoomInfoList = new List<RoomInfo>();
 
                     Hashtable games = (Hashtable)operationResponse[ParameterCode.GameList];
                     foreach (string gameName in games.Keys)
@@ -2330,7 +2340,7 @@ namespace Photon.Realtime
                             #if DEBUG && !NETFX_CORE
                             stacktrace = new System.Diagnostics.StackTrace(true).ToString();
                             #endif
-                            this.DebugReturn(DebugLevel.WARNING, "Got a unexpected Disconnect in LoadBalancingClient State: " + this.State + ". Server: " + this.Server+ " Trace: " + stacktrace);
+                            this.DebugReturn(DebugLevel.WARNING, "Got a unexpected Disconnect in LoadBalancingClient State: " + this.State + ". Server: " + this.Server + " Trace: " + stacktrace);
 
                             if (this.AuthValues != null)
                             {
@@ -2350,6 +2360,7 @@ namespace Photon.Realtime
                     }
                     this.DisconnectedCause = DisconnectCause.MaxCcuReached;
                     this.State = ClientState.Disconnected;
+                    this.ConnectionCallbackTargets.OnDisconnected(this.DisconnectedCause);
                     break;
                 case StatusCode.ExceptionOnConnect:
                 case StatusCode.SecurityExceptionOnConnect:
@@ -2405,6 +2416,7 @@ namespace Photon.Realtime
                     }
                     this.DisconnectedCause = DisconnectCause.Exception;
                     this.State = ClientState.Disconnected;
+                    this.ConnectionCallbackTargets.OnDisconnected(this.DisconnectedCause);
                     break;
             }
         }
@@ -2416,14 +2428,14 @@ namespace Photon.Realtime
         public virtual void OnEvent(EventData photonEvent)
         {
             int actorNr = photonEvent.Sender;
-            Player originatingPlayer = (this.CurrentRoom != null) ? this.CurrentRoom.GetPlayer(actorNr): null;
+            Player originatingPlayer = (this.CurrentRoom != null) ? this.CurrentRoom.GetPlayer(actorNr) : null;
 
             switch (photonEvent.Code)
             {
                 case EventCode.GameList:
                 case EventCode.GameListUpdate:
 
-                    List<RoomInfo> _RoomInfoList = new List<RoomInfo> ();
+                    List<RoomInfo> _RoomInfoList = new List<RoomInfo>();
 
                     Hashtable games = (Hashtable)photonEvent[ParameterCode.GameList];
                     foreach (string gameName in games.Keys)
@@ -2585,10 +2597,11 @@ namespace Photon.Realtime
                     this.LoadBalancingPeer.InitPayloadEncryption(encryptionSecret);
                     break;
                 case EncryptionMode.DatagramEncryption:
+                case EncryptionMode.DatagramEncryptionRandomSequence:
                     {
                         byte[] secret1 = (byte[])encryptionData[EncryptionDataParameters.Secret1];
                         byte[] secret2 = (byte[])encryptionData[EncryptionDataParameters.Secret2];
-                        this.LoadBalancingPeer.InitDatagramEncryption(secret1, secret2);
+                        this.LoadBalancingPeer.InitDatagramEncryption(secret1, secret2, mode == EncryptionMode.DatagramEncryptionRandomSequence);
                     }
                     break;
                 default:
@@ -3335,13 +3348,13 @@ namespace Photon.Realtime
             }
         }
 
-        public void OnCreateRoomFailed (short returnCode, string message)
+        public void OnCreateRoomFailed(short returnCode, string message)
         {
             this.UpdateCallbackTargets();
 
             foreach (IMatchmakingCallbacks target in this)
             {
-                target.OnCreateRoomFailed(returnCode,message);
+                target.OnCreateRoomFailed(returnCode, message);
             }
         }
 

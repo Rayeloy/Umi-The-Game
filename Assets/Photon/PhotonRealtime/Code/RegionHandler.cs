@@ -13,6 +13,9 @@
 #define SUPPORTED_UNITY
 #endif
 
+#if UNITY_WEBGL
+#define PING_VIA_COROUTINE
+#endif
 
 namespace Photon.Realtime
 {
@@ -171,7 +174,6 @@ namespace Photon.Realtime
             this.IsPinging = true;
             this.onCompleteCall = onCompleteCallback;
 
-
             if (string.IsNullOrEmpty(previousSummary))
             {
                 return this.PingEnabledRegions();
@@ -286,7 +288,7 @@ namespace Photon.Realtime
 
         private PhotonPing ping;
 
-        #if UNITY_WEBGL
+        #if PING_VIA_COROUTINE
         // for WebGL exports, a coroutine is used to run pings. this is done on a temporary game object/monobehaviour
         private MonoBehaviour coroutineMonoBehaviour;
         #endif
@@ -351,7 +353,7 @@ namespace Photon.Realtime
             this.Done = false;
             this.CurrentAttempt = 0;
 
-            #if UNITY_WEBGL
+            #if PING_VIA_COROUTINE
             GameObject go = new GameObject();
             go.name = "RegionPing_" + this.region.Code + "_" + this.region.Cluster;
             this.coroutineMonoBehaviour = go.AddComponent<MonoBehaviourEmpty>();        // is defined below, as special case for Unity WegGL
@@ -405,7 +407,6 @@ namespace Photon.Realtime
                 sw.Stop();
                 int rtt = (int)sw.ElapsedMilliseconds;
 
-
                 if (IgnoreInitialAttempt && this.CurrentAttempt == 0)
                 {
                     // do nothing.
@@ -423,6 +424,8 @@ namespace Photon.Realtime
             }
 
             this.Done = true;
+            this.ping.Dispose();
+
             this.onDoneCall(this.region);
 
             return false;
@@ -442,7 +445,7 @@ namespace Photon.Realtime
 
 
             Stopwatch sw = new Stopwatch();
-            for (int i = 0; i < Attempts; i++)
+            for (this.CurrentAttempt = 0; this.CurrentAttempt < Attempts; this.CurrentAttempt++)
             {
                 bool overtime = false;
                 sw.Reset();
@@ -459,7 +462,7 @@ namespace Photon.Realtime
                 }
 
 
-                while (!ping.Done())
+                while (!this.ping.Done())
                 {
                     if (sw.ElapsedMilliseconds >= MaxMilliseconsPerPing)
                     {
@@ -471,10 +474,10 @@ namespace Photon.Realtime
 
 
                 sw.Stop();
-                int rtt = (int) sw.ElapsedMilliseconds;
+                int rtt = (int)sw.ElapsedMilliseconds;
 
 
-                if (IgnoreInitialAttempt && i == 0)
+                if (IgnoreInitialAttempt && this.CurrentAttempt == 0)
                 {
                     // do nothing.
                 }
@@ -482,18 +485,19 @@ namespace Photon.Realtime
                 {
                     rttSum += rtt;
                     replyCount++;
-                    this.region.Ping = (int) ((rttSum) / replyCount);
+                    this.region.Ping = (int)((rttSum) / replyCount);
                 }
 
                 yield return new WaitForSeconds(0.1f);
             }
 
 
-            #if UNITY_WEBGL
+            #if PING_VIA_COROUTINE
             GameObject.Destroy(this.coroutineMonoBehaviour.gameObject);   // this method runs as coroutine on a temp object, which gets destroyed now.
             #endif
 
             this.Done = true;
+            Debug.Log(this.region.ToString());
             this.onDoneCall(this.region);
             yield return null;
         }
@@ -561,7 +565,7 @@ namespace Photon.Realtime
         }
     }
 
-    #if UNITY_WEBGL
+    #if PING_VIA_COROUTINE
     internal class MonoBehaviourEmpty : MonoBehaviour { }
     #endif
 }
