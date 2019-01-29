@@ -97,7 +97,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     [HideInInspector]
     public bool playing = false;
     [HideInInspector]
-    public bool offline = !PhotonNetwork.IsConnected;
+    public bool offline;
 
     #endregion
 
@@ -128,6 +128,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             return;
         }
 #endif
+        //offline = !PhotonNetwork.IsConnected;
         offline = GameInfo.instance.offline;
 
         //initialize lists
@@ -341,7 +342,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
-    public void CreatePlayer()
+    public virtual void CreatePlayer(int playerNum =0)
     {
         if (offline)
         {
@@ -357,8 +358,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
 
             //nombrado de objetos nuevos
-            newPlayer.gameObject.name = "Player";
-            newPlayer.gameObject.name = newPlayer.gameObject.name + playerNum;
+            newPlayer.gameObject.name = "Player" + playerNum;
 
             //Inicializar referencias
             //Player
@@ -383,7 +383,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
-    public void RemovePlayer(PlayerMovement _pM)//solo para online
+    public virtual void RemovePlayer(PlayerMovement _pM)//solo para online
     {
         for (int i = 0; i < allPlayers.Count; i++)
         {

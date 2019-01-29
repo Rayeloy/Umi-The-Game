@@ -13,6 +13,9 @@ public class PlayerHUD : MonoBehaviour {
     public Image Hook;
     public Image Boost;
     public Slider flagSlider;
+    public TMPro.TextMeshProUGUI redTeamScoreText;
+    public TMPro.TextMeshProUGUI blueTeamScoreText;
+    public TMPro.TextMeshProUGUI timeText;
     Vector3 blueFlagHomePos;
     Vector3 redFlagHomePos;
     Transform flag;

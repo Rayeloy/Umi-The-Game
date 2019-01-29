@@ -6,10 +6,6 @@ using TMPro;
 public class ScoreManager : MonoBehaviour {
     public GameController_FlagMode gC;
     // Use this for initialization
-    public void KonoAwake(GameController_FlagMode _gC)
-    {
-        gC = _gC;
-    }
 
     [Tooltip("Tiempo de juego en segundos")][SerializeField]
     private float Tiempo = 120;
@@ -35,12 +31,20 @@ public class ScoreManager : MonoBehaviour {
     List<int> orcasBlueIndex;
 
     [Header("Referencias")]
-	public TextMeshProUGUI[] blueTeamScore_Text;
-	public TextMeshProUGUI[] redTeamScore_Text;
-	public TextMeshProUGUI[] time_Text;
+	public List<TextMeshProUGUI> blueTeamScore_Text;
+	public List<TextMeshProUGUI> redTeamScore_Text;
+	public List<TextMeshProUGUI> time_Text;
     //public RectTransform[] contador;
     public ParticleSystem bluePS;
     public ParticleSystem redPS;
+
+    public void KonoAwake(GameController_FlagMode _gC)
+    {
+        gC = _gC;
+        blueTeamScore_Text = new List<TextMeshProUGUI>();
+        redTeamScore_Text = new List<TextMeshProUGUI>();
+        time_Text = new List<TextMeshProUGUI>();
+    }
 
     public void KonoStart(){
         _Tiempo = Tiempo;
@@ -65,17 +69,17 @@ public class ScoreManager : MonoBehaviour {
         //Tiempos
         _Tiempo = Tiempo;
         _tiempoProrroga = tiempoProrroga;
-        for( int i = 0; i < time_Text.Length; i++)
+        for( int i = 0; i < time_Text.Count; i++)
 			time_Text[i].color = Color.white;
 
         //Scores
         _blueTeamScore = 0;
-        for( int i = 0; i < blueTeamScore_Text.Length; i++){
+        for( int i = 0; i < blueTeamScore_Text.Count; i++){
             blueTeamScore_Text[i].text = _blueTeamScore.ToString();
         }
 
         _redTeamScore = 0;
-        for( int i = 0; i < redTeamScore_Text.Length; i++){
+        for( int i = 0; i < redTeamScore_Text.Count; i++){
             redTeamScore_Text[i].text = _redTeamScore.ToString();
         }
 
@@ -95,7 +99,7 @@ public class ScoreManager : MonoBehaviour {
 
 		_Tiempo -= Time.deltaTime;
 
-        for( int i = 0; i < time_Text.Length; i++)
+        for( int i = 0; i < time_Text.Count; i++)
 			time_Text[i].text = timeToString(_Tiempo);
 
         if (_Tiempo <= 0){
@@ -120,7 +124,7 @@ public class ScoreManager : MonoBehaviour {
                 _blueTeamScore++;
                 RandomOrcaSpawn(Team.blue);
                 bluePS.Play(true);
-                for( int i = 0; i < blueTeamScore_Text.Length; i++)
+                for( int i = 0; i < blueTeamScore_Text.Count; i++)
                 {
                     blueTeamScore_Text[i].text = _blueTeamScore.ToString();
                 }
@@ -133,7 +137,7 @@ public class ScoreManager : MonoBehaviour {
                 _redTeamScore++;
                 RandomOrcaSpawn(Team.red);
                 redPS.Play(true);
-                for( int i = 0; i < redTeamScore_Text.Length; i++)//foreach (TextMeshProUGUI tM in redTeamScore_Text)
+                for( int i = 0; i < redTeamScore_Text.Count; i++)//foreach (TextMeshProUGUI tM in redTeamScore_Text)
                 {
                     redTeamScore_Text[i].text = _redTeamScore.ToString();
                 }
@@ -210,7 +214,7 @@ public class ScoreManager : MonoBehaviour {
     private void SetProrroga(){
         prorroga = true;
 
-        for( int i = 0; i < time_Text.Length; i++)
+        for( int i = 0; i < time_Text.Count; i++)
 			time_Text[i].color = Color.red;
     }
 
@@ -223,7 +227,7 @@ public class ScoreManager : MonoBehaviour {
             End = true;
         }
 
-        for( int i = 0; i < time_Text.Length; i++)
+        for( int i = 0; i < time_Text.Count; i++)
 			time_Text[i].text = timeToString(_tiempoProrroga);
     }
 

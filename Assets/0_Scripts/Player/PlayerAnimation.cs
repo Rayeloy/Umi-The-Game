@@ -41,7 +41,6 @@ public class PlayerAnimation : MonoBehaviour
 
     public void KonoUpdate()
     {
-        print("myPlayerMovement.gC = " + myPlayerMovement.gC);
         if (myPlayerMovement.gC.gameMode == GameMode.CaptureTheFlag)
         {
             if ((myPlayerMovement.gC as GameController_FlagMode).scoreManager.End)

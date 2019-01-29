@@ -17,13 +17,13 @@ public class GameController_FlagMode : GameControllerBase
 
     protected override void Awake()
     {
+        scoreManager.KonoAwake(this as GameController_FlagMode);
         base.Awake();
         CreateFlag();
     }
     protected override void AllAwakes()
     {
         base.AllAwakes();
-        scoreManager.KonoAwake(this as GameController_FlagMode);
     }
 
     public override void StartGame()
@@ -35,6 +35,29 @@ public class GameController_FlagMode : GameControllerBase
     protected override void UpdateModeExclusiveClasses()
     {
         scoreManager.KonoUpdate();
+    }
+
+    public override void CreatePlayer(int playerNum = 0)
+    {
+        base.CreatePlayer(playerNum);
+        if (offline)//Eloy: para Juan: en online habrá que solamente referenciar en el score manager a su player, no los de todos.
+        {
+            scoreManager.blueTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().blueTeamScoreText);
+            scoreManager.redTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().redTeamScoreText);
+            scoreManager.time_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().timeText);
+        }
+    }
+
+    public override void RemovePlayer(PlayerMovement _pM)
+    {
+        int index = allPlayers.IndexOf(_pM);
+        base.RemovePlayer(_pM);
+        if (offline)//Eloy: para Juan: como solo se referencia el nuestro propio, no hace falta borrar cosas del score manager cuando se borra a otro player. Solo borramos cuando nos borramos a nosotros.
+        {
+            scoreManager.blueTeamScore_Text.RemoveAt(index);
+            scoreManager.redTeamScore_Text.RemoveAt(index);
+            scoreManager.time_Text.RemoveAt(index);
+        }
     }
 
     public override void StartGameOver(Team _winnerTeam)

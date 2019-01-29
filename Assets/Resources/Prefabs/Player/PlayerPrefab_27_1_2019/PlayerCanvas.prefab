@@ -1020,7 +1020,7 @@ GameObject:
   - component: {fileID: 8166678013720310456}
   - component: {fileID: 8167944226082222278}
   m_Layer: 5
-  m_Name: P1Canvas 1
+  m_Name: PlayerCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1122,11 +1122,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b5937357bf8bf84c9d4c7447a1c8483, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gC: {fileID: 0}
   crosshair: {fileID: 8166225685631342084}
   crosshairReduced: {fileID: 8166682692440945132}
   Hook: {fileID: 8167096264629539172}
   Boost: {fileID: 8166580659837632414}
   flagSlider: {fileID: 8166608072532018458}
+  redTeamScoreText: {fileID: 8166302402482992348}
+  blueTeamScoreText: {fileID: 8167062554810628626}
+  timeText: {fileID: 8167064270522480836}
 --- !u!1 &8126616222945785876
 GameObject:
   m_ObjectHideFlags: 0
