@@ -365,7 +365,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             allCameraBases.Add(newPlayerCamera);
             allUICameras.Add(newPlayerUICamera);
 
-            contador.Add(newPlayerCanvas.GetComponent<>());
+            contador.Add(newPlayerCanvas.GetComponent<PlayerHUD>().contador);
+            powerUpPanel.Add(newPlayerCanvas.GetComponent<PlayerHUD>().powerUpPanel);
         }
         else
         {

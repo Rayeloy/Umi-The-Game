@@ -8,6 +8,8 @@ public class PlayerHUD : MonoBehaviour {
     [Header("Referencias")]
     public GameControllerBase gC;
 
+    public RectTransform contador;
+    public RectTransform powerUpPanel;
     public Image crosshair;
     public Image crosshairReduced;
     public Image Hook;
