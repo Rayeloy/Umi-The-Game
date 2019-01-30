@@ -7,6 +7,7 @@ using InControl;
 public class GameInfo : MonoBehaviour
 {
     public static GameInfo instance;
+    public GameObject inControlManager;
     public List<PlayerActions> playerActionsList;
     public List<Team> playerTeamList;
     public int nPlayers;

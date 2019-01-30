@@ -41,12 +41,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     public Transform playersCamerasParent;
     public Transform playersUICamerasParent;
 
-    [Header(" --- 'All' Player lists ---")]
+    [Header(" --- 'All' lists ---")]
     public List<WeaponData> allWeapons;//Array que contendrá las armas utilizadas, solo util en Pantalla Dividida, SIN USAR
-    protected List<PlayerMovement> allPlayers;//Array que contiene a los PlayerMovement
-    protected List<CameraController> allCameraBases;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
-    protected List<GameObject> allCanvas;//Array que contiene los objetos de los canvas de cada jugador, solo util en Pantalla Dividida
-    protected List<Camera> allUICameras;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
 
     [Header(" --- Spawn positions ---")]
     //Posiciones de los spawns
@@ -62,8 +58,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     public float scaleCuatro = 1.25f;//escala para 3 jugadores y 4 jugadores
 
     //GAME OVER MENU
-    bool gameOverMenuOn = false;
-    bool gameOverStarted = false;
     [Header(" --- Game Over Menu --- ")]
     public GameObject gameOverMenu;
     public GameObject veil;
@@ -78,11 +72,21 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     [Header(" --- Pause --- ")]
     public string menuScene;
     public GameObject Button;
-    private PlayerActions playerActions;
 
     #endregion
 
     #region ----[ PROPERTIES ]----
+
+    private PlayerActions playerActions;
+
+    //GAME OVER MENU
+    bool gameOverMenuOn = false;
+    bool gameOverStarted = false;
+
+    protected List<PlayerMovement> allPlayers;//Array que contiene a los PlayerMovement
+    protected List<CameraController> allCameraBases;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
+    protected List<GameObject> allCanvas;//Array que contiene los objetos de los canvas de cada jugador, solo util en Pantalla Dividida
+    protected List<Camera> allUICameras;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
 
     //Number of players in the game. In online it will start at 0 and add +1 every time a player joins. In offline it stays constant since the game scene starts
     [HideInInspector]
@@ -104,6 +108,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     //public AttackData[] allAttacks; //este array seria otra manera de organizar los distintos ataques. En el caso de haber muchos en vez de 3 puede que usemos algo como esto.
     //Estos son los ataques de los jugadores, seguramente en un futuro vayan adheridos al jugador, o a su arma. Si no, será un mega array (arriba)
+    [Header("Attacks")]
     public AttackData attackX;
     public AttackData attackY;
     public AttackData attackB;
@@ -117,8 +122,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         offline = !PhotonNetwork.IsConnected;
         Debug.Log("GameController Awake empezado");
-#if UNITY_EDITOR //Esto es para no entrar en escenas cuando no tenemos los controles hechos en el editor. Te devuelve a seleccion de equipo
-        if (GameInfo.instance == null)
+        //Esto es para no entrar en escenas cuando no tenemos los controles. Te devuelve a seleccion de equipo
+        //Eloy: he cambiado esto porque me he dado cuenta de que es necesario hasta en la build final, no solo en el editor.
+        if (GameInfo.instance == null || GameInfo.instance.inControlManager==null)
         {
             string escena = TeamSetupManager.siguienteEscena;
             print(escena);
@@ -127,7 +133,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             SceneManager.LoadScene("TeamSetup");
             return;
         }
-#endif
+
         offline = GameInfo.instance.offline;
 
         //initialize lists
@@ -152,7 +158,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             playerNum = Mathf.Clamp(playerNum, 1, 4);
             for (int i = 0; i < playerNum; i++)
             {
-                CreatePlayer();
+                CreatePlayer(""+(i+1));
             }
 
             //AUTOMATIC PLAYERS & CAMERAS/CANVAS SETUP
@@ -170,8 +176,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
         Debug.Log("Game Controller Awake terminado");
     }
-
-    
+ 
     #endregion
 
     #region Start
@@ -187,7 +192,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         {
             if (photonView.IsMine)
             {
-                CreatePlayer(); // JUAN: Este se llamará sólo si es el maestro del juego ya que es el poseedor del GameController.
+                CreatePlayer(""); // JUAN: Este se llamará sólo si es el maestro del juego ya que es el poseedor del GameController.
+                                  //Eloy: para Juan: entre las comillas pon como quieras que se llame a todos los objetos de tu jugador en la escena, 
+                                  // por orden y limpieza. Sera del estilo "Player yo", "Canvas yo", "CameraBase yo"... siendo "yo" lo que pongas.
             }
         }
     }
@@ -341,7 +348,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
-    public void CreatePlayer()
+    public virtual void CreatePlayer(string playerNumber)
     {
         PlayerMovement newPlayer;
         GameObject newPlayerCanvas;
@@ -357,8 +364,10 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
 
             //nombrado de objetos nuevos
-            newPlayer.gameObject.name = "Player";
-            newPlayer.gameObject.name = newPlayer.gameObject.name + playerNum;
+            newPlayer.gameObject.name = "Player " + playerNumber;
+            newPlayerCanvas.gameObject.name = "Canvas " + playerNumber;
+            newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
+            newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
 
             //Inicializar referencias
             //Player
@@ -366,6 +375,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             newPlayer.myCamera = newPlayerCamera;
             newPlayer.myPlayerHUD = newPlayerCanvas.GetComponent<PlayerHUD>();
             newPlayer.myUICamera = newPlayerUICamera;
+            newPlayer.myPlayerCombat.attackNameText = newPlayerCanvas.GetComponent<PlayerHUD>().attackNameText;
             //Canvas
             newPlayerCanvas.GetComponent<PlayerHUD>().gC = this;
             newPlayerCanvas.GetComponent<Canvas>().worldCamera = newPlayerUICamera;
@@ -397,7 +407,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
-    public void RemovePlayer(PlayerMovement _pM)//solo para online
+    public virtual void RemovePlayer(PlayerMovement _pM)//solo para online
     {
         for (int i = 0; i < allPlayers.Count; i++)
         {
@@ -621,8 +631,11 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     public void GoBackToMenu()
     {
         UnPauseGame();
-        GameObject inControlManager = GameObject.Find("InControl manager");
-        Destroy(inControlManager);
+        if(GameInfo.instance.inControlManager != null)
+        {
+            //Eloy: hay que encontrar una mejor manera de resetear/borrar los controles...
+            Destroy(GameInfo.instance.inControlManager);
+        }
         SceneManager.LoadScene(menuScene);
     }
     #endregion

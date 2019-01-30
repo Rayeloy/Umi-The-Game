@@ -7,35 +7,45 @@ using UnityEngine.UI;
 [RequireComponent(typeof(PlayerCombat))]
 [RequireComponent(typeof(PlayerAnimation))]
 [RequireComponent(typeof(PlayerWeapons))]
+[RequireComponent(typeof(PlayerHook))]
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Referencias")]
+    public PlayerCombat myPlayerCombat;
+    public PlayerWeapons myPlayerWeap;
+    public PlayerPickups myPlayerPickups;
+    public PlayerAnimation myPlayerAnimation;
+    public PlayerHook myPlayerHook;
+    public Controller3D controller;
+
     public GameControllerBase gC;
     public CameraController myCamera;
+    public Transform cameraFollow;
+    public Transform rotateObj;
+
+    //Referencias que no se asignan en el inspector
     [HideInInspector]
     public Camera myUICamera;
+    [HideInInspector]
     public PlayerHUD myPlayerHUD;
-    [HideInInspector]
-    public PlayerPickups myPlayerPickups;
-    [HideInInspector]
-    public PlayerAnimation myPlayerAnimation;
-    [HideInInspector]
-    public PlayerHook myPlayerHook;
-    public Transform cameraFollow;
-    [HideInInspector]
-    public Controller3D controller;
-    PlayerCombat myPlayerCombat;
-    PlayerWeapons myPlayerWeap;
 
-    public Transform rotateObj;
+
+    //CONTROLES
+    public PlayerActions Actions { get; set; }
+
+    //BOOL PARA PERMITIR O BLOQUEAR INPUTS
+    [HideInInspector]
+    public bool noInput = false;
+
+    //EQUIPO
+    [HideInInspector]
+    public Team team = Team.blue;
+    [Header("Body and body color")]
     public SkinnedMeshRenderer Body;
     public Material teamBlueMat;
     public Material teamRedMat;
 
-    //public GameController.controllerName contName;
-    public PlayerActions Actions { get; set; }
-    public Team team = Team.blue;
-
+    //ESTADO DE MOVIMIENTO Y SALTO
     [HideInInspector]
     public MoveState moveSt = MoveState.NotMoving;
     public enum MoveState
@@ -57,8 +67,8 @@ public class PlayerMovement : MonoBehaviour
         Breaking,//Emergency stop
         none
     }
-    [HideInInspector]
-    public bool noInput = false;
+
+    //VARIABLES DE MOVIMIENTO
     Vector3 objectiveVel;
     [HideInInspector]
     public Vector3 currentVel;
@@ -146,12 +156,12 @@ public class PlayerMovement : MonoBehaviour
     {
         currentSpeed = 0;
         noInput = false;
-        controller = GetComponent<Controller3D>();
-        myPlayerCombat = GetComponent<PlayerCombat>();
-        myPlayerAnimation = GetComponent<PlayerAnimation>();
-        myPlayerWeap = GetComponent<PlayerWeapons>();
-        myPlayerHook = GetComponent<PlayerHook>();
-        myPlayerPickups = GetComponent<PlayerPickups>();
+        //controller = GetComponent<Controller3D>();
+        //myPlayerCombat = GetComponent<PlayerCombat>();
+        //myPlayerAnimation = GetComponent<PlayerAnimation>();
+        //myPlayerWeap = GetComponent<PlayerWeapons>();
+        //myPlayerHook = GetComponent<PlayerHook>();
+        //myPlayerPickups = GetComponent<PlayerPickups>();
         lastWallAngle = 0;
         //todos los konoAwakes
         myPlayerCombat.KonoAwake();
@@ -182,7 +192,15 @@ public class PlayerMovement : MonoBehaviour
         }
         currentMaxMoveSpeed = maxMoveSpeed2 = maxMoveSpeed;
         knockbackBreakAcc = Mathf.Clamp(knockbackBreakAcc, -float.MaxValue, breakAcc);//menos de break Acc lo haría ver raro
+
+        PlayerStarts();
     }
+
+    private void PlayerStarts()
+    {
+        myPlayerCombat.KonoStart();
+    }
+
     int frameCounter = 0;
     public void KonoUpdate()
     {

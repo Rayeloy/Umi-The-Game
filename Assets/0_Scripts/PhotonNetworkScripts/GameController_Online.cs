@@ -225,7 +225,7 @@ public class GameController_Online : MonoBehaviourPunCallbacks
                 allCanvas[i].GetComponent<Canvas>().worldCamera = allUICameras[i];
                 allPlayers[i].gameObject.SetActive(true);
                 allPlayers[i].myCamera = allCameraBases[i];
-                allPlayers[i].GetComponent<PlayerCombat>().attackName = allCanvas[i].transform.GetChild(0).GetComponent<Text>();
+                allPlayers[i].GetComponent<PlayerCombat>().attackNameText = allCanvas[i].transform.GetChild(0).GetComponent<Text>();
                 allPlayers[i].Actions = GameInfo.instance.playerActionsList[i];
                 if (GameInfo.instance.playerTeamList[i] == Team.none)
                     GameInfo.instance.playerTeamList[i] = GameInfo.instance.NoneTeamSelect();

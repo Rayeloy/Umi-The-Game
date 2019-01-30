@@ -23,7 +23,8 @@ public class PlayerCombat : MonoBehaviour {
     public Material[] hitboxMats;
     [HideInInspector]
     public float knockBackSpeed = 30f;
-    public Text attackName;
+    [HideInInspector]
+    public Text attackNameText;
     [HideInInspector]
     public bool conHinchador = false;
 
@@ -57,7 +58,7 @@ public class PlayerCombat : MonoBehaviour {
         myAttacks = new List<AttackInfo>();
     }
 
-    private void Start()
+    public void KonoStart()
     {
         FillMyAttacks();
         attackIndex = -1;
@@ -114,17 +115,22 @@ public class PlayerCombat : MonoBehaviour {
     {
         AttackInfo att = new AttackInfo(myPlayerMovement.gC.attackX);
         myAttacks.Add(att);
+        Debug.Log("myAttacks[" + (myAttacks.Count - 1) + "].attack = " + myAttacks[myAttacks.Count-1].attack.name);
         att = new AttackInfo(myPlayerMovement.gC.attackY);
         myAttacks.Add(att);
+        Debug.Log("myAttacks[" + (myAttacks.Count - 1) + "].attack = " + myAttacks[myAttacks.Count - 1].attack.name);
         att = new AttackInfo(myPlayerMovement.gC.attackB);
         myAttacks.Add(att);
+        Debug.Log("myAttacks[" + (myAttacks.Count - 1) + "].attack = " + myAttacks[myAttacks.Count - 1].attack.name);
     }
 
     public void ChangeAttackType(int index)
     {
         attackIndex = index;
         AttackData attack = myAttacks[attackIndex].attack;
-        attackName.text = attack.attackName;
+        Debug.Log("myAttacks[" + attackIndex + "].attack = " + myAttacks[attackIndex].attack.name);
+
+        attackNameText.text = attack.attackName;
         chargingTime = attack.chargingTime;
         startupTime = attack.startupTime;
         activeTime = attack.activeTime;

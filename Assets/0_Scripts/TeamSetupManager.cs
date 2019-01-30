@@ -54,6 +54,16 @@ public class TeamSetupManager : MonoBehaviour
     {
         instance = this;
         minNumPlayers = Mathf.Clamp(minNumPlayers, 1, 6);
+        //We use the GameInfo.instance.inControlManager value to know if we have controls or not set, and therefore we will allow to play the game directly or we will load the TeamSetup scene.
+        if (GameInfo.instance != null)
+        {
+            GameInfo.instance.inControlManager = GameObject.Find("InControl manager");
+        }
+        else
+        {
+            Debug.LogError("Error: GameInfo is null or has not done it's awake yet. It should be awaken and ready.");
+        }
+
     }
 
     void OnEnable()

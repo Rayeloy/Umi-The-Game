@@ -16,6 +16,7 @@ public class PlayerHUD : MonoBehaviour {
     public TMPro.TextMeshProUGUI redTeamScoreText;
     public TMPro.TextMeshProUGUI blueTeamScoreText;
     public TMPro.TextMeshProUGUI timeText;
+    public Text attackNameText;
     Vector3 blueFlagHomePos;
     Vector3 redFlagHomePos;
     Transform flag;

@@ -38,9 +38,9 @@ public class GameController_FlagMode : GameControllerBase
         scoreManager.KonoUpdate();
     }
 
-    public override void CreatePlayer(int playerNum = 0)
+    public override void CreatePlayer(string playerNumber)
     {
-        base.CreatePlayer(playerNum);
+        base.CreatePlayer(playerNumber);
         if (offline)//Eloy: para Juan: en online habrá que solamente referenciar en el score manager a su player, no los de todos.
         {
             scoreManager.blueTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().blueTeamScoreText);

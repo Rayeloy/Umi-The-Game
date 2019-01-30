@@ -2801,21 +2801,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66bcdf6e0f085a446a4787f2032a0aa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myCamera: {fileID: 0}
-  myPlayerHUD: {fileID: 0}
+  myPlayerCombat: {fileID: 2739787249420687251}
+  myPlayerWeap: {fileID: 2740053844141714977}
   myPlayerPickups: {fileID: 2739443829118614599}
   myPlayerAnimation: {fileID: 2740049171833000137}
-  myPlayerHook: {fileID: 0}
-  cameraFollow: {fileID: 2847219716704171441}
+  myPlayerHook: {fileID: 2739915846295203843}
   controller: {fileID: 2739408064946032661}
+  gC: {fileID: 0}
+  myCamera: {fileID: 0}
+  cameraFollow: {fileID: 2847219716704171441}
   rotateObj: {fileID: 2847339013141467789}
+  myUICamera: {fileID: 0}
+  myPlayerHUD: {fileID: 0}
+  noInput: 0
+  team: 1
   Body: {fileID: 2772850078638722801}
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
-  team: 1
   moveSt: 1
   jumpSt: 2
-  noInput: 0
   currentVel: {x: 0, y: -0.51774114, z: 0}
   maxMoveSpeed: 10
   maxKnockbackSpeed: 300
@@ -2871,7 +2875,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 3413d7cda6a31384ca2d10421fac8256, type: 2}
   - {fileID: 2100000, guid: b005bf027cdb3d64d88cd0db2ead83d9, type: 2}
   knockBackSpeed: 20
-  attackName: {fileID: 0}
+  attackNameText: {fileID: 0}
   conHinchador: 0
   targetsHit: []
   attackStg: 0
@@ -2937,7 +2941,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 2794287542818142987}
-  playerMovement: {fileID: 2740017724817165817}
   maxTimeToLand: 0.3
 --- !u!114 &2740053844141714977
 MonoBehaviour:
@@ -2952,6 +2955,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myPlayerAnim: {fileID: 2740049171833000137}
+  myPlayerMovement: {fileID: 0}
   senaka: {fileID: 2847038872594785633}
   rightHand: {fileID: 2854694397609994061}
   leftHand: {fileID: 2847143392388605829}
