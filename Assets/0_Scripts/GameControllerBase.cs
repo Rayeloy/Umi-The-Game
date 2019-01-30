@@ -18,7 +18,7 @@ public enum GameMode
 public class GameControllerBase : MonoBehaviourPunCallbacks
 {
 
-    #region ----[ HEADER REFERENCES ]----
+    #region ----[ VARIABLES FOR DESIGNERS ]----
 
     //referencias
     [Header(" --- Referencias --- ")]
@@ -150,6 +150,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             //PlayerSetupOnline?
             //No hace falta SetUpCanvas creo
             //Haz los awakes, y haz el awake de cada jugador nuevo(esto ultimo hay que buscar donde ponerlo... en el CreatePlayer?
+            int playernumber = PhotonNetwork.PlayerList.Length;
+            CreatePlayer(playernumber.ToString());
         }
         Debug.Log("Game Controller Awake terminado");
     }
@@ -379,7 +381,16 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 Debug.Log("GameControllerBase: Instantiating player over the network");
                 //JUAN: WARNING!!, el objeto que se instancie debe estar siempre en la carpeta de Resources de Photon, o ir al método de instantiate para cambiarlo
                 //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
-                PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0,0,0), Quaternion.identity, 0);
+                if (PlayerMovement.LocalPlayerInstance == null)
+                {
+                    Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
+                    // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
+                    PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0, 0, 0), Quaternion.identity, 0);
+                }
+                else
+                {
+                    Debug.Log("GameControllerBase: Ignoring CreatePlayer() call because we already exist");
+                }
             }
         }
     }

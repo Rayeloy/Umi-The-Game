@@ -2,14 +2,47 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
+using Photon.Realtime;
 
+
+#region ----[ PUBLIC ENUMS ]----
+public enum Team
+{
+    red,
+    blue,
+    none
+}
+public enum MoveState
+{
+    Moving,
+    NotMoving,//Not stunned, breaking
+    Knockback,//Stunned
+    MovingBreaking,//Moving but reducing speed by breakAcc till maxMovSpeed
+    Hooked,
+    Boost,
+    FixedJump,
+    NotBreaking
+}
+public enum JumpState
+{
+    Jumping,
+    Breaking,//Emergency stop
+    none
+}
+#endregion
+
+#region ----[ REQUIRECOMPONENT ]----
 [RequireComponent(typeof(Controller3D))]
 [RequireComponent(typeof(PlayerCombat))]
 [RequireComponent(typeof(PlayerAnimation))]
 [RequireComponent(typeof(PlayerWeapons))]
 [RequireComponent(typeof(PlayerHook))]
-public class PlayerMovement : MonoBehaviour
+#endregion
+public class PlayerMovement : MonoBehaviourPunCallbacks
 {
+
+    #region ----[ VARIABLES FOR DESIGNERS ]----
     [Header("Referencias")]
     public PlayerCombat myPlayerCombat;
     public PlayerWeapons myPlayerWeap;
@@ -23,55 +56,19 @@ public class PlayerMovement : MonoBehaviour
     public Transform cameraFollow;
     public Transform rotateObj;
 
-    //Referencias que no se asignan en el inspector
-    [HideInInspector]
-    public Camera myUICamera;
-    [HideInInspector]
-    public PlayerHUD myPlayerHUD;
 
 
     //CONTROLES
     public PlayerActions Actions { get; set; }
 
-    //BOOL PARA PERMITIR O BLOQUEAR INPUTS
-    [HideInInspector]
-    public bool noInput = false;
-
-    //EQUIPO
-    [HideInInspector]
-    public Team team = Team.blue;
     [Header("Body and body color")]
     public SkinnedMeshRenderer Body;
     public Material teamBlueMat;
     public Material teamRedMat;
 
-    //ESTADO DE MOVIMIENTO Y SALTO
-    [HideInInspector]
-    public MoveState moveSt = MoveState.NotMoving;
-    public enum MoveState
-    {
-        Moving,
-        NotMoving,//Not stunned, breaking
-        Knockback,//Stunned
-        MovingBreaking,//Moving but reducing speed by breakAcc till maxMovSpeed
-        Hooked,
-        Boost,
-        FixedJump,
-        NotBreaking
-    }
-    [HideInInspector]
-    public JumpState jumpSt = JumpState.none;
-    public enum JumpState
-    {
-        Jumping,
-        Breaking,//Emergency stop
-        none
-    }
 
     //VARIABLES DE MOVIMIENTO
     Vector3 objectiveVel;
-    [HideInInspector]
-    public Vector3 currentVel;
     [Header("SPEED")]
     public float maxMoveSpeed = 10.0f;
     float maxMoveSpeed2; // is the max speed from which we aply the joystick sensitivity value
@@ -82,8 +79,6 @@ public class PlayerMovement : MonoBehaviour
     public float maxKnockbackSpeed = 300f;
     public float maxAimingSpeed = 5f;
     public float maxHookingSpeed = 2f;
-    [HideInInspector]
-    public float currentSpeed = 0;
     public float maxSpeedInWater = 5f;
     public float maxVerticalSpeedInWater = 3f;
     [Header("BOOST")]
@@ -93,10 +88,10 @@ public class PlayerMovement : MonoBehaviour
     float _boostTime = 0f;
     public float boostTime
     {
-    	get{return _boostTime;}
-    	set
+        get { return _boostTime; }
+        set
         {
-            myPlayerHUD.setBoostUI( _boostTime/boostCD );
+            myPlayerHUD.setBoostUI(_boostTime / boostCD);
             _boostTime = value;
         }
     }
@@ -140,18 +135,97 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Minimum horizontal angle in which the player wall-jumps. This number ranges from 0 to 90. 0 --> parallel to the wall; 90 --> perpendicular to the wall")]
     [Range(0, 89)]
     public float wallJumpMinHorizAngle = 30;
+
+    [Header("----- ONLINE VARIABLES ----")]
+    [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
+    public static GameObject LocalPlayerInstance;
+    #endregion
+
+    #region ----[ PROPERTIES ]----
+    //Referencias que no se asignan en el inspector
+    [HideInInspector]
+    public Camera myUICamera;
+    [HideInInspector]
+    public PlayerHUD myPlayerHUD;
+    //BOOL PARA PERMITIR O BLOQUEAR INPUTS
+    [HideInInspector]
+    public bool noInput = false;
+    //EQUIPO
+    [HideInInspector]
+    public Team team = Team.blue;
+    //ESTADO DE MOVIMIENTO Y SALTO
+    [HideInInspector]
+    public MoveState moveSt = MoveState.NotMoving;
+    [HideInInspector]
+    public JumpState jumpSt = JumpState.none;
+    [HideInInspector]
+    public Vector3 currentVel;
+    [HideInInspector]
+    public float currentSpeed = 0;
+    [HideInInspector]
+    public Vector3 currentMovDir;
+    [HideInInspector]
+    public bool wallJumpAnim = false;
+    [HideInInspector]
+    public Vector3 currentFacingDir = Vector3.forward;
+    [HideInInspector]
+    public float facingAngle = 0;
+    [HideInInspector]
+    public Vector3 currentCamFacingDir = Vector3.zero;
+    [HideInInspector]
+    public float maxTimeStun = 0.6f;
+    [HideInInspector]
+    public bool haveFlag = false;
+    [HideInInspector]
+    public Flag flag = null;
+    [HideInInspector]
+    public bool inWater = false;
+    #endregion
+
+    #region ----[ VARIABLES ]----    
     float wallJumpRadius;
     float walJumpConeHeight = 1;
     float lastWallAngle = -1;
     GameObject lastWall;
     //bool wallJumped = false;
+    int frameCounter = 0;
 
-    public void SetVelocity(Vector3 vel)
+    float joystickAngle;
+    float deadzone = 0.2f;
+    float joystickSens = 0;
+
+    float timeStun = 0;
+    bool stunned;
+    bool knockBackDone;
+    Vector3 knockback;
+    
+    bool fixedJumping;
+    bool fixedJumpDone;
+    float noMoveMaxTime;
+    float noMoveTime;
+
+    bool hooked;
+    bool hooking;
+
+    bool jumpedOutOfWater = true;
+    #endregion
+
+    #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
+
+    #region AWAKE
+
+    public void Awake()
     {
-        objectiveVel = vel;
-        currentVel = objectiveVel;
+        // #Important
+        // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
+        if (photonView.IsMine)
+        {
+            PlayerMovement.LocalPlayerInstance = this.gameObject;
+        }
+         // #Critical
+         // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+        DontDestroyOnLoad(this.gameObject);
     }
-
     public void KonoAwake()
     {
         currentSpeed = 0;
@@ -169,6 +243,9 @@ public class PlayerMovement : MonoBehaviour
         myPlayerHook.KonoAwake();
         myPlayerWeap.KonoAwake();
     }
+    #endregion
+
+    #region START
     public void KonoStart()
     {
         gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
@@ -195,13 +272,14 @@ public class PlayerMovement : MonoBehaviour
 
         PlayerStarts();
     }
-
     private void PlayerStarts()
     {
         myPlayerCombat.KonoStart();
     }
 
-    int frameCounter = 0;
+    #endregion
+
+    #region UPDATE
     public void KonoUpdate()
     {
         if (Actions.Options.WasPressed) gC.PauseGame(Actions);
@@ -226,12 +304,23 @@ public class PlayerMovement : MonoBehaviour
         controller.collisions.ResetAround();
         myPlayerAnimation.KonoUpdate();
     }
+    #endregion
 
-    [HideInInspector]
-    public Vector3 currentMovDir;
-    float joystickAngle;
-    float deadzone = 0.2f;
-    float joystickSens = 0;
+    #endregion
+
+    #region ----[ CLASS FUNCTIONS ]----
+
+    public void SetVelocity(Vector3 vel)
+    {
+        objectiveVel = vel;
+        currentVel = objectiveVel;
+    }
+    public void ResetPlayer()
+    {
+        ExitWater();
+        jumpSt = JumpState.none;
+    }
+
 
     #region MOVEMENT -----------------------------------------------
     public void CalculateMoveDir()
@@ -303,7 +392,7 @@ public class PlayerMovement : MonoBehaviour
         }
         #endregion
         #region //----------------------------------------------------- Efecto interno --------------------------------------------
-        if(!hooked && !fixedJumping)
+        if (!hooked && !fixedJumping)
         {
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
@@ -319,7 +408,7 @@ public class PlayerMovement : MonoBehaviour
             ProcessAiming();
             ProcessHooking();
             currentMaxMoveSpeed = (joystickSens / 1) * maxMoveSpeed2;
-            if (currentSpeed > currentMaxMoveSpeed && moveSt==MoveState.Moving)
+            if (currentSpeed > currentMaxMoveSpeed && moveSt == MoveState.Moving)
             {
                 moveSt = MoveState.MovingBreaking;
             }
@@ -343,7 +432,7 @@ public class PlayerMovement : MonoBehaviour
             finalMovingAcc = controller.collisions.below ? movingAcc : airMovingAcc; //Turning accleration
             //------------------------------- Speed ------------------------------ -
             currentSpeed = currentSpeed + actAccel * Time.deltaTime;
-            float  maxSpeedClamp= moveSt == MoveState.Moving ? currentMaxMoveSpeed : maxKnockbackSpeed;
+            float maxSpeedClamp = moveSt == MoveState.Moving ? currentMaxMoveSpeed : maxKnockbackSpeed;
             currentSpeed = Mathf.Clamp(currentSpeed, 0, maxSpeedClamp);
         }
         #endregion
@@ -497,11 +586,11 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Warning: Can't jump because: controller.collisions.below || jumpInsurance ("+ (controller.collisions.below || jumpInsurance)+
-                    ") / !inWater || (inWater && controller.collisions.around && ((gC.gameMode == GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) || (gC.gameMode != GameController.GameMode.CaptureTheFlag))) ("+
+                Debug.LogWarning("Warning: Can't jump because: controller.collisions.below || jumpInsurance (" + (controller.collisions.below || jumpInsurance) +
+                    ") / !inWater || (inWater && controller.collisions.around && ((gC.gameMode == GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) || (gC.gameMode != GameController.GameMode.CaptureTheFlag))) (" +
                     (!inWater || (inWater && controller.collisions.around &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) ||
-                (gC.gameMode != GameMode.CaptureTheFlag))))+")");
+                (gC.gameMode != GameMode.CaptureTheFlag)))) + ")");
                 StartWallJump();
             }
         }
@@ -516,12 +605,12 @@ public class PlayerMovement : MonoBehaviour
         jumpSt = JumpState.none;
         timePressingJump = 0;
     }
-    
+
     void ProcessJumpInsurance()
     {
         if (!jumpInsurance)
         {
-            if (controller.collisions.lastBelow && !controller.collisions.below && jumpSt==JumpState.none && jumpedOutOfWater)
+            if (controller.collisions.lastBelow && !controller.collisions.below && jumpSt == JumpState.none && jumpedOutOfWater)
             {
                 //print("Jump Insurance");
                 jumpInsurance = true;
@@ -531,7 +620,7 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             timeJumpInsurance += Time.deltaTime;
-            if (timeJumpInsurance >= maxTimeJumpInsurance || jumpSt==JumpState.Jumping)
+            if (timeJumpInsurance >= maxTimeJumpInsurance || jumpSt == JumpState.Jumping)
             {
                 jumpInsurance = false;
             }
@@ -541,8 +630,8 @@ public class PlayerMovement : MonoBehaviour
 
     void StartWallJump()
     {
-        if (!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal && 
-            (lastWallAngle != controller.collisions.wallAngle|| lastWallAngle == controller.collisions.wallAngle && lastWall != controller.collisions.wall) && jumpedOutOfWater)
+        if (!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal &&
+            (lastWallAngle != controller.collisions.wallAngle || lastWallAngle == controller.collisions.wallAngle && lastWall != controller.collisions.wall) && jumpedOutOfWater)
         {
             GameObject wall = controller.collisions.wall;
             if (wall.GetComponent<StageScript>() == null || wall.GetComponent<StageScript>().wallJumpable)
@@ -576,8 +665,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    [HideInInspector]
-    public bool wallJumpAnim = false;
 
     void EndWallJump()
     {
@@ -665,12 +752,6 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region  FACING DIR AND ANGLE & BODY ROTATION---------------------------------------------
-    [HideInInspector]
-    public Vector3 currentFacingDir = Vector3.forward;
-    [HideInInspector]
-    public float facingAngle = 0;
-    [HideInInspector]
-    public Vector3 currentCamFacingDir = Vector3.zero;
 
     void UpdateFacingDir()//change so that only rotateObj rotates, not whole body
     {
@@ -730,12 +811,6 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region RECIEVE HIT AND STUN ---------------------------------------------
-    [HideInInspector]
-    public float maxTimeStun = 0.6f;
-    float timeStun = 0;
-    bool stunned;
-    bool knockBackDone;
-    Vector3 knockback;
 
     public void StartRecieveHit(Vector3 _knockback, PlayerMovement attacker, float _maxTimeStun)
     {
@@ -771,7 +846,7 @@ public class PlayerMovement : MonoBehaviour
 
     void StopStun()
     {
-        noInput = false;  
+        noInput = false;
         stunned = false;
         print("STUN END");
     }
@@ -779,11 +854,7 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region FIXED JUMP ---------------------------------------------------
-    bool fixedJumping;
-    bool fixedJumpDone;
-    float noMoveMaxTime;
-    float noMoveTime;
-    
+
     public void StartFixedJump(Vector3 vel, float _noMoveMaxTime)
     {
         fixedJumping = true;
@@ -829,7 +900,6 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region HOOKING/HOOK ---------------------------------------------
-    bool hooked;
     public void StartHooked()
     {
         if (!hooked)
@@ -858,7 +928,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    bool hooking;
     public void StartHooking()
     {
         if (!hooking)
@@ -896,10 +965,6 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region PICKUP / FLAG / DEATH ---------------------------------------------
-    [HideInInspector]
-    public bool haveFlag = false;
-    [HideInInspector]
-    public Flag flag = null;
 
     public void PutOnFlag(Flag _flag)
     {
@@ -926,9 +991,7 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region  WATER ---------------------------------------------
-    [HideInInspector]
-    public bool inWater = false;
-    bool jumpedOutOfWater = true;
+
 
     public void EnterWater()
     {
@@ -944,7 +1007,7 @@ public class PlayerMovement : MonoBehaviour
                 flag.SetAway(false);
             }
             //Desactivar al jugadro si se esta en la prorroga.
-            if(gC.gameMode == GameMode.CaptureTheFlag)
+            if (gC.gameMode == GameMode.CaptureTheFlag)
             {
                 (gC as GameController_FlagMode).myScoreManager.PlayerEliminado();
             }
@@ -986,12 +1049,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
     #endregion
-
-    public void ResetPlayer()
-    {
-        ExitWater();
-        jumpSt = JumpState.none;
-    }
 
     #region  AUXILIAR FUNCTIONS ---------------------------------------------
     public Vector3 RotateVector(float angle, Vector3 vector)
@@ -1042,10 +1099,18 @@ public class PlayerMovement : MonoBehaviour
         return circumfPoint;
     }
     #endregion
-}
-public enum Team
-{
-    red,
-    blue,
-    none
+
+    #endregion
+
+    #region ----[ PUN CALLBACKS ]----
+    #endregion
+
+    #region ----[ RPC ]----
+    #endregion
+
+    #region ----[ NETWORK FUNCTIONS ]----
+    #endregion
+
+    #region ----[ IPUNOBSERVABLE ]----
+    #endregion
 }

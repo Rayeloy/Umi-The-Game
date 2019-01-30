@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class RegionClassModel : MonoBehaviour
 {
-    #region ----[ HEADER REFERENCES ]----
+    #region ----[ VARIABLES FOR DESIGNERS ]----
     #endregion
 
     #region ----[ PROPERTIES ]----
