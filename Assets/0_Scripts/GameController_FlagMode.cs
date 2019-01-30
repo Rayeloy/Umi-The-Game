@@ -6,7 +6,7 @@ using Photon.Pun;
 public class GameController_FlagMode : GameControllerBase
 {
     [Header(" --- FLAG MODE --- ")]
-    public ScoreManager scoreManager;
+    public ScoreManager myScoreManager;
     public GameObject flagPrefab;
     public Transform flagsParent;
     [HideInInspector]
@@ -18,7 +18,7 @@ public class GameController_FlagMode : GameControllerBase
 
     protected override void Awake()
     {
-        scoreManager.KonoAwake(this as GameController_FlagMode);
+        myScoreManager.KonoAwake(this as GameController_FlagMode);
         base.Awake();
         CreateFlag();
     }
@@ -29,13 +29,13 @@ public class GameController_FlagMode : GameControllerBase
 
     public override void StartGame()
     {
-        scoreManager.KonoStart();
+        myScoreManager.KonoStart();
         base.StartGame();
     }
 
     protected override void UpdateModeExclusiveClasses()
     {
-        scoreManager.KonoUpdate();
+        myScoreManager.KonoUpdate();
     }
 
     public override void CreatePlayer(string playerNumber)
@@ -43,9 +43,9 @@ public class GameController_FlagMode : GameControllerBase
         base.CreatePlayer(playerNumber);
         if (offline)//Eloy: para Juan: en online habrá que solamente referenciar en el score manager a su player, no los de todos.
         {
-            scoreManager.blueTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().blueTeamScoreText);
-            scoreManager.redTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().redTeamScoreText);
-            scoreManager.time_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().timeText);
+            myScoreManager.blueTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().blueTeamScoreText);
+            myScoreManager.redTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().redTeamScoreText);
+            myScoreManager.time_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().timeText);
         }
     }
 
@@ -55,9 +55,9 @@ public class GameController_FlagMode : GameControllerBase
         base.RemovePlayer(_pM);
         if (offline)//Eloy: para Juan: como solo se referencia el nuestro propio, no hace falta borrar cosas del score manager cuando se borra a otro player. Solo borramos cuando nos borramos a nosotros.
         {
-            scoreManager.blueTeamScore_Text.RemoveAt(index);
-            scoreManager.redTeamScore_Text.RemoveAt(index);
-            scoreManager.time_Text.RemoveAt(index);
+            myScoreManager.blueTeamScore_Text.RemoveAt(index);
+            myScoreManager.redTeamScore_Text.RemoveAt(index);
+            myScoreManager.time_Text.RemoveAt(index);
         }
     }
 
@@ -73,7 +73,7 @@ public class GameController_FlagMode : GameControllerBase
 
     public void ScorePoint(Team _winnerTeam)
     {
-        scoreManager.ScorePoint(_winnerTeam);
+        myScoreManager.ScorePoint(_winnerTeam);
     }
 
     #region FLAG FUNCTIONS
@@ -124,10 +124,10 @@ public class GameController_FlagMode : GameControllerBase
 
     #endregion
 
-    public override void ResetGame()
+    public override void ResetGame()//Eloy: habrá que resetear muchas más cosas
     {
         base.ResetGame();
-        scoreManager.Reset();
+        myScoreManager.Reset();
         RespawnFlags();
     }
 }

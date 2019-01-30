@@ -22,6 +22,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     //referencias
     [Header(" --- Referencias --- ")]
+    public GameInterface myGameInterface;
     //este parámetro es para poner slowmotion al juego (como estados: 0=normal,1=slowmo,2=slowestmo),
     // solo se debe usar para testeo, hay que QUITARLO para la build "comercial".
     [Header(" --- Variables generales ---")]
@@ -50,29 +51,13 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     public Transform redTeamSpawn;
 
     //Variables de HUDS
-    [Header(" --- UI --- ")]
-    public RectTransform[] contador;//Array que contiene todos los contadores de tiempo, solo util en Pantalla Dividida
-    public RectTransform[] powerUpPanel;//Array que contiene los objetos del dash y el hook en el HUD, solo util en Pantalla Dividida
-    [Header(" --- Escala UI --- ")]
+    [Header(" --- Players HUD --- ")]
+
+    private List<RectTransform> contador;//Array que contiene todos los contadores de tiempo, solo util en Pantalla Dividida
+    private List<RectTransform> powerUpPanel;//Array que contiene los objetos del dash y el hook en el HUD, solo util en Pantalla Dividida
+    [Header(" --- Players HUD scale --- ")]
     public float scaleDos = 1.25f;//escala de las camaras para 2 jugadores
     public float scaleCuatro = 1.25f;//escala para 3 jugadores y 4 jugadores
-
-    //GAME OVER MENU
-    [Header(" --- Game Over Menu --- ")]
-    public GameObject gameOverMenu;
-    public GameObject veil;
-    public Image victoryRed;
-    public Image victoryBlue;
-    public Text gameOverPressStart;
-    public GameObject gameOverFirstButton;//intento fallido de controlar qué boton se selecciona automáticamente al iniciar el menu de Game Over
-    [SerializeField]
-    private GameObject ResetButton;
-    public string sceneLoadedOnReset;
-
-    [Header(" --- Pause --- ")]
-    public string menuScene;
-    public GameObject Button;
-
     #endregion
 
     #region ----[ PROPERTIES ]----
@@ -80,9 +65,10 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     private PlayerActions playerActions;
 
     //GAME OVER MENU
-    bool gameOverMenuOn = false;
-    bool gameOverStarted = false;
+    [HideInInspector]
+    public bool gameOverStarted = false;
 
+    //Player components lists
     protected List<PlayerMovement> allPlayers;//Array que contiene a los PlayerMovement
     protected List<CameraController> allCameraBases;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
     protected List<GameObject> allCanvas;//Array que contiene los objetos de los canvas de cada jugador, solo util en Pantalla Dividida
@@ -91,8 +77,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     //Number of players in the game. In online it will start at 0 and add +1 every time a player joins. In offline it stays constant since the game scene starts
     [HideInInspector]
     public int playerNum = 1;
-    [HideInInspector]
-    public Team winnerTeam = Team.blue;
+
     //Pause Menu
     [HideInInspector]
     public bool gamePaused = false;
@@ -134,23 +119,15 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             return;
         }
 
-        offline = GameInfo.instance.offline;
-
         //initialize lists
         allPlayers = new List<PlayerMovement>();
         allCameraBases = new List<CameraController>();
         allCanvas = new List<GameObject>();
         allUICameras = new List<Camera>();
 
-        gameOverMenu.SetActive(false);
-        gameOverPressStart.enabled = false;
-        veil.SetActive(false);
-        gameOverMenuOn = false;
-        if (offline && gameMode != GameMode.Tutorial)
-        {
-            victoryRed.gameObject.SetActive(false);
-            victoryBlue.gameObject.SetActive(false);
-        }
+        contador = new List<RectTransform>();
+        powerUpPanel = new List<RectTransform>();
+
 
         if (offline)
         {
@@ -163,7 +140,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
             //AUTOMATIC PLAYERS & CAMERAS/CANVAS SETUP
             PlayersSetup();
-            SetUpCanvas();
+            SetUpCanvases();
             AllAwakes();
         }
         else //Eloy: para Juan: aqui inicia al host! playerNum deberia estar a 0 y luego ponerse a 1 cuando se crea el jugador
@@ -180,7 +157,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #endregion
 
     #region Start
-    private void Start()
+    protected virtual void Start()
     {
         if (offline)
         {
@@ -238,18 +215,14 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         {
             if (playing)
             {
-                if (playerActions.Jump.WasPressed)
-                {
-                    GoBackToMenu();
-                }
-                else if (playerActions.Attack3.WasPressed || playerActions.Options.WasPressed)
+                if (playerActions.Attack3.WasPressed || playerActions.Options.WasPressed)
                 {
                     UnPauseGame();
                 }
             }
             else
             {
-                if (gameOverStarted && !gameOverMenuOn)
+                if (gameOverStarted && !myGameInterface.gameOverMenuOn)
                 {
                     for (int i = 0; i < playerNum; i++)
                     {
@@ -343,6 +316,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         for (int i = 0; i < allCameraBases.Count; i++)
         {
+            myGameInterface.KonoAwake(this);
             allPlayers[i].KonoAwake();
             allCameraBases[i].KonoAwake();
         }
@@ -390,6 +364,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             allCanvas.Add(newPlayerCanvas);
             allCameraBases.Add(newPlayerCamera);
             allUICameras.Add(newPlayerUICamera);
+
+            contador.Add(newPlayerCanvas.GetComponent<>());
         }
         else
         {
@@ -429,16 +405,13 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     /// <summary>
     /// Inicia los canvas con las variables y tamaños necesarios para el numero de jugadores. 
     /// </summary>
-    private void SetUpCanvas()//Para PantallaDividida
+    private void SetUpCanvases()//Para PantallaDividida
     {
         if (offline)
         {
-            if (playerNum >= 2)
+            for(int i = 0; playerNum >= 2 && i < contador.Count;i++)
             {
-                contador[0].anchoredPosition = new Vector3(contador[0].anchoredPosition.x, 100, contador[0].anchoredPosition.y);
-                contador[1].anchoredPosition = new Vector3(contador[1].anchoredPosition.x, 100, contador[1].anchoredPosition.y);
-                contador[2].anchoredPosition = new Vector3(contador[2].anchoredPosition.x, 100, contador[2].anchoredPosition.y);
-                contador[3].anchoredPosition = new Vector3(contador[3].anchoredPosition.x, 100, contador[3].anchoredPosition.y);
+                contador[i].anchoredPosition = new Vector3(contador[i].anchoredPosition.x, 100, contador[i].anchoredPosition.y);
             }
 
             if (playerNum == 2)
@@ -505,51 +478,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         {
             playing = false;
             gamePaused = true;
-            winnerTeam = _winnerTeam;
             gameOverStarted = true;
-            veil.SetActive(true);
-            if (winnerTeam == Team.blue)
-            {
-                victoryBlue.gameObject.SetActive(true);
-            }
-            else if (winnerTeam == Team.red)
-            {
-                victoryRed.gameObject.SetActive(true);
-            }
-            gameOverPressStart.enabled = true;
-        }
-    }
-
-    public void SwitchGameOverMenu()
-    {
-        //print("GAME OVER MENU");
-        //print("gameOverMenuOn= " + gameOverMenuOn);
-        if (gameOverStarted)
-        {
-            if (gameOverMenuOn)
-            {
-                //GameObject incontrol = GameObject.Find("InControl manager");
-                //Destroy(incontrol);
-                Cursor.lockState = CursorLockMode.Confined;
-                Cursor.visible = false;
-                gameOverMenuOn = false;
-                gameOverMenu.SetActive(false);
-                veil.SetActive(false);
-                victoryRed.gameObject.SetActive(false);
-                victoryBlue.gameObject.SetActive(false);
-                gameOverPressStart.enabled = false;
-                gameOverStarted = false;
-            }
-            else
-            {
-                //print("ACTIVATE GAME OVER MENU");
-                //Cursor.lockState = CursorLockMode.None;
-                //Cursor.visible = true;
-                gameOverMenuOn = true;
-                gameOverMenu.SetActive(true);
-                gameOverPressStart.enabled = false;
-                EventSystem.current.SetSelectedGameObject(gameOverFirstButton);
-            }
+            myGameInterface.StartGameOver(_winnerTeam);
         }
     }
 
@@ -579,66 +509,44 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         player.myPlayerAnimation.RestartAnimation();
     }
 
-    public virtual void ResetGame()
+    private void SwitchGameOverMenu()
+    {
+        if (gameOverStarted)
+        {
+            myGameInterface.SwitchGameOverMenu();
+        }
+    }
+
+    public void PauseGame(PlayerActions p)
+    {
+        Time.timeScale = 0;
+        myGameInterface.PauseGame();
+        playerActions = p;
+        gamePaused = true;
+
+    }
+
+    public void UnPauseGame()
+    {
+        Time.timeScale = 1;
+        myGameInterface.UnPauseGame();
+        gamePaused = false;
+    }
+
+    public virtual void ResetGame()//Eloy: habrá que resetear muchas más cosas
     {
         playing = true;
-        gamePaused = false;
         SwitchGameOverMenu();
         foreach (PlayerMovement pM in allPlayers)
         {
             pM.Die();
         }
         if (gamePaused)
-            UnPauseGame();
-    }
-
-    public void ExitGame()
-    {
-        Application.Quit();
-    }
-
-    #region ---------------------------------------------- Pause ----------------------------------------------
-    public void PauseGame(PlayerActions p)
-    {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
-        Time.timeScale = 0;
-        gamePaused = true;
-
-        veil.SetActive(true);
-        Button.SetActive(true);
-
-        playerActions = p;
-
-        gamePaused = true;
-
-        EventSystem.current.SetSelectedGameObject(ResetButton);
-    }
-
-    private void UnPauseGame()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        Time.timeScale = 1;
-        veil.SetActive(false);
-        Button.SetActive(false);
-
-        gamePaused = false;
-    }
-
-    public void GoBackToMenu()
-    {
-        UnPauseGame();
-        if(GameInfo.instance.inControlManager != null)
         {
-            //Eloy: hay que encontrar una mejor manera de resetear/borrar los controles...
-            Destroy(GameInfo.instance.inControlManager);
+            UnPauseGame();
         }
-        SceneManager.LoadScene(menuScene);
     }
-    #endregion
+
     #endregion
 
     #region ----[ PUN CALLBACKS ]----

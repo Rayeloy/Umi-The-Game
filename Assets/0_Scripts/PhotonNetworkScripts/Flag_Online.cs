@@ -404,7 +404,7 @@ public class Flag_Online : MonoBehaviour
             flagsCaptured++;
             currentOwner.gameObject.GetComponent<PlayerMovement_Online>().noInput = true;
             if (flagsCaptured >= gC.playerNum)
-                gC.GoBackToMenu();
+                gC.myGameInterface.GoBackToMenu();
         }
 
     }

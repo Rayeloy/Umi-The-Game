@@ -487,7 +487,7 @@ public class PlayerMovement : MonoBehaviour
         if (!noInput && moveSt != MoveState.Boost)
         {
             if ((controller.collisions.below || jumpInsurance) && (!inWater || (inWater && controller.collisions.around &&
-                ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).scoreManager.prorroga) ||
+                ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) ||
                 (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
                 currentVel.y = jumpVelocity;
@@ -500,7 +500,7 @@ public class PlayerMovement : MonoBehaviour
                 Debug.LogWarning("Warning: Can't jump because: controller.collisions.below || jumpInsurance ("+ (controller.collisions.below || jumpInsurance)+
                     ") / !inWater || (inWater && controller.collisions.around && ((gC.gameMode == GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) || (gC.gameMode != GameController.GameMode.CaptureTheFlag))) ("+
                     (!inWater || (inWater && controller.collisions.around &&
-                ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).scoreManager.prorroga) ||
+                ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) ||
                 (gC.gameMode != GameMode.CaptureTheFlag))))+")");
                 StartWallJump();
             }
@@ -946,7 +946,7 @@ public class PlayerMovement : MonoBehaviour
             //Desactivar al jugadro si se esta en la prorroga.
             if(gC.gameMode == GameMode.CaptureTheFlag)
             {
-                (gC as GameController_FlagMode).scoreManager.PlayerEliminado();
+                (gC as GameController_FlagMode).myScoreManager.PlayerEliminado();
             }
         }
     }

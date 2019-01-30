@@ -43,7 +43,7 @@ public class PlayerAnimation : MonoBehaviour
     {
         if (myPlayerMovement.gC.gameMode == GameMode.CaptureTheFlag)
         {
-            if ((myPlayerMovement.gC as GameController_FlagMode).scoreManager.End)
+            if ((myPlayerMovement.gC as GameController_FlagMode).myScoreManager.End)
                 {
                 animator.SetBool(endGameHash, true);
                 //ResetVariables();

@@ -31,12 +31,16 @@ public class ScoreManager : MonoBehaviour {
     List<int> orcasBlueIndex;
 
     [Header("Referencias")]
+    public ParticleSystem blueFireworks;
+    public ParticleSystem redFireworks;
+    [HideInInspector]
 	public List<TextMeshProUGUI> blueTeamScore_Text;
+    [HideInInspector]
 	public List<TextMeshProUGUI> redTeamScore_Text;
+    [HideInInspector]
 	public List<TextMeshProUGUI> time_Text;
     //public RectTransform[] contador;
-    public ParticleSystem bluePS;
-    public ParticleSystem redPS;
+
 
     public void KonoAwake(GameController_FlagMode _gC)
     {
@@ -123,7 +127,7 @@ public class ScoreManager : MonoBehaviour {
             case Team.blue:
                 _blueTeamScore++;
                 RandomOrcaSpawn(Team.blue);
-                bluePS.Play(true);
+                blueFireworks.Play(true);
                 for( int i = 0; i < blueTeamScore_Text.Count; i++)
                 {
                     blueTeamScore_Text[i].text = _blueTeamScore.ToString();
@@ -136,7 +140,7 @@ public class ScoreManager : MonoBehaviour {
             case Team.red:
                 _redTeamScore++;
                 RandomOrcaSpawn(Team.red);
-                redPS.Play(true);
+                redFireworks.Play(true);
                 for( int i = 0; i < redTeamScore_Text.Count; i++)//foreach (TextMeshProUGUI tM in redTeamScore_Text)
                 {
                     redTeamScore_Text[i].text = _redTeamScore.ToString();

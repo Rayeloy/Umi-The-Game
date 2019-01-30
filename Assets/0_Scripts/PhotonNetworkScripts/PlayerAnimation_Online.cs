@@ -72,7 +72,7 @@ public class PlayerAnimation_Online : MonoBehaviourPun
             return;
         }
 
-        if(myPlayerMovement.gC.gameMode==GameMode.CaptureTheFlag && (myPlayerMovement.gC as GameController_FlagMode).scoreManager.End){
+        if(myPlayerMovement.gC.gameMode==GameMode.CaptureTheFlag && (myPlayerMovement.gC as GameController_FlagMode).myScoreManager.End){
             animator.SetBool(endGameHash, true);
             //ResetVariables();
             return;

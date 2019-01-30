@@ -390,7 +390,7 @@ public class Flag : MonoBehaviour
             flagsCaptured++;
             currentOwner.gameObject.GetComponent<PlayerMovement>().noInput = true;
             if (flagsCaptured >= gC.playerNum)
-                gC.GoBackToMenu();
+                gC.myGameInterface.GoBackToMenu();
         }
 
     }
