@@ -239,6 +239,10 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
+    private void FixedUpdate()
+    {
+    }
+
     void UpdatePlayers()
     {
         for (int i = 0; i < playerNum; i++)

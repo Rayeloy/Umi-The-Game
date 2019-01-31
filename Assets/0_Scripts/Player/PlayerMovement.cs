@@ -183,30 +183,36 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     #endregion
 
     #region ----[ VARIABLES ]----    
+    //WALL JUMP
     float wallJumpRadius;
     float walJumpConeHeight = 1;
     float lastWallAngle = -1;
     GameObject lastWall;
-    //bool wallJumped = false;
+
     int frameCounter = 0;
 
+    //JOYSTICK INPUT
     float joystickAngle;
     float deadzone = 0.2f;
     float joystickSens = 0;
 
+    //KNOCKBACK AND STUN
     float timeStun = 0;
     bool stunned;
     bool knockBackDone;
     Vector3 knockback;
     
+    //FIXED JUMPS (Como el trampolín)
     bool fixedJumping;
     bool fixedJumpDone;
     float noMoveMaxTime;
     float noMoveTime;
 
+    //HOOK
     bool hooked;
     bool hooking;
 
+    //WATER
     bool jumpedOutOfWater = true;
     #endregion
 
@@ -299,10 +305,15 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
         //print("CurrentVel = " + currentVel);
         ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
+        Debug.Log("currentVel = " + currentVel + "; Time.deltaTime = " + Time.deltaTime + "; currentVel * Time.deltaTime = " + (currentVel * Time.deltaTime) + "; Time.fixedDeltaTime = " + Time.fixedDeltaTime);
         controller.Move(currentVel * Time.deltaTime);
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();
         myPlayerAnimation.KonoUpdate();
+    }
+
+    public void KonoFixedUpdate()
+    {
     }
     #endregion
 
@@ -329,15 +340,14 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         {
             float horiz = Actions.Movement.X;//Input.GetAxisRaw(contName + "H");
             float vert = Actions.Movement.Y;//-Input.GetAxisRaw(contName + "V");
-                                            //print("H = " + horiz + "; V = " + vert);
-                                            // Check that they're not BOTH zero - otherwise
-                                            // dir would reset because the joystick is neutral.
+                                            // Check that they're not BOTH zero - otherwise dir would reset because the joystick is neutral.
             Vector3 temp = new Vector3(horiz, 0, vert);
             joystickSens = temp.magnitude;
             //print("temp.magnitude = " + temp.magnitude);
             if (temp.magnitude >= deadzone)
             {
-                if (joystickSens >= 0.88 || joystickSens > 1) joystickSens = 1;
+                joystickSens = joystickSens >= 0.88f ? 1 : joystickSens;//Eloy: esto evita un "bug" por el que al apretar el joystick 
+                                                                        //contra las esquinas no da un valor total de 1, sino de 0.9 o así
                 moveSt = MoveState.Moving;
                 currentMovDir = temp;
                 currentMovDir.Normalize();
@@ -448,7 +458,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                 {
                     horizontalVel = horizontalVel.normalized * currentMaxMoveSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
-                    currentSpeed = currentVel.magnitude;
+                    currentSpeed = currentMaxMoveSpeed;
                 }
                 //print("Speed = " + currentSpeed+"; currentMaxMoveSpeed = "+currentMaxMoveSpeed);
                 break;
