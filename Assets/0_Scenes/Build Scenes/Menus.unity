@@ -2195,7 +2195,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1689427416}
+      - m_Target: {fileID: 62219455}
         m_MethodName: ExitGame
         m_Mode: 1
         m_Arguments:
@@ -2830,10 +2830,8 @@ GameObject:
   - component: {fileID: 1689427409}
   - component: {fileID: 1689427408}
   - component: {fileID: 1689427412}
-  - component: {fileID: 1689427413}
   - component: {fileID: 1689427414}
   - component: {fileID: 1689427415}
-  - component: {fileID: 1689427416}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2946,18 +2944,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &1689427413
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1689427407}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 344658c79dadf494fbf1f8b51281e2f9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1689427414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2984,18 +2970,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DefaultButton: {fileID: 508356360}
---- !u!114 &1689427416
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1689427407}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53906c25da747714fbf583dbaa78d517, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1709185604
 GameObject:
   m_ObjectHideFlags: 0
@@ -3237,7 +3211,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1689427413}
+      - m_Target: {fileID: 62219455}
         m_MethodName: Load
         m_Mode: 5
         m_Arguments:
