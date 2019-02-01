@@ -180,6 +180,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     public Flag flag = null;
     [HideInInspector]
     public bool inWater = false;
+
+    BufferedInput[] inputsBuffer;//Eloy: para Juan: esta variable iría aquí? o a "Variables"
     #endregion
 
     #region ----[ VARIABLES ]----    
@@ -236,13 +238,9 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         currentSpeed = 0;
         noInput = false;
-        //controller = GetComponent<Controller3D>();
-        //myPlayerCombat = GetComponent<PlayerCombat>();
-        //myPlayerAnimation = GetComponent<PlayerAnimation>();
-        //myPlayerWeap = GetComponent<PlayerWeapons>();
-        //myPlayerHook = GetComponent<PlayerHook>();
-        //myPlayerPickups = GetComponent<PlayerPickups>();
         lastWallAngle = 0;
+        SetupInputsBuffer();
+
         //todos los konoAwakes
         myPlayerCombat.KonoAwake();
         myPlayerAnimation.KonoAwake();
@@ -296,6 +294,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         }
         //print("FRAME NUMBER " + frameCounter);
         frameCounter++;
+        ProcessInputsBuffer();
 
         HorizontalMovement();
         //print("vel = " + currentVel.ToString("F4"));
@@ -305,7 +304,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
         //print("CurrentVel = " + currentVel);
         ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
-        Debug.Log("currentVel = " + currentVel + "; Time.deltaTime = " + Time.deltaTime + "; currentVel * Time.deltaTime = " + (currentVel * Time.deltaTime) + "; Time.fixedDeltaTime = " + Time.fixedDeltaTime);
+        //Debug.Log("currentVel = " + currentVel + "; Time.deltaTime = " + Time.deltaTime + "; currentVel * Time.deltaTime = " + (currentVel * Time.deltaTime) + "; Time.fixedDeltaTime = " + Time.fixedDeltaTime);
         controller.Move(currentVel * Time.deltaTime);
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();
@@ -320,6 +319,56 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     #endregion
 
     #region ----[ CLASS FUNCTIONS ]----
+
+    #region INPUTS BUFFERING
+
+    void SetupInputsBuffer()
+    {
+        inputsBuffer = new BufferedInput[gC.allBufferedInputs.Length];
+        for(int i=0; i < gC.allBufferedInputs.Length; i++)
+        {
+            inputsBuffer[i] = new BufferedInput(gC.allBufferedInputs[i]);
+        }
+    }
+
+    void ProcessInputsBuffer()
+    {
+        for(int i=0; i<inputsBuffer.Length; i++)
+        {
+            if (inputsBuffer[i].buffering)
+            {
+                switch (inputsBuffer[i].input.inputType)
+                {
+                    case PlayerInput.Jump:
+                        if (StartJump(true))
+                        {
+                            inputsBuffer[i].StopBuffering();
+                        }
+                        break;
+                }
+                inputsBuffer[i].ProcessTime();
+            }
+        }
+    }
+
+    void BufferInput(PlayerInput _inputType)
+    {
+        bool found = false;
+        for (int i = 0; i < inputsBuffer.Length && !found; i++)
+        {
+            if(inputsBuffer[i].input.inputType == _inputType)
+            {
+                inputsBuffer[i].StartBuffering();
+                found = true;
+            }
+        }
+        if (!found)
+        {
+            Debug.LogError("Error: Impossible to buffer the input " + _inputType + " because there is no BufferedInput with that type in the inputsBuffered array.");
+        }
+    }
+
+    #endregion
 
     public void SetVelocity(Vector3 vel)
     {
@@ -581,18 +630,21 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     #endregion
 
     #region JUMP ---------------------------------------------------
-    void StartJump()
+    bool StartJump(bool calledFromBuffer = false)
     {
+        bool result = false;
         if (!noInput && moveSt != MoveState.Boost)
         {
             if ((controller.collisions.below || jumpInsurance) && (!inWater || (inWater && controller.collisions.around &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) ||
                 (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
+                result = true;
                 currentVel.y = jumpVelocity;
                 jumpSt = JumpState.Jumping;
                 timePressingJump = 0;
                 myPlayerAnimation.SetJump(true);
+
             }
             else
             {
@@ -601,13 +653,19 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                     (!inWater || (inWater && controller.collisions.around &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) ||
                 (gC.gameMode != GameMode.CaptureTheFlag)))) + ")");
-                StartWallJump();
+                result = StartWallJump();
             }
         }
         else
         {
             Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + moveSt != MoveState.Boost + ")");
         }
+
+        if(!result && !calledFromBuffer)
+        {
+            BufferInput(PlayerInput.Jump);
+        }
+        return result;
     }
 
     void StopJump()
@@ -638,8 +696,9 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     }
 
-    void StartWallJump()
+    bool StartWallJump()
     {
+        bool result = false;
         if (!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal &&
             (lastWallAngle != controller.collisions.wallAngle || lastWallAngle == controller.collisions.wallAngle && lastWall != controller.collisions.wall) && jumpedOutOfWater)
         {
@@ -647,6 +706,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             if (wall.GetComponent<StageScript>() == null || wall.GetComponent<StageScript>().wallJumpable)
             {
                 print("Wall jump");
+                result = true;
                 //wallJumped = true;
                 stopWallTime = 0;
                 currentVel = Vector3.zero;
@@ -659,6 +719,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             }
 
         }
+        return result;
     }
 
     void ProcessWallJump()

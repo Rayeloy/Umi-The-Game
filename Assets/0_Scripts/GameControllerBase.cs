@@ -44,6 +44,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     [Header(" --- 'All' lists ---")]
     public List<WeaponData> allWeapons;//Array que contendrá las armas utilizadas, solo util en Pantalla Dividida, SIN USAR
+    public BufferedInputData[] allBufferedInputs;
 
     [Header(" --- Spawn positions ---")]
     //Posiciones de los spawns
@@ -106,7 +107,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     protected virtual void Awake()
     {
         offline = !PhotonNetwork.IsConnected;
-        Debug.Log("GameController Awake empezado");
         //Esto es para no entrar en escenas cuando no tenemos los controles. Te devuelve a seleccion de equipo
         //Eloy: he cambiado esto porque me he dado cuenta de que es necesario hasta en la build final, no solo en el editor.
         if (GameInfo.instance == null || GameInfo.instance.inControlManager==null)
@@ -128,6 +128,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         contador = new List<RectTransform>();
         powerUpPanel = new List<RectTransform>();
 
+        CheckValidInputsBuffer();
 
         if (offline)
         {
@@ -153,7 +154,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             int playernumber = PhotonNetwork.PlayerList.Length;
             CreatePlayer(playernumber.ToString());
         }
-        Debug.Log("Game Controller Awake terminado");
     }
  
     #endregion
@@ -459,6 +459,32 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 powerUpPanel[1].localScale /= scaleCuatro;
                 powerUpPanel[2].localScale /= scaleCuatro;
                 powerUpPanel[3].localScale /= scaleCuatro;
+            }
+        }
+    }
+
+    //Eloy: this is for checking if the inputsBuffer array is well set up
+    void CheckValidInputsBuffer()
+    {
+        List<PlayerInput> knownInputs = new List<PlayerInput>();
+        for (int i = 0; i < allBufferedInputs.Length; i++)
+        {
+            PlayerInput auxInput = allBufferedInputs[i].inputType;
+            bool found = false;
+            for (int j = 0; j < knownInputs.Count && !found; j++)
+            {
+                if (auxInput == knownInputs[i])
+                {
+                    found = true;
+                }
+            }
+            if (found)
+            {
+                Debug.LogError("Error: There is more than one BufferedInput of the type " + auxInput.ToString() + "in the inputsBuffer.");
+            }
+            else
+            {
+                knownInputs.Add(auxInput);
             }
         }
     }
