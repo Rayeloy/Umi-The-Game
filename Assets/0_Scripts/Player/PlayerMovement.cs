@@ -648,11 +648,11 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             }
             else
             {
-                Debug.LogWarning("Warning: Can't jump because: controller.collisions.below || jumpInsurance (" + (controller.collisions.below || jumpInsurance) +
+                /*Debug.LogWarning("Warning: Can't jump because: controller.collisions.below || jumpInsurance (" + (controller.collisions.below || jumpInsurance) +
                     ") / !inWater || (inWater && controller.collisions.around && ((gC.gameMode == GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) || (gC.gameMode != GameController.GameMode.CaptureTheFlag))) (" +
                     (!inWater || (inWater && controller.collisions.around &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) ||
-                (gC.gameMode != GameMode.CaptureTheFlag)))) + ")");
+                (gC.gameMode != GameMode.CaptureTheFlag)))) + ")");*/
                 result = StartWallJump();
             }
         }

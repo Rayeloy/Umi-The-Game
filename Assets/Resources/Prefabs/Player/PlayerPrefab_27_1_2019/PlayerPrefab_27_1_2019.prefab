@@ -2811,21 +2811,13 @@ MonoBehaviour:
   myCamera: {fileID: 0}
   cameraFollow: {fileID: 2847219716704171441}
   rotateObj: {fileID: 2847339013141467789}
-  myUICamera: {fileID: 0}
-  myPlayerHUD: {fileID: 0}
-  noInput: 0
-  team: 1
   Body: {fileID: 2772850078638722801}
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
-  moveSt: 1
-  jumpSt: 2
-  currentVel: {x: 0, y: -0.51774114, z: 0}
   maxMoveSpeed: 10
   maxKnockbackSpeed: 300
   maxAimingSpeed: 5
   maxHookingSpeed: 3.5
-  currentSpeed: 0
   maxSpeedInWater: 5
   maxVerticalSpeedInWater: 3
   boostSpeed: 25
@@ -2846,6 +2838,14 @@ MonoBehaviour:
   stopWallMaxTime: 0.1
   wallJumpAngle: 25.5
   wallJumpMinHorizAngle: 30
+  myUICamera: {fileID: 0}
+  myPlayerHUD: {fileID: 0}
+  noInput: 0
+  team: 1
+  moveSt: 1
+  jumpSt: 2
+  currentVel: {x: 0, y: -0.51774114, z: 0}
+  currentSpeed: 0
   currentMovDir: {x: 0, y: 0, z: 0}
   wallJumpAnim: 0
   currentFacingDir: {x: -0.030918287, y: 0, z: -0.9995219}
@@ -2893,7 +2893,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c515b7e1049281419f36a8f533abb98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllRays: 1
+  disableAllRays: 0
   collisionMask:
     serializedVersion: 2
     m_Bits: 16896

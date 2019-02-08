@@ -203,6 +203,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     void Update()
     {
         //if (scoreManager.End) return;
+        SlowMotion();
 
         if (!gamePaused)
         {
@@ -251,7 +252,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
-    protected virtual void UpdateModeExclusiveClasses()
+    protected virtual void UpdateModeExclusiveClasses()//no borrar, es para los hijos
     {
     }
     #endregion
