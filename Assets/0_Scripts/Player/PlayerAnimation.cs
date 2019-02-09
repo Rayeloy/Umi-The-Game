@@ -93,7 +93,7 @@ public class PlayerAnimation : MonoBehaviour
             animator.SetBool(runningHash, runningValue);
         }
         //COMBAT ANIMATIONS
-        if (basicSwingValue && myPlayerCombat.attackStg == PlayerCombat.attackStage.ready)
+        if (basicSwingValue && myPlayerCombat.attackStg == AttackStage.ready)
         {
             basicSwingValue = false;
             animator.SetBool(basicSwingHash, basicSwingValue);
@@ -170,7 +170,7 @@ public class PlayerAnimation : MonoBehaviour
             animator.SetBool(swimmingIdleHash, swimmingIdle);
         }
         //COMBAT ANIMATIONS
-        if (!basicSwingValue && myPlayerCombat.attackStg == PlayerCombat.attackStage.startup)
+        if (!basicSwingValue && myPlayerCombat.attackStg == AttackStage.startup)
         {
             basicSwingValue = true;
             animator.SetBool(basicSwingHash, basicSwingValue);

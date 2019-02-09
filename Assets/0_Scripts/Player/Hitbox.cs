@@ -18,7 +18,7 @@ public class Hitbox : MonoBehaviour
         //Debug.LogWarning("I'm " + gameObject.name);
         if (col.gameObject != myPlayerMov.gameObject)
         {
-            if ((tag != "HookBigHB" && tag != "HookSmallHB") && myPlayerCombat.attackStg == PlayerCombat.attackStage.active)
+            if ((tag != "HookBigHB" && tag != "HookSmallHB") && myPlayerCombat.attackStg == AttackStage.active)
             {
                 //print("I'm " + myPlayerMov.gameObject.name + " and I collided with " + col.gameObject);
                 switch (col.tag)

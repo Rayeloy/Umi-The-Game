@@ -19,6 +19,13 @@ public class PlayerHUD : MonoBehaviour {
     public TMPro.TextMeshProUGUI blueTeamScoreText;
     public TMPro.TextMeshProUGUI timeText;
     public Text attackNameText;
+
+    //pickup weapon
+    public GameObject Interaction_Message;
+    public Text changeYourWeaponToText;
+    //public Text pressText;
+    public Image interactButtonImage;
+
     Vector3 blueFlagHomePos;
     Vector3 redFlagHomePos;
     Transform flag;
@@ -32,6 +39,7 @@ public class PlayerHUD : MonoBehaviour {
         {
             SetupFlagSlider();
         }
+        Interaction_Message.SetActive(false);
     }
 
     private void Update()
@@ -40,6 +48,24 @@ public class PlayerHUD : MonoBehaviour {
         {
             UpdateFlagSlider();
         }
+    }
+
+    public void SetPickupWeaponTextMessage(WeaponData _weap)
+    {
+        //if (!changeYourWeaponToText.enabled) changeYourWeaponToText.enabled = true;
+        //if (!pressText.enabled) pressText.enabled = true;
+        //if (!interactButtonImage.enabled) interactButtonImage.enabled = true;
+
+        if (!Interaction_Message.activeInHierarchy) Interaction_Message.SetActive(true);
+        changeYourWeaponToText.text = "to change your weapon to " + _weap.weaponName;
+    }
+
+    public void DisablePickupWeaponTextMessage()
+    {
+        //changeYourWeaponToText.enabled = false;
+        //pressText.enabled = false;
+        //interactButtonImage.enabled = false;
+        if (Interaction_Message.activeInHierarchy) Interaction_Message.SetActive(false);
     }
 
     void SetupFlagSlider()

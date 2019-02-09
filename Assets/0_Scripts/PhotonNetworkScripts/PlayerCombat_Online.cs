@@ -135,20 +135,20 @@ public class PlayerCombat_Online : MonoBehaviourPunCallbacks, IPunObservable
                 //print("Trigger = " + Input.GetAxis(myPlayerMovement.contName + "LT"));
                 if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && attackStg == attackStage.ready && !conHinchador)
                 {
-                    if (myPlayerMovement.Actions.Attack1.WasPressed && !myAttacks[0].cdStarted)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
+                    if (myPlayerMovement.Actions.Attack1.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
                     {
                         ChangeAttackType(0);
                         StartAttack();
                         attackSendSerialized = NetworkAttack.sendAttack1; // Juan: para enviar que hemos hecho un ataque a otras personas presentes en la sala
                     }
-                    if (myPlayerMovement.Actions.Attack2.WasPressed && !myAttacks[1].cdStarted)//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
+                    if (myPlayerMovement.Actions.Attack2.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
                     {
                         ChangeAttackType(1);
                         StartAttack();
                         //ChangeNextAttackType();
                         attackSendSerialized = NetworkAttack.sendAttack2; // Juan: para enviar que hemos hecho un ataque a otras personas presentes en la sala
                     }
-                    if (myPlayerMovement.Actions.Attack3.WasPressed && !myAttacks[2].cdStarted)//Input.GetButtonDown(myPlayerMovement.contName + "B"))
+                    if (myPlayerMovement.Actions.Attack3.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "B"))
                     {
                         ChangeAttackType(2);
                         StartAttack();
@@ -166,7 +166,7 @@ public class PlayerCombat_Online : MonoBehaviourPunCallbacks, IPunObservable
                 }
 
                 ProcessAttack();
-                ProcessAttacksCD();
+                //ProcessAttacksCD();
 
                 if (myPlayerMovement.Actions.Aim.WasPressed)
                 {
@@ -328,7 +328,7 @@ public class PlayerCombat_Online : MonoBehaviourPunCallbacks, IPunObservable
                             hitbox.GetComponent<MeshRenderer>().material = hitboxMats[0];
                             HideAttackHitBox();
 
-                            myAttacks[attackIndex].StartCD();
+                            //myAttacks[attackIndex].StartCD();
 
                         }
                         break;
@@ -336,18 +336,18 @@ public class PlayerCombat_Online : MonoBehaviourPunCallbacks, IPunObservable
             }   
         }
 
-        void ProcessAttacksCD()
-        {
-            for(int i = 0; i < myAttacks.Count; i++)
-            {
-                //Debug.LogWarning("Attack "+myAttacks[i].attack.attackName+" in cd? "+myAttacks[i].cdStarted);
-               if(myAttacks[i].cdStarted)
-                {
-                    //print("Process CD attack + " + i);
-                    myAttacks[i].ProcessCD();
-                }
-            }
-        }
+        //void ProcessAttacksCD()
+        //{
+        //    for(int i = 0; i < myAttacks.Count; i++)
+        //    {
+        //        //Debug.LogWarning("Attack "+myAttacks[i].attack.attackName+" in cd? "+myAttacks[i].cdStarted);
+        //       if(myAttacks[i].cdStarted)
+        //        {
+        //            //print("Process CD attack + " + i);
+        //            myAttacks[i].ProcessCD();
+        //        }
+        //    }
+        //}
 
         [HideInInspector]
         public bool aiming;
@@ -409,37 +409,37 @@ public class PlayerCombat_Online : MonoBehaviourPunCallbacks, IPunObservable
 public class AttackInfo_Online
 {
     public AttackData attack;
-    public float cdTime;
-    public bool cdStarted;
+    //public float cdTime;
+    //public bool cdStarted;
     public AttackInfo_Online(AttackData _attack)
     {
         attack = _attack;
-        cdTime = 0;
-        cdStarted = false;
+        //cdTime = 0;
+        //cdStarted = false;
     }
-    public void StartCD()
-    {
-        cdTime = 0;
-        cdStarted = true;
-        //Debug.Log("CD STARTED - ATTACK " + attack.attackName);
-    }
+    //public void StartCD()
+    //{
+    //    cdTime = 0;
+    //    cdStarted = true;
+    //    //Debug.Log("CD STARTED - ATTACK " + attack.attackName);
+    //}
 
-    public void ProcessCD()
-    {
-        //Debug.Log("CD PROCESS - ATTACK " + attack.attackName + "; cdTime = " + cdTime);
-        cdTime += Time.deltaTime;
-        if (cdTime >= attack.cdTime)
-        {
-            StopCD();
-        }
-    }
+    //public void ProcessCD()
+    //{
+    //    //Debug.Log("CD PROCESS - ATTACK " + attack.attackName + "; cdTime = " + cdTime);
+    //    cdTime += Time.deltaTime;
+    //    if (cdTime >= attack.cdTime)
+    //    {
+    //        StopCD();
+    //    }
+    //}
 
-    public void StopCD()
-    {
-        cdTime = 0;
-        cdStarted = false;
-        //Debug.Log("CD FINISHED - ATTACK " + attack.attackName);
-    }
+    //public void StopCD()
+    //{
+    //    cdTime = 0;
+    //    cdStarted = false;
+    //    //Debug.Log("CD FINISHED - ATTACK " + attack.attackName);
+    //}
 }
 
 #endregion

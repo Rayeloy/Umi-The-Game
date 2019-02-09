@@ -162,11 +162,11 @@ public class PlayerMovement_Online : MonoBehaviourPun
             switch (team)
             {
                 case Team_Online.blue:
-                    myPlayerWeap.AttachWeapon("Churro Azul");
+                    //myPlayerWeap.AttachWeapon("Churro Azul");
                     Body.material = teamBlueMat;
                     break;
                 case Team_Online.red:
-                    myPlayerWeap.AttachWeapon("Churro Rojo");
+                    //myPlayerWeap.AttachWeapon("Churro Rojo");
                     Body.material = teamRedMat;
                     break;
             }

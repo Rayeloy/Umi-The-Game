@@ -50,6 +50,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     public PlayerAnimation myPlayerAnimation;
     public PlayerHook myPlayerHook;
     public Controller3D controller;
+    public PlayerBody myPlayerBody;
 
     public GameControllerBase gC;
     public CameraController myCamera;
@@ -246,6 +247,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         myPlayerAnimation.KonoAwake();
         myPlayerHook.KonoAwake();
         myPlayerWeap.KonoAwake();
+        myPlayerBody.KonoAwake();
     }
     #endregion
 
@@ -263,11 +265,11 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         switch (team)
         {
             case Team.blue:
-                myPlayerWeap.AttachWeapon("Churro Azul");
+                //myPlayerWeap.AttachWeapon("Churro Azul");
                 Body.material = teamBlueMat;
                 break;
             case Team.red:
-                myPlayerWeap.AttachWeapon("Churro Rojo");
+                //myPlayerWeap.AttachWeapon("Churro Rojo");
                 Body.material = teamRedMat;
                 break;
         }
@@ -309,6 +311,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();
         myPlayerAnimation.KonoUpdate();
+        myPlayerWeap.KonoUpdate();
     }
 
     public void KonoFixedUpdate()

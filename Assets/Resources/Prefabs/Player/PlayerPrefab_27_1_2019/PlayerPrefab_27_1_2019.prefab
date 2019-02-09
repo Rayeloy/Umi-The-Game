@@ -2807,6 +2807,7 @@ MonoBehaviour:
   myPlayerAnimation: {fileID: 2740049171833000137}
   myPlayerHook: {fileID: 2739915846295203843}
   controller: {fileID: 2739408064946032661}
+  myPlayerBody: {fileID: 2741506816888055387}
   gC: {fileID: 0}
   myCamera: {fileID: 0}
   cameraFollow: {fileID: 2847219716704171441}
@@ -2867,19 +2868,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ae6d69e3764304f8c7b1a52d60636e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  triggerDeadZone: 0.15
-  attackIndex: -1
   hitboxMats:
   - {fileID: 2100000, guid: 2700333b147dd394c8452531278051f7, type: 2}
   - {fileID: 2100000, guid: 8ef3e573ffcdc814aa37206d968bffe3, type: 2}
   - {fileID: 2100000, guid: 3413d7cda6a31384ca2d10421fac8256, type: 2}
   - {fileID: 2100000, guid: b005bf027cdb3d64d88cd0db2ead83d9, type: 2}
+  hitboxes: {fileID: 2854368171562172343}
+  attackIndex: -1
   knockBackSpeed: 20
   attackNameText: {fileID: 0}
   conHinchador: 0
   targetsHit: []
   attackStg: 0
-  hitboxes: {fileID: 2854368171562172343}
   aiming: 0
 --- !u!114 &2739408064946032661
 MonoBehaviour:
@@ -2956,9 +2956,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myPlayerAnim: {fileID: 2740049171833000137}
   myPlayerMovement: {fileID: 0}
+  myPlayerCombat: {fileID: 0}
   senaka: {fileID: 2847038872594785633}
   rightHand: {fileID: 2854694397609994061}
   leftHand: {fileID: 2847143392388605829}
+  weaponsNearby: []
 --- !u!114 &2739443829118614599
 MonoBehaviour:
   m_ObjectHideFlags: 0

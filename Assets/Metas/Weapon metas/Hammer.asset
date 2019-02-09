@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a294f4648c143c34e9705c42220ff514, type: 3}
+  m_Name: Hammer
+  m_EditorClassIdentifier: 
+  weaponType: 1
+  weaponName: Hammer
+  weaponPrefab: {fileID: 5363239436386287791, guid: a3b3bfa48c2def047af1d10eb216f4b4,
+    type: 3}
+  playerMaxSpeed: 9
+  basicAttack: {fileID: 11400000, guid: 20329e4eb21b2e542ba6778b9838ad77, type: 2}
+  strongAttack: {fileID: 11400000, guid: 3c3d43bfd5a29f44ebbe03668cd5afdc, type: 2}
+  handPosition: {x: -0.0657, y: 0.0006, z: 0.0273}
+  handRotation: {x: 184.54, y: 289.234, z: 169.23}
+  handScale: {x: 3.5, y: 3.5, z: 3.5}
+  backPosition: {x: -0.0037, y: -0.0131, z: -0.028}
+  backRotation: {x: -87.786, y: 40.77, z: 243.521}
+  backScale: {x: 3.5, y: 3.5, z: 3.5}

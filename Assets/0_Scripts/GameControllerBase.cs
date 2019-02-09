@@ -42,6 +42,13 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     public Transform playersCamerasParent;
     public Transform playersUICamerasParent;
 
+    //public AttackData[] allAttacks; //este array seria otra manera de organizar los distintos ataques. En el caso de haber muchos en vez de 3 puede que usemos algo como esto.
+    //Estos son los ataques de los jugadores, seguramente en un futuro vayan adheridos al jugador, o a su arma. Si no, será un mega array (arriba)
+    //[Header("Attacks")]
+    //public AttackData attackX;
+    //public AttackData attackY;
+    //public AttackData attackB;
+
     [Header(" --- 'All' lists ---")]
     public List<WeaponData> allWeapons;//Array que contendrá las armas utilizadas, solo util en Pantalla Dividida, SIN USAR
     public BufferedInputData[] allBufferedInputs;
@@ -92,12 +99,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     #region ----[ VARIABLES ]----
 
-    //public AttackData[] allAttacks; //este array seria otra manera de organizar los distintos ataques. En el caso de haber muchos en vez de 3 puede que usemos algo como esto.
-    //Estos son los ataques de los jugadores, seguramente en un futuro vayan adheridos al jugador, o a su arma. Si no, será un mega array (arriba)
-    [Header("Attacks")]
-    public AttackData attackX;
-    public AttackData attackY;
-    public AttackData attackB;
+
 
     #endregion
 
@@ -604,3 +606,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region ----[ IPUNOBSERVABLE ]----
     #endregion
 }
+
+#region Struct
+#endregion
