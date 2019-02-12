@@ -564,6 +564,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     public void PauseGame(PlayerActions p)
     {
+        print("PARO EL TIEMPO AQUÍ");
         Time.timeScale = 0;
         myGameInterface.PauseGame();
         playerActions = p;

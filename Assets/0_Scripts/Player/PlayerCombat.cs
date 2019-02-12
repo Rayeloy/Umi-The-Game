@@ -148,7 +148,7 @@ public class PlayerCombat : MonoBehaviour {
         ProcessAttack();
         //ProcessAttacksCD();
 
-        if (myPlayerMovement.Actions.Aim.WasPressed)
+        if (myPlayerMovement.Actions.Aim.WasPressed && myPlayerWeap.hasWeapon)
         {
             StartAiming();
         }

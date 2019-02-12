@@ -19,6 +19,7 @@ public class PauseMenu : MonoBehaviour
     private void MenuOn ()
     {
         m_TimeScaleRef = Time.timeScale;
+        print("PARO EL TIEMPO AQUÍ");
         Time.timeScale = 0f;
 
         m_VolumeRef = AudioListener.volume;

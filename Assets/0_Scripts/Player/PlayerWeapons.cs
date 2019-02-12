@@ -104,11 +104,14 @@ public class PlayerWeapons : MonoBehaviour {
             Weapon auxWeap = null;
             for (int i = 0; i < weaponsNearby.Count; i++)
             {
-                float dist = Vector3.Distance(weaponsNearby[i].transform.position, transform.position);
-                if (dist < shortestDistance)
+                if (weaponsNearby[i].weaponData != currentWeapon)
                 {
-                    shortestDistance = dist;
-                    auxWeap = weaponsNearby[i];
+                    float dist = Vector3.Distance(weaponsNearby[i].transform.position, transform.position);
+                    if (dist < shortestDistance)
+                    {
+                        shortestDistance = dist;
+                        auxWeap = weaponsNearby[i];
+                    }
                 }
             }
             nearestWeapon = auxWeap;
@@ -128,8 +131,13 @@ public class PlayerWeapons : MonoBehaviour {
             {
                 myPlayerHUD.DisablePickupWeaponTextMessage();
             }
-
         }
+         string list="";
+        for(int i = 0; i < weaponsNearby.Count; i++)
+        {
+            list += weaponsNearby[i].weaponData.name + ", ";
+        }
+        print("Weapons Nearby: " + list);
     }
     #endregion
 
@@ -143,9 +151,14 @@ public class PlayerWeapons : MonoBehaviour {
 
     public void PickupWeapon(WeaponData weaponData)
     {
+        if (!hasWeapon)
+        {
+            LayerMask newLM = LayerMask.GetMask("Stage", "WaterFloor");
+            myPlayerMovement.controller.collisionMask = newLM;
+        }
         DropWeapon();
         AttachWeapon(weaponData);
-        RemoveWeaponNearby(currentWeapon);
+        //RemoveWeaponNearby(currentWeapon);
         myPlayerCombat.FillMyAttacks(currentWeapon);
     }
     public void DropWeapon()
@@ -205,7 +218,7 @@ public class PlayerWeapons : MonoBehaviour {
 
     public void AddWeaponNearby(Weapon weapPickup)
     {
-        if (currentWeapon != weapPickup.weaponData && !weaponsNearby.Contains(weapPickup))
+        if (!weaponsNearby.Contains(weapPickup))
         {
             weaponsNearby.Add(weapPickup);
         }

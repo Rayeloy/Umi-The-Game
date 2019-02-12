@@ -538,7 +538,7 @@ public class GameController_Online : MonoBehaviourPunCallbacks
 	public void PauseGame( PlayerActions p){
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
+        print("PARO EL TIEMPO AQUÍ");
         Time.timeScale = 0;
         gamePaused = true;
 
