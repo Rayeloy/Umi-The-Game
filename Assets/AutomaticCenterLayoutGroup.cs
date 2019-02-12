@@ -40,7 +40,13 @@ public class AutomaticCenterLayoutGroup : MonoBehaviour
 
     private void Update()
     {
+#if UNITY_EDITOR
         ProcessTimer();
+#endif
+        if (Application.isPlaying)
+        {
+            AutoCenterGroup();
+        }
 
         if (executeAutoCenter)
         {

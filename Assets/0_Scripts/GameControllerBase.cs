@@ -114,7 +114,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         if (GameInfo.instance == null || GameInfo.instance.inControlManager==null)
         {
             string escena = TeamSetupManager.siguienteEscena;
-            print(escena);
+            //print(escena);
             TeamSetupManager.siguienteEscena = SceneManager.GetActiveScene().name;
             TeamSetupManager.startFromMap = true;
             SceneManager.LoadScene("TeamSetup");

@@ -145,6 +145,7 @@ public class PlayerWeapons : MonoBehaviour {
     {
         DropWeapon();
         AttachWeapon(weaponData);
+        RemoveWeaponNearby(currentWeapon);
         myPlayerCombat.FillMyAttacks(currentWeapon);
     }
     public void DropWeapon()
@@ -204,7 +205,7 @@ public class PlayerWeapons : MonoBehaviour {
 
     public void AddWeaponNearby(Weapon weapPickup)
     {
-        if (!weaponsNearby.Contains(weapPickup))
+        if (currentWeapon != weapPickup.weaponData && !weaponsNearby.Contains(weapPickup))
         {
             weaponsNearby.Add(weapPickup);
         }
@@ -216,6 +217,20 @@ public class PlayerWeapons : MonoBehaviour {
         if (weaponsNearby.Contains(weapPickup))
         {
             weaponsNearby.Remove(weapPickup);
+        }
+        UpdateNearestWeapon();
+    }
+    
+    public void RemoveWeaponNearby(WeaponData weapData)
+    {
+        bool found = false;
+        for(int i=0; i<weaponsNearby.Count && !found; i++)
+        {
+            if (weaponsNearby[i].weaponData == weapData)
+            {
+                weaponsNearby.RemoveAt(i);
+                found = true;
+            }
         }
         UpdateNearestWeapon();
     }
