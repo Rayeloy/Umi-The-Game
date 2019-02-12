@@ -169,15 +169,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             StartGame();
             Debug.Log("GameController Start terminado");
         }
-        else
-        {
-            if (photonView.IsMine)
-            {
-                CreatePlayer(""); // JUAN: Este se llamará sólo si es el maestro del juego ya que es el poseedor del GameController.
-                                  //Eloy: para Juan: entre las comillas pon como quieras que se llame a todos los objetos de tu jugador en la escena, 
-                                  // por orden y limpieza. Sera del estilo "Player yo", "Canvas yo", "CameraBase yo"... siendo "yo" lo que pongas.
-            }
-        }
     }
 
     //Funcion que llama al Start de los jugadores. Eloy: Juan, ¿solo pantalla dividida?, JUAN: Sí Eloy, sólo pantalla dividida.
