@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6162394481415892543}
   - component: {fileID: 6053651517961176127}
   m_Layer: 0
-  m_Name: CameraBase 1
+  m_Name: PlayerCameraBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,10 +45,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myPlayerMov: {fileID: 0}
-  myCamera: {fileID: 6162451179906263967}
   myPlayer: {fileID: 0}
-  camMode: 1
   cameraFollowObj: {fileID: 0}
+  myCamera: {fileID: 6162451179906263967}
+  camMode: 1
   deadZone: 0.15
   clampAngleMaxFixed: 70
   clampAngleMinFixed: -20
@@ -71,10 +71,10 @@ MonoBehaviour:
   smoothY: 0
   speedH: 2
   speedV: 2
-  smoothPositioningTime: 0.2
-  smoothRotationTime: 0.2
   targetMyCamPos: {x: 0, y: 0, z: 0}
   smoothCamMoveTime: 0.2
+  smoothPositioningTime: 0.2
+  smoothRotationTime: 0.2
   cameraResetVerticalAngle: 10
 --- !u!1 &6165933204225631055
 GameObject:
@@ -119,8 +119,8 @@ Camera:
   m_GameObject: {fileID: 6165933204225631055}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.5235849, g: 0.8503954, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
