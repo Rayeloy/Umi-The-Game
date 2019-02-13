@@ -11,7 +11,7 @@ public class MainMenuController : MonoBehaviour
         Application.targetFrameRate = 60;
     }
 
-#region Funciones del menu
+    #region Funciones del menu
     public void Load (string sceneName)
 	{
 		SceneManager.LoadScene(sceneName);

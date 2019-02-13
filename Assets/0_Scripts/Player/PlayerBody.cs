@@ -5,6 +5,12 @@ using UnityEngine;
 public class PlayerBody : MonoBehaviour {
 
     public PlayerMovement myPlayerMov;
+    PlayerWeapons myPlayerWeapons;
+
+    public void KonoAwake()
+    {
+        myPlayerWeapons = myPlayerMov.myPlayerWeap;
+    }
 
     #region  TRIGGER COLLISIONS ---------------------------------------------
     private void OnTriggerStay(Collider col)
@@ -41,6 +47,19 @@ public class PlayerBody : MonoBehaviour {
                 break;
             case "PickUp":
                 myPlayerMov.myPlayerPickups.CogerPickup(col.gameObject);
+                break;
+            case "WeaponPickup":
+                myPlayerWeapons.AddWeaponNearby(col.GetComponent<Weapon>());
+                break;
+        }
+    }
+
+    private void OnTriggerExit(Collider col)
+    {
+        switch (col.tag)
+        {
+            case "WeaponPickup":
+                myPlayerWeapons.RemoveWeaponNearby(col.GetComponent<Weapon>());
                 break;
         }
     }

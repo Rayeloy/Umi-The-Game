@@ -141,6 +141,7 @@ namespace InControl
 		{
 			if (Input.GetKeyDown( KeyCode.P ) || InputManager.CommandWasPressed)
 			{
+                print("PARO EL TIEMPO AQUÍ");
 				Time.timeScale = isPaused ? 1.0f : 0.0f;
 				isPaused = !isPaused;
 			}

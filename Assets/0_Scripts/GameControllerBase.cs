@@ -42,6 +42,13 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     public Transform playersCamerasParent;
     public Transform playersUICamerasParent;
 
+    //public AttackData[] allAttacks; //este array seria otra manera de organizar los distintos ataques. En el caso de haber muchos en vez de 3 puede que usemos algo como esto.
+    //Estos son los ataques de los jugadores, seguramente en un futuro vayan adheridos al jugador, o a su arma. Si no, será un mega array (arriba)
+    //[Header("Attacks")]
+    //public AttackData attackX;
+    //public AttackData attackY;
+    //public AttackData attackB;
+
     [Header(" --- 'All' lists ---")]
     public List<WeaponData> allWeapons;//Array que contendrá las armas utilizadas, solo util en Pantalla Dividida, SIN USAR
     public BufferedInputData[] allBufferedInputs;
@@ -92,12 +99,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     #region ----[ VARIABLES ]----
 
-    //public AttackData[] allAttacks; //este array seria otra manera de organizar los distintos ataques. En el caso de haber muchos en vez de 3 puede que usemos algo como esto.
-    //Estos son los ataques de los jugadores, seguramente en un futuro vayan adheridos al jugador, o a su arma. Si no, será un mega array (arriba)
-    [Header("Attacks")]
-    public AttackData attackX;
-    public AttackData attackY;
-    public AttackData attackB;
+
 
     #endregion
 
@@ -112,7 +114,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         if (GameInfo.instance == null || GameInfo.instance.inControlManager==null)
         {
             string escena = TeamSetupManager.siguienteEscena;
-            print(escena);
+            //print(escena);
             TeamSetupManager.siguienteEscena = SceneManager.GetActiveScene().name;
             TeamSetupManager.startFromMap = true;
             SceneManager.LoadScene("TeamSetup");
@@ -167,15 +169,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             StartGame();
             Debug.Log("GameController Start terminado");
         }
-        else
-        {
-            if (photonView.IsMine)
-            {
-                CreatePlayer(""); // JUAN: Este se llamará sólo si es el maestro del juego ya que es el poseedor del GameController.
-                                  //Eloy: para Juan: entre las comillas pon como quieras que se llame a todos los objetos de tu jugador en la escena, 
-                                  // por orden y limpieza. Sera del estilo "Player yo", "Canvas yo", "CameraBase yo"... siendo "yo" lo que pongas.
-            }
-        }
     }
 
     //Funcion que llama al Start de los jugadores. Eloy: Juan, ¿solo pantalla dividida?, JUAN: Sí Eloy, sólo pantalla dividida.
@@ -203,6 +196,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     void Update()
     {
         //if (scoreManager.End) return;
+        SlowMotion();
 
         if (!gamePaused)
         {
@@ -251,7 +245,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
-    protected virtual void UpdateModeExclusiveClasses()
+    protected virtual void UpdateModeExclusiveClasses()//no borrar, es para los hijos
     {
     }
     #endregion
@@ -561,6 +555,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     public void PauseGame(PlayerActions p)
     {
+        print("PARO EL TIEMPO AQUÍ");
         Time.timeScale = 0;
         myGameInterface.PauseGame();
         playerActions = p;
@@ -603,3 +598,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region ----[ IPUNOBSERVABLE ]----
     #endregion
 }
+
+#region Struct
+#endregion

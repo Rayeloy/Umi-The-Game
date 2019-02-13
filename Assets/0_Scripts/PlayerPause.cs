@@ -14,7 +14,8 @@ public class PlayerPause : MonoBehaviour
 	public PlayerMovement myPlayerMovement;
 
 	public void PauseGame(){
-		Time.timeScale = 0;
+        print("PARO EL TIEMPO AQUÍ");
+        Time.timeScale = 0;
 
 		coroutine = Pause();
 		StartCoroutine(coroutine);

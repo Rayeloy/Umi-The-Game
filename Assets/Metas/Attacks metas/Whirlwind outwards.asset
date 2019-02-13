@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ce7d05d43dd0aa4fb7f72139bf0f199, type: 3}
+  m_Name: Whirlwind outwards
+  m_EditorClassIdentifier: 
+  attackName: Whirlwind
+  hitboxPrefab: {fileID: 1703244747168992, guid: 8447410836385804c85c173da3087d9d,
+    type: 3}
+  chargingTime: 0
+  startupTime: 1
+  activeTime: 2
+  recoveryTime: 1
+  comboDifferentAttackPercent: 50
+  stunTime: 0
+  knockbackSpeed: 15
+  knockbackType: 0
+  knockbackDirection: {x: 0, y: 0, z: 0}

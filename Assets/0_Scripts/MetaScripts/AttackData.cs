@@ -21,8 +21,13 @@ public class AttackData : ScriptableObject
     public float startupTime;
     public float activeTime;
     public float recoveryTime;
-    [Tooltip("Waiting time untill you can use this attack again, starts counting when you finish all the attack phases.")]
-    public float cdTime;
+
+    [Tooltip("Percentage of time of the last phase (or recovery phase) that we can skip by using an attack different from this one. 0% means we can't skip it at all," +
+        " 100% means we can fully skip it.")]
+    [Range(0, 100)]
+    public float comboDifferentAttackPercent = 50;
+    //[Tooltip("Waiting time untill you can use this attack again, starts counting when you finish all the attack phases.")]
+    //public float cdTime;
     [Tooltip("Time the attacks leaves the target stunned.")]
     public float stunTime;
     [Tooltip("Limited by maxMoveSpeed.")]

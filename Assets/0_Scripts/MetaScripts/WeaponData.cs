@@ -6,9 +6,17 @@ using UnityEditor;
 [CreateAssetMenu(fileName = "New weapon", menuName = "Weapon")]
 public class WeaponData : ScriptableObject
 {
+    public WeaponType weaponType;
+    [Tooltip("As you want it to show as text on the HUD for picking it up.")]
     public string weaponName;
     [Tooltip("Weapon prefab for attaching to the hand.")]
     public GameObject weaponPrefab;
+
+
+    public float playerMaxSpeed;
+    public AttackData basicAttack;
+    public AttackData strongAttack;
+    //public SpecialAttack
 
     [Header("Weapon in the right hand")]
     [Tooltip("Local position for attaching to the hand.")]
@@ -25,4 +33,12 @@ public class WeaponData : ScriptableObject
     public Vector3 backRotation;
     [Tooltip("Local scale for attaching to the hand.")]
     public Vector3 backScale;
+}
+public enum WeaponType
+{
+    Q_Tip,
+    Hammer,
+    Sword,
+    Boxing_gloves,
+    Donut
 }

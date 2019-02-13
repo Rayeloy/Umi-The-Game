@@ -5,9 +5,10 @@ using UnityEngine;
 #region ----[ PUBLIC ENUMS ]----
 #endregion
 
-public class RegionClassModel : MonoBehaviour
+public class RegionClassModel
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
+    //Referencias
     #endregion
 
     #region ----[ PROPERTIES ]----
@@ -17,6 +18,16 @@ public class RegionClassModel : MonoBehaviour
     #endregion
 
     #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
+
+    #region Awake
+    #endregion
+
+    #region Start
+    #endregion
+
+    #region Update
+    #endregion
+
     #endregion
 
     #region ----[ PRIVATE FUNCTIONS ]----
@@ -37,3 +48,6 @@ public class RegionClassModel : MonoBehaviour
     #region ----[ IPUNOBSERVABLE ]----
     #endregion
 }
+
+#region ----[ STRUCTS ]----
+#endregion
