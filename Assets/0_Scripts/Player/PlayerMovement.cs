@@ -382,6 +382,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         ExitWater();
         jumpSt = JumpState.none;
+        myPlayerWeap.DropWeapon();
+        controller.collisionMask = LayerMask.GetMask("Stage", "WaterFloor", "SpawnWall");
     }
 
 

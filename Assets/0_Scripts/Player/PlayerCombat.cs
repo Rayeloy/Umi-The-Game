@@ -245,9 +245,14 @@ public class PlayerCombat : MonoBehaviour {
             attackTime += Time.deltaTime;
             switch (attackStg)
             {
-                case AttackStage.ready:
-                    break;
                 case AttackStage.charging:
+                    //if(attackTime>= chargingMaxTime)
+                    //{
+                    //    float charge = Mathf.Clamp01(attackTime / chargingTime);
+                    //    attackTime = 0;
+                    //    attackStg = AttackStage.startup;
+                    //    hitbox.GetComponent<MeshRenderer>().material = hitboxMats[1];
+                    //}
                     break;
                 case AttackStage.startup:
 

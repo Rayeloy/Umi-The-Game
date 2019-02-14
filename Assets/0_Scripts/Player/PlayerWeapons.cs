@@ -132,12 +132,12 @@ public class PlayerWeapons : MonoBehaviour {
                 myPlayerHUD.DisablePickupWeaponTextMessage();
             }
         }
-         string list="";
-        for(int i = 0; i < weaponsNearby.Count; i++)
-        {
-            list += weaponsNearby[i].weaponData.name + ", ";
-        }
-        print("Weapons Nearby: " + list);
+        // string list="";
+        //for(int i = 0; i < weaponsNearby.Count; i++)
+        //{
+        //    list += weaponsNearby[i].weaponData.name + ", ";
+        //}
+        //print("Weapons Nearby: " + list);
     }
     #endregion
 
@@ -161,6 +161,7 @@ public class PlayerWeapons : MonoBehaviour {
         //RemoveWeaponNearby(currentWeapon);
         myPlayerCombat.FillMyAttacks(currentWeapon);
     }
+
     public void DropWeapon()
     {
         if (hasWeapon)
