@@ -77,6 +77,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     [Header("ROTATION")]
     public float rotationSpeed = 1;
+    [Range(0,180)]
     public float instantRotationMaxAngle = 130;
     //public float rotationSpeedFixedCam = 250;
     float targetRotation = 0;
