@@ -309,6 +309,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                     allUICameras[3].rect = new Rect(0.5f, 0, 0.5f, 0.5f);
                     break;
             }
+
+            SetSpawnPositions();//Eloy: Para Juan: Esto tendrás que usarlo en online también supongo...
         }
     }
 
@@ -408,6 +410,40 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 Destroy(allCanvas[i]);
                 Destroy(allCameraBases[i].gameObject);
                 Destroy(allUICameras[i].gameObject);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Calcula las posiciones de spawn dentro de cada spawn (rojo y azul), de manera equidistante y centrada y se las da a los Players.
+    /// </summary>
+    void SetSpawnPositions()
+    {
+        int playerNumBlue = 0, playerNumRed = 0;
+        for (int i = 0; i < allPlayers.Count; i++)
+        {
+            if (allPlayers[i].team == Team.blue)
+            {
+                playerNumBlue++;
+            }
+            else
+            {
+                playerNumRed++;
+            }
+        }
+        List<Vector3> spawnPosBlue = blueTeamSpawn.GetComponent<Respawn>().SetSpawnPositions(playerNumBlue);
+        List<Vector3> spawnPosRed = redTeamSpawn.GetComponent<Respawn>().SetSpawnPositions(playerNumRed);
+        for (int i = 0; i < allPlayers.Count; i++)
+        {
+            if (allPlayers[i].team == Team.blue)
+            {
+                allPlayers[i].spawnPosition = spawnPosBlue[0];
+                spawnPosBlue.RemoveAt(0);
+            }
+            else
+            {
+                allPlayers[i].spawnPosition = spawnPosRed[0];
+                spawnPosRed.RemoveAt(0);
             }
         }
     }
@@ -523,14 +559,13 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         //print("RESPAWN PLAYER");
         player.SetVelocity(Vector3.zero);
+        player.transform.position = player.spawnPosition;
         switch (player.team)
         {
-            case Team.blue:
-                player.transform.position = blueTeamSpawn.position;
+            case Team.blue:              
                 player.rotateObj.transform.localRotation = Quaternion.Euler(0, blueTeamSpawn.rotation.eulerAngles.y, 0);
                 break;
             case Team.red:
-                player.transform.position = redTeamSpawn.position;
                 player.rotateObj.transform.localRotation = Quaternion.Euler(0, redTeamSpawn.rotation.eulerAngles.y, 0);
                 break;
         }

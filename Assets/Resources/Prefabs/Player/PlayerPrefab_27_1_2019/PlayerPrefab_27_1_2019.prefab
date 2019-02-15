@@ -2816,6 +2816,8 @@ MonoBehaviour:
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
   maxMoveSpeed: 10
+  rotationSpeed: 800
+  instantRotationMaxAngle: 130
   maxKnockbackSpeed: 300
   maxAimingSpeed: 5
   maxHookingSpeed: 3.5
@@ -2856,6 +2858,7 @@ MonoBehaviour:
   haveFlag: 0
   flag: {fileID: 0}
   inWater: 0
+  spawnPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &2739787249420687251
 MonoBehaviour:
   m_ObjectHideFlags: 0

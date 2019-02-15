@@ -157,8 +157,8 @@ public class PlayerWeapons : MonoBehaviour {
             myPlayerMovement.controller.collisionMask = newLM;
         }
         DropWeapon();
+        myPlayerMovement.maxMoveSpeed = weaponData.playerMaxSpeed;
         AttachWeapon(weaponData);
-        //RemoveWeaponNearby(currentWeapon);
         myPlayerCombat.FillMyAttacks(currentWeapon);
     }
 

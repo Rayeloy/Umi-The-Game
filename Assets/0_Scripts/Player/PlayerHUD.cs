@@ -31,7 +31,7 @@ public class PlayerHUD : MonoBehaviour {
     Transform flag;
     Vector3 flagPos;
 
-    private void Start()
+    public void KonoStart()
     {
         Interaction_Message.SetActive(false);
         crosshair.enabled = false;

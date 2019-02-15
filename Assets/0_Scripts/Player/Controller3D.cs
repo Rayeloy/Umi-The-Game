@@ -294,10 +294,10 @@ public class Controller3D : MonoBehaviour
         //LEFT OR RIGHT ORIENTATION?
         float ang = Vector3.Angle(slideVel, horVel);
         slideVel = ang > 90 ? -slideVel : slideVel;
-        print("SLIDE ANGLE= " + angle + "; vel = " + vel + "; slideVel = " + slideVel.ToString("F4") + "; a = " + a + "; wallAngle = " + wallAngle + "; distanceToWall = " + rayCast.distance);
+        //print("SLIDE ANGLE= " + angle + "; vel = " + vel + "; slideVel = " + slideVel.ToString("F4") + "; a = " + a + "; wallAngle = " + wallAngle + "; distanceToWall = " + rayCast.distance);
         slideVel *= a;
         SlideState slideSt = ang > 90 ? SlideState.right : SlideState.left;
-        print("------------SLIDE STATE ------------ = " + slideSt);
+        //print("------------SLIDE STATE ------------ = " + slideSt);
         if (slideSt == collisions.slideSt)
         {
             collisions.slideSt = slideSt;
@@ -309,7 +309,7 @@ public class Controller3D : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("-----------SECOND WALL SLIDE HAS WRONG DIRECTION---------- = " + slideSt);
+            //Debug.LogWarning("-----------SECOND WALL SLIDE HAS WRONG DIRECTION---------- = " + slideSt);
             horVel = horVel * (rayCast.distance - skinWidth);
             vel = new Vector3(horVel.x, vel.y, horVel.z);
             collisions.wallAngle2 = rayCast.wallAngle;
@@ -406,7 +406,7 @@ public class Controller3D : MonoBehaviour
         if (collisions.closestHorRaycastSlide.axis != Raycast.Axis.none)//si ha habido una collision horizontal
         {
             MovingState value = collisions.closestHorRaycastSlide.row == 0 ? CheckSlopeType(ref vel, collisions.closestHorRaycastSlide) : MovingState.wall;
-            print("---------- SECOND COLLISION HOR: " + value + "; slopeAngle=" + collisions.closestHorRaycastSlide.slopeAngle);
+            //print("---------- SECOND COLLISION HOR: " + value + "; slopeAngle=" + collisions.closestHorRaycastSlide.slopeAngle);
             switch (value)//con que tipo de objeto collisionamos? pared/cuesta arriba/cuesta abajo
             {
                 case MovingState.wall:
@@ -434,7 +434,7 @@ public class Controller3D : MonoBehaviour
                     {
                         if (collisions.wallAngleOld2 != collisions.closestHorRaycastSlide.wallAngle)
                         {
-                            print("APPROACHING WALL: " + "distance = " + collisions.closestHorRaycastSlide.distance);
+                            //print("APPROACHING WALL: " + "distance = " + collisions.closestHorRaycastSlide.distance);
                             horVel = horVel * (collisions.closestHorRaycastSlide.distance - skinWidth);
                             vel = new Vector3(horVel.x, vel.y, horVel.z);
                             collisions.wallAngle2 = collisions.closestHorRaycastSlide.wallAngle;
