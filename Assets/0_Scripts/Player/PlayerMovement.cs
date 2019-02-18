@@ -115,7 +115,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     [Tooltip("Breaking negative acceleration that is used under the effects of a knockback (stunned). Value is clamped to not be higher than breakAcc.")]
     public float knockbackBreakAcc = -30f;
     //public float breakAccOnHit = -2.0f;
-    float gravity;
+    [HideInInspector]
+    public float gravity;
     [Header("JUMP")]
     public float jumpHeight = 4f;
     public float jumpApexTime = 0.4f;
