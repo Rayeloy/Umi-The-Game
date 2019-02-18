@@ -191,13 +191,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     [HideInInspector]
     public bool inWater = false;
     [HideInInspector]
-<<<<<<< HEAD
     public bool online = false;
-=======
     public Vector3 spawnPosition;
-
-    BufferedInput[] inputsBuffer;//Eloy: para Juan: esta variable iría aquí? o a "Variables"
->>>>>>> 547977a979e3edc22c9773c9af53f00068d0dc80
     #endregion
 
     #region ----[ VARIABLES ]----    
@@ -233,7 +228,6 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     //WATER
     bool jumpedOutOfWater = true;
 
-
     BufferedInput[] inputsBuffer;//Eloy: para Juan: esta variable iría aquí? o a "Variables", JUAN: A variables mejor
     #endregion
 
@@ -243,9 +237,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     public void Awake()
     {
-<<<<<<< HEAD
         online = PhotonNetwork.IsConnected;
-=======
         // #Important
         // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
         if (photonView.IsMine)
@@ -255,7 +247,6 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         // #Critical
         // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
         DontDestroyOnLoad(this.gameObject);
->>>>>>> 547977a979e3edc22c9773c9af53f00068d0dc80
     }
 
     public void KonoAwake()
