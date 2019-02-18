@@ -173,10 +173,19 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             //No hace falta SetUpCanvas creo
             //Haz los awakes, y haz el awake de cada jugador nuevo(esto ultimo hay que buscar donde ponerlo... en el CreatePlayer?
             int playernumber = PhotonNetwork.CurrentRoom.PlayerCount;
-            CreatePlayer(playernumber.ToString());
-            OnlineAwake();
-            PlayersSetup();
+            CreatePlayer(""+playernumber);
+
+            onlinePlayer.Actions = PlayerActions.CreateWithKeyboardBindings(); //Juan: hay que hacer la toma de valores de TeamSetupManager aquí pero bueh...
+            onlineCamera.myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+            onlineUICamera.rect = new Rect(0, 0, 1, 1);
+
             myGameInterface.KonoAwake(this);
+            onlinePlayer.KonoAwake();
+            onlineCamera.KonoAwake();
+
+            gameOverStarted = false;
+            contador[0].anchoredPosition = new Vector3(contador[0].anchoredPosition.x, 100, contador[0].anchoredPosition.y);
+
             //OnlinePlayerSetup();
             //OnlineCanvasSetUp();
             //OnlineAwakePlayer();
@@ -302,14 +311,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     /// </summary>
     void PlayersSetup()
     {
-        if (online)
-        {
-            onlinePlayer.Actions = PlayerActions.CreateWithKeyboardBindings(); //Juan: hay que hacer la toma de valores de TeamSetupManager aquí pero bueh...
-            onlineCamera.myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-            onlineUICamera.rect = new Rect(0, 0, 1, 1);
-            onlineCamera.KonoAwake();
-        }
-        else
+        if (!online)
         {
             for (int i = 0; i < allPlayers.Count; i++)
             {
@@ -371,13 +373,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             allPlayers[i].KonoAwake();
             allCameraBases[i].KonoAwake();
         }
-    }
-
-    protected virtual void OnlineAwake()
-    {
-        myGameInterface.KonoAwake(this);
-        onlinePlayer.KonoAwake();
-        onlineCamera.KonoAwake();
     }
 
     //Juan: esta función se ejecuta antes de instanciar al jugador, PhotonNetwrok.Instantiate  así spawneará al jugador en su respectivo lugar desde el principio haya o no comenzado el juego

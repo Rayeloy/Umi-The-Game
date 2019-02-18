@@ -43,11 +43,9 @@ public class GameInterface : MonoBehaviour
         pauseRestartButton.SetActive(false);
         pauseMenuButton.SetActive(false);
 
-        if (!gC.online)
-        {
-            victoryRed.gameObject.SetActive(false);
-            victoryBlue.gameObject.SetActive(false);
-        }
+        victoryRed.gameObject.SetActive(false);
+        victoryBlue.gameObject.SetActive(false);
+        
         gameOverMenuOn = false;
 
     }
