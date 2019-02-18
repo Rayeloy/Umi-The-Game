@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Realtime;
+using Photon.Pun;
 
-public class PlayerHUD : MonoBehaviour {
+public class PlayerHUD : MonoBehaviourPunCallbacks {
 
     [Header("Referencias")]
     public GameControllerBase gC;
@@ -36,7 +38,7 @@ public class PlayerHUD : MonoBehaviour {
         Interaction_Message.SetActive(false);
         crosshair.enabled = false;
         crosshairReduced.enabled = false;
-        if (gC.gameMode == GameMode.CaptureTheFlag)
+        if (gC.gameMode == GameMode.CaptureTheFlag && !PhotonNetwork.IsConnected)
         {
             SetupFlagSlider();
         }
@@ -44,7 +46,7 @@ public class PlayerHUD : MonoBehaviour {
 
     private void Update()
     {
-        if (gC.gameMode == GameMode.CaptureTheFlag)
+        if (gC.gameMode == GameMode.CaptureTheFlag && !PhotonNetwork.IsConnected)
         {
             UpdateFlagSlider();
         }

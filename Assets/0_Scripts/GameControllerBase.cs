@@ -95,11 +95,17 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     [HideInInspector]
     public bool online; //= PhotonNetwork.IsConnected; JUAN: No se puede inicializar el valor porque tira un error chungo, THX UNITY, está inicializado en el Awake
 
+    // variables para nuestro jugador online
     [HideInInspector]
     PlayerMovement onlinePlayer;
+    [HideInInspector]
     CameraController onlineCamera;
+    [HideInInspector]
     GameObject onlineCanvas;
+    [HideInInspector]
     Camera onlineUICamera;
+    [HideInInspector]
+    public PlayerActions BaseGameActions { get; set; }
     #endregion
 
     #region ----[ VARIABLES ]----
@@ -166,8 +172,10 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             //PlayerSetupOnline?
             //No hace falta SetUpCanvas creo
             //Haz los awakes, y haz el awake de cada jugador nuevo(esto ultimo hay que buscar donde ponerlo... en el CreatePlayer?
-            int playernumber = PhotonNetwork.PlayerList.Length;
+            int playernumber = PhotonNetwork.CurrentRoom.PlayerCount;
             CreatePlayer(playernumber.ToString());
+            OnlineAwake();
+            PlayersSetup();
             //OnlinePlayerSetup();
             //OnlineCanvasSetUp();
             //OnlineAwakePlayer();
@@ -187,7 +195,12 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
         else
         {
-            
+            onlinePlayer.KonoStart();
+            if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
+            {
+                StartGame();
+                Debug.Log("GameControllerBase: Empezamos el juego pues se han unido todos los jugadores");
+            }
         }
     }
 
@@ -282,8 +295,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         if (online)
         {
-            onlinePlayer.Actions = GameInfo.instance.playerActionsList[0];
-            onlinePlayer.team = GameInfo.instance.playerTeamList[0];
+            onlinePlayer.Actions = this.BaseGameActions; //Juan: hay que hacer la toma de valores de TeamSetupManager aquí pero bueh...
+            onlineCamera.myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+            onlineUICamera.rect = new Rect(0, 0, 1, 1);
         }
         else
         {
@@ -335,7 +349,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                     break;
             }
 
-            SetSpawnPositions();//Eloy: Para Juan: Esto tendrás que usarlo en online también supongo...
+            SetSpawnPositions();//Eloy: Para Juan: Esto tendrás que usarlo en online también supongo... JUAN: nup, con el photonNetwork.Instantiate ya les coloco en los spawns de entrada
         }
     }
 
@@ -349,6 +363,25 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
+    protected virtual void OnlineAwake()
+    {
+        myGameInterface.KonoAwake(this);
+        onlinePlayer.KonoAwake();
+        onlineCamera.KonoAwake();
+    }
+
+    //Juan: esta función se ejecuta antes de instanciar al jugador, PhotonNetwrok.Instantiate  así spawneará al jugador en su respectivo lugar desde el principio haya o no comenzado el juego
+    public Team SetOnlineTeam()
+    {
+        Team myTeam = Team.blue;
+        int playercount = (int)PhotonNetwork.CurrentRoom.PlayerCount;
+        if (playercount % 2 != 0) //Juan: Pares al azul impares al rojo
+        {
+            myTeam = Team.red;
+        }
+        return myTeam;
+    }
+
     public virtual void CreatePlayer(string playerNumber)
     {
         PlayerMovement newPlayer;
@@ -356,76 +389,118 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         CameraController newPlayerCamera;
         Camera newPlayerUICamera;
 
-        newPlayer = Instantiate(playerPrefab, playersParent).GetComponent<PlayerMovement>();
-
-        if (playerPrefab == null)
+        if (online)
         {
-            Debug.Log("GamerControllerBase: Color=Red><a>Missing playerPrefab Reference in GameController</a></Color>");
-        }
-        else
-        {
-            Debug.Log("GameControllerBase: Instantiating player over the network");
-            //JUAN: WARNING!!, el objeto que se instancie debe estar siempre en la carpeta de Resources de Photon, o ir al método de instantiate para cambiarlo
-            //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
-            if (PlayerMovement.LocalPlayerInstance == null)
+            if (playerPrefab == null)
             {
-                if (online)
-                {
-                    Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
-                    // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-                    newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(-200, -200, -200), Quaternion.identity, 0).GetComponent<PlayerMovement>();
-                }
+                Debug.Log("GamerControllerBase: Color=Red><a>Missing playerPrefab Reference in GameController</a></Color>");
             }
             else
             {
-                Debug.Log("GameControllerBase: Ignoring CreatePlayer() call because we already exist");
+                Debug.Log("GameControllerBase: Instantiating player over the network");
+                //JUAN: WARNING!!, el objeto que se instancie debe estar siempre en la carpeta de Resources de Photon, o ir al método de instantiate para cambiarlo
+                //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
+                if (PlayerMovement.LocalPlayerInstance == null)
+                {
+                    if (online)
+                    {
+                        Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
+                        // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
+                        Team newPlayerTeam = SetOnlineTeam();
+                        Vector3 respawn = new Vector3(-200, -200, -200);
+                        if (newPlayerTeam == Team.blue)
+                        {
+                            respawn = blueTeamSpawn.position;
+                        }
+                        else if (newPlayerTeam == Team.red)
+                        {
+                            respawn = redTeamSpawn.position;
+                        }
+                        newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, respawn, Quaternion.identity, 0).GetComponent<PlayerMovement>();
+
+                        newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
+                        newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
+                        newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
+
+                        //nombrado de objetos nuevos
+                        newPlayer.gameObject.name = "Player " + playerNumber;
+                        newPlayerCanvas.gameObject.name = "Canvas " + playerNumber;
+                        newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
+                        newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
+
+                        //Inicializar referencias
+                        //Player
+                        newPlayer.gC = this;
+                        newPlayer.myCamera = newPlayerCamera;
+                        newPlayer.myPlayerHUD = newPlayerCanvas.GetComponent<PlayerHUD>();
+                        newPlayer.myUICamera = newPlayerUICamera;
+                        newPlayer.myPlayerCombat.attackNameText = newPlayerCanvas.GetComponent<PlayerHUD>().attackNameText;
+                        //Canvas
+                        newPlayerCanvas.GetComponent<PlayerHUD>().gC = this;
+                        newPlayerCanvas.GetComponent<Canvas>().worldCamera = newPlayerUICamera;
+                        //CameraBase
+                        newPlayerCamera.myPlayerMov = newPlayer;
+                        newPlayerCamera.myPlayer = newPlayer.transform;
+                        newPlayerCamera.cameraFollowObj = newPlayer.cameraFollow;
+
+                        //Añadir a los arrays todos los componentes del jugador
+                        //guarda jugador
+                        allPlayers.Add(newPlayer);
+                        allCanvas.Add(newPlayerCanvas);
+                        allCameraBases.Add(newPlayerCamera);
+                        allUICameras.Add(newPlayerUICamera);
+                        contador.Add(newPlayerCanvas.GetComponent<PlayerHUD>().contador);
+                        powerUpPanel.Add(newPlayerCanvas.GetComponent<PlayerHUD>().powerUpPanel);
+
+                        onlinePlayer = newPlayer;
+                        onlineCamera = newPlayerCamera;
+                        onlineCanvas = newPlayerCanvas;
+                        onlineUICamera = newPlayerUICamera;
+                    }
+                }
+                else
+                {
+                    Debug.Log("GameControllerBase: Ignoring CreatePlayer() call because we already exist");
+                }
             }
-        }
-        
-        newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
-        newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
-        newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
-
-        //nombrado de objetos nuevos
-        newPlayer.gameObject.name = "Player " + playerNumber;
-        newPlayerCanvas.gameObject.name = "Canvas " + playerNumber;
-        newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
-        newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
-
-        //Inicializar referencias
-        //Player
-        newPlayer.gC = this;
-        newPlayer.myCamera = newPlayerCamera;
-        newPlayer.myPlayerHUD = newPlayerCanvas.GetComponent<PlayerHUD>();
-        newPlayer.myUICamera = newPlayerUICamera;
-        newPlayer.myPlayerCombat.attackNameText = newPlayerCanvas.GetComponent<PlayerHUD>().attackNameText;
-        //Canvas
-        newPlayerCanvas.GetComponent<PlayerHUD>().gC = this;
-        newPlayerCanvas.GetComponent<Canvas>().worldCamera = newPlayerUICamera;
-        //CameraBase
-        newPlayerCamera.myPlayerMov = newPlayer;
-        newPlayerCamera.myPlayer = newPlayer.transform;
-        newPlayerCamera.cameraFollowObj = newPlayer.cameraFollow;
-
-        if (online)
-        {
-            onlinePlayer = newPlayer;
-            onlineCamera = newPlayerCamera;
-            onlineCanvas = newPlayerCanvas;
-            onlineUICamera = newPlayerUICamera;
         }
         else
         {
+            newPlayer = Instantiate(playerPrefab, playersParent).GetComponent<PlayerMovement>();
+            newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
+            newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
+            newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
+
+            //nombrado de objetos nuevos
+            newPlayer.gameObject.name = "Player " + playerNumber;
+            newPlayerCanvas.gameObject.name = "Canvas " + playerNumber;
+            newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
+            newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
+
+            //Inicializar referencias
+            //Player
+            newPlayer.gC = this;
+            newPlayer.myCamera = newPlayerCamera;
+            newPlayer.myPlayerHUD = newPlayerCanvas.GetComponent<PlayerHUD>();
+            newPlayer.myUICamera = newPlayerUICamera;
+            newPlayer.myPlayerCombat.attackNameText = newPlayerCanvas.GetComponent<PlayerHUD>().attackNameText;
+            //Canvas
+            newPlayerCanvas.GetComponent<PlayerHUD>().gC = this;
+            newPlayerCanvas.GetComponent<Canvas>().worldCamera = newPlayerUICamera;
+            //CameraBase
+            newPlayerCamera.myPlayerMov = newPlayer;
+            newPlayerCamera.myPlayer = newPlayer.transform;
+            newPlayerCamera.cameraFollowObj = newPlayer.cameraFollow;
+                
             //Añadir a los arrays todos los componentes del jugador
             //guarda jugador
             allPlayers.Add(newPlayer);
             allCanvas.Add(newPlayerCanvas);
             allCameraBases.Add(newPlayerCamera);
             allUICameras.Add(newPlayerUICamera);
+            contador.Add(newPlayerCanvas.GetComponent<PlayerHUD>().contador);
+            powerUpPanel.Add(newPlayerCanvas.GetComponent<PlayerHUD>().powerUpPanel);
         }
-
-        contador.Add(newPlayerCanvas.GetComponent<PlayerHUD>().contador);
-        powerUpPanel.Add(newPlayerCanvas.GetComponent<PlayerHUD>().powerUpPanel);
     }
 
     //actualmente en desuso
