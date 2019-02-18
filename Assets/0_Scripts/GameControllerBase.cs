@@ -176,6 +176,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             CreatePlayer(playernumber.ToString());
             OnlineAwake();
             PlayersSetup();
+            myGameInterface.KonoAwake(this);
             //OnlinePlayerSetup();
             //OnlineCanvasSetUp();
             //OnlineAwakePlayer();
@@ -196,9 +197,17 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         else
         {
             onlinePlayer.KonoStart();
+            playing = true;
+            gamePaused = false;
+
+            onlinePlayer.SetVelocity(Vector3.zero);
+            onlinePlayer.myCamera.InstantPositioning();
+            onlinePlayer.myCamera.InstantRotation();
+            onlinePlayer.ResetPlayer();
+            onlinePlayer.myPlayerAnimation.RestartAnimation();
+
             if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
             {
-                StartGame();
                 Debug.Log("GameControllerBase: Empezamos el juego pues se han unido todos los jugadores");
             }
         }
@@ -295,9 +304,10 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         if (online)
         {
-            onlinePlayer.Actions = this.BaseGameActions; //Juan: hay que hacer la toma de valores de TeamSetupManager aquí pero bueh...
+            onlinePlayer.Actions = PlayerActions.CreateWithKeyboardBindings(); //Juan: hay que hacer la toma de valores de TeamSetupManager aquí pero bueh...
             onlineCamera.myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
             onlineUICamera.rect = new Rect(0, 0, 1, 1);
+            onlineCamera.KonoAwake();
         }
         else
         {
@@ -417,7 +427,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                             respawn = redTeamSpawn.position;
                         }
                         newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, respawn, Quaternion.identity, 0).GetComponent<PlayerMovement>();
-
+                        
                         newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
                         newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
                         newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
@@ -655,7 +665,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     public virtual void StartGameOver(Team _winnerTeam)
     {
         //print("GAME OVER");
-        if (!gameOverStarted)
+        if (!gameOverStarted && !online)
         {
             playing = false;
             gamePaused = true;
@@ -699,12 +709,14 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     public void PauseGame(PlayerActions p)
     {
-        print("PARO EL TIEMPO AQUÍ");
-        Time.timeScale = 0;
-        myGameInterface.PauseGame();
-        playerActions = p;
-        gamePaused = true;
-
+        if (!online)
+        {
+            print("PARO EL TIEMPO AQUÍ");
+            Time.timeScale = 0;
+            myGameInterface.PauseGame();
+            playerActions = p;
+            gamePaused = true;
+        }
     }
 
     public void UnPauseGame()

@@ -238,15 +238,6 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     public void Awake()
     {
         online = PhotonNetwork.IsConnected;
-        // #Important
-        // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
-        if (photonView.IsMine)
-        {
-            PlayerMovement.LocalPlayerInstance = this.gameObject;
-        }
-        // #Critical
-        // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
-        DontDestroyOnLoad(this.gameObject);
     }
 
     public void KonoAwake()
@@ -258,6 +249,17 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         SetupInputsBuffer();
 
         PlayerAwakes();
+
+        // #Important
+        // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
+        if (photonView.IsMine)
+        {
+            PlayerMovement.LocalPlayerInstance = this.gameObject;
+        }
+        // #Critical
+        // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+        //DontDestroyOnLoad(this.gameObject);
+
     }
 
     //todos los konoAwakes
@@ -268,18 +270,6 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         myPlayerHook.KonoAwake();
         myPlayerWeap.KonoAwake();
         myPlayerBody.KonoAwake();
-
-        if (online) { 
-            // #Important
-            // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
-            if (photonView.IsMine)
-            {
-                PlayerMovement.LocalPlayerInstance = this.gameObject;
-            }
-            // #Critical
-            // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
-            DontDestroyOnLoad(this.gameObject);
-        }
     }
     #endregion
 
