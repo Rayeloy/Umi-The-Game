@@ -41,7 +41,7 @@ public class GameController_FlagMode : GameControllerBase
     public override void CreatePlayer(string playerNumber)
     {
         base.CreatePlayer(playerNumber);
-        if (offline)//Eloy: para Juan: en online habrá que solamente referenciar en el score manager a su player, no los de todos.
+        if (!online)//Eloy: para Juan: en online habrá que solamente referenciar en el score manager a su player, no los de todos.
         {
             myScoreManager.blueTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().blueTeamScoreText);
             myScoreManager.redTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().redTeamScoreText);
@@ -53,7 +53,7 @@ public class GameController_FlagMode : GameControllerBase
     {
         int index = allPlayers.IndexOf(_pM);
         base.RemovePlayer(_pM);
-        if (offline)//Eloy: para Juan: como solo se referencia el nuestro propio, no hace falta borrar cosas del score manager cuando se borra a otro player. Solo borramos cuando nos borramos a nosotros.
+        if (!online)//Eloy: para Juan: como solo se referencia el nuestro propio, no hace falta borrar cosas del score manager cuando se borra a otro player. Solo borramos cuando nos borramos a nosotros.
         {
             myScoreManager.blueTeamScore_Text.RemoveAt(index);
             myScoreManager.redTeamScore_Text.RemoveAt(index);

@@ -181,8 +181,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     public Flag flag = null;
     [HideInInspector]
     public bool inWater = false;
-
-    BufferedInput[] inputsBuffer;//Eloy: para Juan: esta variable iría aquí? o a "Variables"
+    [HideInInspector]
+    public bool online = false;
     #endregion
 
     #region ----[ VARIABLES ]----    
@@ -217,6 +217,9 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     //WATER
     bool jumpedOutOfWater = true;
+
+
+    BufferedInput[] inputsBuffer;//Eloy: para Juan: esta variable iría aquí? o a "Variables", JUAN: A variables mejor
     #endregion
 
     #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
@@ -225,16 +228,9 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     public void Awake()
     {
-        // #Important
-        // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
-        if (photonView.IsMine)
-        {
-            PlayerMovement.LocalPlayerInstance = this.gameObject;
-        }
-         // #Critical
-         // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
-        DontDestroyOnLoad(this.gameObject);
+        online = PhotonNetwork.IsConnected;
     }
+
     public void KonoAwake()
     {
         currentSpeed = 0;
@@ -248,6 +244,18 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         myPlayerHook.KonoAwake();
         myPlayerWeap.KonoAwake();
         myPlayerBody.KonoAwake();
+
+        if (online) { 
+            // #Important
+            // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
+            if (photonView.IsMine)
+            {
+                PlayerMovement.LocalPlayerInstance = this.gameObject;
+            }
+            // #Critical
+            // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+            DontDestroyOnLoad(this.gameObject);
+        }
     }
     #endregion
 

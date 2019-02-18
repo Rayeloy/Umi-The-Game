@@ -43,7 +43,7 @@ public class GameInterface : MonoBehaviour
         pauseRestartButton.SetActive(false);
         pauseMenuButton.SetActive(false);
 
-        if (gC.offline)
+        if (!gC.online)
         {
             victoryRed.gameObject.SetActive(false);
             victoryBlue.gameObject.SetActive(false);

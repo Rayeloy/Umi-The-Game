@@ -93,8 +93,13 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     [HideInInspector]
     public bool playing = false;
     [HideInInspector]
-    public bool offline; //= !PhotonNetwork.IsConnected; JUAN: No se puede inicializar el valor porque tira un error chungo, THX UNITY, está inicializado en el Awake
+    public bool online; //= PhotonNetwork.IsConnected; JUAN: No se puede inicializar el valor porque tira un error chungo, THX UNITY, está inicializado en el Awake
 
+    [HideInInspector]
+    PlayerMovement onlinePlayer;
+    CameraController onlineCamera;
+    GameObject onlineCanvas;
+    Camera onlineUICamera;
     #endregion
 
     #region ----[ VARIABLES ]----
@@ -108,18 +113,26 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region Awake
     protected virtual void Awake()
     {
-        offline = !PhotonNetwork.IsConnected;
-        //Esto es para no entrar en escenas cuando no tenemos los controles. Te devuelve a seleccion de equipo
-        //Eloy: he cambiado esto porque me he dado cuenta de que es necesario hasta en la build final, no solo en el editor.
-        if (GameInfo.instance == null || GameInfo.instance.inControlManager==null)
+        online = PhotonNetwork.IsConnected;
+        if (online)
         {
-            string escena = TeamSetupManager.siguienteEscena;
-            //print(escena);
-            TeamSetupManager.siguienteEscena = SceneManager.GetActiveScene().name;
-            TeamSetupManager.startFromMap = true;
-            SceneManager.LoadScene("TeamSetup");
-            return;
+            Debug.Log("GameControllerBase: estamos conectados y la base del game controller está funcionando correctamente");
         }
+        else
+        {
+            //Esto es para no entrar en escenas cuando no tenemos los controles. Te devuelve a seleccion de equipo
+            //Eloy: he cambiado esto porque me he dado cuenta de que es necesario hasta en la build final, no solo en el editor.
+            if (GameInfo.instance == null || GameInfo.instance.inControlManager == null)
+            {
+                string escena = TeamSetupManager.siguienteEscena;
+                //print(escena);
+                TeamSetupManager.siguienteEscena = SceneManager.GetActiveScene().name;
+                TeamSetupManager.startFromMap = true;
+                SceneManager.LoadScene("TeamSetup");
+                return;
+            }
+        }
+
 
         //initialize lists
         allPlayers = new List<PlayerMovement>();
@@ -132,7 +145,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
         CheckValidInputsBuffer();
 
-        if (offline)
+        if (!online)
         {
             playerNum = GameInfo.instance.nPlayers;
             playerNum = Mathf.Clamp(playerNum, 1, 4);
@@ -155,6 +168,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             //Haz los awakes, y haz el awake de cada jugador nuevo(esto ultimo hay que buscar donde ponerlo... en el CreatePlayer?
             int playernumber = PhotonNetwork.PlayerList.Length;
             CreatePlayer(playernumber.ToString());
+            //OnlinePlayerSetup();
+            //OnlineCanvasSetUp();
+            //OnlineAwakePlayer();
         }
     }
  
@@ -163,11 +179,15 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region Start
     protected virtual void Start()
     {
-        if (offline)
+        if (!online)
         {
             StartPlayers();
             StartGame();
             Debug.Log("GameController Start terminado");
+        }
+        else
+        {
+            
         }
     }
 
@@ -260,7 +280,12 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     /// </summary>
     void PlayersSetup()
     {
-        if (offline)
+        if (online)
+        {
+            onlinePlayer.Actions = GameInfo.instance.playerActionsList[0];
+            onlinePlayer.team = GameInfo.instance.playerTeamList[0];
+        }
+        else
         {
             for (int i = 0; i < allPlayers.Count; i++)
             {
@@ -328,71 +353,80 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         GameObject newPlayerCanvas;
         CameraController newPlayerCamera;
         Camera newPlayerUICamera;
-        if (offline)
+
+        newPlayer = Instantiate(playerPrefab, playersParent).GetComponent<PlayerMovement>();
+
+        if (playerPrefab == null)
         {
+            Debug.Log("GamerControllerBase: Color=Red><a>Missing playerPrefab Reference in GameController</a></Color>");
+        }
+        else
+        {
+            Debug.Log("GameControllerBase: Instantiating player over the network");
+            //JUAN: WARNING!!, el objeto que se instancie debe estar siempre en la carpeta de Resources de Photon, o ir al método de instantiate para cambiarlo
+            //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
+            if (PlayerMovement.LocalPlayerInstance == null)
+            {
+                if (online)
+                {
+                    Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
+                    // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
+                    newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(-200, -200, -200), Quaternion.identity, 0).GetComponent<PlayerMovement>();
+                }
+            }
+            else
+            {
+                Debug.Log("GameControllerBase: Ignoring CreatePlayer() call because we already exist");
+            }
+        }
+        
+        newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
+        newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
+        newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
 
-            //playerNum++;
-            newPlayer = Instantiate(playerPrefab, playersParent).GetComponent<PlayerMovement>();
-            newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
-            newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
-            newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
+        //nombrado de objetos nuevos
+        newPlayer.gameObject.name = "Player " + playerNumber;
+        newPlayerCanvas.gameObject.name = "Canvas " + playerNumber;
+        newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
+        newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
 
-            //nombrado de objetos nuevos
-            newPlayer.gameObject.name = "Player " + playerNumber;
-            newPlayerCanvas.gameObject.name = "Canvas " + playerNumber;
-            newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
-            newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
+        //Inicializar referencias
+        //Player
+        newPlayer.gC = this;
+        newPlayer.myCamera = newPlayerCamera;
+        newPlayer.myPlayerHUD = newPlayerCanvas.GetComponent<PlayerHUD>();
+        newPlayer.myUICamera = newPlayerUICamera;
+        newPlayer.myPlayerCombat.attackNameText = newPlayerCanvas.GetComponent<PlayerHUD>().attackNameText;
+        //Canvas
+        newPlayerCanvas.GetComponent<PlayerHUD>().gC = this;
+        newPlayerCanvas.GetComponent<Canvas>().worldCamera = newPlayerUICamera;
+        //CameraBase
+        newPlayerCamera.myPlayerMov = newPlayer;
+        newPlayerCamera.myPlayer = newPlayer.transform;
+        newPlayerCamera.cameraFollowObj = newPlayer.cameraFollow;
 
-            //Inicializar referencias
-            //Player
-            newPlayer.gC = this;
-            newPlayer.myCamera = newPlayerCamera;
-            newPlayer.myPlayerHUD = newPlayerCanvas.GetComponent<PlayerHUD>();
-            newPlayer.myUICamera = newPlayerUICamera;
-            newPlayer.myPlayerCombat.attackNameText = newPlayerCanvas.GetComponent<PlayerHUD>().attackNameText;
-            //Canvas
-            newPlayerCanvas.GetComponent<PlayerHUD>().gC = this;
-            newPlayerCanvas.GetComponent<Canvas>().worldCamera = newPlayerUICamera;
-            //CameraBase
-            newPlayerCamera.myPlayerMov = newPlayer;
-            newPlayerCamera.myPlayer = newPlayer.transform;
-            newPlayerCamera.cameraFollowObj = newPlayer.cameraFollow;
-
+        if (online)
+        {
+            onlinePlayer = newPlayer;
+            onlineCamera = newPlayerCamera;
+            onlineCanvas = newPlayerCanvas;
+            onlineUICamera = newPlayerUICamera;
+        }
+        else
+        {
             //Añadir a los arrays todos los componentes del jugador
             //guarda jugador
             allPlayers.Add(newPlayer);
             allCanvas.Add(newPlayerCanvas);
             allCameraBases.Add(newPlayerCamera);
             allUICameras.Add(newPlayerUICamera);
+        }
 
-            contador.Add(newPlayerCanvas.GetComponent<PlayerHUD>().contador);
-            powerUpPanel.Add(newPlayerCanvas.GetComponent<PlayerHUD>().powerUpPanel);
-        }
-        else
-        {
-            if(playerPrefab == null)
-            {
-                Debug.Log("GamerControllerBase: Color=Red><a>Missing playerPrefab Reference in GameController</a></Color>");
-            }
-            else
-            {
-                Debug.Log("GameControllerBase: Instantiating player over the network");
-                //JUAN: WARNING!!, el objeto que se instancie debe estar siempre en la carpeta de Resources de Photon, o ir al método de instantiate para cambiarlo
-                //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
-                if (PlayerMovement.LocalPlayerInstance == null)
-                {
-                    Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
-                    // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-                    PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0, 0, 0), Quaternion.identity, 0);
-                }
-                else
-                {
-                    Debug.Log("GameControllerBase: Ignoring CreatePlayer() call because we already exist");
-                }
-            }
-        }
+        contador.Add(newPlayerCanvas.GetComponent<PlayerHUD>().contador);
+        powerUpPanel.Add(newPlayerCanvas.GetComponent<PlayerHUD>().powerUpPanel);
     }
 
+    //actualmente en desuso
     public virtual void RemovePlayer(PlayerMovement _pM)//solo para online
     {
         for (int i = 0; i < allPlayers.Count; i++)
@@ -417,7 +451,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     /// </summary>
     private void SetUpCanvases()//Para PantallaDividida
     {
-        if (offline)
+        if (!online)
         {
             for(int i = 0; playerNum >= 2 && i < contador.Count;i++)
             {
