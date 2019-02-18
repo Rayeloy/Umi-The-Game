@@ -12,8 +12,8 @@ public class WeaponData : ScriptableObject
     [Tooltip("Weapon prefab for attaching to the hand.")]
     public GameObject weaponPrefab;
 
-
-    public float playerMaxSpeed;
+    [Tooltip("Player maximum speed when carrying this weapon. Normal value is 10.")]
+    public float playerMaxSpeed = 10;
     public AttackData basicAttack;
     public AttackData strongAttack;
     //public SpecialAttack

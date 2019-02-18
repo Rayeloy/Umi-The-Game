@@ -70,12 +70,19 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     //VARIABLES DE MOVIMIENTO
     Vector3 objectiveVel;
-    [Header("SPEED")]
-    public float maxMoveSpeed = 10.0f;
+    [HideInInspector]
+    public float maxMoveSpeed = 10;
     float maxMoveSpeed2; // is the max speed from which we aply the joystick sensitivity value
     float currentMaxMoveSpeed = 10.0f; // its the final max speed, after the joyjoystick sensitivity value
 
-
+    [Header("ROTATION")]
+    public float rotationSpeed = 1;
+    [Range(0,180)]
+    public float instantRotationMaxAngle = 130;
+    //public float rotationSpeedFixedCam = 250;
+    float targetRotation = 0;
+    float currentRotation;
+    [Header("SPEED")]
     [Tooltip("Maximum speed that you can travel at horizontally when hit by someone")]
     public float maxKnockbackSpeed = 300f;
     public float maxAimingSpeed = 5f;
@@ -166,6 +173,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     [HideInInspector]
     public Vector3 currentMovDir;
     [HideInInspector]
+    Vector3 currentInputDir;
+    [HideInInspector]
     public bool wallJumpAnim = false;
     [HideInInspector]
     public Vector3 currentFacingDir = Vector3.forward;
@@ -182,7 +191,13 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     [HideInInspector]
     public bool inWater = false;
     [HideInInspector]
+<<<<<<< HEAD
     public bool online = false;
+=======
+    public Vector3 spawnPosition;
+
+    BufferedInput[] inputsBuffer;//Eloy: para Juan: esta variable iría aquí? o a "Variables"
+>>>>>>> 547977a979e3edc22c9773c9af53f00068d0dc80
     #endregion
 
     #region ----[ VARIABLES ]----    
@@ -204,7 +219,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     bool stunned;
     bool knockBackDone;
     Vector3 knockback;
-    
+
     //FIXED JUMPS (Como el trampolín)
     bool fixedJumping;
     bool fixedJumpDone;
@@ -228,17 +243,35 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     public void Awake()
     {
+<<<<<<< HEAD
         online = PhotonNetwork.IsConnected;
+=======
+        // #Important
+        // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
+        if (photonView.IsMine)
+        {
+            PlayerMovement.LocalPlayerInstance = this.gameObject;
+        }
+        // #Critical
+        // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+        DontDestroyOnLoad(this.gameObject);
+>>>>>>> 547977a979e3edc22c9773c9af53f00068d0dc80
     }
 
     public void KonoAwake()
     {
+        maxMoveSpeed = 10;
         currentSpeed = 0;
         noInput = false;
         lastWallAngle = 0;
         SetupInputsBuffer();
 
-        //todos los konoAwakes
+        PlayerAwakes();
+    }
+
+    //todos los konoAwakes
+    void PlayerAwakes()
+    {
         myPlayerCombat.KonoAwake();
         myPlayerAnimation.KonoAwake();
         myPlayerHook.KonoAwake();
@@ -289,6 +322,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     private void PlayerStarts()
     {
         myPlayerCombat.KonoStart();
+        myPlayerHUD.KonoStart();
     }
 
     #endregion
@@ -331,12 +365,20 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     #region ----[ CLASS FUNCTIONS ]----
 
+    public void ResetPlayer()
+    {
+        ExitWater();
+        jumpSt = JumpState.none;
+        myPlayerWeap.DropWeapon();
+        controller.collisionMask = LayerMask.GetMask("Stage", "WaterFloor", "SpawnWall");
+    }
+
     #region INPUTS BUFFERING
 
     void SetupInputsBuffer()
     {
         inputsBuffer = new BufferedInput[gC.allBufferedInputs.Length];
-        for(int i=0; i < gC.allBufferedInputs.Length; i++)
+        for (int i = 0; i < gC.allBufferedInputs.Length; i++)
         {
             inputsBuffer[i] = new BufferedInput(gC.allBufferedInputs[i]);
         }
@@ -344,7 +386,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     void ProcessInputsBuffer()
     {
-        for(int i=0; i<inputsBuffer.Length; i++)
+        for (int i = 0; i < inputsBuffer.Length; i++)
         {
             if (inputsBuffer[i].buffering)
             {
@@ -367,7 +409,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         bool found = false;
         for (int i = 0; i < inputsBuffer.Length && !found; i++)
         {
-            if(inputsBuffer[i].input.inputType == _inputType)
+            if (inputsBuffer[i].input.inputType == _inputType)
             {
                 inputsBuffer[i].StartBuffering();
                 found = true;
@@ -381,19 +423,13 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     #endregion
 
+    #region MOVEMENT -----------------------------------------------
     public void SetVelocity(Vector3 vel)
     {
         objectiveVel = vel;
         currentVel = objectiveVel;
     }
-    public void ResetPlayer()
-    {
-        ExitWater();
-        jumpSt = JumpState.none;
-    }
 
-
-    #region MOVEMENT -----------------------------------------------
     public void CalculateMoveDir()
     {
         if (!noInput)
@@ -409,24 +445,24 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                 joystickSens = joystickSens >= 0.88f ? 1 : joystickSens;//Eloy: esto evita un "bug" por el que al apretar el joystick 
                                                                         //contra las esquinas no da un valor total de 1, sino de 0.9 o así
                 moveSt = MoveState.Moving;
-                currentMovDir = temp;
-                currentMovDir.Normalize();
+                currentInputDir = temp;
+                currentInputDir.Normalize();
                 switch (myCamera.camMode)
                 {
                     case cameraMode.Fixed:
-                        currentMovDir = RotateVector(-facingAngle, temp);
+                        currentInputDir = currentMovDir = RotateVector(-facingAngle, temp);
                         break;
                     case cameraMode.Shoulder:
-                        currentMovDir = RotateVector(-facingAngle, temp);
+                        currentInputDir = currentMovDir = RotateVector(-facingAngle, temp);
                         break;
                     case cameraMode.Free:
                         Vector3 camDir = (transform.position - myCamera.transform.GetChild(0).position).normalized;
                         camDir.y = 0;
                         // ANGLE OF JOYSTICK
-                        joystickAngle = Mathf.Acos(((0 * currentMovDir.x) + (1 * currentMovDir.z)) / (1 * currentMovDir.magnitude)) * Mathf.Rad2Deg;
+                        joystickAngle = Mathf.Acos(((0 * currentInputDir.x) + (1 * currentInputDir.z)) / (1 * currentInputDir.magnitude)) * Mathf.Rad2Deg;
                         joystickAngle = (horiz > 0) ? -joystickAngle : joystickAngle;
                         //rotate camDir joystickAngle degrees
-                        currentMovDir = RotateVector(joystickAngle, camDir);
+                        currentInputDir = RotateVector(joystickAngle, camDir);
                         //print("joystickAngle= " + joystickAngle + "; camDir= " + camDir.ToString("F4") + "; currentMovDir = " + currentMovDir.ToString("F4"));
                         RotateCharacter();
                         break;
@@ -436,7 +472,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             {
                 joystickSens = 1;
                 moveSt = MoveState.NotMoving;
-                currentMovDir = Vector3.zero;
+                currentInputDir = Vector3.zero;
             }
         }
     }
@@ -672,7 +708,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + moveSt != MoveState.Boost + ")");
         }
 
-        if(!result && !calledFromBuffer)
+        if (!result && !calledFromBuffer)
         {
             BufferInput(PlayerInput.Jump);
         }
@@ -763,7 +799,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         currentVel = finalDir * wallJumpVelocity;
         currentSpeed = currentVel.magnitude;
         currentMovDir = new Vector3(finalDir.x, 0, finalDir.z);
-        RotateCharacter();
+        RotateCharacter(currentMovDir);
 
         myPlayerAnimation.SetJump(true);
 
@@ -794,14 +830,14 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             boostReady = false;
             moveSt = MoveState.Boost;
             boostTime = 0f;
-            if (currentMovDir != Vector3.zero)
+            if (currentInputDir != Vector3.zero)//Usando el joystick o dirección
             {
                 boostDir = currentMovDir;
             }
-            else
+            else//sin tocar ninguna dirección/joystick
             {
-                currentMovDir = boostDir = new Vector3(currentCamFacingDir.x, 0, currentCamFacingDir.z);
-                RotateCharacter();
+                currentMovDir = boostDir = new Vector3(currentCamFacingDir.x, 0, currentCamFacingDir.z);//nos movemos en la dirección en la que mire la cámara
+                RotateCharacter(currentMovDir);
             }
         }
 
@@ -863,7 +899,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     }
 
-    public void RotateCharacter(float rotSpeed = 0)
+    public void RotateCharacter(float rotSpeed=0)
     {
         switch (myCamera.camMode)
         {
@@ -880,15 +916,70 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                 rotateObj.Rotate(dir, rotSpeed * Time.deltaTime);
                 break;
             case cameraMode.Free:
-                if (currentMovDir != Vector3.zero)
+                if (currentInputDir != Vector3.zero)
                 {
-                    float angle = Mathf.Acos(((0 * currentMovDir.x) + (1 * currentMovDir.z)) / (1 * currentMovDir.magnitude)) * Mathf.Rad2Deg;
-                    angle = currentMovDir.x < 0 ? -angle : angle;
-                    rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
+                    currentRotation = rotateObj.localRotation.eulerAngles.y;
+                    //currentRotation = currentRotation > 180 ? currentRotation - 360 : currentRotation;
+
+                    // angle = Arcos((x + y) / magnitude)
+                    float angle = Mathf.Acos(((0 * currentInputDir.x) + (1 * currentInputDir.z)) / (1 * currentInputDir.magnitude)) * Mathf.Rad2Deg;
+                    angle = currentInputDir.x < 0 ? 360 - angle : angle;
+                    targetRotation = angle;
+
+                    if (currentRotation != targetRotation)
+                    {
+                        if(Mathf.Abs(currentRotation - targetRotation) > instantRotationMaxAngle)//Instant rotation
+                        {
+                            RotateCharacter(currentInputDir);
+                        }
+                        else//rotate with speed
+                        {
+                            //rotateObj.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
+                            #region --- Decide rotation direction ---
+                            float sign = 1;
+                            bool currentRotOver180 = currentRotation > 180 ? true : false;
+                            bool targetRotOver180 = targetRotation > 180 ? true : false;
+                            if (currentRotOver180 == targetRotOver180)
+                            {
+                                sign = currentRotation > targetRotation ? -1 : 1;
+                            }
+                            else
+                            {
+                                float oppositeAngle = currentRotation + 180;
+                                oppositeAngle = oppositeAngle > 360 ? oppositeAngle - 360 : oppositeAngle;
+                                print("oppositeAngle = " + oppositeAngle);
+                                sign = oppositeAngle < targetRotation ? -1 : 1;
+                            }
+                            #endregion
+
+                            float newAngle = currentRotation + (sign * rotationSpeed * Time.deltaTime);
+
+                            if (currentRotation < targetRotation && newAngle > targetRotation)
+                            {
+                                newAngle = targetRotation;
+                            }
+                            else if (currentRotation > targetRotation && newAngle < targetRotation)
+                            {
+                                newAngle = targetRotation;
+                            }
+                            rotateObj.localRotation = Quaternion.Euler(0, newAngle, 0);
+                        }         
+                    }
+
+                    print("currentRotation = " + currentRotation + "; targetRotation = " + targetRotation);
+                    //rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
                 }
                 break;
         }
+        currentMovDir = AngleToVector(rotateObj.rotation.eulerAngles.y);
+        print("current angle = " + rotateObj.rotation.eulerAngles.y + "; currentMovDir = "+currentMovDir);
+    }
 
+    void RotateCharacter(Vector3 dir)
+    {
+        float angle = Mathf.Acos(dir.z/ dir.magnitude) * Mathf.Rad2Deg;
+        angle = dir.x < 0 ? 360 - angle : angle;
+        rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
     }
     #endregion
 
@@ -1133,6 +1224,11 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     #endregion
 
     #region  AUXILIAR FUNCTIONS ---------------------------------------------
+    Vector3 AngleToVector(float angle)
+    {
+        angle = angle * Mathf.Deg2Rad;
+        return new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle));
+    }
     public Vector3 RotateVector(float angle, Vector3 vector)
     {
         //rotate angle -90 degrees

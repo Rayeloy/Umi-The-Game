@@ -31,15 +31,15 @@ public class PlayerHUD : MonoBehaviour {
     Transform flag;
     Vector3 flagPos;
 
-    private void Start()
+    public void KonoStart()
     {
+        Interaction_Message.SetActive(false);
         crosshair.enabled = false;
         crosshairReduced.enabled = false;
         if (gC.gameMode == GameMode.CaptureTheFlag)
         {
             SetupFlagSlider();
         }
-        Interaction_Message.SetActive(false);
     }
 
     private void Update()
@@ -57,6 +57,7 @@ public class PlayerHUD : MonoBehaviour {
         //if (!interactButtonImage.enabled) interactButtonImage.enabled = true;
 
         if (!Interaction_Message.activeInHierarchy) Interaction_Message.SetActive(true);
+        print("Setting Pickup Weapon Text Message");
         changeYourWeaponToText.text = "to change your weapon to " + _weap.weaponName;
     }
 
