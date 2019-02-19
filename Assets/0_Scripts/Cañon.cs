@@ -24,11 +24,10 @@ public class Cañon : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Break();
         if (other.tag != "Player") return;
 
         PlayerMovement pm = other.transform.GetComponent<PlayerBody>().myPlayerMov;
-        Debug.Log(pm.gravity);
+        //Debug.Log(pm.gravity);
         LaunchData launchData = CalculateLaunchData(pm.gravity);
 		//if (pm != null && pm.currentVel.y <= playerSpeed)
 	    pm.StartFixedJump(launchData.initialVolicity, launchData.timeToTarget);
