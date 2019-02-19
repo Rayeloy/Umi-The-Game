@@ -951,13 +951,13 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                         }         
                     }
 
-                    print("currentRotation = " + currentRotation + "; targetRotation = " + targetRotation);
+                    //print("currentRotation = " + currentRotation + "; targetRotation = " + targetRotation);
                     //rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
                 }
                 break;
         }
         currentMovDir = AngleToVector(rotateObj.rotation.eulerAngles.y);
-        print("current angle = " + rotateObj.rotation.eulerAngles.y + "; currentMovDir = "+currentMovDir);
+        //print("current angle = " + rotateObj.rotation.eulerAngles.y + "; currentMovDir = "+currentMovDir);
     }
 
     void RotateCharacter(Vector3 dir)
