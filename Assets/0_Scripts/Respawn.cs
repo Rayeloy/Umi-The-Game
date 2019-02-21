@@ -44,7 +44,8 @@ public class Respawn : MonoBehaviour {
             origin = transform.TransformPoint(new Vector3(myMesh.bounds.min.x, myMesh.bounds.center.y, myMesh.bounds.center.z));
             origin += dir * playerHalfWidth;
         }
-        print("Respawn "+team+" : Origin = "+origin+ "; playerHalfWidth = " + playerHalfWidth + "; dir = " + dir+"; spacing = "+spacing+ "; min = "+min+"; max = "+max+"; width = "+width);
+        print("Respawn "+team+" : Origin = "+origin+ "; playerHalfWidth = " + playerHalfWidth + "; dir = " + dir+
+            "; spacing = "+spacing+ "; min = "+min+"; max = "+max+"; width = "+width);
 
         for(int i=0; i<playerNum; i++)
         {

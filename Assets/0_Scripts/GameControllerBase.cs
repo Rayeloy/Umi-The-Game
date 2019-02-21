@@ -55,8 +55,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     [Header(" --- Spawn positions ---")]
     //Posiciones de los spawns
-    public Transform blueTeamSpawn;
-    public Transform redTeamSpawn;
+    public Transform[] blueTeamSpawns;
+    public Transform[] redTeamSpawns;
 
     //Variables de HUDS
     [Header(" --- Players HUD --- ")]
@@ -415,11 +415,11 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                         Vector3 respawn = new Vector3(-200, -200, -200);
                         if (newPlayerTeam == Team.blue)
                         {
-                            respawn = blueTeamSpawn.position;
+                            respawn = blueTeamSpawns[0].position;
                         }
                         else if (newPlayerTeam == Team.red)
                         {
-                            respawn = redTeamSpawn.position;
+                            respawn = redTeamSpawns[0].position;
                         }
                         newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, respawn, Quaternion.identity, 0).GetComponent<PlayerMovement>();
                         
@@ -534,19 +534,88 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     void SetSpawnPositions()
     {
         int playerNumBlue = 0, playerNumRed = 0;
+        List<PlayerMovement> redPlayers = new List<PlayerMovement>();
+        List<PlayerMovement> bluePlayers = new List<PlayerMovement>();
         for (int i = 0; i < allPlayers.Count; i++)
         {
             if (allPlayers[i].team == Team.blue)
             {
-                playerNumBlue++;
+                bluePlayers.Add(allPlayers[i]);
             }
             else
             {
-                playerNumRed++;
+                redPlayers.Add(allPlayers[i]);
             }
         }
-        List<Vector3> spawnPosBlue = blueTeamSpawn.GetComponent<Respawn>().SetSpawnPositions(playerNumBlue);
-        List<Vector3> spawnPosRed = redTeamSpawn.GetComponent<Respawn>().SetSpawnPositions(playerNumRed);
+        
+        
+        int playerNumBlueCopy = playerNumBlue = bluePlayers.Count;
+        int playerNumRedCopy = playerNumRed = redPlayers.Count;
+        print("Blue players: " + playerNumBlueCopy + "; Red Players: " + playerNumRedCopy);
+
+        //Divide number of players in a team by number of spawns in that team && set spawnRotation of players (because is more efficient to do it here)
+        int[] blueSpawnsNumPlayers = new int[blueTeamSpawns.Length];
+        int[] redSpawnsNumPlayers = new int[redTeamSpawns.Length];
+
+
+        int playersPerSpawn = 0;
+        //BLUE TEAM PLAYERS PER SPAWN
+        if (blueTeamSpawns.Length > 0 && playerNumBlue > 0)
+        {
+            print("Blue Team Spawns Players:");
+            float pps = (float)playerNumBlue / (float)blueTeamSpawns.Length;
+            playersPerSpawn = Mathf.CeilToInt(Mathf.Clamp(pps, 1,float.MaxValue));
+            //print("playerNumBlue = "+ playerNumBlue + "; blueTeamSpawns.Length = "+ blueTeamSpawns.Length + "; playersPerSpawn = " + pps + "; rounded number = "+playersPerSpawn);
+            for (int i = 0; i < blueTeamSpawns.Length && playerNumBlueCopy > 0; i++)
+            {
+                blueSpawnsNumPlayers[i] = Mathf.Clamp(playerNumBlueCopy, 0, playersPerSpawn);
+                playerNumBlueCopy -= blueSpawnsNumPlayers[i];
+                //print("Respawn "+ i + ": " + blueSpawnsNumPlayers[i] + " players");
+                for (int j = 0; j < blueSpawnsNumPlayers[i]; j++)
+                {
+                    bluePlayers[0].spawnRotation = Quaternion.Euler(0, blueTeamSpawns[i].rotation.eulerAngles.y, 0);
+                    //print("SpawnRotation " + bluePlayers[0].gameObject.name + " = " + bluePlayers[0].spawnRotation.eulerAngles);
+                    bluePlayers.RemoveAt(0);
+                }
+            }
+        }
+
+
+        //RED TEAM PLAYERS PER SPAWN
+        if (redTeamSpawns.Length > 0 && playerNumRed>0)
+        {
+            print("Red Team Spawns Players:");
+            float pps = (float)playerNumRed / (float)redTeamSpawns.Length;
+            playersPerSpawn = Mathf.CeilToInt(Mathf.Clamp(pps, 1, float.MaxValue));
+            for (int i = 0; i < redTeamSpawns.Length && playerNumRedCopy > 0; i++)
+            {
+                redSpawnsNumPlayers[i] = Mathf.Clamp(playerNumRedCopy, 0, playersPerSpawn);
+                playerNumRedCopy -= redSpawnsNumPlayers[i];
+                print(i + ": " + redSpawnsNumPlayers[i] + " players");
+                for (int j = 0; j < redSpawnsNumPlayers[i]; j++)
+                {
+                    redPlayers[0].spawnRotation = Quaternion.Euler(0, redTeamSpawns[i].rotation.eulerAngles.y, 0);
+                    redPlayers.RemoveAt(0);
+                }
+            }
+        }
+
+        //ALL SPAWN POSITIONS CONCATENATED
+        List<Vector3> spawnPosBlue = new List<Vector3>();
+        List<Vector3> spawnPosRed = new List<Vector3>();
+        for(int i=0; i < blueTeamSpawns.Length && playerNumBlue > 0; i++)
+        {
+            List<Vector3> auxPositions = blueTeamSpawns[i].GetComponent<Respawn>().SetSpawnPositions(blueSpawnsNumPlayers[i]);
+            spawnPosBlue.AddRange(auxPositions);
+        }
+
+        for (int i = 0; i < redTeamSpawns.Length && playerNumRed > 0; i++)
+        {
+            List<Vector3> auxPositions = redTeamSpawns[i].GetComponent<Respawn>().SetSpawnPositions(redSpawnsNumPlayers[i]);
+            spawnPosRed.AddRange(auxPositions);
+        }
+        if (spawnPosBlue.Count != playerNumBlue) Debug.LogError("Error: Spawn positions for blue team are not equal to number of blue team players.");
+        if (spawnPosRed.Count != playerNumRed) Debug.LogError("Error: Spawn positions for blue team are not equal to number of blue team players.");
         for (int i = 0; i < allPlayers.Count; i++)
         {
             if (allPlayers[i].team == Team.blue)
@@ -674,15 +743,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         //print("RESPAWN PLAYER");
         player.SetVelocity(Vector3.zero);
         player.transform.position = player.spawnPosition;
-        switch (player.team)
-        {
-            case Team.blue:              
-                player.rotateObj.transform.localRotation = Quaternion.Euler(0, blueTeamSpawn.rotation.eulerAngles.y, 0);
-                break;
-            case Team.red:
-                player.rotateObj.transform.localRotation = Quaternion.Euler(0, redTeamSpawn.rotation.eulerAngles.y, 0);
-                break;
-        }
+        player.rotateObj.transform.rotation = player.spawnRotation;
+        print("Player " + player.gameObject.name + " respawn rotation = " + player.spawnRotation.eulerAngles);
+
         //player.myCamera.KonoAwake();
         //player.myCamera.SwitchCamera(player.myCamera.camMode);
         //player.myCamera.LateUpdate();
@@ -735,6 +798,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
+    #endregion
+
+    #region Auxiliar
     #endregion
 
     #region ----[ PUN CALLBACKS ]----
