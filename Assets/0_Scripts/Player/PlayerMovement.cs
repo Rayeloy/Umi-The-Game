@@ -193,7 +193,10 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     public bool inWater = false;
     [HideInInspector]
     public bool online = false;
+    [HideInInspector]
     public Vector3 spawnPosition;
+    [HideInInspector]
+    public Quaternion spawnRotation;
     #endregion
 
     #region ----[ VARIABLES ]----    

@@ -4,7 +4,8 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -12,12 +13,27 @@ MonoBehaviour:
   m_Name: Hook
   m_EditorClassIdentifier: 
   attackName: Hook
-  hitboxPrefab: {fileID: 1622504046262182, guid: 12872dce859eb6a409e260ad41e77ddd,
-    type: 2}
-  chargingTime: 0
-  startupTime: 0.5
-  activeTime: 0.6
-  recoveryTime: 0.5
+  chargingPhase:
+    duration: 0
+    restrictRotation: 0
+    rotationSpeed: 0
+    hitboxPrefab: {fileID: 0}
+  startupPhase:
+    duration: 0
+    restrictRotation: 0
+    rotationSpeed: 0
+    hitboxPrefab: {fileID: 0}
+  activePhase:
+    duration: 0
+    restrictRotation: 0
+    rotationSpeed: 0
+    hitboxPrefab: {fileID: 0}
+  recoveryPhase:
+    duration: 0
+    restrictRotation: 0
+    rotationSpeed: 0
+    hitboxPrefab: {fileID: 0}
+  comboDifferentAttackPercent: 50
   stunTime: 0.7
   knockbackSpeed: 20
   knockbackType: 1

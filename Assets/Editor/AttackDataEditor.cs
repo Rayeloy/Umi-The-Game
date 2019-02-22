@@ -66,7 +66,7 @@ public class AttackDataEditor : Editor
         EditorGUILayout.PropertyField(stunTime);
         EditorGUILayout.PropertyField(knockbackSpeed);
         EditorGUILayout.PropertyField(knockbackType);
-        //if(knockbackType  == KnockbackType.customDir)
+        if(knockbackType.intValue  == 2)
         EditorGUILayout.PropertyField(knockbackDirection);
 
         serializedObject.ApplyModifiedProperties();

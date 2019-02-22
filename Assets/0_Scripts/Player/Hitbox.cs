@@ -46,17 +46,17 @@ public class Hitbox : MonoBehaviour
                                 //print("KNOCKBACK TYPE= " + myPlayerCombat.myAttacks[myPlayerCombat.attackIndex].attack.knockbackType);
                                 switch (myPlayerCombat.myAttacks[myPlayerCombat.attackIndex].attack.knockbackType)
                                 {
-                                    case AttackData.KnockbackType.outwards:
+                                    case KnockbackType.outwards:
                                         Vector3 myPos = myPlayerMov.transform.position;
                                         Vector3 colPos = col.transform.position;
                                         result = new Vector3(colPos.x - myPos.x, 0, colPos.z - myPos.z).normalized;
                                         break;
-                                    case AttackData.KnockbackType.inwards:
+                                    case KnockbackType.inwards:
                                         myPos = myPlayerMov.transform.position;
                                         colPos = col.transform.position;
                                         result = new Vector3(myPos.x - colPos.x, 0, myPos.z - colPos.z).normalized;
                                         break;
-                                    case AttackData.KnockbackType.customDir:
+                                    case KnockbackType.customDir:
                                         //calculate real direction based on character's facing direction
                                         float facingAngle = -myPlayerMov.facingAngle;
                                         Vector3 customDir = myPlayerCombat.myAttacks[myPlayerCombat.attackIndex].attack.knockbackDirection;

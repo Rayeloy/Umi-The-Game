@@ -170,10 +170,10 @@ public class PlayerCombat : MonoBehaviour {
         Debug.Log("myAttacks[" + attackIndex + "].attack = " + myAttacks[attackIndex].attack);
 
         attackNameText.text = attack.attackName;
-        chargingTime = attack.chargingTime;
-        startupTime = attack.startupTime;
-        activeTime = attack.activeTime;
-        recoveryTime = attack.recoveryTime;
+        chargingTime = attack.chargingPhase.duration;
+        startupTime = attack.startupPhase.duration;
+        activeTime = attack.activePhase.duration;
+        recoveryTime = attack.recoveryPhase.duration;
         knockBackSpeed = attack.knockbackSpeed;
         //change hitbox
         if (hitboxes.childCount > 0)
@@ -184,9 +184,31 @@ public class PlayerCombat : MonoBehaviour {
             }
         }
 
-        GameObject newHitbox = Instantiate(attack.hitboxPrefab, hitboxes, false);
+        GameObject newHitbox = Instantiate(GetHitBoxPrefab(), hitboxes, false);
         hitbox = newHitbox.GetComponent<Collider>();
         hitbox.GetComponent<MeshRenderer>().material = hitboxMats[0];
+    }
+
+    GameObject GetHitBoxPrefab()
+    {
+        GameObject hb = null;
+        switch (attackStg)
+        {
+            case AttackStage.charging:
+                hb = myAttacks[attackIndex].attack.chargingPhase.hitboxPrefab;
+                break;
+            case AttackStage.startup:
+                hb = myAttacks[attackIndex].attack.startupPhase.hitboxPrefab;
+                break;
+            case AttackStage.active:
+                hb = myAttacks[attackIndex].attack.activePhase.hitboxPrefab;
+                break;
+            case AttackStage.recovery:
+                hb = myAttacks[attackIndex].attack.recoveryPhase.hitboxPrefab;
+                break;
+        }
+
+        return hb;
     }
 
     void HideAttackHitBox()

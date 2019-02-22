@@ -34,6 +34,7 @@ public class WeaponData : ScriptableObject
     [Tooltip("Local scale for attaching to the hand.")]
     public Vector3 backScale;
 }
+
 public enum WeaponType
 {
     Q_Tip,
