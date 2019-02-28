@@ -4,9 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerHUD : MonoBehaviour {
+    [SerializeField][Tooltip("Offset de la pantalla al que se bloquea la flecha de la bola")]
+	float offsetPantalla;
 
     [Header("Referencias")]
+    [HideInInspector]
     public GameControllerBase gC;
+    [HideInInspector]
+    public Camera myCamera;
 
     public RectTransform contador;
     public RectTransform powerUpPanel;
@@ -30,6 +35,12 @@ public class PlayerHUD : MonoBehaviour {
     Vector3 redFlagHomePos;
     Transform flag;
     Vector3 flagPos;
+
+    [SerializeField]
+	Transform Arrow;
+	[SerializeField]
+	Transform Wale;
+    
 
     public void KonoStart()
     {
@@ -76,8 +87,13 @@ public class PlayerHUD : MonoBehaviour {
         redFlagHomePos = (gC as GameController_FlagMode).redTeamFlagHome.position;
         blueFlagHomePos.y = 0;
         redFlagHomePos.y = 0;
+
+        //Flecha bola
+        Arrow.gameObject.SetActive(false);
+	    Wale.gameObject.SetActive(false);
     }
 
+    Vector3 ArrowPointing;
     void UpdateFlagSlider()
     {
         flagPos = flag.position;
@@ -97,6 +113,25 @@ public class PlayerHUD : MonoBehaviour {
         float coef = diff + totalDist / 2;
         */
         //print("totalDist = " + totalDist + "; distFromBlue = " + distFromBlue + "; distFromRed = " + distFromRed + "; diff = " + diff + "; coef = " + coef + "; progress = " + progress);
+    
+    // Flecha a Bolla
+        Vector3 dir = myCamera.WorldToScreenPoint(flag.position);
+
+		if (dir.x > offsetPantalla && dir.x < Screen.width - offsetPantalla && dir.y > offsetPantalla && dir.y < Screen.height - offsetPantalla){
+			Arrow.gameObject.SetActive(false);
+			Wale.gameObject.SetActive(false);
+		}
+		else{
+			Arrow.gameObject.SetActive(true);
+			Wale.gameObject.SetActive(true);
+
+			ArrowPointing.z = Mathf.Atan2((Arrow.transform.position.y - dir.y), (Arrow.transform.position.x - dir.x)) *Mathf.Rad2Deg - 90;
+
+			Arrow.transform.rotation = Quaternion.Euler(ArrowPointing);
+			Arrow.transform.position = new Vector3(Mathf.Clamp(dir.x, offsetPantalla,  Screen.width - offsetPantalla), Mathf.Clamp(dir.y, offsetPantalla,  Screen.height - offsetPantalla), 0);
+
+			Wale.transform.position = Arrow.transform.position;
+		}
     }
 
     public void StartAim()

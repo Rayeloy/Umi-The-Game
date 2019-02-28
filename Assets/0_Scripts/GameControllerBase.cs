@@ -442,6 +442,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                         newPlayer.myPlayerCombat.attackNameText = newPlayerCanvas.GetComponent<PlayerHUD>().attackNameText;
                         //Canvas
                         newPlayerCanvas.GetComponent<PlayerHUD>().gC = this;
+                        newPlayerCanvas.GetComponent<PlayerHUD>().myCamera = newPlayerCamera.myCamera.GetComponent<Camera>();//newPlayerUICamera;
                         newPlayerCanvas.GetComponent<Canvas>().worldCamera = newPlayerUICamera;
                         //CameraBase
                         newPlayerCamera.myPlayerMov = newPlayer;
