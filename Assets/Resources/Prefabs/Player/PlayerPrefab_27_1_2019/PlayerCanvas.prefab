@@ -96,9 +96,9 @@ MonoBehaviour:
   - {fileID: 1909984392524275721}
   layoutElements:
   - rect: {fileID: 5369223005124494464}
-    horDistToNextElement: 20.598385
+    horDistToNextElement: 20.59827
   - rect: {fileID: 273446834886727318}
-    horDistToNextElement: 21.060339
+    horDistToNextElement: 21.060446
   - rect: {fileID: 1909984392524275721}
     horDistToNextElement: 0
   transformInfos:
@@ -115,7 +115,7 @@ MonoBehaviour:
     width: 95.96273
     height: 123.4
   - transform: {fileID: 273446834886727318}
-    position: {x: 450.30194, y: 227.3854, z: 0}
+    position: {x: 450.30182, y: 227.3854, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 0.6042296, y: 0.6042296, z: 0.6042296}
     width: 100
@@ -441,7 +441,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -113.38328, y: -0.65023804}
+  m_AnchoredPosition: {x: -113.38339, y: -0.65023804}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8886709675184849556
@@ -1696,23 +1696,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 8126600660023991336}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b5937357bf8bf84c9d4c7447a1c8483, type: 3}
+  m_Script: {fileID: 11500000, guid: dc74bac4e8f92194c81e88e92bf5f869, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offsetPantalla: -50
+  offsetPantalla: 0
   gC: {fileID: 0}
   myCamera: {fileID: 0}
   contador: {fileID: 8349414005299868418}
   powerUpPanel: {fileID: 8348775279138176912}
   crosshair: {fileID: 8166225685631342084}
   crosshairReduced: {fileID: 8166682692440945132}
-  Hook: {fileID: 8167096264629539172}
-  Boost: {fileID: 8166580659837632414}
+  Hook: {fileID: 8167057279080904116}
+  Boost: {fileID: 8166700275750719732}
   flagSlider: {fileID: 8166608072532018458}
   redTeamScoreText: {fileID: 8166302402482992348}
   blueTeamScoreText: {fileID: 8167062554810628626}
   timeText: {fileID: 8167064270522480836}
-  attackNameText: {fileID: 8166268902934297148}
+  attackNameText: {fileID: 0}
   Interaction_Message: {fileID: 640784522757686749}
   changeYourWeaponToText: {fileID: 8695511668206878142}
   interactButtonImage: {fileID: 8911326659482474980}
