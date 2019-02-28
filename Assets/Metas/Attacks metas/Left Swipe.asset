@@ -4,7 +4,8 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -12,12 +13,13 @@ MonoBehaviour:
   m_Name: Left Swipe
   m_EditorClassIdentifier: 
   attackName: Left Swipe
-  hitboxPrefab: {fileID: 1106858598728734, guid: 0170b6bc00f63cf4c815c19c4e7103f5,
-    type: 2}
-  chargingTime: 0
-  startupTime: 0.2
-  activeTime: 0.5
-  recoveryTime: 0.3
+  hasChargingPhase: 1
+  chargingPhase: {fileID: 0}
+  startupPhase: {fileID: 0}
+  activePhase: {fileID: 0}
+  recoveryPhase: {fileID: 0}
+  comboDifferentAttackPercent: 50
+  stunTime: 0
   knockbackSpeed: 10
   knockbackType: 2
   knockbackDirection: {x: -1, y: 0, z: 0}
