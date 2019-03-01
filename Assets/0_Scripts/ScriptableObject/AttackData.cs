@@ -37,6 +37,26 @@ public class AttackData : ScriptableObject
     public KnockbackType knockbackType = KnockbackType.outwards;
     [Tooltip("Leave at 0 if knockbackType is not customDir.")]
     public Vector3 knockbackDirection = Vector3.zero;
+
+    private void OnEnable()
+    {
+        if (chargingPhase == null)
+        {
+            chargingPhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
+        }
+        if (startupPhase == null)
+        {
+            startupPhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
+        }
+        if (activePhase == null)
+        {
+            activePhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
+        }
+        if (recoveryPhase == null)
+        {
+            recoveryPhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
+        }
+    }
 }
 [System.Serializable]
 public class AttackPhase : ScriptableObject
@@ -44,13 +64,6 @@ public class AttackPhase : ScriptableObject
     public float duration;
     public bool restrictRotation;
     public float rotationSpeed;
+    [Tooltip("Leave empty if no hitbox needed")]
     public GameObject hitboxPrefab;
-
-    //public AttackPhase(float _duration, bool _restrictRotation, float _rotationSpeed, GameObject _hitboxPrefab)
-    //{
-    //    duration = _duration;
-    //    restrictRotation = _restrictRotation;
-    //    rotationSpeed = _rotationSpeed;
-    //    hitboxPrefab = _hitboxPrefab;
-    //}
 }

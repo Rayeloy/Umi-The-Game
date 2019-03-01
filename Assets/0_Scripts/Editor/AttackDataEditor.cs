@@ -46,11 +46,14 @@ public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor,AttackPha
         knockbackType = serializedObject.FindProperty("knockbackType");
         knockbackDirection = serializedObject.FindProperty("knockbackDirection");
 
+        Debug.Log("0 - STARTUP PHASE TIME = " + attackData.startupPhase.duration);
         CheckAndCreateSubEditors(attackPhases);
+        Debug.Log("1 - STARTUP PHASE TIME = " + attackData.startupPhase.duration);
     }
 
     private void OnDisable()
     {
+        Debug.Log("2 - STARTUP PHASE TIME = " + attackData.startupPhase.duration);
     }
 
     protected override void SubEditorSetup(AttackPhaseEditor editor)
@@ -62,7 +65,7 @@ public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor,AttackPha
         //base.OnInspectorGUI(); 
         serializedObject.Update();
 
-        CheckAndCreateSubEditors(attackPhases);
+        //CheckAndCreateSubEditors(attackPhases);
 
         EditorGUILayout.PropertyField(attackName);
 
@@ -101,10 +104,10 @@ public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor,AttackPha
         {
             subEditorTargets = new AttackPhase[4];
             //To create new scriptableObjects you must use "CreateInstance(Type type)" instead of new scriptableObjectClass(,,);
-            subEditorTargets[0] = attackData.chargingPhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
-            subEditorTargets[1] = attackData.startupPhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
-            subEditorTargets[2] = attackData.activePhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
-            subEditorTargets[3] = attackData.recoveryPhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
+            subEditorTargets[0] = attackData.chargingPhase;
+            subEditorTargets[1] = attackData.startupPhase;
+            subEditorTargets[2] = attackData.activePhase;
+            subEditorTargets[3] = attackData.recoveryPhase;
         }
     }
 
@@ -115,15 +118,14 @@ public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor,AttackPha
         base.CheckAndCreateSubEditors(subEditorTargets);
         if (subEditors.Length == 4)
         {
-            subEditors[0].SetUpEditorData("Charging phase");
+            subEditors[0].SetUpEditorData("Charging phase", attackData.chargingPhase);
             if (hasChargingPhase.boolValue)
             {
 
             }
-            subEditors[1].SetUpEditorData("Startup phase");
-
-            subEditors[2].SetUpEditorData("Active phase");
-            subEditors[3].SetUpEditorData("Recovery phase");
+            subEditors[1].SetUpEditorData("Startup phase", attackData.startupPhase);
+            subEditors[2].SetUpEditorData("Active phase", attackData.activePhase);
+            subEditors[3].SetUpEditorData("Recovery phase", attackData.recoveryPhase);
         }
         else
         {
