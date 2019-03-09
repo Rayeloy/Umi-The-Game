@@ -113,25 +113,32 @@ public class PlayerHUD : MonoBehaviour {
         float coef = diff + totalDist / 2;
         */
         //print("totalDist = " + totalDist + "; distFromBlue = " + distFromBlue + "; distFromRed = " + distFromRed + "; diff = " + diff + "; coef = " + coef + "; progress = " + progress);
-    
-    // Flecha a Bolla
+
+        // Flecha a Bola
+        ArrowToFlag();
+    }
+
+    void ArrowToFlag()
+    {
         Vector3 dir = myCamera.WorldToScreenPoint(flag.position);
 
-		if (dir.x > offsetPantalla && dir.x < Screen.width - offsetPantalla && dir.y > offsetPantalla && dir.y < Screen.height - offsetPantalla){
-			Arrow.gameObject.SetActive(false);
-			Wale.gameObject.SetActive(false);
-		}
-		else{
-			Arrow.gameObject.SetActive(true);
-			Wale.gameObject.SetActive(true);
+        if (dir.x > offsetPantalla && dir.x < Screen.width - offsetPantalla && dir.y > offsetPantalla && dir.y < Screen.height - offsetPantalla)
+        {
+            Arrow.gameObject.SetActive(false);
+            Wale.gameObject.SetActive(false);
+        }
+        else
+        {
+            Arrow.gameObject.SetActive(true);
+            Wale.gameObject.SetActive(true);
 
-			ArrowPointing.z = Mathf.Atan2((Arrow.transform.position.y - dir.y), (Arrow.transform.position.x - dir.x)) *Mathf.Rad2Deg - 90;
+            ArrowPointing.z = Mathf.Atan2((Arrow.transform.position.y - dir.y), (Arrow.transform.position.x - dir.x)) * Mathf.Rad2Deg - 90;
 
-			Arrow.transform.rotation = Quaternion.Euler(ArrowPointing);
-			Arrow.transform.position = new Vector3(Mathf.Clamp(dir.x, offsetPantalla,  Screen.width - offsetPantalla), Mathf.Clamp(dir.y, offsetPantalla,  Screen.height - offsetPantalla), 0);
+            Arrow.transform.rotation = Quaternion.Euler(ArrowPointing);
+            Arrow.transform.position = new Vector3(Mathf.Clamp(dir.x, offsetPantalla, Screen.width - offsetPantalla), Mathf.Clamp(dir.y, offsetPantalla, Screen.height - offsetPantalla), 0);
 
-			Wale.transform.position = Arrow.transform.position;
-		}
+            Wale.transform.position = Arrow.transform.position;
+        }
     }
 
     public void StartAim()

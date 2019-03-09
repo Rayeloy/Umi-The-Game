@@ -433,35 +433,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                         newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
                         newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
 
-                        //Inicializar referencias
-                        //Player
-                        newPlayer.gC = this;
-                        newPlayer.myCamera = newPlayerCamera;
-                        newPlayer.myPlayerHUD = newPlayerCanvas.GetComponent<PlayerHUD>();
-                        newPlayer.myUICamera = newPlayerUICamera;
-                        newPlayer.myPlayerCombat.attackNameText = newPlayerCanvas.GetComponent<PlayerHUD>().attackNameText;
-                        //Canvas
-                        newPlayerCanvas.GetComponent<PlayerHUD>().gC = this;
-                        newPlayerCanvas.GetComponent<PlayerHUD>().myCamera = newPlayerCamera.myCamera.GetComponent<Camera>();//newPlayerUICamera;
-                        newPlayerCanvas.GetComponent<Canvas>().worldCamera = newPlayerUICamera;
-                        //CameraBase
-                        newPlayerCamera.myPlayerMov = newPlayer;
-                        newPlayerCamera.myPlayer = newPlayer.transform;
-                        newPlayerCamera.cameraFollowObj = newPlayer.cameraFollow;
-
-                        //Añadir a los arrays todos los componentes del jugador
-                        //guarda jugador
-                        allPlayers.Add(newPlayer);
-                        allCanvas.Add(newPlayerCanvas);
-                        allCameraBases.Add(newPlayerCamera);
-                        allUICameras.Add(newPlayerUICamera);
-                        contador.Add(newPlayerCanvas.GetComponent<PlayerHUD>().contador);
-                        powerUpPanel.Add(newPlayerCanvas.GetComponent<PlayerHUD>().powerUpPanel);
-
-                        onlinePlayer = newPlayer;
-                        onlineCamera = newPlayerCamera;
-                        onlineCanvas = newPlayerCanvas;
-                        onlineUICamera = newPlayerUICamera;
+                        InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
                     }
                 }
                 else
@@ -483,29 +455,45 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
             newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
 
-            //Inicializar referencias
-            //Player
-            newPlayer.gC = this;
-            newPlayer.myCamera = newPlayerCamera;
-            newPlayer.myPlayerHUD = newPlayerCanvas.GetComponent<PlayerHUD>();
-            newPlayer.myUICamera = newPlayerUICamera;
-            newPlayer.myPlayerCombat.attackNameText = newPlayerCanvas.GetComponent<PlayerHUD>().attackNameText;
-            //Canvas
-            newPlayerCanvas.GetComponent<PlayerHUD>().gC = this;
-            newPlayerCanvas.GetComponent<Canvas>().worldCamera = newPlayerUICamera;
-            //CameraBase
-            newPlayerCamera.myPlayerMov = newPlayer;
-            newPlayerCamera.myPlayer = newPlayer.transform;
-            newPlayerCamera.cameraFollowObj = newPlayer.cameraFollow;
-                
-            //Añadir a los arrays todos los componentes del jugador
-            //guarda jugador
-            allPlayers.Add(newPlayer);
-            allCanvas.Add(newPlayerCanvas);
-            allCameraBases.Add(newPlayerCamera);
-            allUICameras.Add(newPlayerUICamera);
-            contador.Add(newPlayerCanvas.GetComponent<PlayerHUD>().contador);
-            powerUpPanel.Add(newPlayerCanvas.GetComponent<PlayerHUD>().powerUpPanel);
+            InitializePlayerReferences(newPlayer,newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
+        }
+    }
+
+    //Eloy: Juan, he creado este método porque copiar y pegar lo mismo en ambos lados del if era un horror para mi cerebro. cada nueva referencia sería un lío, así mejor.
+    void InitializePlayerReferences(PlayerMovement player, GameObject canvas, CameraController cameraBase, Camera UICamera)
+    {
+        //Inicializar referencias
+        PlayerHUD playerHUD = canvas.GetComponent<PlayerHUD>();
+        //Player
+        player.gC = this;
+        player.myCamera = cameraBase;
+        player.myPlayerHUD = playerHUD;
+        player.myUICamera = UICamera;
+        player.myPlayerCombat.attackNameText = playerHUD.attackNameText;
+        //Canvas
+        playerHUD.gC = this;
+        playerHUD.myCamera = cameraBase.myCamera.GetComponent<Camera>();//newPlayerUICamera;
+        canvas.GetComponent<Canvas>().worldCamera = UICamera;
+        //CameraBase
+        cameraBase.myPlayerMov = player;
+        cameraBase.myPlayer = player.transform;
+        cameraBase.cameraFollowObj = player.cameraFollow;
+
+        //Añadir a los arrays todos los componentes del jugador
+        //guarda jugador
+        allPlayers.Add(player);
+        allCanvas.Add(canvas);
+        allCameraBases.Add(cameraBase);
+        allUICameras.Add(UICamera);
+        contador.Add(playerHUD.contador);
+        powerUpPanel.Add(playerHUD.powerUpPanel);
+
+        if (online)
+        {
+            onlinePlayer = player;
+            onlineCamera = cameraBase;
+            onlineCanvas = canvas;
+            onlineUICamera = UICamera;
         }
     }
 
