@@ -1,0 +1,152 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Simple_Candle_Shader_DEMO
+  m_Shader: {fileID: 4800000, guid: caf83561a87c28e46934d7ee0611e2f4, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Albedo:
+        m_Texture: {fileID: 2800000, guid: 7eb2903236958284198a2cfac5ce608e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AlbedoSSS:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Curvature:
+        m_Texture: {fileID: 2800000, guid: dda7f4ba96ec36945a2df867628a104b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetalGloss:
+        m_Texture: {fileID: 2800000, guid: dda7f4ba96ec36945a2df867628a104b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetalRSmoothA:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetalRSmoothG:
+        m_Texture: {fileID: 2800000, guid: dda7f4ba96ec36945a2df867628a104b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal:
+        m_Texture: {fileID: 2800000, guid: 36f7ba881340a024b8473f7c24599bf0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: 36f7ba881340a024b8473f7c24599bf0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SSS:
+        m_Texture: {fileID: 2800000, guid: 7d7538cd14e17ae4d97e9cd8fb9b3741, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SSS_ColorWeightA:
+        m_Texture: {fileID: 2800000, guid: 7d7538cd14e17ae4d97e9cd8fb9b3741, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TextureSample0:
+        m_Texture: {fileID: 2800000, guid: ffb4fa4c24f74ca4d8c68cb35339bb75, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BackScatter: 1.4
+    - _BaseGlow: 0.072
+    - _BaseSSSGlow: 0.446
+    - _BumpScale: 1
+    - _Curvature_Power: 2.47
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DirectScatter: 2.32
+    - _DstBlend: 0
+    - _Fuzz: 2.01
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _Metallic: 0
+    - _Metalness_Add: -0.85
+    - _Mode: 0
+    - _NormalBumpScale: 1.68
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _SSSAdd: 0.32
+    - _SSSBoost: 1.71
+    - _SSSMultiply: 1.25
+    - _Scatter: 2.5
+    - _ScatterAdd: 0.7
+    - _SmoothnessAdjust: -0.38
+    - _SmoothnessTextureChannel: 0
+    - _Smoothness_Add: 0.01
+    - _Smoothness_Multiplier: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _TransAmbient: 0.074
+    - _TransDirect: 1
+    - _TransNormalDistortion: 0.124
+    - _TransScattering: 3.7
+    - _TransShadow: 0
+    - _Translucency: 0.8
+    - _UVSec: 0
+    - _ZWrite: 1
+    - __dirty: 0
+    m_Colors:
+    - _AlbedoColor: {r: 0.04411763, g: 0.04411763, b: 0.04411763, a: 0}
+    - _CandleLightColorPower: {r: 0.9705882, g: 0.8837669, b: 0.5209775, a: 0.416}
+    - _Color: {r: 0.9558824, g: 0.9407589, b: 0.9137111, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FuzzColor: {r: 0.7205882, g: 0.7205882, b: 0.7205882, a: 0}
+    - _SSSTint: {r: 0.9558824, g: 0.92602324, b: 0.75908303, a: 0}
+    - _SSS_BaseColorWeightA: {r: 0.85294116, g: 0.8377162, b: 0.7525951, a: 0.628}

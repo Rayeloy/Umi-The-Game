@@ -1,0 +1,107 @@
+Hi and thank you for Purchasing
+Simple Skin Shader for Unity.
+
+The material settings for this shader are as follows:
+
+NEW MATERIALS - FEBRUARY 2019
+
+Skin Shader 2
+
+Base SSS Glow - An overall glow based on the main SSS Color-weight Map
+Direct Scatter - Subsurface scatter when lights is directed on the face
+Back Scatter - Typical sub-surface scatter from the back, the ear and thin parts driven from the Alpha of the SSS Color-weight Map
+Fuzz - A general Fresnel effect around the edges
+Fuzz Color - Tint the fuzz
+SSS-BaseColor-Weight - The main texture for SSS , Alpha contains the weight (Thickness map)		-	RGBA	TARGA 32bit
+Albedo - Main colors
+Albedo-Color - Tint and offset the main texture
+Normal Map - The Main normal Map
+Normal Bump Scale - 0 to 2 , 1 is neutral (default), Use this too boost or reduce the normal map
+Curvature - Use this to convey extra porosity or scattering
+Curvature Power - A contraster slider for extra push of the curvature map.
+Metal-Gloss - The Main metal-Gloss Map , Gloss is contained in the Alpha channel.	-	RGBA	TARGA 32bit
+Smoothness Adjust - Typically for making a surface look wetter or drier over an above the Gloss map		
+
+Please note that this shader is highly dependant on a Directional light for it's effect to take place.
+Point lights are difficult to manage in a shader of this kind so had to be overlooked to keep performance as the main focus.
+
+You will need to create various materials depending on your scene or lighting setup as one materials settings may not work well in
+all lighting conditions. Please see the video on Unity Asset Store that covers this pack.
+
+Need more help?
+Contact me@robertramsay.co.uk
+
+Please get in touch with me before submitting a review that may reflect an issue you are having. I am always able to make new shaders
+and adjustments that suit your project.
+
+This shader was created with Amplify Shader in Unity 2017.1.0f3
+
+-----------
+Simple Candle Shader
+
+Scatter Add - The amount of scatter drived via the SSS_Color-Weight(A) Map, Thickness is stored in the Alpha channel -	RGBA	TARGA 32bit
+Albedo - The main color or AO
+Albedo Color - Tint of the Main Albedo Texture
+Normal Map - Normal Map Texture
+Normal Bump Scale - 0 to 2 , 1 is neutral (default), Use this too boost or reduce the normal map
+Metal-Gloss - The Main metal-Gloss Map , Gloss is contained in the Alpha channel.	-	RGBA	TARGA 32bit
+Smoothness Adjust - Typically for making a surface look wetter or drier over an above the Gloss map		
+CandleLightColor-Power - To simulate the light affecting the candle, the Power is affected by the Alpha Value.
+
+Need more help?
+Contact me@robertramsay.co.uk
+
+Please get in touch with me before submitting a review that may reflect an issue you are having. I am always able to make new shaders
+and adjustments that suit your project.
+
+This shader was created with Amplify Shader in Unity 2017.1.0f3
+
+-----------
+
+The best way to learn is to adjust sliders, then rotate the directional light.
+Toggle the reflection probe when you can so that it updates any scene reflection data.
+Setting the reflection proble to Real-Time - On awake is a good way to see how things look in game.
+SSS depends on a main directional light, the directional light with the highest intensity will be used.
+
+--------------
+
+Thank you for your support.
+Robert Ramsay - RRFreelance
+
+------------
+Previously:
+
+
+OLD MATERIALS
+-------------
+[Translucency]
+Strength: How strong the effect is
+Normal Distortion: The Shift off to the edge the effect is
+Scattering Falloff: Lower values means more area covered
+Direct: How much affect direct lights have on the effect
+Ambient: How much ambient lights have an effect of it
+Shadow: How much shadows play a role in the overall effect
+SSS-Multiply: A Pre-multiplied effect on the Translucency tetxure map
+SSS-Add: A premultiplied add on the Translucency map after multiplication above.
+BaseGlow: Self Illumination using the current Albedo and or color.
+
+[Textures]
+Albedo: The base colour Texture
+Color: A color tint or tone to use
+SSS: Your thickness or translucency texture
+SSS-Tint: You can alter the tint of the SSS effect
+Normal: Your normal map
+Metal(R)-Smooth(G): A texture packed texture where Metalness is
+in the Red Channel and Smoothness(or Gloss) is in the Green channel.
+Metalness_Add: Additional/Subtractional Metalness value overall
+Smoothness_Add: Additional/Subtractional Smoothness value overall
+-----------------
+
+Any more requests based on this shader, I will be happy to provide
+variations of this texture depending on your needs, all you have to 
+do is get in touch be email: me@robertramsay.co.uk
+
+Many Thanks!
+
+
+
