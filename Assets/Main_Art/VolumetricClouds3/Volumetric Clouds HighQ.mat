@@ -10,7 +10,7 @@ Material:
   m_Name: Volumetric Clouds HighQ
   m_Shader: {fileID: 4800000, guid: 6dbb1fc55cba3964684746532b78b82a, type: 3}
   m_ShaderKeywords: Y_AXIS _ _COMPLEXLIGHTING_MODE _DISTBLEND_POST _HQPOINTLIGHT _NEW_SHADING
-    _NORMALMAP _RENDERSHADOWS
+    _NORMALMAP _RENDERSHADOWS _SSSHADOW_MAPBLEND
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -31,7 +31,7 @@ Material:
     m_Floats:
     - _Alignment: 0
     - _AlphaCut: 0.01
-    - _BlendWithShadowmap: 0
+    - _BlendWithShadowmap: 1
     - _CloudBaseFlatness: 0.1
     - _CloudDensity: 2
     - _CloudFlatness: 1
