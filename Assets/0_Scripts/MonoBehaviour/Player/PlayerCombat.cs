@@ -172,18 +172,19 @@ public class PlayerCombat : MonoBehaviour
 
         Debug.Log("myAttacks[" + attackIndex + "].attack = " + myAttacks[attackIndex].attack);
 
-        attackNameText.text = attack.attackName;
+        //attackNameText.text = attack.attackName;
         chargingTime = attack.chargingPhase.duration;
         startupTime = attack.startupPhase.duration;
         activeTime = attack.activePhase.duration;
         recoveryTime = attack.recoveryPhase.duration;
         knockBackSpeed = attack.knockbackSpeed;
 
-        ChangeAttackPhase(AttackStage.ready);
+        ChangeAttackPhase(AttackStage.ready);//puede ser algo inutil cuando ya se está en ready
     }
 
     void ChangeAttackPhase(AttackStage attackStage)
     {
+        print("Change attack phase to " + attackStage);
         attackStg = attackStage;
 
         //change hitbox
@@ -357,7 +358,7 @@ public class PlayerCombat : MonoBehaviour
                     }
                     break;
                 case AttackStage.startup:
-
+                    print("Startup phase running.");
                     //animacion startup
                     if (attackTime >= startupTime)
                     {

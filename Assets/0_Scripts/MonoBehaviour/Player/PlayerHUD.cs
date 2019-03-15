@@ -68,7 +68,7 @@ public class PlayerHUD : MonoBehaviour {
         //if (!interactButtonImage.enabled) interactButtonImage.enabled = true;
 
         if (!Interaction_Message.activeInHierarchy) Interaction_Message.SetActive(true);
-        print("Setting Pickup Weapon Text Message");
+        //print("Setting Pickup Weapon Text Message");
         changeYourWeaponToText.text = "to change your weapon to " + _weap.weaponName;
     }
 

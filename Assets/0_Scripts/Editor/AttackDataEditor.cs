@@ -5,7 +5,7 @@ using UnityEditor;
 
 [CustomEditor(typeof(AttackData))]
 [CanEditMultipleObjects]
-public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor,AttackPhase>
+public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor, AttackPhase>
 {
     private AttackData attackData;
 
@@ -28,7 +28,7 @@ public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor,AttackPha
     //bool chargingToggle = false;
 
     private void OnEnable()
-    {
+    {  
         attackData = (AttackData)target;
         attackName = serializedObject.FindProperty("attackName");
 
@@ -46,22 +46,36 @@ public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor,AttackPha
         knockbackType = serializedObject.FindProperty("knockbackType");
         knockbackDirection = serializedObject.FindProperty("knockbackDirection");
 
-        Debug.Log("0 - STARTUP PHASE TIME = " + attackData.startupPhase.duration);
-        CheckAndCreateSubEditors(attackPhases);
-        Debug.Log("1 - STARTUP PHASE TIME = " + attackData.startupPhase.duration);
+        Debug.Log("0 - attackPhases.Length = " + attackPhases.Length+"; subEditors.Length ="+subEditors.Length);
+        CheckAndCreateSubEditors(ref attackPhases);
+        Debug.Log("1 - attackPhases.Length = " + attackPhases.Length + "; subEditors.Length =" + subEditors.Length);
     }
 
     private void OnDisable()
     {
-        Debug.Log("2 - STARTUP PHASE TIME = " + attackData.startupPhase.duration);
+        Debug.Log("2 - attackPhases.Length = " + attackPhases.Length + "; subEditors.Length =" + subEditors.Length);
+    }
+
+    void InitializeArrays()
+    {
+        if(attackPhases == null)
+        attackPhases = new AttackPhase[0];
+
+        if (subEditors == null)
+        {
+
+        }
     }
 
     protected override void SubEditorSetup(AttackPhaseEditor editor)
     {
+
     }
 
     public override void OnInspectorGUI()
     {
+        Debug.Log("1.5 - attackPhases.Length = " + attackPhases.Length + "; subEditors.Length =" + subEditors.Length);
+        CheckAndCreateSubEditors(ref attackPhases);
         //base.OnInspectorGUI(); 
         serializedObject.Update();
 
@@ -90,14 +104,14 @@ public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor,AttackPha
         EditorGUILayout.PropertyField(stunTime);
         EditorGUILayout.PropertyField(knockbackSpeed);
         EditorGUILayout.PropertyField(knockbackType);
-        if(knockbackType.intValue  == 2)
-        EditorGUILayout.PropertyField(knockbackDirection);
+        if (knockbackType.intValue == 2)
+            EditorGUILayout.PropertyField(knockbackDirection);
 
         serializedObject.ApplyModifiedProperties();
         //EditorUtility.SetDirty(target);
     }
 
-    private void FillAttackPhasesArray(ref AttackPhase[] subEditorTargets)
+    private bool FillAttackPhasesArray(ref AttackPhase[] subEditorTargets)
     {
         //Debug.Log("1- AttackPhasesArray has length = " + subEditorTargets.Length);
         if (subEditorTargets.Length == 0)
@@ -108,28 +122,35 @@ public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor,AttackPha
             subEditorTargets[1] = attackData.startupPhase;
             subEditorTargets[2] = attackData.activePhase;
             subEditorTargets[3] = attackData.recoveryPhase;
-        }
-    }
-
-    protected override void CheckAndCreateSubEditors(AttackPhase[] subEditorTargets)
-    {
-        FillAttackPhasesArray(ref subEditorTargets);
-        //Debug.Log("2- AttackPhasesArray has length = " + subEditorTargets.Length);
-        base.CheckAndCreateSubEditors(subEditorTargets);
-        if (subEditors.Length == 4)
-        {
-            subEditors[0].SetUpEditorData("Charging phase", attackData.chargingPhase);
-            if (hasChargingPhase.boolValue)
-            {
-
-            }
-            subEditors[1].SetUpEditorData("Startup phase", attackData.startupPhase);
-            subEditors[2].SetUpEditorData("Active phase", attackData.activePhase);
-            subEditors[3].SetUpEditorData("Recovery phase", attackData.recoveryPhase);
+            return true;
         }
         else
         {
-            Debug.LogError("Error: There should be 4 attack phases, but there are " + subEditors.Length);
+            return false;
+        }
+    }
+
+    protected override void CheckAndCreateSubEditors(ref AttackPhase[] subEditorTargets)
+    {
+        if(FillAttackPhasesArray(ref subEditorTargets))
+        {
+            //Debug.Log("2- AttackPhasesArray has length = " + subEditorTargets.Length);
+            base.CheckAndCreateSubEditors(ref subEditorTargets);
+            if (subEditors.Length == 4)
+            {
+                subEditors[0].SetUpEditorData("Charging phase", attackData.chargingPhase);
+                if (hasChargingPhase.boolValue)
+                {
+
+                }
+                subEditors[1].SetUpEditorData("Startup phase", attackData.startupPhase);
+                subEditors[2].SetUpEditorData("Active phase", attackData.activePhase);
+                subEditors[3].SetUpEditorData("Recovery phase", attackData.recoveryPhase);
+            }
+            else
+            {
+                Debug.LogError("Error: There should be 4 attack phases, but there are " + subEditors.Length);
+            }
         }
     }
 }

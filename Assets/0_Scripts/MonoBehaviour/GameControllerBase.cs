@@ -469,7 +469,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         player.myCamera = cameraBase;
         player.myPlayerHUD = playerHUD;
         player.myUICamera = UICamera;
-        player.myPlayerCombat.attackNameText = playerHUD.attackNameText;
+        //player.myPlayerCombat.attackNameText = playerHUD.attackNameText;
         //Canvas
         playerHUD.gC = this;
         playerHUD.myCamera = cameraBase.myCamera.GetComponent<Camera>();//newPlayerUICamera;

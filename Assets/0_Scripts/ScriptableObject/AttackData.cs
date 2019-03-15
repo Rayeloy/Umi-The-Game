@@ -61,9 +61,14 @@ public class AttackData : ScriptableObject
 [System.Serializable]
 public class AttackPhase : ScriptableObject
 {
+    [SerializeField]
+    public bool isFoldedInEditor;
+
     public float duration;
     public bool restrictRotation;
     public float rotationSpeed;
+    [Tooltip("Do you want this phase to have a hitbox?")]
+    public bool hasHitbox;
     [Tooltip("Leave empty if no hitbox needed")]
     public GameObject hitboxPrefab;
 }

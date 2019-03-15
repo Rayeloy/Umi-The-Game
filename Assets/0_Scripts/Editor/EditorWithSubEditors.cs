@@ -9,15 +9,15 @@ public abstract class EditorWithSubEditors<TEditor, TTarget> : Editor
     public TEditor[] subEditors;
 
 
-    protected virtual void CheckAndCreateSubEditors(TTarget[] subEditorTargets)
+    protected virtual void CheckAndCreateSubEditors(ref TTarget[] subEditorTargets)
     {
         //Debug.Log("CheckAndCreateSubEditors starts");
         if (subEditors != null && subEditors.Length == subEditorTargets.Length)
         {
-            Debug.Log("CheckAndCreateSubEditors exits");
+            Debug.Log("CheckAndCreateSubEditors exit");
             return;
         }
-        Debug.Log("subEditors[] =  "+subEditors);
+        //Debug.Log("subEditors[] =  "+subEditors);
 
         CleanupEditors();
 
@@ -27,7 +27,7 @@ public abstract class EditorWithSubEditors<TEditor, TTarget> : Editor
         {
             subEditors[i] = CreateEditor(subEditorTargets[i]) as TEditor;
             SubEditorSetup(subEditors[i]);
-            Debug.Log("Editor for " + subEditorTargets[i]+" created");
+            //Debug.Log("Editor for " + subEditorTargets[i]+" created");
         }
     }
 

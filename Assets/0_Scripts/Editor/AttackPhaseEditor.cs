@@ -12,12 +12,15 @@ public class AttackPhaseEditor : Editor
     private string phaseName = null;
     protected AttackPhase myAttackPhase;
 
+    SerializedProperty isFoldedInEditor;
+
     SerializedProperty duration;
     SerializedProperty restrictRotation;
     SerializedProperty rotationSpeed;
+    SerializedProperty hasHitbox;
     SerializedProperty hitboxPrefab;
 
-    bool hitboxPrefabToggle;
+
 
     private void OnEnable()
     {
@@ -30,9 +33,12 @@ public class AttackPhaseEditor : Editor
     {
         myAttackPhase = (AttackPhase)target;
 
+        isFoldedInEditor = serializedObject.FindProperty("isFoldedInEditor");
+
         duration = serializedObject.FindProperty("duration");
         restrictRotation = serializedObject.FindProperty("restrictRotation");
         rotationSpeed = serializedObject.FindProperty("rotationSpeed");
+        hasHitbox = serializedObject.FindProperty("hasHitbox");
         hitboxPrefab = serializedObject.FindProperty("hitboxPrefab");
     }
 
@@ -45,7 +51,7 @@ public class AttackPhaseEditor : Editor
 
         EditorGUILayout.BeginHorizontal();
 
-        showPhase = EditorGUILayout.Foldout(showPhase, phaseName);
+        isFoldedInEditor.boolValue = EditorGUILayout.Foldout(isFoldedInEditor.boolValue, phaseName);
 
         /*if (GUILayout.Button("-", GUILayout.Width(buttonWidth)))
         {
@@ -53,7 +59,7 @@ public class AttackPhaseEditor : Editor
         }*/
         EditorGUILayout.EndHorizontal();
 
-        if (showPhase)
+        if (isFoldedInEditor.boolValue)
         {
             DrawPhase();
         }
@@ -64,16 +70,14 @@ public class AttackPhaseEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-
     /*public static Reaction CreateReaction(Type reactionType)
     {
         return (Reaction)CreateInstance(reactionType);
     }*/
 
-
     protected virtual void DrawPhase()
     {
-        Debug.Log("Draw Attack Phase inspector");
+        //Debug.Log("Draw Attack Phase inspector");
         //DrawDefaultInspector();
         //GUILayout.BeginHorizontal();
         //GUILayout.Label("Duration", GUILayout.Width(70));
@@ -88,8 +92,8 @@ public class AttackPhaseEditor : Editor
         }
 
         EditorGUILayout.BeginHorizontal();
-        hitboxPrefabToggle = EditorGUILayout.Toggle(hitboxPrefabToggle, GUILayout.Width(25));
-        if (hitboxPrefabToggle)
+        hasHitbox.boolValue = EditorGUILayout.Toggle(hasHitbox.boolValue, GUILayout.Width(25));
+        if (hasHitbox.boolValue)
         {
             hitboxPrefab.objectReferenceValue = EditorGUILayout.ObjectField(
                 new GUIContent("Hitbox Prefab", "Add the hitbox prefab"), hitboxPrefab.objectReferenceValue, typeof(GameObject), false);
