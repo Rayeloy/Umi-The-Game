@@ -305,7 +305,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     #region ----[ CLASS FUNCTIONS ]----
 
-    #region AWAKE AND CREATE PLAYERS
+    #region AWAKE / CREATE PLAYERS / SPAWN POSITIONS
     /// <summary>
     /// Funcion que Inicializa valores de todos los jugadores y sus cámaras.
     /// </summary>
@@ -459,7 +459,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
-    //Eloy: Juan, he creado este método porque copiar y pegar lo mismo en ambos lados del if era un horror para mi cerebro. cada nueva referencia sería un lío, así mejor.
+    //Eloy: Juan, he creado este método porque copiar y pegar lo mismo en ambos lados del if(online/offline) era un horror para mi cerebro. cada nueva referencia sería un lío, así mejor.
     void InitializePlayerReferences(PlayerMovement player, GameObject canvas, CameraController cameraBase, Camera UICamera)
     {
         //Inicializar referencias
@@ -603,8 +603,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             List<Vector3> auxPositions = redTeamSpawns[i].GetComponent<Respawn>().SetSpawnPositions(redSpawnsNumPlayers[i]);
             spawnPosRed.AddRange(auxPositions);
         }
-        if (spawnPosBlue.Count != playerNumBlue) Debug.LogError("Error: Spawn positions for blue team are not equal to number of blue team players.");
-        if (spawnPosRed.Count != playerNumRed) Debug.LogError("Error: Spawn positions for blue team are not equal to number of blue team players.");
+        if (spawnPosBlue.Count != playerNumBlue) Debug.LogError("Error: Spawn positions("+spawnPosBlue.Count+") for blue team are not equal to number of blue team players("+playerNumBlue+").");
+        if (spawnPosRed.Count != playerNumRed) Debug.LogError("Error: Spawn positions (" + spawnPosRed.Count + ") for red team are not equal to number of red team players(" + playerNumRed + ").");
         for (int i = 0; i < allPlayers.Count; i++)
         {
             if (allPlayers[i].team == Team.blue)
