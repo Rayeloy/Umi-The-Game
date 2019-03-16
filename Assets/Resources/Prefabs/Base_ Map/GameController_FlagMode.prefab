@@ -60,22 +60,21 @@ MonoBehaviour:
   playersCamerasParent: {fileID: 0}
   playersUICamerasParent: {fileID: 0}
   allWeapons:
-  - {fileID: 11400000, guid: 15b874004fd9fc843b3dd52a1a5b0c17, type: 2}
   - {fileID: 11400000, guid: 62e907f90cd3a02418417962b53df879, type: 2}
+  - {fileID: 11400000, guid: 15b874004fd9fc843b3dd52a1a5b0c17, type: 2}
   allBufferedInputs:
   - {fileID: 11400000, guid: 5be981359aa5af64f9ab89d0f694fc30, type: 2}
-  blueTeamSpawn: {fileID: 0}
-  redTeamSpawn: {fileID: 0}
+  blueTeamSpawns:
+  - {fileID: 0}
+  redTeamSpawns:
+  - {fileID: 0}
   scaleDos: 1.25
   scaleCuatro: 1.25
   gameOverStarted: 0
   playerNum: 1
   gamePaused: 0
   playing: 0
-  offline: 0
-  attackX: {fileID: 11400000, guid: 8effc5015e16c2949913cfbcd884371e, type: 2}
-  attackY: {fileID: 11400000, guid: f966ce84c6d7ddd4f8ee9bf2d3992d62, type: 2}
-  attackB: {fileID: 11400000, guid: 62b70d52c7fb6024eafbe61034f7d534, type: 2}
+  online: 0
   myScoreManager: {fileID: 114010027320582548}
   flagPrefab: {fileID: 1751600940884742, guid: b65fe97042153d54abc8f26b7532c126, type: 3}
   flagsParent: {fileID: 0}
@@ -123,21 +122,9 @@ MonoBehaviour:
   - {fileID: 0}
   blueFireworks: {fileID: 0}
   redFireworks: {fileID: 0}
-  blueTeamScore_Text:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  redTeamScore_Text:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  time_Text:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  blueTeamScore_Text: []
+  redTeamScore_Text: []
+  time_Text: []
 --- !u!82 &82853969678866926
 AudioSource:
   m_ObjectHideFlags: 0
