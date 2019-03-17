@@ -89,6 +89,7 @@ GameObject:
   - component: {fileID: 6103894786154261235}
   - component: {fileID: 6053909862265312425}
   - component: {fileID: 646909521823584330}
+  - component: {fileID: 8636643008417965968}
   m_Layer: 8
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -120,7 +121,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.5235849, g: 0.8503954, b: 1, a: 0}
+  m_BackGroundColor: {r: 0.003921569, g: 0.94117653, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
@@ -239,3 +240,28 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
+--- !u!114 &8636643008417965968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6165933204225631055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef41eb2e41997d54191ca724371ad048, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  materialUsed: {fileID: 2100000, guid: d25add9c3e7193a44aa6d0f460e72982, type: 2}
+  hidePlane: 1
+  planeOffset: 0.01
+  attachToEditorCam: 1
+  editorCamScript: {fileID: 0}
+  pointLights: []
+  splitShadowRendering: 0
+  materialShadows: {fileID: 0}
+  syncMaterial: 0
+  shadowRenderOffset: 0.01
+  activateHandleDrawing: 0
+  shadowPlane: {fileID: 0}
+  plane: {fileID: 0}

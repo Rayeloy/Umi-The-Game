@@ -127,6 +127,7 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     public void LateUpdate()
     {
+        print("CameraController.myPlayerMov = " + myPlayerMov);
         if (myPlayerMov.gC.playing)
         {
             float inputX = myPlayerMov.Actions.CamMovement.X;//Input.GetAxis(myPlayerMov.contName + "H2");
