@@ -4,17 +4,47 @@ using UnityEngine;
 
 public class GameController_Tutorial : GameControllerBase
 {
-    [Header(" --- TUTORIAL --- ")]
-    public GameObject[] flags;
+    #region ----[ VARIABLES FOR DESIGNERS ]----
+    //Referencias
+    #endregion
 
-    protected override void Start()
-    {
-        for (int i = 0; i < playerNum; i++)
-        {
-            flags[i].SetActive(true);
-            flags[i].GetComponent<Flag>().gC = this;
-        }
-        base.Start();
+    #region ----[ PROPERTIES ]----
+    #endregion
 
-    }
+    #region ----[ VARIABLES ]----
+    #endregion
+
+    #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
+
+    #region Awake
+    #endregion
+
+    #region Start
+    #endregion
+
+    #region Update
+    #endregion
+
+    #endregion
+
+    #region ----[ PRIVATE FUNCTIONS ]----
+    #endregion
+
+    #region ----[ PUBLIC FUNCTIONS ]----
+    #endregion
+
+    #region ----[ PUN CALLBACKS ]----
+    #endregion
+
+    #region ----[ RPC ]----
+    #endregion
+
+    #region ----[ NETWORK FUNCTIONS ]----
+    #endregion
+
+    #region ----[ IPUNOBSERVABLE ]----
+    #endregion
 }
+
+#region ----[ STRUCTS ]----
+#endregion
