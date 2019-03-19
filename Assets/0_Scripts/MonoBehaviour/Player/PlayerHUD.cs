@@ -120,6 +120,7 @@ public class PlayerHUD : MonoBehaviour {
 
     void ArrowToFlag()
     {
+        
         Vector3 dir = myCamera.WorldToScreenPoint(flag.position);
 
         if (dir.x > offsetPantalla && dir.x < Screen.width - offsetPantalla && dir.y > offsetPantalla && dir.y < Screen.height - offsetPantalla)
