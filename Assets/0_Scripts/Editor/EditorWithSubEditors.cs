@@ -6,12 +6,12 @@ public abstract class EditorWithSubEditors<TEditor, TTarget> : Editor
     where TTarget : Object
 {
     [SerializeField]
-    public TEditor[] subEditors;
+    public TEditor[] subEditors = new TEditor[0];
 
 
     protected virtual void CheckAndCreateSubEditors(ref TTarget[] subEditorTargets)
     {
-        //Debug.Log("CheckAndCreateSubEditors starts");
+        Debug.Log("CheckAndCreateSubEditors starts");
         if (subEditors != null && subEditors.Length == subEditorTargets.Length)
         {
             Debug.Log("CheckAndCreateSubEditors exit");

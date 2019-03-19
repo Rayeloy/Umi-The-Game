@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: Whirlwind outwards
   m_EditorClassIdentifier: 
   attackName: Whirlwind
-  hitboxPrefab: {fileID: 1703244747168992, guid: 8447410836385804c85c173da3087d9d,
-    type: 3}
-  chargingTime: 0
-  startupTime: 1
-  activeTime: 2
-  recoveryTime: 1
+  hasChargingPhase: 0
+  chargingPhase: {fileID: 0}
+  startupPhase: {fileID: 0}
+  activePhase: {fileID: 0}
+  recoveryPhase: {fileID: 0}
   comboDifferentAttackPercent: 50
   stunTime: 0
   knockbackSpeed: 15

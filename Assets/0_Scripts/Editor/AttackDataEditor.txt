@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -45,11 +45,10 @@ public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor, AttackPh
         knockbackSpeed = serializedObject.FindProperty("knockbackSpeed");
         knockbackType = serializedObject.FindProperty("knockbackType");
         knockbackDirection = serializedObject.FindProperty("knockbackDirection");
-        /*
+
         Debug.Log("0 - attackPhases.Length = " + attackPhases.Length+"; subEditors.Length ="+subEditors.Length);
         CheckAndCreateSubEditors(ref attackPhases);
         Debug.Log("1 - attackPhases.Length = " + attackPhases.Length + "; subEditors.Length =" + subEditors.Length);
-        */
     }
 
     private void OnDisable()
@@ -76,8 +75,7 @@ public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor, AttackPh
 
     public override void OnInspectorGUI()
     {
-        base.OnInspectorGUI();
-        /*Debug.Log("1.5 - attackPhases.Length = " + attackPhases.Length + "; subEditors.Length =" + subEditors.Length);
+        Debug.Log("1.5 - attackPhases.Length = " + attackPhases.Length + "; subEditors.Length =" + subEditors.Length);
         CheckAndCreateSubEditors(ref attackPhases);
         //base.OnInspectorGUI(); 
         serializedObject.Update();
@@ -112,57 +110,55 @@ public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor, AttackPh
 
         serializedObject.ApplyModifiedProperties();
         //EditorUtility.SetDirty(target);
-        */
     }
 
     private bool FillAttackPhasesArray(ref AttackPhaseData[] subEditorTargets)
     {
-        /* Debug.Log("1- AttackPhasesArray has length = " + subEditorTargets.Length);
-         if (subEditorTargets.Length == 0)
-         {
-             if (attackData.chargingPhase == null)
-             {
-                 Debug.Log("chargingPhase created");
-                 attackData.chargingPhase = CreateInstance(typeof(AttackPhaseData)) as AttackPhaseData;
-                 //attackData.chargingPhase = new AttackPhase();
-             }
-             if (attackData.startupPhase == null)
-             {
-                 Debug.Log("startupPhase created");
-                 attackData.startupPhase = CreateInstance(typeof(AttackPhaseData)) as AttackPhaseData;
-                 //attackData.startupPhase = new AttackPhase();
-             }
-             if (attackData.activePhase == null)
-             {
-                 Debug.Log("activePhase created");
-                 attackData.activePhase = CreateInstance(typeof(AttackPhaseData)) as AttackPhaseData;
-                 //attackData.activePhase = new AttackPhase();
-             }
-             if (attackData.recoveryPhase == null)
-             {
-                 Debug.Log("recoveryPhase created");
-                 attackData.recoveryPhase = CreateInstance(typeof(AttackPhaseData)) as AttackPhaseData;
-                 //attackData.recoveryPhase = new AttackPhase();
-             }
+        Debug.Log("1- AttackPhasesArray has length = " + subEditorTargets.Length);
+        if (subEditorTargets.Length == 0)
+        {
+            if (attackData.chargingPhase == null)
+            {
+                Debug.Log("chargingPhase created");
+                attackData.chargingPhase = CreateInstance(typeof(AttackPhaseData)) as AttackPhaseData;
+                //attackData.chargingPhase = new AttackPhase();
+            }
+            if (attackData.startupPhase == null)
+            {
+                Debug.Log("startupPhase created");
+                attackData.startupPhase = CreateInstance(typeof(AttackPhaseData)) as AttackPhaseData;
+                //attackData.startupPhase = new AttackPhase();
+            }
+            if (attackData.activePhase == null)
+            {
+                Debug.Log("activePhase created");
+                attackData.activePhase = CreateInstance(typeof(AttackPhaseData)) as AttackPhaseData;
+                //attackData.activePhase = new AttackPhase();
+            }
+            if (attackData.recoveryPhase == null)
+            {
+                Debug.Log("recoveryPhase created");
+                attackData.recoveryPhase = CreateInstance(typeof(AttackPhaseData)) as AttackPhaseData;
+                //attackData.recoveryPhase = new AttackPhase();
+            }
 
-             subEditorTargets = new AttackPhaseData[4];
-             //To create new scriptableObjects you must use "CreateInstance(Type type)" instead of new scriptableObjectClass(,,);
-             subEditorTargets[0] = attackData.chargingPhase;
-             subEditorTargets[1] = attackData.startupPhase;
-             subEditorTargets[2] = attackData.activePhase;
-             subEditorTargets[3] = attackData.recoveryPhase;
-             return true;
-         }
-         else
-         {
-             return false;
-         }*/
-        return false;
+            subEditorTargets = new AttackPhaseData[4];
+            //To create new scriptableObjects you must use "CreateInstance(Type type)" instead of new scriptableObjectClass(,,);
+            subEditorTargets[0] = attackData.chargingPhase;
+            subEditorTargets[1] = attackData.startupPhase;
+            subEditorTargets[2] = attackData.activePhase;
+            subEditorTargets[3] = attackData.recoveryPhase;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     protected override void CheckAndCreateSubEditors(ref AttackPhaseData[] subEditorTargets)
     {
-        /*if(FillAttackPhasesArray(ref subEditorTargets))
+        if(FillAttackPhasesArray(ref subEditorTargets))
         {
             Debug.Log("2- AttackPhasesArray has length = " + subEditorTargets.Length);
             base.CheckAndCreateSubEditors(ref subEditorTargets);
@@ -183,7 +179,7 @@ public class AttackDataEditor : EditorWithSubEditors<AttackPhaseEditor, AttackPh
             {
                 Debug.LogError("Error: There should be 4 attack phases, but there are " + subEditors.Length);
             }
-        }*/
+        }
     }
 }
 

@@ -3,14 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(AttackPhaseData))]
-public class AttackPhaseEditor : Editor
+[CustomPropertyDrawer(typeof(AttackPhase))]
+public class AttackPhasePD : PropertyDrawer
 {
-    public bool showPhase;
-
-    private string phaseName = null;
-    protected AttackPhaseData myAttackPhase;
-
     SerializedProperty isFoldedInEditor;
 
     SerializedProperty duration;
@@ -19,19 +14,17 @@ public class AttackPhaseEditor : Editor
     SerializedProperty hasHitbox;
     SerializedProperty hitboxPrefab;
 
-
-
     private void OnEnable()
     {
         //reaction = (Reaction)target;
-        
+
         Init();
     }
 
 
     protected virtual void Init()
     {
-        Debug.Log("I'm being executed now; Target = " + target.ToString() + "; Application.isPlaying = " + Application.isPlaying);
+        /*Debug.Log("I'm being executed now; Target = " + target.ToString() + "; Application.isPlaying = " + Application.isPlaying);
         if (target == null) return;
         myAttackPhase = (AttackPhaseData)target;
 
@@ -42,43 +35,63 @@ public class AttackPhaseEditor : Editor
         rotationSpeed = serializedObject.FindProperty("rotationSpeed");
         hasHitbox = serializedObject.FindProperty("hasHitbox");
         hitboxPrefab = serializedObject.FindProperty("hitboxPrefab");
+        */
     }
 
-    public override void OnInspectorGUI()
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        serializedObject.Update();
+
+        // Using BeginProperty / EndProperty on the parent property means that
+        // prefab override logic works on the entire property.
 
         EditorGUILayout.BeginVertical(GUI.skin.box);
-        EditorGUI.indentLevel++;
+        EditorGUI.BeginProperty(position, label, property);
+        //EditorGUI.indentLevel++;
 
-        EditorGUILayout.BeginHorizontal();
+        /*EditorGUILayout.BeginHorizontal();
 
-        isFoldedInEditor.boolValue = EditorGUILayout.Foldout(isFoldedInEditor.boolValue, phaseName);
+        isFoldedInEditor.boolValue = EditorGUILayout.Foldout(isFoldedInEditor.boolValue, "Test Phase");
 
-        /*if (GUILayout.Button("-", GUILayout.Width(buttonWidth)))
-        {
-            reactionsProperty.RemoveFromObjectArray(reaction);
-        }*/
         EditorGUILayout.EndHorizontal();
 
         if (isFoldedInEditor.boolValue)
         {
             DrawPhase();
-        }
+        }*/
 
-        EditorGUI.indentLevel--;
+
+        //base.OnGUI(position, property, label);
+
+
+
+        // Draw label
+        position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
+
+        // Don't make child fields be indented
+        int indent = EditorGUI.indentLevel;
+        EditorGUI.indentLevel = 0;
+
+        // Calculate rects
+        Rect durationRect = new Rect(position.x, position.y, 50, position.height);
+        Rect restrictRotationRect = new Rect(position.x, position.y+15, 50, position.height);
+        Rect rotationSpeedRect = new Rect(position.x, position.y+30, 50, position.height);
+
+        // Draw fields - passs GUIContent.none to each so they are drawn without labels
+        EditorGUI.PropertyField(durationRect, property.FindPropertyRelative("duration"));
+        EditorGUI.PropertyField(restrictRotationRect, property.FindPropertyRelative("restrictRotation"));
+        EditorGUI.PropertyField(rotationSpeedRect, property.FindPropertyRelative("rotationSpeed"));
+
+        // Set indent back to what it was
+        EditorGUI.indentLevel = indent;
+
+
+        //EditorGUI.indentLevel--;
+        EditorGUI.EndProperty();
         EditorGUILayout.EndVertical();
-
-        serializedObject.ApplyModifiedProperties();
     }
 
-    /*public static Reaction CreateReaction(Type reactionType)
-    {
-        return (Reaction)CreateInstance(reactionType);
-    }*/
-
     protected virtual void DrawPhase()
-    {
+    {/*
         //Debug.Log("Draw Attack Phase inspector");
         //DrawDefaultInspector();
         //GUILayout.BeginHorizontal();
@@ -107,21 +120,23 @@ public class AttackPhaseEditor : Editor
 
         }
         EditorGUILayout.EndHorizontal();
+        */
     }
-
-    public void SetUpEditorData(string name, AttackPhaseData attackPhase)
-    {
-        if(phaseName == null){
-            phaseName = name;
-        }
-        //myAttackPhase.duration = attackPhase.duration;
-        //myAttackPhase.restrictRotation = attackPhase.restrictRotation;
-        //myAttackPhase.rotationSpeed = attackPhase.rotationSpeed;
-        //myAttackPhase.hitboxPrefab = attackPhase.hitboxPrefab;
-        //duration = serializedObject.FindProperty("duration");
-        //restrictRotation = serializedObject.FindProperty("restrictRotation");
-        //rotationSpeed = serializedObject.FindProperty("rotationSpeed");
-        //hitboxPrefab = serializedObject.FindProperty("hitboxPrefab");
-    }
-
+    
 }
+
+
+/*
+ * [CustomPropertyDrawer( typeof( Test ) )]
+public class Ed : PropertyDrawer {
+ 
+    public override float GetPropertyHeight ( SerializedProperty property, GUIContent label ) {
+        return base.GetPropertyHeight( property, label );
+    }
+ 
+    public override void OnGUI ( Rect position, SerializedProperty property, GUIContent label ) {
+        GUI.Label( position, "This is a Test" );
+    }
+ 
+}
+*/

@@ -788,9 +788,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
+    #region Auxiliar
     #endregion
 
-    #region Auxiliar
     #endregion
 
     #region ----[ PUN CALLBACKS ]----

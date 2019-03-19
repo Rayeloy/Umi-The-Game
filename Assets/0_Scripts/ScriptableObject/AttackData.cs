@@ -40,35 +40,30 @@ public class AttackData : ScriptableObject
 
     private void OnEnable()
     {
-        if (chargingPhase == null)
-        {
-            chargingPhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
-        }
-        if (startupPhase == null)
-        {
-            startupPhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
-        }
-        if (activePhase == null)
-        {
-            activePhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
-        }
-        if (recoveryPhase == null)
-        {
-            recoveryPhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
-        }
+        Debug.Log("AttackData OnEnable() and I'm "+name);
+        //if (chargingPhase == null)
+        //{
+        //    Debug.Log("chargingPhase created");
+        //    chargingPhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
+        //    //chargingPhase = new AttackPhase();
+        //}
+        //if (startupPhase == null)
+        //{
+        //    Debug.Log("startupPhase created");
+        //    startupPhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
+        //    //startupPhase = new AttackPhase();
+        //}
+        //if (activePhase == null)
+        //{
+        //    Debug.Log("activePhase created");
+        //    activePhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
+        //    //activePhase = new AttackPhase();
+        //}
+        //if (recoveryPhase == null)
+        //{
+        //    Debug.Log("recoveryPhase created");
+        //    recoveryPhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
+        //    //recoveryPhase = new AttackPhase();
+        //}
     }
-}
-[System.Serializable]
-public class AttackPhase : ScriptableObject
-{
-    [SerializeField]
-    public bool isFoldedInEditor;
-
-    public float duration;
-    public bool restrictRotation;
-    public float rotationSpeed;
-    [Tooltip("Do you want this phase to have a hitbox?")]
-    public bool hasHitbox;
-    [Tooltip("Leave empty if no hitbox needed")]
-    public GameObject hitboxPrefab;
 }

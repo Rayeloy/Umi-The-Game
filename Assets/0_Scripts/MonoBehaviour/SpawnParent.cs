@@ -29,21 +29,9 @@ public class SpawnParent : MonoBehaviour
     #region Start
     private void Start()
     {
-        if (visibleTriggerMeshes)
+        if (Application.isPlaying)
         {
-            spawnTrigger.enabled = true;
-            for(int i=0; i < spawnWalls.Length; i++)
-            {
-                spawnWalls[i].enabled = true;
-            }
-        }
-        else
-        {
-            spawnTrigger.enabled = false;
-            for (int i = 0; i < spawnWalls.Length; i++)
-            {
-                spawnWalls[i].enabled = false;
-            }
+            ToggleVisibleTriggerMeshes();
         }
     }
     #endregion
@@ -81,6 +69,29 @@ public class SpawnParent : MonoBehaviour
     #endregion
 
     #region ----[ PRIVATE FUNCTIONS ]----
+    void ToggleVisibleTriggerMeshes()
+    {
+        if (visibleTriggerMeshes)
+        {
+            if(!spawnTrigger.enabled)
+            spawnTrigger.enabled = true;
+            for (int i = 0; i < spawnWalls.Length; i++)
+            {
+                if (!spawnWalls[i].enabled)
+                    spawnWalls[i].enabled = true;
+            }
+        }
+        else
+        {
+            if (spawnTrigger.enabled)
+                spawnTrigger.enabled = false;
+            for (int i = 0; i < spawnWalls.Length; i++)
+            {
+                if (spawnWalls[i].enabled)
+                    spawnWalls[i].enabled = false;
+            }
+        }
+    }
     #endregion
 
     #region ----[ PUBLIC FUNCTIONS ]----
