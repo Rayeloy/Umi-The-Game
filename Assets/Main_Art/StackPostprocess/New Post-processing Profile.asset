@@ -20,6 +20,7 @@ MonoBehaviour:
   - {fileID: 114261871888353568}
   - {fileID: 114274382516418062}
   - {fileID: 114584445026179546}
+  - {fileID: 114330774685265830}
 --- !u!114 &114259377949890792
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -93,7 +94,7 @@ MonoBehaviour:
     value: 32
   focalLength:
     overrideState: 1
-    value: 50
+    value: 1
   kernelSize:
     overrideState: 0
     value: 1
@@ -181,6 +182,50 @@ MonoBehaviour:
   dirtIntensity:
     overrideState: 0
     value: 0
+--- !u!114 &114330774685265830
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40b924e2dad56384a8df2a1e111bb675, type: 3}
+  m_Name: Vignette
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 1
+  mode:
+    overrideState: 1
+    value: 0
+  color:
+    overrideState: 1
+    value: {r: 0.5411765, g: 1, b: 0.9402842, a: 1}
+  center:
+    overrideState: 1
+    value: {x: 0.5, y: 0.5}
+  intensity:
+    overrideState: 1
+    value: 0.498
+  smoothness:
+    overrideState: 1
+    value: 0.061
+  roundness:
+    overrideState: 0
+    value: 1
+  rounded:
+    overrideState: 0
+    value: 0
+  mask:
+    overrideState: 0
+    value: {fileID: 0}
+    defaultState: 1
+  opacity:
+    overrideState: 0
+    value: 1
 --- !u!114 &114493736091753178
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -203,7 +248,7 @@ MonoBehaviour:
     defaultState: 1
   intensity:
     overrideState: 1
-    value: 0.052
+    value: 0.08
   fastMode:
     overrideState: 0
     value: 0
@@ -277,11 +322,11 @@ MonoBehaviour:
     overrideState: 0
     value: 0
   postExposure:
-    overrideState: 0
-    value: 0
+    overrideState: 1
+    value: 0.15
   contrast:
     overrideState: 1
-    value: 8.2
+    value: 10
   mixerRedOutRedIn:
     overrideState: 0
     value: 100
@@ -311,13 +356,13 @@ MonoBehaviour:
     value: 100
   lift:
     overrideState: 0
-    value: {x: 1, y: 0.90065354, z: 0.99173397, w: 0}
+    value: {x: 0.9635172, y: 0.98198974, z: 1, w: 0}
   gamma:
     overrideState: 0
-    value: {x: 0.9251584, y: 0.945701, z: 1, w: 0}
+    value: {x: 1, y: 0.92032945, z: 0.97850305, w: 0}
   gain:
     overrideState: 0
-    value: {x: 0.70880157, y: 0.7281476, z: 1, w: 0}
+    value: {x: 1, y: 0.9606578, z: 0.95713896, w: 0}
   masterCurve:
     overrideState: 0
     value:
