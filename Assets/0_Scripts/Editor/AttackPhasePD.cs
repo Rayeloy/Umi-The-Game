@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomPropertyDrawer(typeof(AttackPhase))]
+//[CustomPropertyDrawer(typeof(AttackPhase))]
 public class AttackPhasePD : PropertyDrawer
 {
     SerializedProperty isFoldedInEditor;
