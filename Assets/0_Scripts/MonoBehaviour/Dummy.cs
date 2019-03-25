@@ -310,6 +310,7 @@ public class Dummy : MonoBehaviour
     public void InflateDummy()
     {
         GetComponent<CapsuleCollider>().enabled = true;
+
         //animación hinchado
     }
 

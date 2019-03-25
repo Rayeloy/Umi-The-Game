@@ -102,23 +102,23 @@ public class GameController_Tutorial : GameControllerBase
 [System.Serializable]
 public class TutorialLane
 {
-    public int lane;
+    public int laneNumber;
     [HideInInspector]
     public TutorialPhase phase;
     [Tooltip("Add 1 entry for every phase, then add as many invisible walls as you want for each phase.")]
-    public PhaseInvisibleWalls[] laneInvisibleWalls;
+    public PhaseInvisibleWalls[] lanePhases;
 
     public TutorialLane(int _laneNumber=0)
     {
         phase = TutorialPhase.StartPhase;
-        lane = _laneNumber;
+        laneNumber = _laneNumber;
     }
 
     public void ProgressPhase()
     {
-        for (int i = 0; i < laneInvisibleWalls[(int)phase].invisibleWalls.Length; i++)
+        for (int i = 0; i < lanePhases[(int)phase].invisibleWalls.Length; i++)
         {
-            laneInvisibleWalls[(int)phase].invisibleWalls[i].SetActive(false);
+            lanePhases[(int)phase].invisibleWalls[i].SetActive(false);
         }
         phase++;
     }
