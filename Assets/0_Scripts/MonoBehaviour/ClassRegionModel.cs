@@ -49,5 +49,5 @@ public class RegionClassModel
     #endregion
 }
 
-#region ----[ STRUCTS ]----
+#region ----[ STRUCTS & CLASSES ]----
 #endregion

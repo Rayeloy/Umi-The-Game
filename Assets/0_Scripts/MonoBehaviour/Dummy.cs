@@ -1,9 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 #region ----[ PUBLIC ENUMS ]----
 #endregion
+
+[System.Serializable]
+public class MyIntEvent : UnityEvent<int>
+{
+}
 
 public class Dummy : MonoBehaviour
 {
@@ -11,12 +17,21 @@ public class Dummy : MonoBehaviour
     //Referencias
     public Controller3D controller;
 
+    public MyIntEvent phaseProgressFunction;
+    [Tooltip("Max number of hits the dummy can take before deflating")]
+    public int maxHP;
+    int currentHP;
+
     //VARIABLES DE MOVIMIENTO
     Vector3 objectiveVel;
     [HideInInspector]
     public float maxMoveSpeed = 10;
     float maxMoveSpeed2; // is the max speed from which we aply the joystick sensitivity value
     float currentMaxMoveSpeed = 10.0f; // its the final max speed, after the joyjoystick sensitivity value
+
+    [Header("Body Mass")]
+    [Tooltip("Body Mass Index. 1 is for normal body mass.")]
+    public float bodyMass;
 
     [Header("SPEED")]
     [Tooltip("Maximum speed that you can travel at horizontally when hit by someone")]
@@ -71,6 +86,7 @@ public class Dummy : MonoBehaviour
     {
         maxMoveSpeed = 10;
         currentSpeed = 0;
+        currentHP = maxHP;
     }
     #endregion
 
@@ -92,11 +108,12 @@ public class Dummy : MonoBehaviour
         }
 
         HorizontalMovement();
-        //VerticalMovement();
+        VerticalMovement();
 
         //Debug.Log("currentVel = " + currentVel + "; Time.deltaTime = " + Time.deltaTime + "; currentVel * Time.deltaTime = " + (currentVel * Time.deltaTime) + "; Time.fixedDeltaTime = " + Time.fixedDeltaTime);
         controller.Move(currentVel * Time.deltaTime);
         controller.collisions.ResetAround();
+        Debug.LogWarning("DUMMY: vel = " + currentVel.ToString("F4"));
     }
 
     #endregion
@@ -227,6 +244,7 @@ public class Dummy : MonoBehaviour
         if (!inWater)
         {
             inWater = true;
+            phaseProgressFunction.Invoke(0);
         }
     }
 
@@ -278,8 +296,27 @@ public class Dummy : MonoBehaviour
     public void StartRecieveHit(Vector3 _knockback)
     {
         print("Dummy: Recieve hit");
+        moveSt = MoveState.Knockback;
         knockBackDone = false;
+        _knockback = _knockback / bodyMass;
         knockback = _knockback;
+        currentHP--;
+        if (currentHP == 0)
+        {
+            DeflateDummy();
+        }
+    }
+
+    public void InflateDummy()
+    {
+        GetComponent<CapsuleCollider>().enabled = true;
+        //animación hinchado
+    }
+
+    public void DeflateDummy()
+    {
+        gameObject.layer = LayerMask.NameToLayer("Atrezzo");
+        //animación desinchado
     }
     #endregion
 

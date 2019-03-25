@@ -16,15 +16,11 @@ public class GameController_FlagMode : GameControllerBase
     public Transform redTeamFlagHome;
     public Transform centerCameraParent;
 
-    protected override void Awake()
+    protected override void SpecificAwake()
     {
         myScoreManager.KonoAwake(this as GameController_FlagMode);
-        base.Awake();
+        //base.Awake();
         CreateFlag();
-    }
-    protected override void AllAwakes()
-    {
-        base.AllAwakes();
     }
 
     public override void StartGame()

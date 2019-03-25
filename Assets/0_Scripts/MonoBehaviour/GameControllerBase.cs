@@ -149,7 +149,11 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         contador = new List<RectTransform>();
         powerUpPanel = new List<RectTransform>();
 
+        //Check data
         CheckValidInputsBuffer();
+
+        //Set stuff active
+        myGameInterface.gameObject.SetActive(true);
 
         if (!online)
         {
@@ -189,7 +193,14 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             //OnlinePlayerSetup();
             //OnlineCanvasSetUp();
             //OnlineAwakePlayer();
+
         }
+        SpecificAwake();
+    }
+
+    protected virtual void SpecificAwake()
+    {
+        //code for children's awake
     }
  
     #endregion

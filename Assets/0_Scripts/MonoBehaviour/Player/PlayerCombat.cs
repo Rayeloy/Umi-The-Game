@@ -61,6 +61,17 @@ public class PlayerCombat : MonoBehaviour
 
     [HideInInspector]
     public bool aiming;
+
+    [HideInInspector]
+    public bool isRotationRestricted
+    {
+        get{
+            bool result = false;
+            if (attackStg != AttackStage.ready && myAttacks[attackIndex].attack.GetAttackPhase(attackStg).restrictRotation)
+                result = true;
+            return result;
+        }
+    }
     #endregion
 
     #region ----[ VARIABLES ]----
@@ -231,39 +242,67 @@ public class PlayerCombat : MonoBehaviour
         switch (attackStg)
         {
             case AttackStage.charging:
-                newHB = myAttacks[attackIndex].attack.chargingPhase.hitboxPrefab;
-                if (newHB != null)
+                if (myAttacks[attackIndex].attack.chargingPhase.hasHitbox)
                 {
-                    GameObject newHitbox = Instantiate(newHB, hitboxes, false);
-                    hitbox.GetComponent<MeshRenderer>().material = hitboxMats[0];
-                    hitbox = newHitbox.GetComponent<Collider>();
+                    newHB = myAttacks[attackIndex].attack.chargingPhase.hitboxPrefab;
+                    if (newHB != null)
+                    {
+                        GameObject newHitbox = Instantiate(newHB, hitboxes, false);
+                        newHitbox.GetComponent<MeshRenderer>().material = hitboxMats[0];
+                        hitbox = newHitbox.GetComponent<Collider>();
+                    }
+                    else
+                    {
+                        Debug.LogError("Error: Hitbox prefab not found for the charging phase of the attack " + myAttacks[attackIndex].attack.name);
+                    }
                 }
                 break;
             case AttackStage.startup:
-                newHB = myAttacks[attackIndex].attack.startupPhase.hitboxPrefab;
-                if (newHB != null)
+                if (myAttacks[attackIndex].attack.startupPhase.hasHitbox)
                 {
-                    GameObject newHitbox = Instantiate(newHB, hitboxes, false);
-                    hitbox.GetComponent<MeshRenderer>().material = hitboxMats[1];
-                    hitbox = newHitbox.GetComponent<Collider>();
+                    newHB = myAttacks[attackIndex].attack.startupPhase.hitboxPrefab;
+                    if (newHB != null)
+                    {
+                        GameObject newHitbox = Instantiate(newHB, hitboxes, false);
+                        newHitbox.GetComponent<MeshRenderer>().material = hitboxMats[1];
+                        hitbox = newHitbox.GetComponent<Collider>();
+                    }
+                    else
+                    {
+                        Debug.LogError("Error: Hitbox prefab not found for the startup phase of the attack " + myAttacks[attackIndex].attack.name);
+                    }
                 }
                 break;
             case AttackStage.active:
-                newHB = myAttacks[attackIndex].attack.activePhase.hitboxPrefab;
-                if (newHB != null)
+                if (myAttacks[attackIndex].attack.activePhase.hasHitbox)
                 {
-                    GameObject newHitbox = Instantiate(newHB, hitboxes, false);
-                    hitbox.GetComponent<MeshRenderer>().material = hitboxMats[2];
-                    hitbox = newHitbox.GetComponent<Collider>();
+                    newHB = myAttacks[attackIndex].attack.activePhase.hitboxPrefab;
+                    if (newHB != null)
+                    {
+                        GameObject newHitbox = Instantiate(newHB, hitboxes, false);
+                        newHitbox.GetComponent<MeshRenderer>().material = hitboxMats[2];
+                        hitbox = newHitbox.GetComponent<Collider>();
+                    }
+                    else
+                    {
+                        Debug.LogError("Error: Hitbox prefab not found for the active phase of the attack " + myAttacks[attackIndex].attack.name);
+                    }
                 }
                 break;
             case AttackStage.recovery:
-                newHB = myAttacks[attackIndex].attack.recoveryPhase.hitboxPrefab;
-                if (newHB != null)
+                if (myAttacks[attackIndex].attack.recoveryPhase.hasHitbox)
                 {
-                    GameObject newHitbox = Instantiate(newHB, hitboxes, false);
-                    hitbox.GetComponent<MeshRenderer>().material = hitboxMats[3];
-                    hitbox = newHitbox.GetComponent<Collider>();
+                    newHB = myAttacks[attackIndex].attack.recoveryPhase.hitboxPrefab;
+                    if (newHB != null)
+                    {
+                        GameObject newHitbox = Instantiate(newHB, hitboxes, false);
+                        newHitbox.GetComponent<MeshRenderer>().material = hitboxMats[3];
+                        hitbox = newHitbox.GetComponent<Collider>();
+                    }
+                    else
+                    {
+                        Debug.LogError("Error: Hitbox prefab not found for the recovery phase of the attack " + myAttacks[attackIndex].attack.name);
+                    }
                 }
                 break;
         }
@@ -358,7 +397,6 @@ public class PlayerCombat : MonoBehaviour
                     }
                     break;
                 case AttackStage.startup:
-                    print("Startup phase running.");
                     //animacion startup
                     if (attackTime >= startupTime)
                     {

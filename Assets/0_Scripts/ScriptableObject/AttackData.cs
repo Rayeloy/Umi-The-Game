@@ -66,4 +66,20 @@ public class AttackData : ScriptableObject
         //    //recoveryPhase = new AttackPhase();
         //}
     }
+
+    public AttackPhase GetAttackPhase(AttackStage attackStage)
+    {
+        switch (attackStage)
+        {
+            case AttackStage.charging:
+                return chargingPhase;
+            case AttackStage.startup:
+                return startupPhase;
+            case AttackStage.active:
+                return activePhase;
+            case AttackStage.recovery:
+                return recoveryPhase;
+        }
+        return null;
+    }
 }

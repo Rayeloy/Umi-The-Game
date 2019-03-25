@@ -929,7 +929,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
                     if (currentRotation != targetRotation)
                     {
-                        if(Mathf.Abs(currentRotation - targetRotation) > instantRotationMaxAngle)//Instant rotation
+                        if(!myPlayerCombat.isRotationRestricted && Mathf.Abs(currentRotation - targetRotation) > instantRotationMaxAngle)//Instant rotation
                         {
                             RotateCharacter(currentInputDir);
                         }
@@ -1010,7 +1010,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         if (stunned)
         {
-            moveSt = MoveState.Knockback;
+            moveSt = MoveState.Knockback;//Eloy: ESTO CREO QUE ESTÁ MAL PUESTO, el knockback SOLO SE APLICA UNA VEZ, no todo el tiempo de stun...pero me da miedo cambiarlo ahora de repente
             timeStun += Time.deltaTime;
             if (timeStun >= maxTimeStun)
             {
