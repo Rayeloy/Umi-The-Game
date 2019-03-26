@@ -27,6 +27,7 @@ public class TeamSetupManager : MonoBehaviour
     [Range(1,6)]
     public int minNumPlayers;
 	public GameObject playerPrefab;
+    public GameObject CameraGhostBuster;
 
 	public static string siguienteEscena;
     public static bool startFromMap = false;
@@ -88,7 +89,9 @@ public class TeamSetupManager : MonoBehaviour
         {
 			if (contador < tiempoParaReady)
             {
+                CameraGhostBuster.SetActive(true);
 				contador += Time.deltaTime;
+
 				return;			
 			}
 
