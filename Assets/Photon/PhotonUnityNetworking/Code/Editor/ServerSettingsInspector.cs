@@ -63,16 +63,16 @@ public class ServerSettingsInspector : Editor
             EditorGUI.indentLevel++;
 
             //Realtime APP ID
-            BuildAppIdField(settingsSp, "AppIdRealtime");
+            BuildAppIdField(settingsSp.FindPropertyRelative("AppIdRealtime"));
 
 
             if (PhotonEditorUtils.HasChat)
             {
-                BuildAppIdField(settingsSp, "AppIdChat");
+                BuildAppIdField(settingsSp.FindPropertyRelative("AppIdChat"));
             }
             if (PhotonEditorUtils.HasVoice)
             {
-                BuildAppIdField(settingsSp, "AppIdVoice");
+                BuildAppIdField(settingsSp.FindPropertyRelative("AppIdVoice"));
             }
 
             EditorGUILayout.PropertyField(settingsSp.FindPropertyRelative("AppVersion"));
@@ -150,13 +150,19 @@ public class ServerSettingsInspector : Editor
     }
 
 
-    private void BuildAppIdField(SerializedProperty property,string propertyName)
+    private void BuildAppIdField(SerializedProperty property)
     {
         EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.PropertyField(property.FindPropertyRelative(propertyName));
+        EditorGUILayout.PropertyField(property);
+        string appId = property.stringValue;
+        string url = "https://dashboard.photonengine.com/en-US/PublicCloud";
+        if (!string.IsNullOrEmpty(appId))
+        {
+            url = string.Format("https://dashboard.photonengine.com/en-US/App/Manage/{0}", appId);
+        }
         if (GUILayout.Button("Dashboard", EditorStyles.miniButton, GUILayout.Width(70)))
         {
-            Application.OpenURL("https://dashboard.photonengine.com/en-US/App/Manage/" + property.FindPropertyRelative(propertyName).stringValue);
+            Application.OpenURL(url);
         }
         EditorGUILayout.EndHorizontal();
     }

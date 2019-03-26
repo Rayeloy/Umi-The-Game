@@ -364,8 +364,13 @@ namespace Photon.Realtime
 
             if (this.isOffline)
             {
+                // Merge and delete values.
+                this.CustomProperties.Merge(customProps);
+                this.CustomProperties.StripKeysWithNullValues();
+
                 // invoking callbacks
                 this.LoadBalancingClient.InRoomCallbackTargets.OnRoomPropertiesUpdate(propertiesToSet);
+               
             }
             else
             {
