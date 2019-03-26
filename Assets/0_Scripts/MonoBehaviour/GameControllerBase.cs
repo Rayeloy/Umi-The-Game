@@ -70,6 +70,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     #region ----[ PROPERTIES ]----
 
+    protected int playerNumBlue = 0, playerNumRed = 0;
     private PlayerActions playerActions;
 
     //GAME OVER MENU
@@ -293,6 +294,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 }
             }
         }
+        SpecificUpdate();
     }
 
     private void FixedUpdate()
@@ -305,6 +307,11 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         {
             allPlayers[i].KonoUpdate();
         }
+    }
+
+    protected virtual void SpecificUpdate()
+    {
+
     }
 
     protected virtual void UpdateModeExclusiveClasses()//no borrar, es para los hijos
@@ -534,7 +541,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     /// </summary>
     void SetSpawnPositions()
     {
-        int playerNumBlue = 0, playerNumRed = 0;
         List<PlayerMovement> redPlayers = new List<PlayerMovement>();
         List<PlayerMovement> bluePlayers = new List<PlayerMovement>();
         for (int i = 0; i < allPlayers.Count; i++)

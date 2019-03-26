@@ -17,6 +17,14 @@ public class Dummy : MonoBehaviour
     //Referencias
     public Controller3D controller;
 
+    [Header(" --- Shitty Animation --- ")]
+    public GameObject deflatedDummy;
+    public GameObject inflatedDummy;
+    public GameObject inflatingDummyAlembic;
+    public float inflatingDummyAnimMaxTime;
+    public GameObject deflatingDummyAlembic;
+    public float deflatingDummyAnimMaxTime;
+
     public MyIntEvent phaseProgressFunction;
     [Tooltip("Max number of hits the dummy can take before deflating")]
     public int maxHP;
@@ -52,6 +60,12 @@ public class Dummy : MonoBehaviour
     #endregion
 
     #region ----[ PROPERTIES ]----
+    // SHITTY ANIMATIONS
+    bool inflatingDummy = false;
+    bool deflatingDummy = false;
+    float inflatingDummyTime = 0;
+    float deflatingDummyTime = 0;
+
     [HideInInspector]
     public MoveState moveSt = MoveState.NotMoving;
 
@@ -87,6 +101,12 @@ public class Dummy : MonoBehaviour
         maxMoveSpeed = 10;
         currentSpeed = 0;
         currentHP = maxHP;
+
+        //activations/deactivations
+        deflatedDummy.SetActive(true);
+        inflatedDummy.SetActive(false);
+        inflatingDummyAlembic.SetActive(false);
+        deflatingDummyAlembic.SetActive(false);
     }
     #endregion
 
@@ -106,6 +126,8 @@ public class Dummy : MonoBehaviour
         {
             currentVel.y = 0;
         }
+        InflatingDummy();
+        DeflatingDummy();
 
         HorizontalMovement();
         VerticalMovement();
@@ -303,21 +325,79 @@ public class Dummy : MonoBehaviour
         currentHP--;
         if (currentHP == 0)
         {
-            DeflateDummy();
+            StartDeflateDummy();
         }
     }
 
-    public void InflateDummy()
+    public void StartInflateDummy()
     {
-        GetComponent<CapsuleCollider>().enabled = true;
-
         //animación hinchado
+        deflatedDummy.SetActive(false);
+        inflatedDummy.SetActive(false);
+        inflatingDummyAlembic.SetActive(true);
+        deflatingDummyAlembic.SetActive(false);
+
+        inflatingDummyTime = 0;
+
+        inflatingDummy = true;
     }
 
-    public void DeflateDummy()
+    void InflatingDummy()
+    {
+        if (inflatingDummy)
+        {
+            inflatingDummyTime += Time.deltaTime;
+            if (inflatingDummyTime >= inflatingDummyAnimMaxTime)
+            {
+                StopInflatingDummy();
+            }
+        }
+    }
+
+    void StopInflatingDummy()
+    {
+        GetComponent<CapsuleCollider>().enabled = true;
+        deflatedDummy.SetActive(false);
+        inflatedDummy.SetActive(true);
+        inflatingDummyAlembic.SetActive(false);
+        deflatingDummyAlembic.SetActive(false);
+        inflatingDummy = false;
+    }
+
+
+    public void StartDeflateDummy()
     {
         gameObject.layer = LayerMask.NameToLayer("Atrezzo");
         //animación desinchado
+        deflatedDummy.SetActive(false);
+        inflatedDummy.SetActive(false);
+        inflatingDummyAlembic.SetActive(false);
+        deflatingDummyAlembic.SetActive(true);
+
+        deflatingDummyTime = 0;
+
+        deflatingDummy = true;
+    }
+
+    void DeflatingDummy()
+    {
+        if (deflatingDummy)
+        {
+            deflatingDummyTime += Time.deltaTime;
+            if (deflatingDummyTime >= deflatingDummyAnimMaxTime)
+            {
+                StopDeflatingDummy();
+            }
+        }
+    }
+
+    void StopDeflatingDummy()
+    {
+        deflatedDummy.SetActive(true);
+        inflatedDummy.SetActive(false);
+        inflatingDummyAlembic.SetActive(false);
+        deflatingDummyAlembic.SetActive(false);
+        deflatingDummy = false;
     }
     #endregion
 
