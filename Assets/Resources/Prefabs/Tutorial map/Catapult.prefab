@@ -67,7 +67,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3393368569088486285}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 29.66, y: 20.87, z: -0.68}
+  m_LocalPosition: {x: 29.66, y: 49.67, z: -41.95}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8872600104894252546}
@@ -222,7 +222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abd345c8f1a4c2c4b82a72b3fef2a1a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  target: {fileID: 2290889208355109863}
   h: 25
   debugPath: 0
 --- !u!1 &8642983336360874717
@@ -271,16 +271,12 @@ PrefabInstance:
       value: CatapultaShooting
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: bf227a7e1547f2149aa317a7c3956984, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 100000, guid: bf227a7e1547f2149aa317a7c3956984, type: 3}
-      propertyPath: m_TagString
-      value: Untagged
-      objectReference: {fileID: 0}
-    - target: {fileID: 100000, guid: bf227a7e1547f2149aa317a7c3956984, type: 3}
       propertyPath: m_Layer
       value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: bf227a7e1547f2149aa317a7c3956984, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: bf227a7e1547f2149aa317a7c3956984, type: 3}
       propertyPath: m_Layer
@@ -394,14 +390,6 @@ PrefabInstance:
     - target: {fileID: 100006, guid: c0631c17591e0f94691341cebdd070b5, type: 3}
       propertyPath: m_Name
       value: CatapultaStill
-      objectReference: {fileID: 0}
-    - target: {fileID: 100006, guid: c0631c17591e0f94691341cebdd070b5, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 100006, guid: c0631c17591e0f94691341cebdd070b5, type: 3}
-      propertyPath: m_TagString
-      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 100006, guid: c0631c17591e0f94691341cebdd070b5, type: 3}
       propertyPath: m_Layer
