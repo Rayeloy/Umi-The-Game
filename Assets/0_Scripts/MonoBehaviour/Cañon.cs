@@ -28,8 +28,10 @@ public class Cañon : MonoBehaviour
 
         PlayerMovement pm = other.transform.GetComponent<PlayerBody>().myPlayerMov;
         //Debug.Log(pm.gravity);
+        //print("PLAYER GRAVITY = "+pm.gravity);
         LaunchData launchData = CalculateLaunchData(pm.gravity);
-		//if (pm != null && pm.currentVel.y <= playerSpeed)
+        //if (pm != null && pm.currentVel.y <= playerSpeed)
+        //print("CANNON VELOCITY = "+launchData.initialVolicity);
 	    pm.StartFixedJump(launchData.initialVolicity, launchData.timeToTarget);
     }
 
@@ -57,11 +59,12 @@ public class Cañon : MonoBehaviour
     LaunchData CalculateLaunchData(float g){
         float displacementY = target.position.y - transform.position.y;
         Vector3 DisplacementXZ = new Vector3 (target.position.x - transform.position.x, 0, target.position.z - transform.position.z);
-        float time = Mathf.Sqrt(-2*h/g) + Mathf.Sqrt(2*(displacementY - h)/g);
-
+        //print("pene = " + Mathf.Sqrt(-2 * h / g)+"h = "+h+"; g = "+g);
+        float time = Mathf.Sqrt(-2*h/g) + Mathf.Sqrt(-2*(displacementY - h)/g);
+        //print("pene = " + Mathf.Sqrt(-2 * h / g) + ";pene2 = " + Mathf.Sqrt(2 * Mathf.Abs((displacementY - h)) / g) + "; pene = "+ 2 * (2 * Mathf.Abs((displacementY - h)) / g));
         Vector3 velocityY = Vector3.up * Mathf.Sqrt (-2 *g * h);
         Vector3 velocityXZ = DisplacementXZ / time;
-
+        //print("DisplacementXZ = " + DisplacementXZ + "; time = " + time);
         return new LaunchData(velocityXZ + velocityY, time);
     }
 
@@ -70,6 +73,7 @@ public class Cañon : MonoBehaviour
         public readonly float timeToTarget;
 
         public LaunchData(Vector3 initialVolicity, float timeToTarget){
+            print("initialVolicity = " + initialVolicity);
             this.initialVolicity = initialVolicity;
             this.timeToTarget = timeToTarget;
         }

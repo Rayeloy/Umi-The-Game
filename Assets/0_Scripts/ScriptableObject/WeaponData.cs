@@ -10,12 +10,13 @@ public class WeaponData : ScriptableObject
     [Tooltip("As you want it to show as text on the HUD for picking it up.")]
     public string weaponName;
     [Tooltip("Weapon prefab for attaching to the hand.")]
-    public GameObject weaponPrefab;
+    public GameObject[] weaponSkins;
 
     [Tooltip("Player maximum speed when carrying this weapon. Normal value is 10.")]
     public float playerMaxSpeed = 10;
     public AttackData basicAttack;
     public AttackData strongAttack;
+    public AttackData specialAttack;
     //public SpecialAttack
 
     [Header("Weapon in the right hand")]

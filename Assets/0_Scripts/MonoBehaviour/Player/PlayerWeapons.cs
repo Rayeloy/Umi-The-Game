@@ -24,7 +24,7 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
 
     #region ----[ PROPERTIES ]----
     [HideInInspector]
-    public WeaponData currentWeapon;
+    public Weapon currentWeapon;
     private Transform currentWeapObject;
     [HideInInspector]
     public List<Weapon> weaponsNearby;
@@ -86,7 +86,7 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
 
         if (nearestWeapon!=null && myPlayerMovement.Actions.Attack1.WasPressed)
         {
-            PickupWeapon(nearestWeapon.weaponData);
+            PickupWeapon(nearestWeapon);
         }
 
         UpdateNearestWeapon();
@@ -143,14 +143,8 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
     #endregion
 
     #region ----[ PUBLIC FUNCTIONS ]----
-    //no se usa esta ahora mismo
-    public void PickupWeapon(WeaponType weapon)
-    {
-        AttachWeapon(weapon);
-        myPlayerCombat.FillMyAttacks(currentWeapon);
-    }
 
-    public void PickupWeapon(WeaponData weaponData)
+    public void PickupWeapon(Weapon weapon)
     {
         if (!hasWeapon)
         {
@@ -158,9 +152,9 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
             myPlayerMovement.controller.collisionMask = newLM;
         }
         DropWeapon();
-        myPlayerMovement.maxMoveSpeed = weaponData.playerMaxSpeed;
-        AttachWeapon(weaponData);
-        myPlayerCombat.FillMyAttacks(currentWeapon);
+        myPlayerMovement.maxMoveSpeed = weapon.weaponData.playerMaxSpeed;
+        AttachWeapon(weapon);
+        myPlayerCombat.FillMyAttacks(currentWeapon.weaponData);
     }
 
     public void DropWeapon()
@@ -191,22 +185,15 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
     public void AttachWeapon()
     {
         currentWeapObject.SetParent(rightHand);
-        currentWeapObject.localPosition = currentWeapon.handPosition;
-        currentWeapObject.localRotation = Quaternion.Euler(currentWeapon.handRotation.x, currentWeapon.handRotation.y, currentWeapon.handRotation.z);
-        currentWeapObject.localScale = currentWeapon.handScale;
-    }
-    //no se usa ahora mismo
-    public void AttachWeapon(WeaponType wepType)
-    {
-        currentWeapon = SearchWeapon(wepType);
-        currentWeapObject = Instantiate(currentWeapon.weaponPrefab, rightHand).transform;
-        AttachWeapon();
+        currentWeapObject.localPosition = currentWeapon.weaponData.handPosition;
+        currentWeapObject.localRotation = Quaternion.Euler(currentWeapon.weaponData.handRotation.x, currentWeapon.weaponData.handRotation.y, currentWeapon.weaponData.handRotation.z);
+        currentWeapObject.localScale = currentWeapon.weaponData.handScale;
     }
 
-    public void AttachWeapon(WeaponData weaponData)
+    public void AttachWeapon(Weapon weapon)
     {
-        currentWeapon = weaponData;
-        currentWeapObject = Instantiate(currentWeapon.weaponPrefab, rightHand).transform;
+        currentWeapon = weapon;
+        currentWeapObject = Instantiate(currentWeapon.currentWeaponPrefab, rightHand).transform;
         AttachWeapon();
     }
 
@@ -215,9 +202,9 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
         if (!PhotonNetwork.IsConnected)
         {
             currentWeapObject.SetParent(senaka);
-            currentWeapObject.localPosition = currentWeapon.backPosition;
-            currentWeapObject.localRotation = Quaternion.Euler(currentWeapon.backRotation.x, currentWeapon.backRotation.y, currentWeapon.backRotation.z);
-            currentWeapObject.localScale = currentWeapon.backScale;
+            currentWeapObject.localPosition = currentWeapon.weaponData.backPosition;
+            currentWeapObject.localRotation = Quaternion.Euler(currentWeapon.weaponData.backRotation.x, currentWeapon.weaponData.backRotation.y, currentWeapon.weaponData.backRotation.z);
+            currentWeapObject.localScale = currentWeapon.weaponData.backScale;
         }
     }
 

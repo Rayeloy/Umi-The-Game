@@ -331,15 +331,19 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         frameCounter++;
         ProcessInputsBuffer();
 
+        //print("CurrentVel 1= " + currentVel);
         HorizontalMovement();
+        //print("CurrentVel 2= " + currentVel);
         //print("vel = " + currentVel.ToString("F4"));
         UpdateFacingDir();
         VerticalMovement();
         //print("vel = " + currentVel.ToString("F4"));
 
-        //print("CurrentVel = " + currentVel);
         ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
+
         //Debug.Log("currentVel = " + currentVel + "; Time.deltaTime = " + Time.deltaTime + "; currentVel * Time.deltaTime = " + (currentVel * Time.deltaTime) + "; Time.fixedDeltaTime = " + Time.fixedDeltaTime);
+
+        //print("CurrentVel 3= " + currentVel);
         controller.Move(currentVel * Time.deltaTime);
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();

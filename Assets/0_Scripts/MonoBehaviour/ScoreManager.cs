@@ -102,9 +102,11 @@ public class ScoreManager : MonoBehaviour {
         }
 
 		_Tiempo -= Time.deltaTime;
+        for ( int i = 0; i < time_Text.Count; i++)
+        {
+            time_Text[i].text = timeToString(_Tiempo);
+        }
 
-        for( int i = 0; i < time_Text.Count; i++)
-			time_Text[i].text = timeToString(_Tiempo);
 
         if (_Tiempo <= 0){
             Team winner;

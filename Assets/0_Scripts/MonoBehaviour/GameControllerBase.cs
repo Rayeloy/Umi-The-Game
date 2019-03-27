@@ -483,7 +483,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         //Inicializar referencias
         PlayerHUD playerHUD = canvas.GetComponent<PlayerHUD>();
         //Player
-        print("GC reference applied to PlayerMovement");
         player.gC = this;
         player.myCamera = cameraBase;
         player.myPlayerHUD = playerHUD;

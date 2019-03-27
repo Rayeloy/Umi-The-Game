@@ -40,7 +40,7 @@ public class AttackData : ScriptableObject
 
     private void OnEnable()
     {
-        Debug.Log("AttackData OnEnable() and I'm "+name);
+        //Debug.Log("AttackData OnEnable() and I'm "+name);
         //if (chargingPhase == null)
         //{
         //    Debug.Log("chargingPhase created");

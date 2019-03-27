@@ -468,6 +468,8 @@ public class PlayerCombat : MonoBehaviour
         //Debug.Log("myAttacks[" + (myAttacks.Count - 1) + "].attack = " + myAttacks[myAttacks.Count - 1].attack.name);
         att = new AttackInfo(weaponData.strongAttack);
         myAttacks.Add(att);
+        att = new AttackInfo(weaponData.specialAttack);
+        myAttacks.Add(att);
         //Debug.Log("myAttacks[" + (myAttacks.Count - 1) + "].attack = " + myAttacks[myAttacks.Count - 1].attack.name);
 
         //SPECIAL ATTACK

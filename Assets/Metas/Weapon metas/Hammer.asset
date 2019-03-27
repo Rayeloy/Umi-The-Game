@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponType: 1
   weaponName: Hammer
-  weaponPrefab: {fileID: 5363239436386287791, guid: a3b3bfa48c2def047af1d10eb216f4b4,
-    type: 3}
+  weaponSkins:
+  - {fileID: 5363239436386287791, guid: a3b3bfa48c2def047af1d10eb216f4b4, type: 3}
+  currentWeaponPrefab: {fileID: 0}
   playerMaxSpeed: 9
   basicAttack: {fileID: 11400000, guid: 20329e4eb21b2e542ba6778b9838ad77, type: 2}
   strongAttack: {fileID: 11400000, guid: 3c3d43bfd5a29f44ebbe03668cd5afdc, type: 2}
