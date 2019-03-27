@@ -17,28 +17,11 @@ public enum TutorialPhase
 public class GameController_Tutorial : GameControllerBase
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
-    [Header(" --- FLAG MODE --- ")]
+    [Header(" --- TUTORIAL MODE --- ")]
     //Referencias
     public TutorialLane[] tutorialLanes;
     public Transform ringSpawnPoint;
-    public Dummy dummy;
-    [Header(" --- Shitty Animations --- ")]
-    [Header("Walls")]
-    public GameObject[] inflatableWallsInflatingAlembic = new GameObject[2];
-    public float inflatableWallsInflatingAnimMaxTime;
-    public GameObject[] inflatableWallsBefore = new GameObject[2];
-    public GameObject[] inflatableWallsBreakingAlembic = new GameObject[2];
-    public float inflatableWallsBreakingAnimMaxTime;
-    public GameObject[] inflatableWallsAfter = new GameObject[2];
-    public GameObject[] inflatableWallsPlatforms = new GameObject[2];
-    bool inflatableWallsInflating = false;
-    bool inflatableWallsBreaking = false;
-    float inflatableWallsInflatingTime = 0;
-    float inflatableWallsBreakingTime = 0;
-    [Header("Cannon")]
-    public GameObject cannon;
-    public GameObject cannonShootingAembic;
-    public float cannonAnimMaxTime;
+
     [Header(" --- Ring Battle ---")]
     public Text battleText;
     public float battleMaxTimeToStart;
@@ -49,8 +32,6 @@ public class GameController_Tutorial : GameControllerBase
     #endregion
 
     #region ----[ PROPERTIES ]----
-    float cannonAnimTime = 0;
-    bool startShootingCannon = false;
 
     List<PlayerMovement> playersInRing;
     bool cdToStartRingTeamBattle = false;
@@ -66,18 +47,13 @@ public class GameController_Tutorial : GameControllerBase
     #region Awake
     protected override void SpecificAwake()
     {
-        tutorialLanes = new TutorialLane[2];
-        for (int i = 0; i < inflatableWallsBefore.Length; i++)
-        {
-            inflatableWallsInflatingAlembic[i].SetActive(false); 
-            inflatableWallsBefore[i].SetActive(true);
-            inflatableWallsBreakingAlembic[i].SetActive(false);
-            inflatableWallsAfter[i].SetActive(false);
-            inflatableWallsPlatforms[i].SetActive(false);
-        }
         playersInRing = new List<PlayerMovement>();
         battleTimeToStart = battleMaxTimeToStart;
-        battleText.enabled = false;
+        battleText.gameObject.SetActive(false);
+        for (int i = 0; i < tutorialLanes.Length; i++)
+        {
+            tutorialLanes[i].Awake();
+        }
     }
     #endregion
 
@@ -91,8 +67,10 @@ public class GameController_Tutorial : GameControllerBase
         {
             if (playing)
             {
-                InflatingWalls();
-                BreakingWalls();
+                for(int i=0; i < tutorialLanes.Length; i++)
+                {
+                    tutorialLanes[i].Update();
+                }
                 CheckStartRingTeamBattle();
                 CountdownRingTeamBattle();
                 ProcessRingTeamBattle();
@@ -104,19 +82,6 @@ public class GameController_Tutorial : GameControllerBase
     #endregion
 
     #region ----[ PRIVATE FUNCTIONS ]----
-    void InflateDummyAndWalls()
-    {
-        dummy.StartInflateDummy();
-        //Inflate walls animation
-        StartInflatingWalls();
-    }
-
-    void DeflateDummyAndWalls()
-    {
-        dummy.StartDeflateDummy();
-        //Inflate walls animation
-        StartBreakingWalls();
-    }
 
     void CheckStartRingTeamBattle()
     {
@@ -131,8 +96,8 @@ public class GameController_Tutorial : GameControllerBase
             if (playersInRing[i].team == Team.red)
                 redPlayersInRing++;
         }
-        if (bluePlayersInRing == playerNumBlue) start = true;
-        if (redPlayersInRing == playerNumRed) start = true;
+        if (bluePlayersInRing == playerNumBlue &&  playerNumBlue>0) start = true;
+        if (redPlayersInRing == playerNumRed && playerNumRed>0) start = true;
         if (start)
         {
             StartCountdownRingTeamBattle();
@@ -141,9 +106,10 @@ public class GameController_Tutorial : GameControllerBase
 
     void StartCountdownRingTeamBattle()
     {
+        print("START COUNTDOWN RING TEAM BATTLE");
         battleTimeToStart = battleMaxTimeToStart;
         cdToStartRingTeamBattle = true;
-        battleText.enabled = true;
+        battleText.gameObject.SetActive(true);
     }
 
     void CountdownRingTeamBattle()
@@ -162,7 +128,7 @@ public class GameController_Tutorial : GameControllerBase
     void StopCountdownRingTeamBattle()
     {
         cdToStartRingTeamBattle = false;
-        battleText.text = "Fight!";
+        battleText.text = "FIGHT!";
 
         //Teleport playeres out of the ring
         for(int i = 0; 0 <= allPlayers.Count; i++)
@@ -185,29 +151,32 @@ public class GameController_Tutorial : GameControllerBase
 
     void ProcessRingTeamBattle()
     {
-        if (battleText.enabled)
+        if (startRingTeamBattle)
         {
-            fightTextShowingTime += Time.deltaTime;
-            if (fightTextShowingTime >= fightTextshowingMaxTime)
+            if (battleText.enabled)
             {
-                battleText.enabled = false;
+                fightTextShowingTime += Time.deltaTime;
+                if (fightTextShowingTime >= fightTextshowingMaxTime)
+                {
+                    battleText.gameObject.SetActive(false);
+                }
             }
-        }
 
-        int bluePlayersInRing = 0;
-        int redPlayersInRing = 0;
-        for (int i = 0; 0 <= allPlayers.Count; i++)
-        {
-            if (allPlayers[i].inWater)
+            int bluePlayersInRing = 0;
+            int redPlayersInRing = 0;
+            for (int i = 0; 0 <= allPlayers.Count; i++)
             {
-                if (playersInRing[i].team == Team.blue)
-                    bluePlayersInRing++;
-                if (playersInRing[i].team == Team.red)
-                    redPlayersInRing++;
+                if (allPlayers[i].inWater)
+                {
+                    if (playersInRing[i].team == Team.blue)
+                        bluePlayersInRing++;
+                    if (playersInRing[i].team == Team.red)
+                        redPlayersInRing++;
+                }
             }
+            if (bluePlayersInRing == playerNumBlue) FinishRingTeamBattle(Team.blue);
+            if (redPlayersInRing == playerNumRed) FinishRingTeamBattle(Team.red);
         }
-        if (bluePlayersInRing == playerNumBlue) FinishRingTeamBattle(Team.blue);
-        if (redPlayersInRing == playerNumRed) FinishRingTeamBattle(Team.red);
     }
 
     void FinishRingTeamBattle(Team winner)
@@ -216,100 +185,6 @@ public class GameController_Tutorial : GameControllerBase
         StartGameOver(winner);
     }
 
-    void StartInflatingWalls()
-    {
-        for (int i = 0; i < inflatableWallsBefore.Length; i++)
-        {
-            inflatableWallsInflatingAlembic[i].SetActive(true);
-            inflatableWallsBefore[i].SetActive(false);
-            inflatableWallsAfter[i].SetActive(false);
-        }
-        inflatableWallsInflating = true;
-        inflatableWallsInflatingTime = 0;
-    }
-
-    void InflatingWalls()
-    {
-        if (inflatableWallsInflating)
-        {
-            inflatableWallsInflatingTime += Time.deltaTime;
-            if (inflatableWallsInflatingTime >= inflatableWallsInflatingAnimMaxTime)
-            {
-                StopInflatingWalls();
-            }
-        }
-    }
-
-    void StopInflatingWalls()
-    {
-        for (int i = 0; i < inflatableWallsBefore.Length; i++)
-        {
-            inflatableWallsInflatingAlembic[i].SetActive(false);
-            inflatableWallsBefore[i].SetActive(false);
-            inflatableWallsAfter[i].SetActive(true);
-        }
-        inflatableWallsInflating = false;
-    }
-
-    void StartBreakingWalls()
-    {
-        for (int i = 0; i < inflatableWallsBefore.Length; i++)
-        {
-            inflatableWallsBreakingAlembic[i].SetActive(true);
-            inflatableWallsAfter[i].SetActive(false);
-        }
-        inflatableWallsBreaking = true;
-        inflatableWallsBreakingTime = 0;
-    }
-
-    void BreakingWalls()
-    {
-        if (inflatableWallsBreaking)
-        {
-            inflatableWallsBreakingTime += Time.deltaTime;
-            if (inflatableWallsBreakingTime >= inflatableWallsInflatingAnimMaxTime)
-            {
-                StopBreakingWalls();
-            }
-        }
-    }
-
-    void StopBreakingWalls()
-    {
-        for (int i = 0; i < inflatableWallsBefore.Length; i++)
-        {
-            inflatableWallsBreakingAlembic[i].SetActive(false);
-            inflatableWallsPlatforms[i].SetActive(true);
-        }
-        inflatableWallsBreaking = false;
-    }
-
-    void StartShootingCannon()
-    {
-        startShootingCannon = true;
-        cannonAnimTime = 0;
-        cannon.SetActive(false);
-        cannonShootingAembic.SetActive(true);
-    }
-
-    void ShootingCannon()
-    {
-        if (startShootingCannon)
-        {
-            cannonAnimTime += Time.deltaTime;
-            if (cannonAnimTime >= cannonAnimMaxTime)
-            {
-                StopShootingCannon();
-            }
-        }
-    }
-
-    void StopShootingCannon()
-    {
-        startShootingCannon = false;
-        cannon.SetActive(true);
-        cannonShootingAembic.SetActive(false);
-    }
     #endregion
 
     #region ----[ PUBLIC FUNCTIONS ]----
@@ -318,10 +193,10 @@ public class GameController_Tutorial : GameControllerBase
         switch (tutorialLanes[laneNumber].phase)
         {
             case TutorialPhase.StartPhase:
-                InflateDummyAndWalls();
+                tutorialLanes[laneNumber].InflateDummyAndWalls();
                 break;
             case TutorialPhase.DummyPhase:
-                DeflateDummyAndWalls();
+                tutorialLanes[laneNumber].DeflateDummyAndWalls();
                 break;
             case TutorialPhase.WallJumpPhase:
                 break;
@@ -372,21 +247,106 @@ public class TutorialLane
     public TutorialPhase phase;
     [Tooltip("Add 1 entry for every phase, then add as many invisible walls as you want for each phase.")]
     public PhaseInvisibleWalls[] lanePhases;
+    public Dummy dummy;
+    public InflatableWall[] inflatableWalls = new InflatableWall[2];
+    [Header(" --- Shitty Animations --- ")]
+    [Header("Cannon")]
+    public GameObject cannon;
+    public GameObject cannonShootingAlembic;
+    public float cannonAnimMaxTime;
+    float cannonAnimTime = 0;
+    bool startShootingCannon = false;
+
+
 
     public TutorialLane(int _laneNumber = 0)
     {
         phase = TutorialPhase.StartPhase;
         laneNumber = _laneNumber;
+        cannon.SetActive(true);
+        cannonShootingAlembic.SetActive(false);
+        for (int i = 0; i < inflatableWalls.Length; i++)
+        {
+            inflatableWalls[i].KonoAwake();
+        }
+    }
+
+    public void Awake()
+    {
+        cannon.SetActive(true);
+        cannonShootingAlembic.SetActive(false);
+        for(int i = 0; i < inflatableWalls.Length; i++)
+        {
+            inflatableWalls[i].KonoAwake();
+        }
+    }
+
+    public void Update()
+    {
+        for (int i = 0; i < inflatableWalls.Length; i++)
+        {
+            inflatableWalls[i].KonoUpdate();
+        }
     }
 
     public void ProgressPhase()
-    {
+    {/*
         for (int i = 0; i < lanePhases[(int)phase].invisibleWalls.Length; i++)
         {
             lanePhases[(int)phase].invisibleWalls[i].SetActive(false);
         }
+        */
         phase++;
     }
+
+    public void InflateDummyAndWalls()
+    {
+        Debug.Log("INFLATE DUMMY AND WALLS");
+        dummy.StartInflatingDummy();
+        //Inflate walls animation
+        for (int i = 0; i < inflatableWalls.Length; i++)
+        {
+            inflatableWalls[i].StartInflatingWall();
+        }
+    }
+
+    public void DeflateDummyAndWalls()
+    {
+        dummy.StartDeflateDummy();
+        //Inflate walls animation
+        for (int i = 0; i < inflatableWalls.Length; i++)
+        {
+            inflatableWalls[i].StartBreakingWall();
+        }
+    }
+
+    public void StartShootingCannon()
+    {
+        startShootingCannon = true;
+        cannonAnimTime = 0;
+        cannon.SetActive(false);
+        cannonShootingAlembic.SetActive(true);
+    }
+
+    void ShootingCannon()
+    {
+        if (startShootingCannon)
+        {
+            cannonAnimTime += Time.deltaTime;
+            if (cannonAnimTime >= cannonAnimMaxTime)
+            {
+                StopShootingCannon();
+            }
+        }
+    }
+
+    void StopShootingCannon()
+    {
+        startShootingCannon = false;
+        cannon.SetActive(true);
+        cannonShootingAlembic.SetActive(false);
+    }
+
 }
 
 [System.Serializable]

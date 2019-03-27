@@ -11,6 +11,10 @@ public class TutorialPhasesTrigger : MonoBehaviour
     {
         switch (myTutorialPhase)
         {
+            case TutorialPhase.StartPhase:
+                if(gC.tutorialLanes[(int)myTutorialPhase].phase==TutorialPhase.StartPhase)
+                gC.ProgressLane((int)myTutorialPhase);
+                break;
             case TutorialPhase.CannonPhase:
                 PlayerMovement player = col.GetComponent<PlayerMovement>();
                 if (player != null)

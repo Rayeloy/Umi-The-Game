@@ -1052,7 +1052,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             }
             else
             {
-                print("notBreaking on");
+                //print("notBreaking on");
                 moveSt = MoveState.NotBreaking;
             }
             noMoveTime += Time.deltaTime;

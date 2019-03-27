@@ -44,6 +44,11 @@ public class PlayerHUD : MonoBehaviour {
 
     public void KonoStart()
     {
+        if(gC.gameMode == GameMode.Tutorial)
+        {
+            Arrow.gameObject.SetActive(false);
+            Wale.gameObject.SetActive(false);
+        }
         Interaction_Message.SetActive(false);
         crosshair.enabled = false;
         crosshairReduced.enabled = false;

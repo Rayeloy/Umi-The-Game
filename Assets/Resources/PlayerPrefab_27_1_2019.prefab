@@ -2911,6 +2911,8 @@ MonoBehaviour:
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
   maxMoveSpeed: 10
+  rotationSpeed: 1
+  instantRotationMaxAngle: 130
   maxKnockbackSpeed: 300
   maxAimingSpeed: 5
   maxHookingSpeed: 3.5
@@ -2925,6 +2927,7 @@ MonoBehaviour:
   airMovingAcc: 0.3
   hardBreakAcc: -90
   knockbackBreakAcc: -30
+  gravity: 0
   jumpHeight: 2.5
   jumpApexTime: 0.4
   breakJumpForce: 1.5
@@ -2952,6 +2955,8 @@ MonoBehaviour:
   flag: {fileID: 0}
   inWater: 0
   online: 0
+  spawnPosition: {x: 0, y: 0, z: 0}
+  spawnRotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &2739787249420687251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2989,7 +2994,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c515b7e1049281419f36a8f533abb98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllRays: 0
+  disableAllRays: 1
   collisionMask:
     serializedVersion: 2
     m_Bits: 279040
