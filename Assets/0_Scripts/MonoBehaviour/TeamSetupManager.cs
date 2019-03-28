@@ -4,6 +4,7 @@ using InControl;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 ///Juan:
 ///PhotonAnimatorView and Triggers
@@ -48,8 +49,12 @@ public class TeamSetupManager : MonoBehaviour
 	public float tiempoParaReady = 10.0f;
 
 	[Header("Referencias")]
-	public Animator animator;
-	public GameObject ReadyButton;
+	public GameObject readyButton;
+
+    public Camera myCamera;
+    public VideoPlayer video;
+    bool loadingScreenstarted = false;
+    float loadingScreenTime;
 
     private void Awake()
     {
@@ -85,36 +90,8 @@ public class TeamSetupManager : MonoBehaviour
 	private float contador = 0;
 	void Update()
 	{
-		if (ready)
-        {
-			if (contador < tiempoParaReady)
-            {
-                CameraGhostBuster.SetActive(true);
-				contador += Time.deltaTime;
-
-				return;			
-			}
-
-			ReadyButton.SetActive(true);
-			foreach(PlayerSelected ps in players)
-            {
-				if (ps.Actions.Jump.WasPressed)
-                {
-                    Debug.Log("LOAD GAME ");
-					if (startFromMap)
-					{
-                        Debug.Log("Start from map: "+siguienteEscena);
-						SceneManager.LoadScene(siguienteEscena);
-					}
-					else
-					{
-                        Debug.Log("Start from menu");
-                        SceneManager.LoadScene(nextScene);
-					}
-				}
-			}
-			return;
-		}
+        ProgressLoadingScreen();
+        ProgressReady();    
 
 		if (JoinButtonWasPressedOnListener( joystickListener ))
 		{
@@ -143,7 +120,6 @@ public class TeamSetupManager : MonoBehaviour
 			}
 			if (contador == players.Count)
             {
-				ready = true;
 				//GameInfo.playerActionsList = new PlayerActions[players.Count];
 				//GameInfo.playerActionsList = new List<PlayerActions>();
 				//for(int i = 0; i < players.Count; i++){
@@ -157,7 +133,11 @@ public class TeamSetupManager : MonoBehaviour
                 GameInfo.instance.nPlayers = players.Count;
 				if (siguienteEscena != "Tutorial")
                 {
-                    animator.SetBool("Ready", true);
+                    //animator.SetBool("Ready", true);
+                    if (!loadingScreenstarted)
+                    {
+                        StartLoadingScreen();
+                    }
                 }
 				else
                 {
@@ -172,14 +152,79 @@ public class TeamSetupManager : MonoBehaviour
 				}
 			}
 		}
-	}
 
 
-	bool JoinButtonWasPressedOnListener( PlayerActions actions )
+    }
+
+    void StartLoadingScreen()
+    {
+        loadingScreenstarted = true;
+        loadingScreenTime = 0;
+        video.enabled = true;
+        myCamera.cullingMask = LayerMask.GetMask("UI");
+        HideTeamSelectUI();
+        
+    }
+
+    void ProgressLoadingScreen()
+    {
+        if (loadingScreenstarted)
+        {
+            loadingScreenTime += Time.deltaTime;
+            if (loadingScreenTime >= tiempoParaReady)
+            {
+                StopLoadingScreen();
+            }
+        }
+    }
+
+    void StopLoadingScreen()
+    {
+        print("StopLoadingScreen");
+        loadingScreenstarted = false;
+        //appear button
+        readyButton.SetActive(true);
+        ready = true;
+    }
+
+    void HideTeamSelectUI()
+    {
+        for(int i = 0; i < pUI.Length; i++)
+        {
+            pUI[i].panel.SetActive(false);
+        }
+
+    }
+
+    void ProgressReady()
+    {
+        if (ready)
+        {
+            foreach (PlayerSelected ps in players)
+            {
+                if (ps.Actions.Jump.WasPressed)
+                {
+                    Debug.Log("LOAD GAME ");
+                    if (startFromMap)
+                    {
+                        Debug.Log("Start from map: " + siguienteEscena);
+                        SceneManager.LoadScene(siguienteEscena);
+                    }
+                    else
+                    {
+                        Debug.Log("Start from menu");
+                        SceneManager.LoadScene(nextScene);
+                    }
+                }
+            }
+            return;
+        }
+    }
+
+    bool JoinButtonWasPressedOnListener( PlayerActions actions )
 	{
 		return actions.Attack1.WasPressed || actions.Attack2.WasPressed || actions.Attack3.WasPressed || (actions != keyboardListener && actions.Jump.WasPressed);
 	}
-
 
 	PlayerSelected FindPlayerUsingJoystick( InputDevice inputDevice )
 	{
@@ -196,12 +241,10 @@ public class TeamSetupManager : MonoBehaviour
 		return null;
 	}
 
-
 	bool ThereIsNoPlayerUsingJoystick( InputDevice inputDevice )
 	{
 		return FindPlayerUsingJoystick( inputDevice ) == null;
 	}
-
 
 	PlayerSelected FindPlayerUsingKeyboard()
 	{
@@ -218,12 +261,10 @@ public class TeamSetupManager : MonoBehaviour
 		return null;
 	}
 
-
 	bool ThereIsNoPlayerUsingKeyboard()
 	{
 		return FindPlayerUsingKeyboard() == null;
 	}
-
  
 	void OnDeviceDetached( InputDevice inputDevice )
 	{
@@ -233,7 +274,6 @@ public class TeamSetupManager : MonoBehaviour
 			RemovePlayer( player );
 		}
 	}
-
 
 	PlayerSelected CreatePlayer( InputDevice inputDevice )
 	{

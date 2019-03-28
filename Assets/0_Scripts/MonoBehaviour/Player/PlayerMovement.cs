@@ -329,6 +329,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         }
         //print("FRAME NUMBER " + frameCounter);
         frameCounter++;
+        UpdateFlagLightBeam();
         ProcessInputsBuffer();
 
         //print("CurrentVel 1= " + currentVel);
@@ -1226,6 +1227,52 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                 flag.SetAway(true);
             }
         }
+    }
+    #endregion
+
+    #region LIGHT BEAM ---------------------------------------------
+    float distanceToFlag;
+    void UpdateDistanceToFlag()
+    {
+        distanceToFlag= ((gC as GameController_FlagMode).flags[0].transform.position - transform.position).magnitude;
+    }
+
+    void UpdateFlagLightBeam()
+    {
+        if (gC.gameMode == GameMode.CaptureTheFlag)
+        {
+            if (!haveFlag)
+            {
+                UpdateDistanceToFlag();
+                print("distanceToFlag = " + distanceToFlag);
+                if (distanceToFlag >= (gC as GameController_FlagMode).minDistToFlagToSeeBeam)
+                {
+                    ShowFlagLightBeam();
+                }
+                else
+                {
+                    StopFlagLightBeam();
+                }
+            }
+            else
+            {
+                StopFlagLightBeam();
+            }
+        }     
+    }
+
+    void ShowFlagLightBeam()
+    {
+        print("SHOW FLAG LIGHT BEAM");
+        myCamera.myCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("LightBeam");
+        //int mask= myCamera.myCamera.GetComponent<Camera>().cullingMask;
+        //myCamera.myCamera.GetComponent<Camera>().cullingMask = LayerMask.GetMask();
+    }
+
+    void StopFlagLightBeam()
+    {
+        print("STOP FLAG LIGHT BEAM");
+        myCamera.myCamera.GetComponent<Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("LightBeam"));
     }
     #endregion
 

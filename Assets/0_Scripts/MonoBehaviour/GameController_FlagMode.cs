@@ -16,6 +16,8 @@ public class GameController_FlagMode : GameControllerBase
     public Transform redTeamFlagHome;
     public Transform centerCameraParent;
 
+    public float minDistToFlagToSeeBeam;
+
     protected override void Awake()
     {
         myScoreManager.KonoAwake(this as GameController_FlagMode);
