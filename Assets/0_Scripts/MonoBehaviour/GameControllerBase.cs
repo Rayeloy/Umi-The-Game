@@ -50,7 +50,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     //public AttackData attackB;
 
     [Header(" --- 'All' lists ---")]
-    public List<WeaponData> allWeapons;//Array que contendrá las armas utilizadas, solo util en Pantalla Dividida, SIN USAR
     public BufferedInputData[] allBufferedInputs;
 
     [Header(" --- Spawn positions ---")]
@@ -66,6 +65,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     [Header(" --- Players HUD scale --- ")]
     public float scaleDos = 1.25f;//escala de las camaras para 2 jugadores
     public float scaleCuatro = 1.25f;//escala para 3 jugadores y 4 jugadores
+    [Header(" --- Other Stuff --- ")]
+    public Weapon startingWeaponBlue;
+    public Weapon startingWeaponRed;
     #endregion
 
     #region ----[ PROPERTIES ]----
@@ -750,7 +752,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         player.SetVelocity(Vector3.zero);
         player.transform.position = player.spawnPosition;
         player.rotateObj.transform.rotation = player.spawnRotation;
-        print("Player " + player.gameObject.name + " respawn rotation = " + player.spawnRotation.eulerAngles);
+        //print("Player " + player.gameObject.name + " respawn rotation = " + player.spawnRotation.eulerAngles);
 
         //player.myCamera.KonoAwake();
         //player.myCamera.SwitchCamera(player.myCamera.camMode);

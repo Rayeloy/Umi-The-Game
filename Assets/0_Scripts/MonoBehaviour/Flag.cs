@@ -8,7 +8,7 @@ public class Flag : MonoBehaviour
     [Header("Referencias")]
     public Transform flagCamera;
     public Transform flagCameraLocalParent;
-    public GameControllerBase gC;
+    public GameController_FlagMode gC;
     [HideInInspector]
     public Vector3 respawnPos;
     [Tooltip("Not used yet. Can be used to differentiate flags")]
@@ -58,6 +58,9 @@ public class Flag : MonoBehaviour
     float maxHeight, minHeight;
     //Vector3 bodyOriginalLocalPos;
     bool idleAnimStarted = false;
+
+    [Header("Flag LightBeam")]
+    public GameObject lightBeam;
 
 
     private void Awake()
@@ -187,7 +190,6 @@ public class Flag : MonoBehaviour
         StartRespawnIssho(respawnTime);
     }
 
-
     void StartRespawnIssho(float _maxTimeToRespawn)
     {
         if (!respawning)
@@ -199,13 +201,14 @@ public class Flag : MonoBehaviour
             flagCamera.SetParent((gC as GameController_FlagMode).centerCameraParent);
             flagCamera.localPosition = Vector3.zero;
             flagCamera.localRotation = Quaternion.identity;
+            lightBeam.transform.SetParent(gC.flagsParent);
+            lightBeam.transform.localPosition = Vector3.zero;
         }
         else
         {
             Debug.LogError("Error: can't start a respawn process for the flag since there is one already happening.");
         }
     }
-
 
     void ProcessRespawn()
     {
@@ -392,7 +395,7 @@ public class Flag : MonoBehaviour
             if (flagsCaptured >= gC.playerNum)
                 gC.myGameInterface.GoBackToMenu();
         }
-
+        gC.ShowFlagHomeLightBeam(currentOwner.GetComponent<PlayerMovement>().team);
     }
 
     public void PutFlagOnBack(PlayerMovement player)
@@ -441,9 +444,11 @@ public class Flag : MonoBehaviour
         flagCamera.localPosition = Vector3.zero;
         flagCamera.localRotation = Quaternion.identity;
 
+        lightBeam.transform.SetParent(transform);
+        lightBeam.transform.localPosition = Vector3.zero;
+
         grounded = false;
     }
-
 
 
     //private void OnTriggerEnter(Collider col)

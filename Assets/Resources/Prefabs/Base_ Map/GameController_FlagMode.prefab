@@ -59,9 +59,6 @@ MonoBehaviour:
   playersCanvasParent: {fileID: 0}
   playersCamerasParent: {fileID: 0}
   playersUICamerasParent: {fileID: 0}
-  allWeapons:
-  - {fileID: 11400000, guid: 62e907f90cd3a02418417962b53df879, type: 2}
-  - {fileID: 11400000, guid: 15b874004fd9fc843b3dd52a1a5b0c17, type: 2}
   allBufferedInputs:
   - {fileID: 11400000, guid: 5be981359aa5af64f9ab89d0f694fc30, type: 2}
   blueTeamSpawns:
@@ -70,6 +67,8 @@ MonoBehaviour:
   - {fileID: 0}
   scaleDos: 1.25
   scaleCuatro: 1.25
+  startingWeaponBlue: {fileID: 0}
+  startingWeaponRed: {fileID: 0}
   gameOverStarted: 0
   playerNum: 1
   gamePaused: 0
@@ -82,6 +81,7 @@ MonoBehaviour:
   blueTeamFlagHome: {fileID: 0}
   redTeamFlagHome: {fileID: 0}
   centerCameraParent: {fileID: 0}
+  minDistToSeeBeam: 10
 --- !u!114 &114010027320582548
 MonoBehaviour:
   m_ObjectHideFlags: 0

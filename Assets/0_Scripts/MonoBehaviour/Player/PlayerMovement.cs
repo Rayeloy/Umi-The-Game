@@ -308,6 +308,9 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         currentMaxMoveSpeed = maxMoveSpeed2 = maxMoveSpeed;
         knockbackBreakAcc = Mathf.Clamp(knockbackBreakAcc, -float.MaxValue, breakAcc);//menos de break Acc lo haría ver raro
 
+        ShowFlagFlow();
+        EquipWeaponAtStart();
+
         PlayerStarts();
     }
     private void PlayerStarts()
@@ -365,8 +368,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         ExitWater();
         jumpSt = JumpState.none;
-        myPlayerWeap.DropWeapon();
-        controller.collisionMask = LayerMask.GetMask("Stage", "WaterFloor", "SpawnWall");
+        //myPlayerWeap.DropWeapon();
+        //controller.collisionMask = LayerMask.GetMask("Stage", "WaterFloor", "SpawnWall");
     }
 
     #region INPUTS BUFFERING
@@ -1151,13 +1154,16 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         flag = _flag;
         flag.transform.SetParent(rotateObj);
         flag.transform.localPosition = new Vector3(0, 0, -0.5f);
-        flag.transform.localRotation = Quaternion.Euler(0, -90, 0);
+        flag.transform.localRotation = Quaternion.Euler(0, -135, 0);
+        HideFlagFlow();
     }
 
     public void LoseFlag()
     {
         haveFlag = false;
         flag = null;
+        ShowFlagFlow();
+        (gC as GameController_FlagMode).HideFlagHomeLightBeam(team);
     }
 
     public void Die()
@@ -1211,7 +1217,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         if (inWater)
         {
             inWater = false;
-            myPlayerWeap.AttachWeapon();
+            myPlayerWeap.AttatchWeapon();
         }
     }
     #endregion
@@ -1244,8 +1250,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             if (!haveFlag)
             {
                 UpdateDistanceToFlag();
-                print("distanceToFlag = " + distanceToFlag);
-                if (distanceToFlag >= (gC as GameController_FlagMode).minDistToFlagToSeeBeam)
+                //print("distanceToFlag = " + distanceToFlag);
+                if (distanceToFlag >= (gC as GameController_FlagMode).minDistToSeeBeam)
                 {
                     ShowFlagLightBeam();
                 }
@@ -1263,18 +1269,72 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     void ShowFlagLightBeam()
     {
-        print("SHOW FLAG LIGHT BEAM");
-        myCamera.myCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("LightBeam");
+        //print("SHOW FLAG LIGHT BEAM");
+        myCamera.myCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("FlagLightBeam");
         //int mask= myCamera.myCamera.GetComponent<Camera>().cullingMask;
         //myCamera.myCamera.GetComponent<Camera>().cullingMask = LayerMask.GetMask();
     }
 
     void StopFlagLightBeam()
     {
-        print("STOP FLAG LIGHT BEAM");
-        myCamera.myCamera.GetComponent<Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("LightBeam"));
+        //print("STOP FLAG LIGHT BEAM");
+        myCamera.myCamera.GetComponent<Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("FlagLightBeam"));
+    }
+
+    void ShowFlagFlow()
+    {
+        myCamera.myCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("FlagGlow");
+    }
+
+    void HideFlagFlow()
+    {
+        myCamera.myCamera.GetComponent<Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("FlagGlow"));
+    }
+
+    public void ShowFlagHomeLightBeam(Team team)
+    {
+        switch (team)
+        {
+            case Team.blue:
+                myCamera.myCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("BlueLightBeam");
+                break;
+            case Team.red:
+                myCamera.myCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("RedLightBeam");
+                break;
+        }
+    }
+
+    public void HideFlagHomeLightBeam(Team team)
+    {
+        switch (team)
+        {
+            case Team.blue:
+                print("HIDE BLUE TEAM LIGHT BEAM");
+                myCamera.myCamera.GetComponent<Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("BlueLightBeam"));
+                break;
+            case Team.red:
+                print("HIDE RED TEAM LIGHT BEAM");
+                myCamera.myCamera.GetComponent<Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("RedLightBeam"));
+                break;
+        }
     }
     #endregion
+
+    void EquipWeaponAtStart()
+    {
+        //print("EQUIP WEAPON AT START");
+        switch (team)
+        {
+            case Team.blue:
+                //print("EQUIP BLUE WEAPON");
+                myPlayerWeap.PickupWeapon(gC.startingWeaponBlue);
+                break;
+            case Team.red:
+                //print("EQUIP RED WEAPON");
+                myPlayerWeap.PickupWeapon(gC.startingWeaponRed);
+                break;
+        }
+    }
 
     #region  AUXILIAR FUNCTIONS ---------------------------------------------
     Vector3 AngleToVector(float angle)

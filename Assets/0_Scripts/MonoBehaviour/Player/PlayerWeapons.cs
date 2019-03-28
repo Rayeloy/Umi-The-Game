@@ -148,12 +148,13 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
     {
         if (!hasWeapon)
         {
+            //print("SET PLAYER LAYER TO GO THROUGH SPAWN WALLS");
             LayerMask newLM = LayerMask.GetMask("Stage", "WaterFloor");
             myPlayerMovement.controller.collisionMask = newLM;
         }
         DropWeapon();
         myPlayerMovement.maxMoveSpeed = weapon.weaponData.playerMaxSpeed;
-        AttachWeapon(weapon);
+        AttatchWeapon(weapon);
         myPlayerCombat.FillMyAttacks(currentWeapon.weaponData);
     }
 
@@ -168,7 +169,7 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
         }
     }
 
-    public WeaponData SearchWeapon(WeaponType wepType)
+    /*public WeaponData SearchWeapon(WeaponType wepType)
     {
         List<WeaponData> allWeap = myPlayerMovement.gC.allWeapons;
         for (int i = 0; i < allWeap.Count; i++)
@@ -180,9 +181,9 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
         }
         Debug.LogError("Error: Could not find the weapon with the name " + name);
         return null;
-    }
+    }*/
 
-    public void AttachWeapon()
+    public void AttatchWeapon()
     {
         currentWeapObject.SetParent(rightHand);
         currentWeapObject.localPosition = currentWeapon.weaponData.handPosition;
@@ -190,11 +191,11 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
         currentWeapObject.localScale = currentWeapon.weaponData.handScale;
     }
 
-    public void AttachWeapon(Weapon weapon)
+    public void AttatchWeapon(Weapon weapon)
     {
         currentWeapon = weapon;
         currentWeapObject = Instantiate(currentWeapon.currentWeaponPrefab, rightHand).transform;
-        AttachWeapon();
+        AttatchWeapon();
     }
 
     public void AttachWeaponToBack()

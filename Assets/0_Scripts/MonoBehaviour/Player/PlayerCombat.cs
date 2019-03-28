@@ -501,7 +501,7 @@ public class PlayerCombat : MonoBehaviour
         {
             aiming = false;
             myPlayerMovement.myCamera.SwitchCamera(cameraMode.Free);
-            myPlayerWeap.AttachWeapon();
+            myPlayerWeap.AttatchWeapon();
             myPlayerHUD.StopAim();
         }
     }

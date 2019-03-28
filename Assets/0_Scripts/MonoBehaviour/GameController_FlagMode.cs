@@ -16,7 +16,7 @@ public class GameController_FlagMode : GameControllerBase
     public Transform redTeamFlagHome;
     public Transform centerCameraParent;
 
-    public float minDistToFlagToSeeBeam;
+    public float minDistToSeeBeam;
 
     protected override void Awake()
     {
@@ -26,6 +26,8 @@ public class GameController_FlagMode : GameControllerBase
     protected override void SpecificAwake()
     {
         CreateFlag();
+        HideFlagHomeLightBeam(Team.blue);
+        HideFlagHomeLightBeam(Team.red);
     }
 
     public override void StartGame()
@@ -130,5 +132,21 @@ public class GameController_FlagMode : GameControllerBase
         base.ResetGame();
         myScoreManager.Reset();
         RespawnFlags();
+    }
+
+    public void ShowFlagHomeLightBeam(Team ownersTeam)
+    {
+        for(int i = 0; i < allPlayers.Count; i++)
+        {
+            allPlayers[i].ShowFlagHomeLightBeam(ownersTeam);
+        }
+    }
+
+    public void HideFlagHomeLightBeam(Team ownersTeam)
+    {
+        for (int i = 0; i < allPlayers.Count; i++)
+        {
+            allPlayers[i].HideFlagHomeLightBeam(ownersTeam);
+        }
     }
 }
