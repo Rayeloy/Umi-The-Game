@@ -172,11 +172,13 @@ public class PlayerHUD : MonoBehaviour {
 
     public void setHookUI (float f)
     {
+        print("SetHookUI: fillAmout= " + f);
         Hook.fillAmount = Mathf.Clamp01( f );
     }
 
     public void setBoostUI (float f)
     {
+        print("SetBoostUI: fillAmout= " + f);
         Boost.fillAmount = Mathf.Clamp01( f );
     }
 }
