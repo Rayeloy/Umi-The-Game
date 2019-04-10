@@ -351,8 +351,10 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         controller.Move(currentVel * Time.deltaTime);
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();
+
         myPlayerAnimation.KonoUpdate();
         myPlayerWeap.KonoUpdate();
+        myPlayerHook.KonoUpdate();
     }
 
     public void KonoFixedUpdate()
@@ -368,6 +370,11 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         ExitWater();
         jumpSt = JumpState.none;
+        myPlayerHook.ResetHook();
+        if (haveFlag)
+        {
+            flag.SetAway(false);
+        }
         //myPlayerWeap.DropWeapon();
         //controller.collisionMask = LayerMask.GetMask("Stage", "WaterFloor", "SpawnWall");
     }
@@ -1089,6 +1096,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         {
             noInput = true;
             hooked = true;
+            //To Do:
+            //Stop attacking
         }
     }
 
@@ -1166,6 +1175,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         (gC as GameController_FlagMode).HideFlagHomeLightBeam(team);
     }
 
+    //En desuso
     public void Die()
     {
         if (haveFlag)

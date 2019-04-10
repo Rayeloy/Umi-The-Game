@@ -70,6 +70,7 @@ public class Flag : MonoBehaviour
         skinWidth = myCol.bounds.extents.y;
         //bodyOriginalLocalPos= new Vector3(-0.016f, -0.303f, 0);
     }
+
     void Start()
     {
         respawnPos = transform.position;
@@ -78,6 +79,7 @@ public class Flag : MonoBehaviour
         playerHooking = null;
 
     }
+
     private void Update()
     {
         ProcessLocked();

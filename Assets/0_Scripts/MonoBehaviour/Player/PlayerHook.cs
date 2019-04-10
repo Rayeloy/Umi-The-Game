@@ -83,7 +83,7 @@ public class PlayerHook : MonoBehaviour
         hookSt = HookState.ready;
     }
 
-    private void Update()
+    public void KonoUpdate()
     {
         if (hookSt != HookState.ready && hookSt != HookState.cd)
         {
@@ -159,6 +159,12 @@ public class PlayerHook : MonoBehaviour
                 break;
 
         }
+    }
+
+    public void ResetHook()
+    {
+        FinishHook();
+        cdTime = 0;
     }
 
     void MoveHook(Vector3 vel)

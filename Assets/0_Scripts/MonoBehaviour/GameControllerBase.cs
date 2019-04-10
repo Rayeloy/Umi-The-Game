@@ -794,16 +794,18 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     public virtual void ResetGame()//Eloy: habrá que resetear muchas más cosas
     {
-        playing = true;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        /*playing = true;
         SwitchGameOverMenu();
         foreach (PlayerMovement pM in allPlayers)
         {
-            pM.Die();
+            RespawnPlayer(pM);
+            pM.ResetPlayer();
         }
         if (gamePaused)
         {
             UnPauseGame();
-        }
+        }*/
     }
 
     #region Auxiliar
