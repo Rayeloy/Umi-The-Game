@@ -79,6 +79,10 @@ public class CameraController : MonoBehaviour
     bool switching = false;
     float timeSwitching;
 
+    //CanSeeHookPoint
+    [HideInInspector]
+    public bool canSeeHookPoint;
+
     #endregion
 
     #region Funciones de MonoBehaviour

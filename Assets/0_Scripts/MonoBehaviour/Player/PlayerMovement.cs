@@ -51,6 +51,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     public PlayerHook myPlayerHook;
     public Controller3D controller;
     public PlayerBody myPlayerBody;
+    public PlayerObjectDetection myPlayerObjectDetection;
 
     public GameControllerBase gC;
     public CameraController myCamera;
