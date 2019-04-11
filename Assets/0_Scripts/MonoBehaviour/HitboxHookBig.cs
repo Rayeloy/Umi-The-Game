@@ -41,7 +41,7 @@ public class HitboxHookBig : MonoBehaviour
                             }
                         }
                         break;
-                    case "Stage":
+                    /*case "Stage":
                         StageScript stage = col.GetComponent<StageScript>();
                         if (stage != null)
                         {
@@ -49,6 +49,14 @@ public class HitboxHookBig : MonoBehaviour
                             {
                                 myHook.StartGrappling();
                             }
+                        }
+                        break;*/
+                    case "HookPoint":
+                        HookPoint hookPoint = col.GetComponent<HookPoint>();
+                        if (hookPoint != null)
+                        {
+                            Vector3 hookPos = hookPoint.GetHookPoint(col.ClosestPointOnBounds(myHook.transform.position));
+                            myHook.StartGrappling(hookPos);
                         }
                         break;
                 }

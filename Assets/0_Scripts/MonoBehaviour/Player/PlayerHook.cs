@@ -18,6 +18,7 @@ public class PlayerHook : MonoBehaviour
     float currentDistance;
     Vector3 originPos;
     Vector3 hookPos;
+
     public float hookFowardSpeed;
     public float hookBackwardsSpeed;
     public float hookGrapplingSpeed;
@@ -314,11 +315,14 @@ public class PlayerHook : MonoBehaviour
                 FinishGrapple();
                 break;
         }
-        myHook.GetComponent<LineRenderer>().enabled = false;
+        if (myHook != null)
+        {
+            myHook.GetComponent<LineRenderer>().enabled = false;
+        }
     }
 
     Vector3 grappleOrigin;
-    public void StartGrappling()
+    public void StartGrappling(Vector3 grapplingPoint)
     {
         if (hookSt == HookState.throwing)
         {
@@ -327,7 +331,7 @@ public class PlayerHook : MonoBehaviour
             myPlayerMov.StopHooking();
             myPlayerMov.StartHooked();
             myPlayerCombat.StopAiming();
-
+            currentHook.transform.position = grapplingPoint;
         }
     }
 
