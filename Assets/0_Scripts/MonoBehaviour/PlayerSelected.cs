@@ -51,16 +51,16 @@ public class PlayerSelected : MonoBehaviour
 
     void Update()
     {
-        if(!isAReleased && Actions.Jump.WasReleased)
+        if(!isAReleased && Actions.A.WasReleased)
         {
             isAReleased = true;
         }
-        if (Actions.Jump.WasPressed && isAReleased)
+        if (Actions.A.WasPressed && isAReleased)
             SetReady ();
 
         if (!Ready)
         {
-            if (Actions.Movement.X < -0.5f && joystickNeutral)
+            if (Actions.RightJoystick.X < -0.5f && joystickNeutral)
             {
                 joystickNeutral = false;
                 switch (team)
@@ -73,7 +73,7 @@ public class PlayerSelected : MonoBehaviour
                         break;
                 }
             }
-            else if (Actions.Movement.X > 0.5f && joystickNeutral)
+            else if (Actions.RightJoystick.X > 0.5f && joystickNeutral)
             {
                 joystickNeutral = false;
                 switch (team)
@@ -85,7 +85,7 @@ public class PlayerSelected : MonoBehaviour
                         changeTeam(Team.none);
                         break;
                 }
-            }else if (Actions.Movement.X >= -0.5f && Actions.Movement.X <= 0.5f)
+            }else if (Actions.RightJoystick.X >= -0.5f && Actions.RightJoystick.X <= 0.5f)
             {
                 joystickNeutral = true;
             }

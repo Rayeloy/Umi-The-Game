@@ -112,7 +112,7 @@ public class PlayerCombat : MonoBehaviour
         {
             //BASIC ATTACK INPUT CHECK
             int index = 0;
-            if (myPlayerMovement.Actions.Attack1.WasPressed && (attackStg == AttackStage.ready || CanComboWithDifferentAttack(index)) && !myPlayerWeap.canPickupWeapon)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
+            if (myPlayerMovement.Actions.X.WasPressed && (attackStg == AttackStage.ready || CanComboWithDifferentAttack(index)) && !myPlayerWeap.canPickupWeapon)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
             {
                 if (CanComboWithDifferentAttack(index))
                 {
@@ -124,7 +124,7 @@ public class PlayerCombat : MonoBehaviour
 
             //STRONG ATTACK INPUT CHECK
             index = 1;
-            if (myPlayerMovement.Actions.Attack2.WasPressed && (attackStg == AttackStage.ready || CanComboWithDifferentAttack(index)))//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
+            if (myPlayerMovement.Actions.Y.WasPressed && (attackStg == AttackStage.ready || CanComboWithDifferentAttack(index)))//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
             {
                 if (CanComboWithDifferentAttack(index))
                 {
@@ -137,7 +137,7 @@ public class PlayerCombat : MonoBehaviour
 
             //SPECIAL ATTACK INPUT CHECK
             index = 2;
-            if (myPlayerMovement.Actions.Attack3.WasPressed && (attackStg == AttackStage.ready || CanComboWithDifferentAttack(index)))//Input.GetButtonDown(myPlayerMovement.contName + "B"))
+            if (myPlayerMovement.Actions.B.WasPressed && (attackStg == AttackStage.ready || CanComboWithDifferentAttack(index)))//Input.GetButtonDown(myPlayerMovement.contName + "B"))
             {
                 if (CanComboWithDifferentAttack(index))
                 {
@@ -149,7 +149,7 @@ public class PlayerCombat : MonoBehaviour
             }
 
             //HOOK INPUT CHECK
-            if (aiming && myPlayerMovement.Actions.Boost.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
+            if (aiming && myPlayerMovement.Actions.R2.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
             {
                 myHook.StartHook();
                 //ChangeAttackType(gC.attackHook);
@@ -160,11 +160,11 @@ public class PlayerCombat : MonoBehaviour
         ProcessAttack();
         //ProcessAttacksCD();
 
-        if (myPlayerMovement.Actions.Aim.WasPressed && myPlayerWeap.hasWeapon)
+        if (myPlayerMovement.Actions.L2.WasPressed && myPlayerWeap.hasWeapon)
         {
             StartAiming();
         }
-        if (myPlayerMovement.Actions.Aim.WasReleased)
+        if (myPlayerMovement.Actions.L2.WasReleased)
         {
             StopAiming();
         }

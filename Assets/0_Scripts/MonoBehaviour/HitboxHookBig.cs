@@ -14,7 +14,7 @@ public class HitboxHookBig : MonoBehaviour
     }
     private void OnTriggerEnter(Collider col)
     {
-
+        //print("Hook: Collision with " + col.name);
         if (col.gameObject != myPlayerMov.gameObject)
         {
             if (myHook.canHookSomething)
@@ -52,13 +52,44 @@ public class HitboxHookBig : MonoBehaviour
                         }
                         break;*/
                     case "HookPoint":
-                        HookPoint hookPoint = col.GetComponent<HookPoint>();
-                        if (hookPoint != null)
-                        {
-                            Vector3 hookPos = hookPoint.GetHookPoint(col.ClosestPointOnBounds(myHook.transform.position));
-                            myHook.StartGrappling(hookPos);
-                        }
+                        //print("Hook: Collision with HookPoint 1");
+                        CollideWithHookPoint(col);
                         break;
+                }
+            }
+            else if (myHook.grappleSt == PlayerHook.GrappleState.throwing)
+            {
+                CollideWithHookPoint(col);
+            }
+        }
+    }  
+
+    void CollideWithHookPoint(Collider col)
+    {
+        if (col.name.Contains("SmallTrigger"))
+        {
+            //print("Hook: Collision with HookPoint 2");
+            HookPoint hookPoint = col.transform.parent.GetComponent<HookPoint>();
+            if (hookPoint != null)
+            {
+                RaycastHit hit;
+                Vector3 rayOrigin = myHook.currentHook.transform.position;
+                Vector3 rayEnd = col.transform.parent.position;
+                LayerMask lm = LayerMask.GetMask("Stage");
+                Debug.DrawLine(rayOrigin, rayEnd, Color.yellow, 3);
+                //Debug.Log("hook pos = " + rayOrigin.ToString("F4"));
+
+                if (Physics.Linecast(rayOrigin, rayEnd, out hit, lm, QueryTriggerInteraction.Collide))
+                {
+                    Vector3 hookPos = hookPoint.GetHookPoint(hit.point);//col.ClosestPointOnBounds(myHook.transform.position));
+                    myHook.StartGrappling(hookPos, col.transform.parent.GetComponent<HookPoint>());
+                }
+                else
+                {
+                    //Debug.Log("Error: Can't find a collision point between the hook and the hookPoint. " +
+                    //    "There must be one since we already collided and we are just trying to find a collisions point");
+                    Vector3 hookPos = hookPoint.GetHookPoint(col.ClosestPointOnBounds(myHook.transform.position));
+                    myHook.StartGrappling(hookPos, col.transform.parent.GetComponent<HookPoint>());
                 }
             }
         }

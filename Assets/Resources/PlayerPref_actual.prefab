@@ -252,11 +252,12 @@ MonoBehaviour:
   teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
   teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
   maxMoveSpeed: 10
-  rotationSpeed: 800
+  rotationSpeed: 950
   instantRotationMaxAngle: 130
   maxKnockbackSpeed: 300
   maxAimingSpeed: 5
   maxHookingSpeed: 3.5
+  maxGrapplingSpeed: 3.5
   maxSpeedInWater: 5
   maxVerticalSpeedInWater: 3
   boostSpeed: 25
@@ -275,7 +276,9 @@ MonoBehaviour:
   pressingJumpActiveProportion: 0.7
   maxTimeJumpInsurance: 0.3
   wallJumpVelocity: 15
-  stopWallMaxTime: 0.1
+  wallJumpSlidingAcc: -2
+  wallJumpMinHeightPercent: 55
+  stopWallMaxTime: 2
   wallJumpAngle: 25.5
   wallJumpMinHorizAngle: 30
   myUICamera: {fileID: 0}
@@ -298,6 +301,7 @@ MonoBehaviour:
   online: 0
   spawnPosition: {x: 0, y: 0, z: 0}
   spawnRotation: {x: 0, y: 0, z: 0, w: 0}
+  hooked: 0
 --- !u!114 &2739787249420687251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -438,6 +442,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 264b8cf1ef769c948a0a19b7ff58980d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myCameraBase: {fileID: 0}
+  currentHook: {fileID: 0}
   hookLocalOrigin: {x: -0.2, y: 0.381, z: 0.511}
   hookMaxDistance: 20
   hookFowardSpeed: 45
@@ -448,6 +454,12 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 22016
+  grappleColMask:
+    serializedVersion: 2
+    m_Bits: 512
+  minDistanceToGrapple: 25
+  hookPointMinDistToCameraCenter: 450
+  grappleMaxCDTime: 0.3
 --- !u!1 &4490985865824122605
 GameObject:
   m_ObjectHideFlags: 0
@@ -552,6 +564,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c93038202fd599c40a3b5b418ee1908b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hookPoints: []
 --- !u!1001 &4157572412794338423
 PrefabInstance:
   m_ObjectHideFlags: 0

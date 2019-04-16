@@ -142,6 +142,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             }
         }
 
+        //Deactivate test player components. DO NOT MOVE!
+        DeactivatePlayerComponents();
+
 
         //initialize lists
         allPlayers = new List<PlayerMovement>();
@@ -276,7 +279,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         {
             if (playing)
             {
-                if (playerActions.Attack3.WasPressed || playerActions.Options.WasPressed)
+                if (playerActions.B.WasPressed || playerActions.Start.WasPressed)
                 {
                     UnPauseGame();
                 }
@@ -287,7 +290,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 {
                     for (int i = 0; i < playerNum; i++)
                     {
-                        if (allPlayers[i].Actions.Options.WasPressed)
+                        if (allPlayers[i].Actions.Start.WasPressed)
                         {
                             SwitchGameOverMenu();
                             i = playerNum;//BREAK
@@ -716,20 +719,24 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         if (Input.GetKeyDown(KeyCode.Keypad0))
         {
-            if (slowmo == 0)
+            switch (slowmo)
             {
-                Time.timeScale = 0.25f;
-                slowmo = 1;
-            }
-            else if (slowmo == 1)
-            {
-                Time.timeScale = 0.075f;
-                slowmo = 2;
-            }
-            else if (slowmo == 2)
-            {
-                Time.timeScale = 1;
-                slowmo = 0;
+                case 0:
+                    Time.timeScale = 0.25f;
+                    slowmo = 1;
+                    break;
+                case 1:
+                    Time.timeScale = 0.075f;
+                    slowmo = 2;
+                    break;
+                case 2:
+                    Time.timeScale = 0.025f;
+                    slowmo = 3;
+                    break;
+                case 3:
+                    Time.timeScale = 1;
+                    slowmo = 0;
+                    break;
             }
         }
     }
@@ -777,7 +784,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         if (!online)
         {
-            print("PARO EL TIEMPO AQUÍ");
             Time.timeScale = 0;
             myGameInterface.PauseGame();
             playerActions = p;
@@ -787,13 +793,28 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     public void UnPauseGame()
     {
-        Time.timeScale = 1;
+        switch (slowmo)
+        {
+            case 0:
+                Time.timeScale = 1;
+                break;
+            case 1:
+                Time.timeScale = 0.25f;
+                break;
+            case 2:
+                Time.timeScale = 0.075f;
+                break;
+            case 3:
+                Time.timeScale = 0.025f;
+                break;
+        }
         myGameInterface.UnPauseGame();
         gamePaused = false;
     }
 
     public virtual void ResetGame()//Eloy: habrá que resetear muchas más cosas
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         /*playing = true;
         SwitchGameOverMenu();
@@ -806,6 +827,30 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         {
             UnPauseGame();
         }*/
+    }
+
+    void DeactivatePlayerComponents()
+    {
+        int count = playersParent.childCount;
+        for(int i=0; i < count; i++)
+        {
+            playersParent.GetChild(i).gameObject.SetActive(false);
+        }
+        count = playersCamerasParent.childCount;
+        for (int i = 0; i < count; i++)
+        {
+            playersCamerasParent.GetChild(i).gameObject.SetActive(false);
+        }
+        count = playersUICamerasParent.childCount;
+        for (int i = 0; i < count; i++)
+        {
+            playersUICamerasParent.GetChild(i).gameObject.SetActive(false);
+        }
+        count = playersCanvasParent.childCount;
+        for (int i = 0; i < count; i++)
+        {
+            playersCanvasParent.GetChild(i).gameObject.SetActive(false);
+        }
     }
 
     #region Auxiliar

@@ -9,6 +9,7 @@ public class StoringManager : MonoBehaviour {
     public GameObject hookPrefab;
     public GameObject flagPrefab;
     public GameObject fakeFlagPrefab;
+    public GameObject fakeHookPrefab;
 
     private void Awake()
     {

@@ -41,7 +41,7 @@ public class PlayerPickups : MonoBehaviour
 		cooldownTime = Mathf.Clamp(cooldownTime, 0, maxCooldownTime);
 
 		//Si se ha presionado el boton
-		if (pickupList[activePickup].name == "Hinchador" && myPlayerMovement.Actions.UsePickup.IsPressed)
+		if (pickupList[activePickup].name == "Hinchador" && myPlayerMovement.Actions.L1.IsPressed)
 		{
 			Collider[] hitColliders = Physics.OverlapBox(rota.position + collPosition, collScale / 2, rota.rotation, m_LayerMask);
 			int i = 0;
@@ -57,7 +57,7 @@ public class PlayerPickups : MonoBehaviour
 			}
 		}
 
-		else if (myPlayerMovement.Actions.UsePickup.WasPressed) {
+		else if (myPlayerMovement.Actions.L1.WasPressed) {
 			//Condiciones para poder usarlo
 			if (cooldownTime >= pickupList[activePickup].Cooldown && pickupList[activePickup].Cantidad > 0){
 				Usar();

@@ -26,12 +26,12 @@ public class PlayerPause : MonoBehaviour
         while (true)
         {
 			//Debug.Log(myPlayerMovement.Actions.Jump.WasPressed);
-			if (myPlayerMovement.Actions.Jump.WasPressed){
+			if (myPlayerMovement.Actions.A.WasPressed){
 				Time.timeScale = 1;
 				SceneManager.LoadScene(menuScene);
 				StopCoroutine(coroutine);
 			}
-			else if (myPlayerMovement.Actions.Attack3.WasPressed){
+			else if (myPlayerMovement.Actions.B.WasPressed){
 				Time.timeScale = 1;
 				StopCoroutine(coroutine);
 			}

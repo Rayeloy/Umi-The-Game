@@ -12,6 +12,7 @@ public class PlayerHUD : MonoBehaviour {
     public GameControllerBase gC;
     [HideInInspector]
     public Camera myCamera;
+    Canvas myCanvas;
 
     public RectTransform contador;
     public RectTransform powerUpPanel;
@@ -40,8 +41,17 @@ public class PlayerHUD : MonoBehaviour {
 	Transform Arrow;
 	[SerializeField]
 	Transform Wale;
-    
 
+    //Grapple
+    public GameObject hookPointHUDPrefab;
+    public GameObject pressButtonToGrappleMessage;
+    List<HookPointHUDInfo> hookPointHUDInfoList;
+
+    public void KonoAwake()
+    {
+        hookPointHUDInfoList = new List<HookPointHUDInfo>();
+        myCanvas = GetComponent<Canvas>();
+    }
     public void KonoStart()
     {
         if(gC.gameMode == GameMode.Tutorial)
@@ -56,6 +66,7 @@ public class PlayerHUD : MonoBehaviour {
         {
             SetupFlagSlider();
         }
+        pressButtonToGrappleMessage.SetActive(false);
     }
 
     private void Update()
@@ -64,6 +75,7 @@ public class PlayerHUD : MonoBehaviour {
         {
             UpdateFlagSlider();
         }
+        UpdateGrapplePoints();
     }
 
     public void SetPickupWeaponTextMessage(WeaponData _weap)
@@ -152,6 +164,7 @@ public class PlayerHUD : MonoBehaviour {
         crosshair.enabled = true;
         crosshairReduced.enabled = false;
     }
+
     public void StartThrowHook()
     {
         crosshair.enabled = false;
@@ -172,13 +185,77 @@ public class PlayerHUD : MonoBehaviour {
 
     public void setHookUI (float f)
     {
-        print("SetHookUI: fillAmout= " + f);
+        //print("SetHookUI: fillAmout= " + f);
         Hook.fillAmount = Mathf.Clamp01( f );
     }
 
     public void setBoostUI (float f)
     {
-        print("SetBoostUI: fillAmout= " + f);
+        //print("SetBoostUI: fillAmout= " + f);
         Boost.fillAmount = Mathf.Clamp01( f );
     }
+
+    public void ShowGrappleMessage()
+    {
+        //Debug.LogWarning("SHOW GRAPPLE MESSAGE");
+        pressButtonToGrappleMessage.SetActive(true);
+    }
+
+    public void HideGrappleMessage()
+    {
+        pressButtonToGrappleMessage.SetActive(false);
+    }
+
+    public void ShowGrapplePoints(List<HookPoint> hookPoints)
+    {
+        for(int i = 0; i < hookPoints.Count; i++)
+        {
+            bool found = false;
+            for(int j = 0; j < hookPointHUDInfoList.Count && !found; j++)
+            {
+                if (hookPointHUDInfoList[j].hookPointHUD.myHookPoint == hookPoints[i])
+                {
+                    found = true;
+                }
+            }
+            if (!found)
+            {
+                //CREAR grapplePointHUD prefab
+                print("CREATE NEW hookPointHUDObject");
+                GameObject hookPointHUDObject = Instantiate(hookPointHUDPrefab, transform,false);
+                HookPointHUDInfo auxHookPointHUDInfo = new HookPointHUDInfo(hookPointHUDObject.GetComponent<HookPointHUD>());
+                auxHookPointHUDInfo.hookPointHUD.KonoAwake(hookPoints[i],myCamera,myCanvas);
+                auxHookPointHUDInfo.showing = true;
+                hookPointHUDInfoList.Add(auxHookPointHUDInfo);
+            }
+        }
+    }
+
+    void UpdateGrapplePoints()
+    {
+        for(int i = 0; i < hookPointHUDInfoList.Count; i++)
+        {
+            if (hookPointHUDInfoList[i].showing)
+            {
+                hookPointHUDInfoList[i].hookPointHUD.KonoUpdate();
+            }
+        }
+    }
 }
+public class HookPointHUDInfo
+{
+    public HookPointHUD hookPointHUD;
+    public bool showing = false;
+
+    public HookPointHUDInfo()
+    {
+        hookPointHUD = null;
+        showing = false;
+    }
+
+    public HookPointHUDInfo(HookPointHUD _hookPointHUD)
+    {
+        hookPointHUD = _hookPointHUD;
+        showing = true;
+    }
+} 

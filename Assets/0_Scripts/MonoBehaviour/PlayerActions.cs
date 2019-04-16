@@ -3,115 +3,121 @@
 
 public class PlayerActions : PlayerActionSet
 {
-	public PlayerAction Boost;
-	public PlayerAction Jump;
-	public PlayerAction Aim;
-	public PlayerAction UsePickup;
+    public PlayerAction R1;
+	public PlayerAction R2;
+    public PlayerAction L1;
+	public PlayerAction L2;
+	//public PlayerAction UsePickup;
 
-	public PlayerAction Attack1;
-	public PlayerAction Attack2;
-	public PlayerAction Attack3;
+    public PlayerAction A;
+    public PlayerAction X;
+	public PlayerAction Y;
+	public PlayerAction B;
 
-	public PlayerAction Left;
-	public PlayerAction Right;
-	public PlayerAction Up;
-	public PlayerAction Down;
-	public PlayerTwoAxisAction Movement;
+	public PlayerAction RJLeft;
+	public PlayerAction RJRight;
+	public PlayerAction RJUp;
+	public PlayerAction RJDown;
+	public PlayerTwoAxisAction RightJoystick;
 
-	public PlayerAction CamLeft;
-	public PlayerAction CamRight;
-	public PlayerAction CamUp;
-	public PlayerAction CamDown;
-	public PlayerTwoAxisAction CamMovement;
+	public PlayerAction LJLeft;
+	public PlayerAction LJRight;
+	public PlayerAction LJUp;
+	public PlayerAction LJDown;
+	public PlayerTwoAxisAction LeftJoystick;
 
 	public PlayerAction R3;
 	public PlayerAction L3;
 
-	public PlayerAction Options;
+	public PlayerAction Start;
 
 	public PlayerActions()
 	{
-		Boost = CreatePlayerAction( "Boost" );
-		Jump = CreatePlayerAction( "Jump" );
-		Aim = CreatePlayerAction( "Aim" );
-		UsePickup = CreatePlayerAction( "UsePickup" );
+        R1 = CreatePlayerAction("R1");
+        R2 = CreatePlayerAction( "R2" );
+        L1 = CreatePlayerAction("L1");
+        L2 = CreatePlayerAction( "L2" );
 
-		Attack1 = CreatePlayerAction( "Attack1" );
-		Attack2 = CreatePlayerAction( "Attack2" );
-		Attack3 = CreatePlayerAction( "Attack3" );
+        A = CreatePlayerAction("A");
+        X = CreatePlayerAction( "X" );
+		Y = CreatePlayerAction( "Y" );
+		B = CreatePlayerAction( "B" );
 
-		Left = CreatePlayerAction( "Left" );
-		Right = CreatePlayerAction( "Right" );
-		Up = CreatePlayerAction( "Up" );
-		Down = CreatePlayerAction( "Down" );
-		Movement = CreateTwoAxisPlayerAction( Left, Right, Down, Up );
+        RJLeft = CreatePlayerAction("RJLeft");
+        RJRight = CreatePlayerAction("RJRight");
+        RJUp = CreatePlayerAction("RJUp");
+        RJDown = CreatePlayerAction("RJDown");
+        RightJoystick = CreateTwoAxisPlayerAction(RJLeft, RJRight, RJDown, RJUp);
 
-		CamLeft = CreatePlayerAction( "CamLeft" );
-		CamRight = CreatePlayerAction( "CamRight" );
-		CamUp = CreatePlayerAction( "CamUp" );
-		CamDown = CreatePlayerAction( "CamDown" );
-		CamMovement = CreateTwoAxisPlayerAction( CamLeft, CamRight, CamDown, CamUp );
+        LJLeft = CreatePlayerAction("LJLeft");
+        LJRight = CreatePlayerAction("LJRight");
+        LJUp = CreatePlayerAction("LJUp");
+        LJDown = CreatePlayerAction("LJDown");
+        LeftJoystick = CreateTwoAxisPlayerAction(LJLeft, LJRight, LJDown, LJUp);
 
 		R3 = CreatePlayerAction("R3");
-		L3 = CreatePlayerAction("L3");	
+		L3 = CreatePlayerAction("L3");
 
-		Options = CreatePlayerAction ( "Options" );
+        Start = CreatePlayerAction ("Start");
 	}
 	public static PlayerActions CreateWithKeyboardBindings()
 	{
 		var actions = new PlayerActions();
 
-		actions.Boost.AddDefaultBinding( Key.Q );
-		actions.Jump.AddDefaultBinding( Key.Space );
-		actions.Aim.AddDefaultBinding( Key.E );
-		actions.UsePickup.AddDefaultBinding( Mouse.LeftButton);
+        actions.R1.AddDefaultBinding(Key.T);
+        actions.R2.AddDefaultBinding( Key.Q );
+        actions.L1.AddDefaultBinding(Key.G);
+        actions.L2.AddDefaultBinding( Key.E );
 
-		actions.Attack1.AddDefaultBinding( Key.Key1 );
-		actions.Attack2.AddDefaultBinding( Key.Key2 );
-		actions.Attack3.AddDefaultBinding( Key.Key3 );
+        actions.A.AddDefaultBinding(Key.Space);
+        actions.X.AddDefaultBinding( Key.Key1 );
+		actions.Y.AddDefaultBinding( Key.Key2 );
+		actions.B.AddDefaultBinding( Key.Key3 );
 
-		actions.Up.AddDefaultBinding( Key.W );
-		actions.Down.AddDefaultBinding( Key.S );
-		actions.Left.AddDefaultBinding( Key.A );
-		actions.Right.AddDefaultBinding( Key.D );
+		actions.RJUp.AddDefaultBinding( Key.W );
+		actions.RJDown.AddDefaultBinding( Key.S );
+		actions.RJLeft.AddDefaultBinding( Key.A );
+		actions.RJRight.AddDefaultBinding( Key.D );
 
-		actions.CamUp.AddDefaultBinding( Mouse.PositiveY );
-		actions.CamDown.AddDefaultBinding( Mouse.NegativeY );
-		actions.CamLeft.AddDefaultBinding( Mouse.NegativeX );
-		actions.CamRight.AddDefaultBinding( Mouse.PositiveX );
+		actions.LJUp.AddDefaultBinding( Mouse.PositiveY );
+		actions.LJDown.AddDefaultBinding( Mouse.NegativeY );
+		actions.LJLeft.AddDefaultBinding( Mouse.NegativeX );
+		actions.LJRight.AddDefaultBinding( Mouse.PositiveX );
 
 		actions.L3.AddDefaultBinding( Key.Key4 );
 		actions.R3.AddDefaultBinding( Key.Key5 );
 
-		actions.Options.AddDefaultBinding ( Key.Escape );
+		actions.Start.AddDefaultBinding ( Key.Escape );
 		return actions;
 	}
 	public static PlayerActions CreateWithJoystickBindings()
 	{
 		var actions = new PlayerActions();
-		actions.Boost.AddDefaultBinding( InputControlType.RightTrigger );
-		actions.Jump.AddDefaultBinding( InputControlType.Action1 );
-		actions.Aim.AddDefaultBinding( InputControlType.LeftTrigger );
-		actions.UsePickup.AddDefaultBinding( InputControlType.LeftBumper);
 
-		actions.Attack1.AddDefaultBinding( InputControlType.Action3 );
-		actions.Attack2.AddDefaultBinding( InputControlType.Action4 );
-		actions.Attack3.AddDefaultBinding( InputControlType.Action2 );
+        actions.R1.AddDefaultBinding(InputControlType.RightBumper);
+        actions.R2.AddDefaultBinding( InputControlType.RightTrigger );
+        actions.L1.AddDefaultBinding(InputControlType.LeftBumper);
+        actions.L2.AddDefaultBinding( InputControlType.LeftTrigger );
 
-		actions.Up.AddDefaultBinding( InputControlType.LeftStickUp );
-		actions.Down.AddDefaultBinding( InputControlType.LeftStickDown );
-		actions.Left.AddDefaultBinding( InputControlType.LeftStickLeft );
-		actions.Right.AddDefaultBinding( InputControlType.LeftStickRight );
+        actions.A.AddDefaultBinding(InputControlType.Action1);
+        actions.X.AddDefaultBinding( InputControlType.Action3 );
+		actions.Y.AddDefaultBinding( InputControlType.Action4 );
+		actions.B.AddDefaultBinding( InputControlType.Action2 );
 
-		actions.CamUp.AddDefaultBinding( InputControlType.RightStickUp );
-		actions.CamDown.AddDefaultBinding( InputControlType.RightStickDown );
-		actions.CamLeft.AddDefaultBinding( InputControlType.RightStickLeft );
-		actions.CamRight.AddDefaultBinding( InputControlType.RightStickRight );
+		actions.RJUp.AddDefaultBinding( InputControlType.LeftStickUp );
+		actions.RJDown.AddDefaultBinding( InputControlType.LeftStickDown );
+		actions.RJLeft.AddDefaultBinding( InputControlType.LeftStickLeft );
+		actions.RJRight.AddDefaultBinding( InputControlType.LeftStickRight );
+
+		actions.LJUp.AddDefaultBinding( InputControlType.RightStickUp );
+		actions.LJDown.AddDefaultBinding( InputControlType.RightStickDown );
+		actions.LJLeft.AddDefaultBinding( InputControlType.RightStickLeft );
+		actions.LJRight.AddDefaultBinding( InputControlType.RightStickRight );
 
 		actions.R3.AddDefaultBinding ( InputControlType.RightStickButton );
 		actions.L3.AddDefaultBinding ( InputControlType.LeftStickButton );
 
-		actions.Options.AddDefaultBinding (InputControlType.Start);
+		actions.Start.AddDefaultBinding (InputControlType.Start);
 		return actions;
 	}
 }

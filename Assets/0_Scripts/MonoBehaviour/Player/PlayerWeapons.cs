@@ -84,7 +84,7 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
     public void KonoUpdate()
     {
 
-        if (nearestWeapon!=null && myPlayerMovement.Actions.Attack1.WasPressed)
+        if (nearestWeapon!=null && myPlayerMovement.Actions.X.WasPressed)
         {
             PickupWeapon(nearestWeapon);
         }

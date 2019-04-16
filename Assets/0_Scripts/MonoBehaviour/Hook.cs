@@ -11,8 +11,14 @@ public class Hook : MonoBehaviour {
     
     public void KonoAwake(PlayerMovement playerMov, PlayerHook playerHook)
     {
-        myHitboxBig.KonoAwake(playerMov, playerHook);
-        myHitboxSmall.KonoAwake(playerMov, playerHook);
+        if (myHitboxBig.isActiveAndEnabled)
+        {
+            myHitboxBig.KonoAwake(playerMov, playerHook);
+        }
+        if (myHitboxSmall.isActiveAndEnabled)
+        {
+            myHitboxSmall.KonoAwake(playerMov, playerHook);
+        }
         myLineRenderer = GetComponent<LineRenderer>();
     }
     public void UpdateRopeLine(Vector3 pos1, Vector3 pos2)

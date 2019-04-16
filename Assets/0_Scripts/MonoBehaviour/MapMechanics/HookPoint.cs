@@ -5,29 +5,39 @@ using UnityEngine;
 public class HookPoint : MonoBehaviour
 {
     public Transform[] hookPoints;
+    public GameObject smallTrigger;
+    public GameObject bigTrigger;
+
 
     public Vector3 GetHookPoint(Vector3 collisionPoint)
     {
-        if (collisionPoint.z >= transform.position.z)
+        //print("collision point world pos = " + collisionPoint.ToString("F4"));
+        collisionPoint = transform.InverseTransformPoint(collisionPoint);
+        //print("collision point local pos = "+collisionPoint.ToString("F4"));
+        if (collisionPoint.z >= 0)
         {
-            if (collisionPoint.x >= transform.position.x)//Cuadrante 1
+            if (collisionPoint.x >= 0)//Cuadrante 1
             {
+                //print("Cuadrante 1");
                 return hookPoints[0].position;
             }
             else//Cuadrante 4
             {
-                return hookPoints[1].position;
+                //print("Cuadrante 4");
+                return hookPoints[3].position;
             }
         }
         else
         {
-            if (collisionPoint.x >= transform.position.x)//Cuadrante 2
+            if (collisionPoint.x >= 0)//Cuadrante 2
             {
-                return hookPoints[2].position;
+                //print("Cuadrante 2");
+                return hookPoints[1].position;
             }
             else//Cuadrante 3
             {
-                return hookPoints[3].position;
+                //print("Cuadrante 3");
+                return hookPoints[2].position;
             }
         }
     }

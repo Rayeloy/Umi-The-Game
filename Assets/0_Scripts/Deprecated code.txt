@@ -1,3 +1,64 @@
+//PlayerMovement ProcessWallJump
+{
+            //CHECK IF WE ARE STILL ON THE WALL 
+            //(since we are sliding off we will eventually have no more wall to hang from)
+
+            /*if (lastWall == controller.collisions.horWall)
+            {
+                bool success = false;
+                if (wallJumpRaycastAxis == Raycast.Axis.X)
+                {
+                    for (int i = 0; i < controller.collisions.horRaycastsX.GetLength(0) && !success; i++)
+                    {
+                        for (int j = 0; j < controller.collisions.horRaycastsX.GetLength(1) && !success; j++)
+                        {
+                            if (controller.collisions.horRaycastsX[i, j].axis == Raycast.Axis.X && controller.collisions.horRaycastsX[i, j].rayHeightPercentage <= wallJumpMinHeightPercent)
+                            {
+                                success = true;
+                                Debug.Log("WallJump: There is still at least 1 raycast colliding with the wall and below " + wallJumpMinHeightPercent + "%");
+                            }
+                        }
+                    }
+                }
+                else if (wallJumpRaycastAxis == Raycast.Axis.Z)
+                {
+                    for (int i = 0; i < controller.collisions.horRaycastsZ.GetLength(0) && !success; i++)
+                    {
+                        for (int j = 0; j < controller.collisions.horRaycastsZ.GetLength(1) && !success; j++)
+                        {
+                            if (controller.collisions.horRaycastsZ[i, j].axis == Raycast.Axis.Z && controller.collisions.horRaycastsZ[i, j].rayHeightPercentage <= wallJumpMinHeightPercent)
+                            {
+                                success = true;
+                                Debug.Log("WallJump: There is still at least 1 raycast colliding with the wall and below " + wallJumpMinHeightPercent + "%");
+                            }
+                        }
+                    }
+                }
+            }
+            else if (lastWall == controller.collisions.verWall)
+            {
+                bool success = false;
+                for (int i = 0; i < controller.collisions.verRaycastsY.GetLength(0) && !success; i++)
+                {
+                    for (int j = 0; j < controller.collisions.verRaycastsY.GetLength(1) && !success; j++)
+                    {
+                        if (controller.collisions.verRaycastsY[i, j].axis == Raycast.Axis.Y && controller.collisions.horRaycastsX[i, j].rayHeightPercentage <= wallJumpMinHeightPercent)
+                        {
+                            success = true;
+                            Debug.Log("WallJump: There is still at least 1 raycast colliding with the wall and below " + wallJumpMinHeightPercent + "%");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Debug.Log("WallJump: StopWallJump, this wall (hor:" + controller.collisions.horWall + "; ver: "+ controller.collisions.verWall + ")is not the same wall that I started walljumping from (" + lastWall + ").");
+                StopWallJump();
+            }*/
+}
+
+
+
 void VerticalCollisions(ref Vector3 vel)
     {
         // ---------------------- 3D "CAPSULE" -------------------

@@ -2,23 +2,55 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+#region ----[ PUBLIC ENUMS ]----
+#endregion
 public class PlayerObjectDetection : MonoBehaviour
 {
-    List<HookPoint> hookPoints;
+    #region ----[ VARIABLES FOR DESIGNERS ]----
+    //Referencias
+    #endregion
 
-    private void Start()
-    {
-    }
+    #region ----[ PROPERTIES ]----
+    [HideInInspector]
+    public List<HookPoint> hookPoints;
+    #endregion
 
+    #region ----[ VARIABLES ]----
+    #endregion
+
+    #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
+
+    #region Awake
+    #endregion
+
+    #region Start
+    #endregion
+
+    #region Update
+    #endregion
+
+    #region OnTrigger
     private void OnTriggerEnter(Collider col)
     {
         switch (col.tag)
         {
             case "HookPoint":
-                HookPoint hookPoint = col.GetComponent<HookPoint>();
-                if (!hookPoints.Contains(hookPoint))
+                if (col.name.Contains("SmallTrigger"))
                 {
-                    hookPoints.Add(hookPoint);
+                    HookPoint hookPoint = col.transform.parent.GetComponent<HookPoint>();
+                    if (hookPoint != null)
+                    {
+                        if (!hookPoints.Contains(hookPoint))
+                        {
+                            print("hookpoint added");
+                            hookPoints.Add(hookPoint);
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("Error: the variable hookPoint is null.");
+                    }
                 }
                 break;
         }
@@ -29,29 +61,77 @@ public class PlayerObjectDetection : MonoBehaviour
         switch (col.tag)
         {
             case "HookPoint":
-                HookPoint hookPoint = col.GetComponent<HookPoint>();
-                if (hookPoints.Contains(hookPoint))
+                if (col.name.Contains("SmallTrigger"))
                 {
-                    hookPoints.Remove(hookPoint);
+                    HookPoint hookPoint = col.transform.parent.GetComponent<HookPoint>();
+                    if (hookPoint != null)
+                    {
+                        if (hookPoints.Contains(hookPoint))
+                        {
+                            print("hookpoint removed");
+                            hookPoints.Remove(hookPoint);
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("Error: the variable hookPoint is null.");
+                    }
                 }
                 break;
         }
     }
-    bool started = false;
+
+    bool onTriggerStayFirstTime = false;
     private void OnTriggerStay(Collider col)
     {
-        if (!started)
+        if (!onTriggerStayFirstTime)
         {
+            onTriggerStayFirstTime = true;
             switch (col.tag)
             {
                 case "HookPoint":
-                    HookPoint hookPoint = col.GetComponent<HookPoint>();
-                    if (!hookPoints.Contains(hookPoint))
+                    if (col.name.Contains("SmallTrigger"))
                     {
-                        hookPoints.Add(hookPoint);
+                        HookPoint hookPoint = col.transform.parent.GetComponent<HookPoint>();
+                        if (hookPoint != null)
+                        {
+                            if (!hookPoints.Contains(hookPoint))
+                            {
+                                print("hookpoint added");
+                                hookPoints.Add(hookPoint);
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError("Error: the variable hookPoint is null.");
+                        }
                     }
                     break;
             }
         }
     }
+    #endregion
+
+    #endregion
+
+    #region ----[ PRIVATE FUNCTIONS ]----
+    #endregion
+
+    #region ----[ PUBLIC FUNCTIONS ]----
+    #endregion
+
+    #region ----[ PUN CALLBACKS ]----
+    #endregion
+
+    #region ----[ RPC ]----
+    #endregion
+
+    #region ----[ NETWORK FUNCTIONS ]----
+    #endregion
+
+    #region ----[ IPUNOBSERVABLE ]----
+    #endregion
 }
+
+#region ----[ STRUCTS & CLASSES ]----
+#endregion

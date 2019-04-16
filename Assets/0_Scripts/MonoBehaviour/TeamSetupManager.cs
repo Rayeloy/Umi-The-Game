@@ -202,7 +202,7 @@ public class TeamSetupManager : MonoBehaviour
         {
             foreach (PlayerSelected ps in players)
             {
-                if (ps.Actions.Jump.WasPressed)
+                if (ps.Actions.A.WasPressed)
                 {
                     Debug.Log("LOAD GAME ");
                     if (startFromMap)
@@ -223,7 +223,7 @@ public class TeamSetupManager : MonoBehaviour
 
     bool JoinButtonWasPressedOnListener( PlayerActions actions )
 	{
-		return actions.Attack1.WasPressed || actions.Attack2.WasPressed || actions.Attack3.WasPressed || (actions != keyboardListener && actions.Jump.WasPressed);
+		return actions.X.WasPressed || actions.Y.WasPressed || actions.B.WasPressed || (actions != keyboardListener && actions.A.WasPressed);
 	}
 
 	PlayerSelected FindPlayerUsingJoystick( InputDevice inputDevice )

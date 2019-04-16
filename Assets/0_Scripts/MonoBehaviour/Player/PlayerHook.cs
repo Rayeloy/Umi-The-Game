@@ -6,36 +6,13 @@ using UnityEngine.UI;
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerHook : MonoBehaviour
 {
+    [Header("Referencias")]
+    PlayerHUD myPlayerHUD;
     PlayerMovement myPlayerMov;
     PlayerCombat myPlayerCombat;
+    [HideInInspector]
+    public CameraController myCameraBase;
     Hook myHook;
-
-    GameObject currentHook;
-    Transform hookRopeEnd;
-    Transform hookedObject;
-    public Vector3 hookLocalOrigin;
-    public float hookMaxDistance;
-    float currentDistance;
-    Vector3 originPos;
-    Vector3 hookPos;
-
-    public float hookFowardSpeed;
-    public float hookBackwardsSpeed;
-    public float hookGrapplingSpeed;
-    public float hookMinDistance;//Distance the hook stops when bringing the enemy
-    public float cdMaxTime;
-    public float cdTime
-    {
-    	get{return _cdTime;}
-    	set
-        {
-            myPlayerHUD.setHookUI( _cdTime/cdMaxTime );
-            _cdTime = value;
-        }
-    }
-    float _cdTime;
-    bool hookReady;
-    Vector3 reelingVel;
 
     HookState hookSt;
     public enum HookState
@@ -46,6 +23,54 @@ public class PlayerHook : MonoBehaviour
         grappling,
         cd
     }
+    [HideInInspector]
+    public GameObject currentHook;
+    Transform hookRopeEnd;
+    Transform hookedObject;
+    public Vector3 hookLocalOrigin;
+    public float hookMaxDistance;
+    float currentDistance;
+    Vector3 originPos;
+    Vector3 hookPos;
+
+    [HideInInspector]
+    public bool canHookSomething
+    {
+        get
+        {
+            return (hookSt == HookState.throwing && !enemyHooked && !objectHooked);
+        }
+    }
+    [HideInInspector]
+    public bool somethingHooked
+    {
+        get
+        {
+            return (enemyHooked || objectHooked);
+        }
+    }
+
+    [Header("Parameters")]
+    public float hookFowardSpeed;
+    public float hookBackwardsSpeed;
+    public float hookGrapplingSpeed;
+    public float hookMinDistance;//Distance the hook stops when bringing the enemy
+    public float cdMaxTime;
+    public float cdTime
+    {
+        get { return _cdTime; }
+        set
+        {
+            myPlayerHUD.setHookUI(_cdTime / cdMaxTime);
+            _cdTime = value;
+        }
+    }
+    float _cdTime;
+    bool hookReady;
+    Vector3 hookMovingVel;
+    Vector3 dirToHook;
+
+
     bool enemyHooked;
     bool objectHooked;// item 
     PlayerMovement enemy;
@@ -53,24 +78,28 @@ public class PlayerHook : MonoBehaviour
     [Space]
     public LayerMask collisionMask;
 
-    [Header("Referencias")]
-    PlayerHUD myPlayerHUD;
-
-    /*public PlayerHook()
+    // --- Grapple --- 
+    [HideInInspector]
+    public GrappleState grappleSt = GrappleState.ready;
+    public enum GrappleState
     {
-        myPlayerMov = new PlayerMovement();
-        myPlayerCombat = new PlayerCombat();
-        myPlayerHUD = new PlayerHUD();
-        hookSt = new HookState();
-        currentHook = new GameObject();
-        originPos = new Vector3();
-        hookLocalOrigin = new Vector3();
-
-        hookReady = false;
-        enemyHooked = false;
-        objectHooked = false;
-
-    }*/
+        ready,
+        throwing,
+        reeling,
+        cd
+    }
+    [Header(" --- Grapple --- ")]
+    [Tooltip("Layers that we can collide with, like walls, or the hookPoint. If it's a wall (checking via tags) we won't be able to grapple.")]
+    public LayerMask grappleColMask;
+    public float minDistanceToGrapple;
+    public float hookPointMinDistToCameraCenter;
+    public float grappleMaxCDTime;
+    float  grappleCDTime= 0;
+    bool canAutoGrapple = false;
+    HookPoint currentHookPoint;
+    float currentGrappleDistance = 0;
+    Camera myCamera;
+    Plane[] cameraPlanes;
 
     public void KonoAwake()
     {
@@ -82,10 +111,19 @@ public class PlayerHook : MonoBehaviour
         }
         myPlayerHUD = myPlayerMov.myPlayerHUD;
         hookSt = HookState.ready;
+        myCamera = myCameraBase.myCamera.GetComponent<Camera>();
     }
 
     public void KonoUpdate()
     {
+        UpdateHookPoints();
+        if (canAutoGrapple && myPlayerMov.Actions.R1.IsPressed)
+        {
+            StartAutoGrapple();
+        }
+
+        ProcessAutoGrapple();
+
         if (hookSt != HookState.ready && hookSt != HookState.cd)
         {
             UpdateDistance();
@@ -95,19 +133,23 @@ public class PlayerHook : MonoBehaviour
             }
             Vector3 hookRopeEndPos = hookRopeEnd.position;
             myHook.UpdateRopeLine(originPos, hookRopeEndPos);
-            Debug.DrawLine(originPos, hookRopeEndPos, Color.red);
+            //Debug.DrawLine(originPos, hookRopeEndPos, Color.red);
             RaycastHit hit;
             if (Physics.Linecast(originPos, hookRopeEndPos, out hit, collisionMask, QueryTriggerInteraction.Ignore))
             {
                 StopHook();
             }
         }
+        ProcessHook();
+    }
 
+    void ProcessHook()
+    {
         Vector3 reelingDir;
         switch (hookSt)
         {
             case HookState.throwing:
-                MoveHook(reelingVel);
+                MoveHook(hookMovingVel);
                 break;
             case HookState.reeling:
                 if (currentDistance <= hookMinDistance)
@@ -119,19 +161,19 @@ public class PlayerHook : MonoBehaviour
                     //Calculate dir to owner
                     reelingDir = (originPos - hookPos).normalized;
                     //move with speed to owner
-                    reelingVel = reelingDir * hookBackwardsSpeed;
+                    hookMovingVel = reelingDir * hookBackwardsSpeed;
                     //Calculate rotation
-                    Quaternion rotation = Quaternion.LookRotation(-reelingVel);
+                    Quaternion rotation = Quaternion.LookRotation(-hookMovingVel);
                     currentHook.transform.localRotation = rotation;
 
                     if (enemyHooked)
                     {
-                        enemy.currentVel = reelingVel;
+                        enemy.currentVel = hookMovingVel;
                         enemy.currentSpeed = hookBackwardsSpeed;
                     }
                     else
                     {
-                        MoveHook(reelingVel);
+                        MoveHook(hookMovingVel);
                     }
 
                     //check for collisions
@@ -146,8 +188,8 @@ public class PlayerHook : MonoBehaviour
                 {
                     reelingDir = (hookPos - originPos).normalized;
                     //move with speed to hook
-                    reelingVel = reelingDir * hookGrapplingSpeed;
-                    myPlayerMov.currentVel = reelingVel;
+                    hookMovingVel = reelingDir * hookGrapplingSpeed;
+                    myPlayerMov.currentVel = hookMovingVel;
                     myPlayerMov.currentSpeed = hookGrapplingSpeed;
                 }
                 break;
@@ -158,7 +200,6 @@ public class PlayerHook : MonoBehaviour
                     hookSt = HookState.ready;
                 }
                 break;
-
         }
     }
 
@@ -176,7 +217,7 @@ public class PlayerHook : MonoBehaviour
 
     public void StartHook()
     {
-        if (hookSt == HookState.ready)
+        if (hookSt == HookState.ready && (grappleSt == GrappleState.ready || grappleSt == GrappleState.cd))
         {
             //VARIABLES
             enemy = null;
@@ -204,10 +245,10 @@ public class PlayerHook : MonoBehaviour
             {
                 endPoint = rayOrigin + (myPlayerMov.currentCamFacingDir * hookMaxDistance);
             }
-            reelingVel = (endPoint - originPos).normalized * hookFowardSpeed;
+            hookMovingVel = (endPoint - originPos).normalized * hookFowardSpeed;
 
             //Instantiate hook
-            Quaternion rotation = Quaternion.LookRotation(reelingVel);
+            Quaternion rotation = Quaternion.LookRotation(hookMovingVel);
             currentHook = StoringManager.instance.Spawn(StoringManager.instance.hookPrefab, originPos, rotation).gameObject;
             myHook = currentHook.GetComponent<Hook>();
             myHook.GetComponent<LineRenderer>().enabled = true;
@@ -219,7 +260,7 @@ public class PlayerHook : MonoBehaviour
 
     public void HookPlayer(PlayerMovement player)
     {
-        if (canHookSomething)
+        if (canHookSomething && !player.hooked)
         {
             //print("HOOK PLAYER");
             enemyHooked = true;
@@ -312,7 +353,7 @@ public class PlayerHook : MonoBehaviour
                 }
                 break;
             case HookState.grappling:
-                FinishGrapple();
+                FinishHookGrappling();
                 break;
         }
         if (myHook != null)
@@ -321,8 +362,7 @@ public class PlayerHook : MonoBehaviour
         }
     }
 
-    Vector3 grappleOrigin;
-    public void StartGrappling(Vector3 grapplingPoint)
+    public void StartHookGrappling(Vector3 grapplingPosition)
     {
         if (hookSt == HookState.throwing)
         {
@@ -331,18 +371,20 @@ public class PlayerHook : MonoBehaviour
             myPlayerMov.StopHooking();
             myPlayerMov.StartHooked();
             myPlayerCombat.StopAiming();
-            currentHook.transform.position = grapplingPoint;
+            currentHook.transform.position = grapplingPosition;
+            //currentHookPoint = hookPoint;
+
         }
     }
 
-    void FinishGrapple()
+    void FinishHookGrappling()
     {
         hookSt = HookState.cd;
         myPlayerMov.StopHooked();
         StoringManager.instance.StoreObject(currentHook.transform);
         currentHook = null;
         cdTime = 0;
-        if (myPlayerMov.Actions.Aim.IsPressed)
+        if (myPlayerMov.Actions.L2.IsPressed)
         {
             myPlayerCombat.StartAiming();
         }
@@ -377,7 +419,6 @@ public class PlayerHook : MonoBehaviour
         }
     }
 
-    Vector3 dirToHook;
     void UpdateDistance()
     {
         originPos = myPlayerMov.rotateObj.TransformPoint(hookLocalOrigin);
@@ -397,20 +438,193 @@ public class PlayerHook : MonoBehaviour
         currentDistance = dirToHook.magnitude;
     }
 
-    [HideInInspector]
-    public bool canHookSomething
+    public void StartGrappling(Vector3 hookPos,HookPoint hookPoint)
     {
-        get
+        print("START GRAPPLING");
+        if (grappleSt == GrappleState.throwing)
         {
-            return (hookSt == HookState.throwing && !enemyHooked && !objectHooked);
+            StartReelingAutoGrapple();
+        }
+        else if(hookSt==HookState.throwing)
+        {
+            StartHookGrappling(hookPos);
+        }
+        else
+        {
+            Debug.LogError("Error: PlayerHook: hook collided with a hookPoint but the hook is not in hook mode nor automatic grapple mode");
         }
     }
-    [HideInInspector]
-    public bool somethingHooked
+
+    //AUTOMATIC GRAPPLE
+    void ProcessAutoGrapple()
     {
-        get
+        Vector3 reelingDir;
+        switch (grappleSt)
         {
-            return (enemyHooked || objectHooked);
+            case GrappleState.throwing:
+                MoveHook(hookMovingVel);
+                UpdateDistance();
+                Vector3 hookRopeEndPos = hookRopeEnd.position;
+                myHook.UpdateRopeLine(originPos, hookRopeEndPos);
+                //Debug.DrawLine(originPos, hookRopeEndPos, Color.red);
+                RaycastHit hit;
+                if (Physics.Linecast(originPos, hookRopeEndPos, out hit, collisionMask, QueryTriggerInteraction.Ignore))
+                {
+                    StartReelingAutoGrapple();
+                }
+                break;
+            case GrappleState.reeling:
+                UpdateDistance();
+                hookRopeEndPos = hookRopeEnd.position;
+                myHook.UpdateRopeLine(originPos, hookRopeEndPos);
+                if (currentDistance <= hookMinDistance)
+                {
+                    FinishAutoGrapple();
+                }
+                else
+                {
+                    reelingDir = (hookPos - originPos).normalized;
+                    //move with speed to hook
+                    hookMovingVel = reelingDir * hookGrapplingSpeed;
+                    myPlayerMov.currentVel = hookMovingVel;
+                    myPlayerMov.currentSpeed = hookGrapplingSpeed;
+                }
+                break;
+            case GrappleState.cd:
+                grappleCDTime += Time.deltaTime;
+                if (grappleCDTime >= grappleMaxCDTime)
+                {
+                    grappleSt = GrappleState.ready;
+                }
+                break;
         }
     }
+
+    public void StartAutoGrapple()
+    {
+        if (grappleSt == GrappleState.ready)
+        {
+            Debug.Log("Grapple: Starting Grapple");
+            //VARIABLES
+            grappleSt = GrappleState.throwing;
+            currentGrappleDistance = 0;
+            originPos = myPlayerMov.rotateObj.transform.TransformPoint(hookLocalOrigin);
+            hookPos = originPos;
+            myPlayerMov.StartHooked();
+
+            //Calculate trayectory
+            Vector3 rayOrigin = originPos;
+            float dist = (minDistanceToGrapple + 0.1f);
+            Vector3 endPoint = currentHookPoint.transform.position;
+            Debug.Log("Grapple: Checking for walls in the middle; rayOrigin = "+rayOrigin.ToString("F4"));
+
+            Debug.DrawLine(rayOrigin, endPoint, Color.white, 3);
+            RaycastHit hit;
+            if (Physics.Linecast(rayOrigin, endPoint, out hit, grappleColMask, QueryTriggerInteraction.Collide))
+            {
+                if (hit.transform.tag == "Stage")
+                {
+                    Debug.LogWarning("Warning: Can't grapple because there is a wall or something similar in the middle ("+hit.transform.name+")");
+                    return;
+                }
+                else
+                {
+                    endPoint = hit.point;
+                    //throwing grapple anim start
+                    hookMovingVel = (endPoint - originPos).normalized * hookFowardSpeed;
+
+                    //Instantiate hook
+                    Quaternion rotation = Quaternion.LookRotation(hookMovingVel);
+                    currentHook = StoringManager.instance.Spawn(StoringManager.instance.hookPrefab, originPos, rotation).gameObject;
+                    myHook = currentHook.GetComponent<Hook>();
+                    myHook.GetComponent<LineRenderer>().enabled = true;
+                    myHook.KonoAwake(myPlayerMov, this);
+                    hookRopeEnd = myHook.hookRopeEnd;
+                    //myPlayerHUD.StartThrowHook();
+                }
+            }
+            else
+            {
+                Debug.LogError("Error: For some reason the automatic grapple can't hit the hookPoint with a raycast to check for walls");
+            }
+        }
+    }
+
+    public void StartReelingAutoGrapple()
+    {
+        if (grappleSt == GrappleState.throwing)
+        {
+            //print("START REELING GRAPPLE");
+            grappleSt = GrappleState.reeling;
+        }
+    }
+
+    public void FinishAutoGrapple()
+    {
+        grappleSt = GrappleState.cd;
+        myPlayerMov.StopHooked();
+        StoringManager.instance.StoreObject(currentHook.transform);
+        currentHook = null;
+        grappleCDTime = 0;
+        if (myPlayerMov.Actions.L2.IsPressed)
+        {
+            myPlayerCombat.StartAiming();
+        }
+        if (myHook != null)
+        {
+            myHook.GetComponent<LineRenderer>().enabled = false;
+        }
+    }
+
+    void UpdateHookPoints()
+    {
+        //print("UpdateHookPoints: Start");
+        List<HookPoint> hookPoints = myPlayerMov.myPlayerObjectDetection.hookPoints;
+        List<HookPoint> hookPointsInView = new List<HookPoint>();
+        HookPoint closestHookPoint = null;//HookPoint that is in range of grapple, in front of the camera (in view) and has the lowest angle with the camera Z+
+        float lowestAngle = float.MaxValue;
+        for (int i = 0; i < hookPoints.Count; i++)
+        {
+            float dist = (hookPoints[i].transform.position - myPlayerMov.transform.position).magnitude;
+            //print("UpdateHookPoints: hookPoints[" + i + "]: " + hookPoints[i].name+"; Dist to player = "+dist);
+            if (dist <= minDistanceToGrapple)
+            {
+                //print("UpdateHookPoints: dist ("+dist+") <= minDistanceToGrapple ("+minDistanceToGrapple+")");
+                Collider col = hookPoints[i].smallTrigger.GetComponent<Collider>();
+                cameraPlanes = GeometryUtility.CalculateFrustumPlanes(myCamera);
+                if (GeometryUtility.TestPlanesAABB(cameraPlanes, col.bounds))
+                {
+                    //print("UpdateHookPoints: hookPoint in camera view range");
+                    Vector2 cameraCenterPix = new Vector2(myCamera.pixelWidth / 2, myCamera.pixelHeight / 2);
+                    float distToCameraCenter = ((Vector2)myCamera.WorldToScreenPoint(hookPoints[i].transform.position) - cameraCenterPix).magnitude;
+                    //print("UpdateHookPoints: hookPoint is at " + distToCameraCenter + " pixels of distance to the center of the screen");
+                    if (distToCameraCenter <= hookPointMinDistToCameraCenter)
+                    {
+                        hookPointsInView.Add(hookPoints[i]);
+                        Vector3 objectVector = hookPoints[i].transform.position - transform.position;
+                        float newAngle = Vector3.Angle(myCamera.transform.forward, objectVector);
+                        if (newAngle < lowestAngle)
+                        {
+                            //print("UpdateHookPoints: New lowest Angle found");
+                            lowestAngle = newAngle;
+                            closestHookPoint = hookPoints[i];
+                        }
+                    }                  
+                }
+            }
+            if (closestHookPoint != null)
+            {
+                currentHookPoint = closestHookPoint;
+                canAutoGrapple = true;
+                myPlayerHUD.ShowGrappleMessage();
+                myPlayerHUD.ShowGrapplePoints(hookPointsInView);
+            }
+            else
+            {
+                canAutoGrapple = false;
+                myPlayerHUD.HideGrappleMessage();
+            }
+        }
+    }
+
 }

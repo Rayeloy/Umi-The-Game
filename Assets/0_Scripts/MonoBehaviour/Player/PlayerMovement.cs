@@ -28,7 +28,8 @@ public enum JumpState
 {
     Jumping,
     Breaking,//Emergency stop
-    none
+    none,
+    wallJumping
 }
 #endregion
 
@@ -79,7 +80,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     [Header("ROTATION")]
     public float rotationSpeed = 1;
     float currentRotationSpeed = 0;
-    [Range(0,180)]
+    [Range(0, 180)]
     public float instantRotationMaxAngle = 130;
     //public float rotationSpeedFixedCam = 250;
     float targetRotation = 0;
@@ -89,9 +90,11 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     [Tooltip("Maximum speed that you can travel at horizontally when hit by someone")]
     public float maxKnockbackSpeed = 300f;
     public float maxAimingSpeed = 5f;
-    public float maxHookingSpeed = 2f;
+    public float maxHookingSpeed = 3.5f;
+    public float maxGrapplingSpeed = 3.5f;
     public float maxSpeedInWater = 5f;
     public float maxVerticalSpeedInWater = 3f;
+
     [Header("BOOST")]
     public float boostSpeed = 20f;
     public float boostCD = 5f;
@@ -108,6 +111,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     }
     bool boostReady = true;
     Vector3 boostDir;
+
     [Header("ACCELERATIONS")]
     public float initialAcc = 30;
     public float breakAcc = -30;
@@ -120,6 +124,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     //public float breakAccOnHit = -2.0f;
     [HideInInspector]
     public float gravity;
+
     [Header("JUMP")]
     public float jumpHeight = 4f;
     public float jumpApexTime = 0.4f;
@@ -134,8 +139,11 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     float timeJumpInsurance = 0;
     bool jumpInsurance;
     bool jumpingFromWater;
+
     [Header("WALLJUMP")]
     public float wallJumpVelocity = 10f;
+    public float wallJumpSlidingAcc = -2.5f;
+    public float wallJumpMinHeightPercent = 55;
     public float stopWallMaxTime = 0.5f;
     float stopWallTime = 0;
     bool wallJumping = false;
@@ -208,6 +216,12 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     float walJumpConeHeight = 1;
     float lastWallAngle = -1;
     GameObject lastWall;
+    Raycast.Axis wallJumpRaycastAxis = Raycast.Axis.none;
+    int rows = 5;
+    int columns = 5;
+    float rowsSpacing;
+    float columnsSpacing;
+    LayerMask auxLM;
 
     int frameCounter = 0;
 
@@ -229,8 +243,13 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     float noMoveTime;
 
     //HOOK
-    bool hooked;
+    [HideInInspector]
+    public bool hooked;
     bool hooking;
+
+    //GRAPPLE
+    bool grappling = false;
+
 
     //WATER
     bool jumpedOutOfWater = true;
@@ -255,6 +274,14 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         noInput = false;
         lastWallAngle = 0;
         SetupInputsBuffer();
+        myPlayerHook.myCameraBase = myCamera;
+
+        //WALLJUMP
+        rows = 5;
+        columns = 5;
+        rowsSpacing = ((controller.coll.bounds.size.y * wallJumpMinHeightPercent) / 100) / (rows - 1);
+        columnsSpacing = controller.coll.bounds.size.x / (columns - 1);
+        auxLM = LayerMask.GetMask("Stage");
 
         PlayerAwakes();
 
@@ -276,6 +303,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     //todos los konoAwakes
     void PlayerAwakes()
     {
+        myPlayerHUD.KonoAwake();
         myPlayerCombat.KonoAwake();
         myPlayerAnimation.KonoAwake();
         myPlayerHook.KonoAwake();
@@ -325,7 +353,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     #region UPDATE
     public void KonoUpdate()
     {
-        if (Actions.Options.WasPressed) gC.PauseGame(Actions);
+        if (Actions.Start.WasPressed) gC.PauseGame(Actions);
 
         if ((controller.collisions.above || controller.collisions.below) && !hooked)
         {
@@ -378,6 +406,22 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         }
         //myPlayerWeap.DropWeapon();
         //controller.collisionMask = LayerMask.GetMask("Stage", "WaterFloor", "SpawnWall");
+    }
+
+    void EquipWeaponAtStart()
+    {
+        //print("EQUIP WEAPON AT START");
+        switch (team)
+        {
+            case Team.blue:
+                //print("EQUIP BLUE WEAPON");
+                myPlayerWeap.PickupWeapon(gC.startingWeaponBlue);
+                break;
+            case Team.red:
+                //print("EQUIP RED WEAPON");
+                myPlayerWeap.PickupWeapon(gC.startingWeaponRed);
+                break;
+        }
     }
 
     #region INPUTS BUFFERING
@@ -441,9 +485,9 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         if (!noInput)
         {
-            float horiz = Actions.Movement.X;//Input.GetAxisRaw(contName + "H");
-            float vert = Actions.Movement.Y;//-Input.GetAxisRaw(contName + "V");
-                                            // Check that they're not BOTH zero - otherwise dir would reset because the joystick is neutral.
+            float horiz = Actions.RightJoystick.X;//Input.GetAxisRaw(contName + "H");
+            float vert = Actions.RightJoystick.Y;//-Input.GetAxisRaw(contName + "V");
+                                                 // Check that they're not BOTH zero - otherwise dir would reset because the joystick is neutral.
             Vector3 temp = new Vector3(horiz, 0, vert);
             joystickSens = temp.magnitude;
             //print("temp.magnitude = " + temp.magnitude);
@@ -510,7 +554,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
             CalculateMoveDir();//Movement direction
-            if (!myPlayerCombat.aiming && Actions.Boost.WasPressed)//Input.GetButtonDown(contName + "RB"))
+            if (!myPlayerCombat.aiming && Actions.R2.WasPressed)//Input.GetButtonDown(contName + "RB"))
             {
                 StartBoost();
             }
@@ -552,82 +596,86 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
         //print("MoveState = " + moveSt+"; speed = "+currentSpeed);
-        switch (moveSt)
+        if (jumpSt != JumpState.wallJumping)
         {
-            case MoveState.Moving:
-                currentVel = currentVel + currentMovDir * finalMovingAcc;
-                horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
-                if (horizontalVel.magnitude > currentMaxMoveSpeed)
-                {
-                    horizontalVel = horizontalVel.normalized * currentMaxMoveSpeed;
-                    currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
-                    currentSpeed = currentMaxMoveSpeed;
-                }
-                //print("Speed = " + currentSpeed+"; currentMaxMoveSpeed = "+currentMaxMoveSpeed);
-                break;
-            case MoveState.NotMoving:
-                Vector3 aux = currentVel.normalized * currentSpeed;
-                currentVel = new Vector3(aux.x, currentVel.y, aux.z);
-                break;
-            case MoveState.Boost:
-                if (controller.collisions.collisionHorizontal)//BOOST CONTRA PARED
-                {
-                    WallBoost();
-                }
-                else//BOOST NORMAL
-                {
-                    currentVel = boostDir * finalMovingAcc;
+            switch (moveSt)
+            {
+                case MoveState.Moving:
+                    currentVel = currentVel + currentMovDir * finalMovingAcc;
                     horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
-                    horizontalVel = horizontalVel.normalized * boostSpeed;
-                    currentVel = new Vector3(horizontalVel.x, 0, horizontalVel.z);
-                    currentSpeed = boostSpeed;
-                }
-                break;
-            case MoveState.Knockback:
-                if (!knockBackDone)
-                {
-                    print("KNOCKBACK");
-                    currentVel = currentVel + knockback;
+                    if (horizontalVel.magnitude > currentMaxMoveSpeed)
+                    {
+                        horizontalVel = horizontalVel.normalized * currentMaxMoveSpeed;
+                        currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
+                        currentSpeed = currentMaxMoveSpeed;
+                    }
+                    //print("Speed = " + currentSpeed+"; currentMaxMoveSpeed = "+currentMaxMoveSpeed);
+                    break;
+                case MoveState.NotMoving:
+                    Vector3 aux = currentVel.normalized * currentSpeed;
+                    currentVel = new Vector3(aux.x, currentVel.y, aux.z);
+                    break;
+                case MoveState.Boost:
+                    if (controller.collisions.collisionHorizontal)//BOOST CONTRA PARED
+                    {
+                        WallBoost();
+                    }
+                    else//BOOST NORMAL
+                    {
+                        currentVel = boostDir * finalMovingAcc;
+                        horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                        horizontalVel = horizontalVel.normalized * boostSpeed;
+                        currentVel = new Vector3(horizontalVel.x, 0, horizontalVel.z);
+                        currentSpeed = boostSpeed;
+                    }
+                    break;
+                case MoveState.Knockback:
+                    if (!knockBackDone)
+                    {
+                        print("KNOCKBACK");
+                        currentVel = currentVel + knockback;
+                        horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                        currentSpeed = horizontalVel.magnitude;
+                        currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
+                        knockBackDone = true;
+                    }
+                    else
+                    {
+                        aux = currentVel.normalized * currentSpeed;
+                        currentVel = new Vector3(aux.x, currentVel.y, aux.z);
+                    }
+                    //print("vel.y = " + currentVel.y);
+
+                    break;
+                case MoveState.MovingBreaking://FRENADA FUERTE
+                    Vector3 finalDir = currentVel + currentMovDir * finalMovingAcc;
+                    horizontalVel = new Vector3(finalDir.x, 0, finalDir.z);
+                    currentVel = horizontalVel.normalized * currentSpeed;
+                    currentVel.y = finalDir.y;
+                    break;
+                case MoveState.Hooked:
+                    horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                    currentSpeed = horizontalVel.magnitude;
+                    break;
+                case MoveState.FixedJump:
+                    currentVel = knockback;
                     horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
                     currentSpeed = horizontalVel.magnitude;
                     currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
-                    knockBackDone = true;
-                }
-                else
-                {
-                    aux = currentVel.normalized * currentSpeed;
-                    currentVel = new Vector3(aux.x, currentVel.y, aux.z);
-                }
-                //print("vel.y = " + currentVel.y);
+                    break;
+                case MoveState.NotBreaking:
+                    horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                    currentSpeed = horizontalVel.magnitude;
+                    break;
 
-                break;
-            case MoveState.MovingBreaking://FRENADA FUERTE
-                Vector3 finalDir = currentVel + currentMovDir * finalMovingAcc;
-                horizontalVel = new Vector3(finalDir.x, 0, finalDir.z);
-                currentVel = horizontalVel.normalized * currentSpeed;
-                currentVel.y = finalDir.y;
-                break;
-            case MoveState.Hooked:
-                horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
-                currentSpeed = horizontalVel.magnitude;
-                break;
-            case MoveState.FixedJump:
-                currentVel = knockback;
-                horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
-                currentSpeed = horizontalVel.magnitude;
-                currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
-                break;
-            case MoveState.NotBreaking:
-                horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
-                currentSpeed = horizontalVel.magnitude;
-                break;
-
+            }
         }
         #endregion
     }
 
     void VerticalMovement()
     {
+
         if (!jumpedOutOfWater && !inWater && controller.collisions.below)
         {
             jumpedOutOfWater = true;
@@ -637,7 +685,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         {
             lastWallAngle = -1;
         }
-        if (Actions.Jump.WasPressed)//Input.GetButtonDown(contName + "A"))
+        if (Actions.A.WasPressed)//Input.GetButtonDown(contName + "A"))
         {
             //print("JUMP");
             StartJump();
@@ -657,7 +705,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                 }
                 else
                 {
-                    if (Actions.Jump.WasReleased)//Input.GetButtonUp(contName + "A"))
+                    if (Actions.A.WasReleased)//Input.GetButtonUp(contName + "A"))
                     {
                         jumpSt = JumpState.Breaking;
                     }
@@ -670,6 +718,9 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                     jumpSt = JumpState.none;
                 }
 
+                break;
+            case JumpState.wallJumping:
+                currentVel.y += wallJumpSlidingAcc * Time.deltaTime;
                 break;
 
 
@@ -754,47 +805,95 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         bool result = false;
         if (!controller.collisions.below && (!inWater || inWater && controller.collisions.around) && controller.collisions.collisionHorizontal &&
-            (lastWallAngle != controller.collisions.wallAngle || lastWallAngle == controller.collisions.wallAngle && lastWall != controller.collisions.wall) && jumpedOutOfWater)
+            (lastWallAngle != controller.collisions.wallAngle || lastWallAngle == controller.collisions.wallAngle && lastWall != controller.collisions.horWall) && jumpedOutOfWater)
         {
-            GameObject wall = controller.collisions.wall;
+            GameObject wall = controller.collisions.horWall;
             if (wall.GetComponent<StageScript>() == null || wall.GetComponent<StageScript>().wallJumpable)
             {
                 print("Wall jump");
+                jumpSt = JumpState.wallJumping;
                 result = true;
                 //wallJumped = true;
                 stopWallTime = 0;
-                currentVel = Vector3.zero;
+                SetVelocity(Vector3.zero);
                 wallJumping = true;
                 anchorPoint = transform.position;
                 wallNormal = controller.collisions.wallNormal;
                 wallNormal.y = 0;
                 lastWallAngle = controller.collisions.wallAngle;
                 lastWall = wall;
+                wallJumpRaycastAxis = controller.collisions.closestHorRaycast.axis;
+                Debug.Log("WALL JUMP RAY HEIGHT PERCENTAGE : " + controller.collisions.closestHorRaycast.rayHeightPercentage + "%; wall = " + wall.name);
             }
 
         }
         return result;
     }
 
-    void ProcessWallJump()
+    void ProcessWallJump()//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
     {
         if (wallJumping)
         {
-            currentVel = Vector3.zero;
-            currentSpeed = 0;
             stopWallTime += Time.deltaTime;
-            if (stopWallTime >= stopWallMaxTime)
+            if (Actions.A.WasReleased || !Actions.A.IsPressed)
             {
                 EndWallJump();
             }
-        }
-    }
+            if (stopWallTime >= stopWallMaxTime)
+            {
+                StopWallJump();
+            }
 
+            float rayLength = controller.coll.bounds.extents.x + 0.3f;
+            RaycastHit hit;
+
+            Vector3 paralelToWall = new Vector3(-wallNormal.z, 0, wallNormal.x).normalized;
+            Vector3 rowsOrigin = new Vector3(controller.coll.bounds.center.x, controller.coll.bounds.min.y, controller.coll.bounds.center.z);
+            rowsOrigin -= paralelToWall * controller.coll.bounds.extents.x;
+            Vector3 dir = -wallNormal.normalized;
+            bool success = false;
+            for (int i = 0; i < rows && !success; i++)
+            {
+                Vector3 rowOrigin = rowsOrigin + Vector3.up * rowsSpacing * i;
+                for (int j = 0; j < columns && !success; j++)
+                {
+                    Vector3 rayOrigin = rowOrigin + paralelToWall * rowsSpacing * j;
+                    Debug.Log("WallJump: Ray[" + i + "," + j + "] with origin = " + rayOrigin.ToString("F4")+"; rayLength ="+rayLength);
+                    Debug.DrawRay(rayOrigin, dir * rayLength, Color.blue, 3);
+
+                    if (Physics.Raycast(rayOrigin, dir, out hit, rayLength, auxLM, QueryTriggerInteraction.Ignore))
+                    {
+                        if (hit.transform.gameObject == lastWall)
+                        {
+                            success = true;
+                            Debug.Log("WallJump: Success! still walljumping!");
+                        }
+                        else
+                        {
+                            Debug.Log("WallJump: this wall ("+hit.transform.gameObject+")is not the same wall that I started walljumping from (" + lastWall + ").");
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("WallJump: no hit on ray ["+i+","+j+"] when checking for wall!");
+                    }
+                }
+
+            }
+            if (!success)
+            {
+                StopWallJump();
+            }
+        }
+
+    }
 
     void EndWallJump()
     {
         wallJumping = false;
         wallJumpAnim = true;
+        jumpSt = JumpState.none;
+        wallJumpRaycastAxis = Raycast.Axis.none;
         //CALCULATE JUMP DIR
         //LEFT OR RIGHT ORIENTATION?
         //Angle
@@ -812,6 +911,14 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
         Debug.DrawLine(anchorPoint, circleCenter, Color.white, 20);
         Debug.DrawLine(anchorPoint, circumfPoint, Color.yellow, 20);
+    }
+
+    public void StopWallJump()
+    {
+        print("STOP WALLJUMP");
+        wallJumping = false;
+        wallJumpAnim = true;
+        jumpSt = JumpState.none;
     }
     #endregion
 
@@ -857,7 +964,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             boostTime += Time.deltaTime;
             if (boostTime < boostDuration)
             {
-                if (Actions.Jump.WasPressed)
+                if (Actions.A.WasPressed)
                 {
                     StopBoost();
                 }
@@ -916,7 +1023,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     }
 
-    public void RotateCharacter(float rotSpeed=0)
+    public void RotateCharacter(float rotSpeed = 0)
     {
         switch (myCamera.camMode)
         {
@@ -945,7 +1052,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
                     if (currentRotation != targetRotation)
                     {
-                        if(!myPlayerCombat.isRotationRestricted && Mathf.Abs(currentRotation - targetRotation) > instantRotationMaxAngle)//Instant rotation
+                        if (!myPlayerCombat.isRotationRestricted && Mathf.Abs(currentRotation - targetRotation) > instantRotationMaxAngle)//Instant rotation
                         {
                             RotateCharacter(currentInputDir);
                         }
@@ -980,7 +1087,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                                 newAngle = targetRotation;
                             }
                             rotateObj.localRotation = Quaternion.Euler(0, newAngle, 0);
-                        }         
+                        }
                     }
 
                     //print("currentRotation = " + currentRotation + "; targetRotation = " + targetRotation);
@@ -994,7 +1101,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     void RotateCharacter(Vector3 dir)
     {
-        float angle = Mathf.Acos(dir.z/ dir.magnitude) * Mathf.Rad2Deg;
+        float angle = Mathf.Acos(dir.z / dir.magnitude) * Mathf.Rad2Deg;
         angle = dir.x < 0 ? 360 - angle : angle;
         rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
     }
@@ -1097,6 +1204,10 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         {
             noInput = true;
             hooked = true;
+            if (jumpSt == JumpState.wallJumping)
+            {
+                StopWallJump();
+            }
             //To Do:
             //Stop attacking
         }
@@ -1251,7 +1362,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     float distanceToFlag;
     void UpdateDistanceToFlag()
     {
-        distanceToFlag= ((gC as GameController_FlagMode).flags[0].transform.position - transform.position).magnitude;
+        distanceToFlag = ((gC as GameController_FlagMode).flags[0].transform.position - transform.position).magnitude;
     }
 
     void UpdateFlagLightBeam()
@@ -1275,7 +1386,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             {
                 StopFlagLightBeam();
             }
-        }     
+        }
     }
 
     void ShowFlagLightBeam()
@@ -1330,22 +1441,6 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         }
     }
     #endregion
-
-    void EquipWeaponAtStart()
-    {
-        //print("EQUIP WEAPON AT START");
-        switch (team)
-        {
-            case Team.blue:
-                //print("EQUIP BLUE WEAPON");
-                myPlayerWeap.PickupWeapon(gC.startingWeaponBlue);
-                break;
-            case Team.red:
-                //print("EQUIP RED WEAPON");
-                myPlayerWeap.PickupWeapon(gC.startingWeaponRed);
-                break;
-        }
-    }
 
     #region  AUXILIAR FUNCTIONS ---------------------------------------------
     Vector3 AngleToVector(float angle)
