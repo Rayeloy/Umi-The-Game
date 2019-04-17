@@ -30,13 +30,17 @@ public class HookPointHUD : MonoBehaviour
 
     public void KonoUpdate()
     {
-        //Vector3 vPPos = myCamera.WorldToViewportPoint(myHookPointTrans.position);
-        Vector3 screenPoint = myCamera.WorldToScreenPoint(myHookPointTrans.position);
-        screenPoint.z = myCanvas.planeDistance;
+        /*//Vector3 vPPos = myCamera.WorldToViewportPoint(myHookPointTrans.position);
+        Vector3 screenPoint = RectTransformUtility.WorldToScreenPoint(myCamera, myHookPointTrans.position); //myCamera.WorldToScreenPoint(myHookPointTrans.position);
+        //screenPoint.z = myCanvas.planeDistance;
         //print("HookPointHUD: Update: newPos"+ screenPoint.ToString("F4"));
         Vector2 result;
-        result = myCamera.ScreenToWorldPoint(screenPoint);
-        //RectTransformUtility.ScreenPointToLocalPointInRectangle(transform.parent.GetComponent<RectTransform>(), screenPoint, myCamera, out result);
-        transform.position = result;
+        //result = myCamera.ScreenToWorldPoint(screenPoint);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(transform.parent.GetComponent<RectTransform>(), screenPoint, myCamera, out result);
+        transform.position = result;*/
+        Vector3 screenPos = myCamera.WorldToViewportPoint(myHookPointTrans.position);
+        myRect.anchorMin = screenPos;
+        myRect.anchorMax = screenPos;
+
     }
 }

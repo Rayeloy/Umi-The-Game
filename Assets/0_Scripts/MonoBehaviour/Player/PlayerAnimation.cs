@@ -14,9 +14,11 @@ public class PlayerAnimation : MonoBehaviour
     int jumpHash = Animator.StringToHash("Jump");
     int jumpingHash = Animator.StringToHash("Jumping");
     bool jumpingValue;
+
     int landHash = Animator.StringToHash("Land");
+    bool landBool;
+
     int jumpStateHash = Animator.StringToHash("Ascender");
-    bool landing;
     int swimmingIdleHash = Animator.StringToHash("SwimmingIdle");
     bool swimmingIdle;
     int swimmingHash = Animator.StringToHash("Swimming");
@@ -72,10 +74,10 @@ public class PlayerAnimation : MonoBehaviour
 
     void ResetVariables()
     {
-        if (landing && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1 && !animator.IsInTransition(0))
+        if (landBool && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1 && !animator.IsInTransition(0))
         {
-            landing = false;
-            animator.SetBool(landHash, landing);
+            landBool = false;
+            animator.SetBool(landHash, landBool);
         }
         if (swimming && !myPlayerMovement.inWater)
         {
@@ -124,10 +126,10 @@ public class PlayerAnimation : MonoBehaviour
                 swimming = false;
                 animator.SetBool(swimmingHash, swimming);
             }
-            if (landing)
+            if (landBool)
             {
-                landing = false;
-                animator.SetBool(landHash, landing);
+                landBool = false;
+                animator.SetBool(landHash, landBool);
             }
             jumpingValue = true;
             animator.SetBool(jumpingHash, jumpingValue);
@@ -144,8 +146,8 @@ public class PlayerAnimation : MonoBehaviour
                 animator.SetBool(jumpingHash, jumpingValue);
             }
             //print("SET TRIGGER LAND ");
-            landing = true;
-            animator.SetBool(landHash, landing);
+            landBool = true;
+            animator.SetBool(landHash, landBool);
         }
 
         if (myPlayerMovement.inWater && myPlayerMovement.currentSpeed > 0)
@@ -158,8 +160,7 @@ public class PlayerAnimation : MonoBehaviour
             swimming = true;
             animator.SetBool(swimmingHash, swimming);
         }
-
-        if (myPlayerMovement.inWater && myPlayerMovement.currentSpeed == 0)
+        else if (myPlayerMovement.inWater && myPlayerMovement.currentSpeed == 0)
         {
             if (swimming)
             {

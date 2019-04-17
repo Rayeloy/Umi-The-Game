@@ -1197,7 +1197,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     #endregion
 
-    #region HOOKING/HOOK ---------------------------------------------
+    #region HOOKING/HOOKED ---------------------------------------------
     public void StartHooked()
     {
         if (!hooked)
@@ -1227,8 +1227,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         {
             noInput = false;
             hooked = false;
-            currentVel = Vector3.zero;
-            currentSpeed = 0;
+            SetVelocity(currentVel / 3);
         }
     }
 

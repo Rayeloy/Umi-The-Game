@@ -180,7 +180,6 @@ public class TeamSetupManager : MonoBehaviour
 
     void StopLoadingScreen()
     {
-        print("StopLoadingScreen");
         loadingScreenstarted = false;
         //appear button
         readyButton.SetActive(true);

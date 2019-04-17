@@ -96,35 +96,35 @@ MonoBehaviour:
   - {fileID: 1909984392524275721}
   layoutElements:
   - rect: {fileID: 5369223005124494464}
-    horDistToNextElement: 18.878046
+    horDistToNextElement: 20.532425
   - rect: {fileID: 273446834886727318}
-    horDistToNextElement: 13.652933
+    horDistToNextElement: 0.18874359
   - rect: {fileID: 1909984392524275721}
     horDistToNextElement: 0
   transformInfos:
   - transform: {fileID: 2818554262979730756}
-    position: {x: 882.5, y: 351.6875, z: 0}
+    position: {x: 889, y: 354.1667, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 1, y: 1, z: 1}
-    width: 1068
+    width: 1068.3352
     height: 141
   - transform: {fileID: 5369223005124494464}
-    position: {x: 579.52673, y: 351.6983, z: 0}
+    position: {x: 593.6892, y: 353.34415, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 0.6042296, y: 0.6042296, z: 0.6042296}
-    width: 96.35991
+    width: 96.37572
     height: 123.563
   - transform: {fileID: 273446834886727318}
-    position: {x: 709.1538, y: 350.85992, z: 0}
+    position: {x: 727.0043, y: 354.16663, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 0.6042296, y: 0.6042296, z: 0.6042296}
-    width: 100.40793
+    width: 100.42566
     height: 100.576004
   - transform: {fileID: 1909984392524275721}
-    position: {x: 1007.80334, y: 356.65247, z: 0}
+    position: {x: 1005.36194, y: 359.16666, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 0.6042296, y: 0.6042296, z: 0.6042296}
-    width: 451.69995
+    width: 451.76794
     height: 118.576004
   executeAutoCenter: 0
   updateFreq: 2
@@ -422,7 +422,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.47300002, y: 0.2745532}
   m_AnchorMax: {x: 0.6758877, y: 0.768}
-  m_AnchoredPosition: {x: -3.7940674, y: -0.00002670288}
+  m_AnchoredPosition: {x: -9.713837, y: -0.000011444092}
   m_SizeDelta: {x: 235.01588, y: 49}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3190888281608812634
@@ -515,7 +515,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.39170414, y: 0.2745532}
   m_AnchorMax: {x: 0.44452056, y: 0.7254468}
-  m_AnchoredPosition: {x: -17.284897, y: -0.5000477}
+  m_AnchoredPosition: {x: -9.713982, y: -0.000032424927}
   m_SizeDelta: {x: 44, y: 37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8886709675184849556
@@ -698,7 +698,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.319663, y: 0.22500001}
   m_AnchorMax: {x: 0.36681646, y: 0.768}
-  m_AnchoredPosition: {x: -15.645462, y: 0.5000229}
+  m_AnchoredPosition: {x: -9.713959, y: -0.000015258789}
   m_SizeDelta: {x: 46.000015, y: 47}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5223072370466229471
@@ -1193,17 +1193,20 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
     m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
+    m_SelectedTrigger: Highlighted
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 0}
@@ -1584,7 +1587,6 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_textAlignment: 514
-  m_isAlignmentEnumConverted: 1
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -1611,12 +1613,13 @@ MonoBehaviour:
   m_verticalMapping: 0
   m_uvLineOffset: 0
   m_geometrySortingOrder: 0
+  m_VertexBufferAutoSizeReduction: 1
   m_firstVisibleCharacter: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
   m_margin: {x: 0, y: 0, z: -0.021606445, w: 0}
   m_textInfo:
-    textComponent: {fileID: 0}
+    textComponent: {fileID: 8167062554810628626}
     characterCount: 2
     spriteCount: 0
     spaceCount: 0
@@ -1625,12 +1628,9 @@ MonoBehaviour:
     lineCount: 1
     pageCount: 1
     materialCount: 1
-  m_havePropertiesChanged: 0
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 0
-  m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_subTextObjects:
   - {fileID: 0}
@@ -2007,7 +2007,6 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_textAlignment: 514
-  m_isAlignmentEnumConverted: 1
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -2034,12 +2033,13 @@ MonoBehaviour:
   m_verticalMapping: 0
   m_uvLineOffset: 0
   m_geometrySortingOrder: 0
+  m_VertexBufferAutoSizeReduction: 1
   m_firstVisibleCharacter: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
   m_margin: {x: -0.12390137, y: 0, z: 0, w: 0}
   m_textInfo:
-    textComponent: {fileID: 0}
+    textComponent: {fileID: 8166302402482992348}
     characterCount: 2
     spriteCount: 0
     spaceCount: 0
@@ -2048,12 +2048,9 @@ MonoBehaviour:
     lineCount: 1
     pageCount: 1
     materialCount: 1
-  m_havePropertiesChanged: 0
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 0
-  m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_subTextObjects:
   - {fileID: 0}
@@ -2168,7 +2165,6 @@ MonoBehaviour:
   m_fontSizeMax: 71.4
   m_fontStyle: 0
   m_textAlignment: 514
-  m_isAlignmentEnumConverted: 1
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -2195,6 +2191,7 @@ MonoBehaviour:
   m_verticalMapping: 0
   m_uvLineOffset: 0
   m_geometrySortingOrder: 0
+  m_VertexBufferAutoSizeReduction: 1
   m_firstVisibleCharacter: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
@@ -2209,12 +2206,9 @@ MonoBehaviour:
     lineCount: 1
     pageCount: 1
     materialCount: 1
-  m_havePropertiesChanged: 0
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 0
-  m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_subTextObjects:
   - {fileID: 0}

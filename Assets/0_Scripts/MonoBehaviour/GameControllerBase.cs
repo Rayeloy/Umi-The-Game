@@ -356,7 +356,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             {
                 case 1:
                     allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-                    allUICameras[0].rect = new Rect(0, 0, 1, 1);
+                    allUICameras[0].rect = new Rect(0, 0, 0.99999f, 1);
                     break;
                 case 2:
                     allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1, 0.5f);
