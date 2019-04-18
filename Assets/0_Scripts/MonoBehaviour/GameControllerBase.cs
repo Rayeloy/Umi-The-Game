@@ -329,6 +329,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region ----[ CLASS FUNCTIONS ]----
 
     #region AWAKE / CREATE PLAYERS / SPAWN POSITIONS
+
     /// <summary>
     /// Funcion que Inicializa valores de todos los jugadores y sus cámaras.
     /// </summary>
@@ -356,7 +357,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             {
                 case 1:
                     allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-                    allUICameras[0].rect = new Rect(0, 0, 0.99999f, 1);
+                    allUICameras[0].rect = new Rect(0, 0, 1f, 1);
                     break;
                 case 2:
                     allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1, 0.5f);
@@ -430,8 +431,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
                 if (PlayerMovement.LocalPlayerInstance == null)
                 {
-                    if (online)
-                    {
                         Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
                         // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
                         Team newPlayerTeam = SetOnlineTeam();
@@ -457,7 +456,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                         newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
 
                         InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
-                    }
                 }
                 else
                 {
@@ -470,7 +468,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             newPlayer = Instantiate(playerPrefab, playersParent).GetComponent<PlayerMovement>();
             newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
             newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
-            newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
+            newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
 
             //nombrado de objetos nuevos
             newPlayer.gameObject.name = "Player " + playerNumber;
@@ -496,6 +494,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         //Canvas
         playerHUD.gC = this;
         playerHUD.myCamera = cameraBase.myCamera.GetComponent<Camera>();//newPlayerUICamera;
+        playerHUD.myUICamera = UICamera;//newPlayerUICamera;
         canvas.GetComponent<Canvas>().worldCamera = UICamera;
         //CameraBase
         cameraBase.myPlayerMov = player;
@@ -649,41 +648,46 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         if (!online)
         {
-            for(int i = 0; playerNum >= 2 && i < contador.Count;i++)
+            for(int i = 0; i < allCanvas.Count; i++)
             {
-                contador[i].anchoredPosition = new Vector3(contador[i].anchoredPosition.x, 100, contador[i].anchoredPosition.y);
+                allCanvas[i].GetComponent<PlayerHUD>().AdaptCanvasHeightScale();
             }
 
-            if (playerNum == 2)
-            {
-                contador[0].localScale /= scaleDos;
-                contador[1].localScale /= scaleDos;
+            //for(int i = 0; playerNum >= 2 && i < contador.Count;i++)
+            //{
+            //    contador[i].anchoredPosition = new Vector3(contador[i].anchoredPosition.x, 100, contador[i].anchoredPosition.y);
+            //}
 
-                powerUpPanel[0].localScale /= scaleDos;
-                powerUpPanel[1].localScale /= scaleDos;
-            }
-            else if (playerNum == 3)
-            {
-                contador[0].localScale /= scaleCuatro;
-                contador[1].localScale /= scaleCuatro;
-                contador[2].localScale /= scaleDos;
+            //if (playerNum == 2)
+            //{
+            //    contador[0].localScale /= scaleDos;
+            //    contador[1].localScale /= scaleDos;
 
-                powerUpPanel[0].localScale /= scaleCuatro;
-                powerUpPanel[1].localScale /= scaleCuatro;
-                powerUpPanel[2].localScale /= scaleDos;
-            }
-            else if (playerNum == 4)
-            {
-                contador[0].localScale /= scaleCuatro;
-                contador[1].localScale /= scaleCuatro;
-                contador[2].localScale /= scaleCuatro;
-                contador[3].localScale /= scaleCuatro;
+            //    powerUpPanel[0].localScale /= scaleDos;
+            //    powerUpPanel[1].localScale /= scaleDos;
+            //}
+            //else if (playerNum == 3)
+            //{
+            //    contador[0].localScale /= scaleCuatro;
+            //    contador[1].localScale /= scaleCuatro;
+            //    contador[2].localScale /= scaleDos;
 
-                powerUpPanel[0].localScale /= scaleCuatro;
-                powerUpPanel[1].localScale /= scaleCuatro;
-                powerUpPanel[2].localScale /= scaleCuatro;
-                powerUpPanel[3].localScale /= scaleCuatro;
-            }
+            //    powerUpPanel[0].localScale /= scaleCuatro;
+            //    powerUpPanel[1].localScale /= scaleCuatro;
+            //    powerUpPanel[2].localScale /= scaleDos;
+            //}
+            //else if (playerNum == 4)
+            //{
+            //    contador[0].localScale /= scaleCuatro;
+            //    contador[1].localScale /= scaleCuatro;
+            //    contador[2].localScale /= scaleCuatro;
+            //    contador[3].localScale /= scaleCuatro;
+
+            //    powerUpPanel[0].localScale /= scaleCuatro;
+            //    powerUpPanel[1].localScale /= scaleCuatro;
+            //    powerUpPanel[2].localScale /= scaleCuatro;
+            //    powerUpPanel[3].localScale /= scaleCuatro;
+            //}
         }
     }
 

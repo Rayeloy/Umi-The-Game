@@ -599,8 +599,8 @@ public class PlayerHook : MonoBehaviour
                     Debug.Log("I'm player " + myPlayerMov.name + "  and my center in the camera is  = " + cameraCenterPix.ToString("F4"));
                     Vector2 hookScreenPos = myCamera.WorldToScreenPoint(hookPoints[i].transform.position);
                     float distToCameraCenter = (hookScreenPos - cameraCenterPix).magnitude;
-                    //Debug.DrawLine(hookScreenPos, cameraCenterPix,Color.green);
-                    //print("UpdateHookPoints: hookPoint is at " + distToCameraCenter + " pixels of distance to the center of the screen");
+                    Debug.DrawLine(hookScreenPos, cameraCenterPix,Color.green);
+                    print("UpdateHookPoints: hookPoint is at " + distToCameraCenter + " pixels of distance to the center of the screen");
                     if (distToCameraCenter <= hookPointMinDistToCameraCenter)
                     {
                         hookPointsInView.Add(hookPoints[i]);
