@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerHUD : MonoBehaviour {
-    [SerializeField][Tooltip("Offset de la pantalla al que se bloquea la flecha de la bola")]
-	float offsetPantalla;
+public class PlayerHUD : MonoBehaviour
+{
+    [SerializeField]
+    [Tooltip("Offset de la pantalla al que se bloquea la flecha de la bola")]
+    float offsetPantalla;
 
     [Header("Referencias")]
     [HideInInspector]
     public GameControllerBase gC;
     [HideInInspector]
     public Camera myCamera;
+    [HideInInspector]
+    public Camera myUICamera;
     Canvas myCanvas;
 
     public RectTransform contador;
@@ -38,9 +42,9 @@ public class PlayerHUD : MonoBehaviour {
     Vector3 flagPos;
 
     [SerializeField]
-	Transform Arrow;
-	[SerializeField]
-	Transform Wale;
+    Transform Arrow;
+    [SerializeField]
+    Transform Wale;
 
     //Grapple
     public GameObject hookPointHUDPrefab;
@@ -54,7 +58,7 @@ public class PlayerHUD : MonoBehaviour {
     }
     public void KonoStart()
     {
-        if(gC.gameMode == GameMode.Tutorial)
+        if (gC.gameMode == GameMode.Tutorial)
         {
             Arrow.gameObject.SetActive(false);
             Wale.gameObject.SetActive(false);
@@ -76,6 +80,23 @@ public class PlayerHUD : MonoBehaviour {
             UpdateFlagSlider();
         }
         UpdateGrapplePoints();
+    }
+
+    public void AdaptCanvasHeightScale()
+    {
+        float scale = myUICamera.rect.width - myUICamera.rect.height;
+        if (scale != 0)
+        {
+            float scaleValue = scale;
+            float invScaleValue = 1 + (1 - scale);
+            contador.localScale = new Vector3(contador.localScale.x * scaleValue, contador.localScale.y,1);
+            powerUpPanel.localScale = new Vector3(powerUpPanel.localScale.x * scaleValue, powerUpPanel.localScale.y, 1);
+            crosshair.rectTransform.localScale = new Vector3(crosshair.rectTransform.localScale.x * scaleValue, crosshair.rectTransform.localScale.y, 1);
+            crosshairReduced.rectTransform.localScale = new Vector3(crosshairReduced.rectTransform.localScale.x * scaleValue, crosshairReduced.rectTransform.localScale.y, 1);
+            redTeamScoreText.rectTransform.localScale = new Vector3(redTeamScoreText.rectTransform.localScale.x * invScaleValue, redTeamScoreText.rectTransform.localScale.y, 1);
+            blueTeamScoreText.rectTransform.localScale = new Vector3(blueTeamScoreText.rectTransform.localScale.x * invScaleValue, blueTeamScoreText.rectTransform.localScale.y, 1);
+            timeText.rectTransform.localScale = new Vector3(timeText.rectTransform.localScale.x, timeText.rectTransform.localScale.y * scaleValue, 1);
+        }
     }
 
     public void SetPickupWeaponTextMessage(WeaponData _weap)
@@ -107,7 +128,7 @@ public class PlayerHUD : MonoBehaviour {
 
         //Flecha bola
         Arrow.gameObject.SetActive(false);
-	    Wale.gameObject.SetActive(false);
+        Wale.gameObject.SetActive(false);
     }
 
     Vector3 ArrowPointing;
@@ -137,7 +158,7 @@ public class PlayerHUD : MonoBehaviour {
 
     void ArrowToFlag()
     {
-        
+
         Vector3 dir = myCamera.WorldToScreenPoint(flag.position);
 
         if (dir.x > offsetPantalla && dir.x < Screen.width - offsetPantalla && dir.y > offsetPantalla && dir.y < Screen.height - offsetPantalla)
@@ -183,16 +204,16 @@ public class PlayerHUD : MonoBehaviour {
         crosshairReduced.enabled = false;
     }
 
-    public void setHookUI (float f)
+    public void setHookUI(float f)
     {
         //print("SetHookUI: fillAmout= " + f);
-        Hook.fillAmount = Mathf.Clamp01( f );
+        Hook.fillAmount = Mathf.Clamp01(f);
     }
 
-    public void setBoostUI (float f)
+    public void setBoostUI(float f)
     {
         //print("SetBoostUI: fillAmout= " + f);
-        Boost.fillAmount = Mathf.Clamp01( f );
+        Boost.fillAmount = Mathf.Clamp01(f);
     }
 
     public void ShowGrappleMessage()
@@ -208,10 +229,10 @@ public class PlayerHUD : MonoBehaviour {
 
     public void ShowGrapplePoints(List<HookPoint> hookPoints)
     {
-        for(int i = 0; i < hookPoints.Count; i++)
+        for (int i = 0; i < hookPoints.Count; i++)
         {
             bool found = false;
-            for(int j = 0; j < hookPointHUDInfoList.Count && !found; j++)
+            for (int j = 0; j < hookPointHUDInfoList.Count && !found; j++)
             {
                 if (hookPointHUDInfoList[j].hookPointHUD.myHookPoint == hookPoints[i])
                 {
@@ -222,9 +243,9 @@ public class PlayerHUD : MonoBehaviour {
             {
                 //CREAR grapplePointHUD prefab
                 print("CREATE NEW hookPointHUDObject");
-                GameObject hookPointHUDObject = Instantiate(hookPointHUDPrefab, transform,false);
+                GameObject hookPointHUDObject = Instantiate(hookPointHUDPrefab, transform, false);
                 HookPointHUDInfo auxHookPointHUDInfo = new HookPointHUDInfo(hookPointHUDObject.GetComponent<HookPointHUD>());
-                auxHookPointHUDInfo.hookPointHUD.KonoAwake(hookPoints[i],myCamera,myCanvas);
+                auxHookPointHUDInfo.hookPointHUD.KonoAwake(hookPoints[i], myUICamera, myCanvas);
                 auxHookPointHUDInfo.showing = true;
                 hookPointHUDInfoList.Add(auxHookPointHUDInfo);
             }
@@ -233,7 +254,7 @@ public class PlayerHUD : MonoBehaviour {
 
     void UpdateGrapplePoints()
     {
-        for(int i = 0; i < hookPointHUDInfoList.Count; i++)
+        for (int i = 0; i < hookPointHUDInfoList.Count; i++)
         {
             if (hookPointHUDInfoList[i].showing)
             {
@@ -258,4 +279,4 @@ public class HookPointHUDInfo
         hookPointHUD = _hookPointHUD;
         showing = true;
     }
-} 
+}
