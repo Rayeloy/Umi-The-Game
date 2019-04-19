@@ -207,6 +207,11 @@ public class PlayerAnimation_01 : MonoBehaviour
             animator.SetBool(runHash, run);
         }
 
+
+
+
+
+
         if (startJump || (!myPlayerMovement.controller.collisions.below && myPlayerMovement.controller.collisions.lastBelow))
         {
             if (startJump)
@@ -230,7 +235,9 @@ public class PlayerAnimation_01 : MonoBehaviour
         }
 
         float timeToLand = myPlayerMovement.controller.collisions.distanceToFloor / Mathf.Abs(myPlayerMovement.currentVel.y);
+
         //Debug.LogWarning("vel.y = " + playerMovement.currentVel.y + "; below = " + playerMovement.controller.collisions.below + "; distance to floor = " + playerMovement.controller.collisions.distanceToFloor + "; timeToLand = " + timeToLand);
+
         if ((myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.controller.collisions.below && timeToLand <= maxTimeToLand)
             || (falling && myPlayerMovement.controller.collisions.below))
         {
