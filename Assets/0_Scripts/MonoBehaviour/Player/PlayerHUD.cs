@@ -47,6 +47,7 @@ public class PlayerHUD : MonoBehaviour
     Transform Wale;
 
     //Grapple
+    public Transform hookPointsParent;
     public GameObject hookPointHUDPrefab;
     public GameObject pressButtonToGrappleMessage;
     List<HookPointHUDInfo> hookPointHUDInfoList;
@@ -79,7 +80,7 @@ public class PlayerHUD : MonoBehaviour
         {
             UpdateFlagSlider();
         }
-        UpdateGrapplePoints();
+        UpdateAllHookPointHUDs();
     }
 
     public void AdaptCanvasHeightScale()
@@ -89,7 +90,7 @@ public class PlayerHUD : MonoBehaviour
         {
             float scaleValue = scale;
             float invScaleValue = 1 + (1 - scale);
-            contador.localScale = new Vector3(contador.localScale.x * scaleValue, contador.localScale.y,1);
+            contador.localScale = new Vector3(contador.localScale.x * scaleValue, contador.localScale.y, 1);
             powerUpPanel.localScale = new Vector3(powerUpPanel.localScale.x * scaleValue, powerUpPanel.localScale.y, 1);
             crosshair.rectTransform.localScale = new Vector3(crosshair.rectTransform.localScale.x * scaleValue, crosshair.rectTransform.localScale.y, 1);
             crosshairReduced.rectTransform.localScale = new Vector3(crosshairReduced.rectTransform.localScale.x * scaleValue, crosshairReduced.rectTransform.localScale.y, 1);
@@ -216,6 +217,8 @@ public class PlayerHUD : MonoBehaviour
         Boost.fillAmount = Mathf.Clamp01(f);
     }
 
+
+    // --- GRAPPLE//Hook Point ---
     public void ShowGrappleMessage()
     {
         //Debug.LogWarning("SHOW GRAPPLE MESSAGE");
@@ -227,32 +230,30 @@ public class PlayerHUD : MonoBehaviour
         pressButtonToGrappleMessage.SetActive(false);
     }
 
-    public void ShowGrapplePoints(List<HookPoint> hookPoints)
-    {
-        for (int i = 0; i < hookPoints.Count; i++)
-        {
-            bool found = false;
-            for (int j = 0; j < hookPointHUDInfoList.Count && !found; j++)
-            {
-                if (hookPointHUDInfoList[j].hookPointHUD.myHookPoint == hookPoints[i])
-                {
-                    found = true;
-                }
-            }
-            if (!found)
-            {
-                //CREAR grapplePointHUD prefab
-                print("CREATE NEW hookPointHUDObject");
-                GameObject hookPointHUDObject = Instantiate(hookPointHUDPrefab, transform, false);
-                HookPointHUDInfo auxHookPointHUDInfo = new HookPointHUDInfo(hookPointHUDObject.GetComponent<HookPointHUD>());
-                auxHookPointHUDInfo.hookPointHUD.KonoAwake(hookPoints[i], myUICamera, myCanvas);
-                auxHookPointHUDInfo.showing = true;
-                hookPointHUDInfoList.Add(auxHookPointHUDInfo);
-            }
-        }
-    }
+    //public void ShowGrapplePoints(List<HookPoint> hookPoints)
+    //{
+    //    for (int i = 0; i < hookPoints.Count; i++)
+    //    {
+    //        bool found = false;
+    //        for (int j = 0; j < hookPointHUDInfoList.Count && !found; j++)
+    //        {
+    //            if (hookPointHUDInfoList[j].hookPointHUD.myHookPoint == hookPoints[i])
+    //            {
+    //                found = true;
+    //                if ()
+    //                {
 
-    void UpdateGrapplePoints()
+    //                }
+    //            }
+    //        }
+    //        if (!found)
+    //        {
+    //            AddHookPointHUD(hookPoints[i]);
+    //        }
+    //    }
+    //}
+
+    void UpdateAllHookPointHUDs()
     {
         for (int i = 0; i < hookPointHUDInfoList.Count; i++)
         {
@@ -262,21 +263,113 @@ public class PlayerHUD : MonoBehaviour
             }
         }
     }
+
+    public void HideHookPointHUD(HookPoint hookPoint)
+    {
+        for (int i = 0; i < hookPointHUDInfoList.Count; i++)
+        {
+            if (hookPointHUDInfoList[i].hookPointHUD.myHookPoint == hookPoint)
+            {
+                if (hookPointHUDInfoList[i].showing)
+                {
+                    hookPointHUDInfoList[i].showing = false;
+                    if (hookPointHUDInfoList[i].chosenOne)
+                    {
+                        hookPointHUDInfoList[i].SwitchChosenOne();
+                    }
+                    hookPointHUDInfoList[i].hookPointHUD.gameObject.SetActive(false);
+                }
+            }
+        }
+    }
+
+    public void ShowHookPointHUD(HookPoint hookPoint)
+    {
+        bool found = false;
+        for(int i=0; i < hookPointHUDInfoList.Count && !found; i++)
+        {
+            if (hookPointHUDInfoList[i].hookPointHUD.myHookPoint == hookPoint)
+            {
+                if (!hookPointHUDInfoList[i].showing)
+                {
+                    hookPointHUDInfoList[i].showing = true;
+                    hookPointHUDInfoList[i].hookPointHUD.gameObject.SetActive(true);
+                    found = true;
+                }
+            }
+        }
+        if (!found)//Create new hookpointHUD
+        {
+            AddHookPointHUD(hookPoint);
+        }
+
+    }
+
+    void AddHookPointHUD(HookPoint hookPoint)
+    {
+        print("CREATE NEW hookPointHUDObject");
+        GameObject hookPointHUDObject = Instantiate(hookPointHUDPrefab, transform, false);
+        hookPointHUDObject.transform.SetParent(hookPointsParent, true);
+        HookPointHUDInfo auxHookPointHUDInfo = new HookPointHUDInfo(hookPointHUDObject.GetComponent<HookPointHUD>());
+        auxHookPointHUDInfo.hookPointHUD.KonoAwake(hookPoint, myUICamera, myCanvas);
+        auxHookPointHUDInfo.showing = true;
+        hookPointHUDInfoList.Add(auxHookPointHUDInfo);
+    }
+
+    public void SetChosenHookPointHUD(HookPoint hookPoint)
+    {
+        print("SetChosenHookPointHUD("+hookPoint.name+")");
+        for (int i = 0; i < hookPointHUDInfoList.Count; i++)
+        {
+            if (hookPointHUDInfoList[i].hookPointHUD.myHookPoint == hookPoint && !hookPointHUDInfoList[i].chosenOne)
+            {
+                hookPointHUDInfoList[i].SwitchChosenOne();
+            }
+            else
+            {
+                if (hookPointHUDInfoList[i].chosenOne)
+                {
+                    hookPointHUDInfoList[i].SwitchChosenOne();
+                }
+            }
+        }
+    }
 }
 public class HookPointHUDInfo
 {
     public HookPointHUD hookPointHUD;
     public bool showing = false;
+    public bool chosenOne = false;
+    Color green = new Color(0.46f, 1, 0, 0.75f);
+    Color gray = new Color(0.5f , 0.5f, 0.5f, 0.75f);
 
     public HookPointHUDInfo()
     {
         hookPointHUD = null;
         showing = false;
+        chosenOne = false;
+        hookPointHUD.GetComponent<Image>().color = gray;
     }
 
     public HookPointHUDInfo(HookPointHUD _hookPointHUD)
     {
         hookPointHUD = _hookPointHUD;
         showing = true;
+        chosenOne = false;
+        hookPointHUD.GetComponent<Image>().color = gray;
+    }
+
+    public void SwitchChosenOne()
+    {
+        if (chosenOne)
+        {
+            chosenOne = false;
+            hookPointHUD.GetComponent<Image>().color = gray;
+        }
+        else
+        {
+            chosenOne = true;
+            hookPointHUD.GetComponent<Image>().color = green;
+        }
     }
 }

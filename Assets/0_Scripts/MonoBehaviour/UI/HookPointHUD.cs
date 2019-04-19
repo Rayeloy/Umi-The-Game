@@ -33,17 +33,26 @@ public class HookPointHUD : MonoBehaviour
 
     public void KonoUpdate()
     {
-        pixelW = myCamera.pixelWidth;
-        pixelH = myCamera.pixelHeight;
-        Vector3 screenPos = myCamera.WorldToScreenPoint(myHookPointTrans.position);
-        Debug.Log("World pos = " + myHookPointTrans.position.ToString("F4") + "; screenPos = " + screenPos.ToString("F4"));
-        //transform.position = screenPos;
-        //float outOfScreenX = ((UICamera.rect.x+UICamera.rect.width)-1) * UICamera.pixelWidth;
-        //outOfScreenX = Mathf.Clamp(outOfScreenX, 0, float.MaxValue);
-        float offsetX = -((pixelW / 2) + (myCamera.rect.x * 2 * pixelW));
-        float offsetY = -((pixelH / 2) + (myCamera.rect.y * 2 * pixelH));
-        Debug.Log("UICamera.rect.x = " + myCamera.rect.x.ToString("F4") + "; UICamera.pixelWidth = " + myCamera.pixelWidth.ToString("F4"));
-        myRect.localPosition = new Vector3(screenPos.x + offsetX, screenPos.y + offsetY, 0);
+        if (myCanvas.renderMode == RenderMode.ScreenSpaceCamera)
+        {
+            pixelW = myCamera.pixelWidth;
+            pixelH = myCamera.pixelHeight;
+            Vector3 screenPos = myCamera.WorldToScreenPoint(myHookPointTrans.position);
+            //Debug.Log("World pos = " + myHookPointTrans.position.ToString("F4") + "; screenPos = " + screenPos.ToString("F4"));
+            //transform.position = screenPos;
+            //float outOfScreenX = ((UICamera.rect.x+UICamera.rect.width)-1) * UICamera.pixelWidth;
+            //outOfScreenX = Mathf.Clamp(outOfScreenX, 0, float.MaxValue);
+            float offsetX = -((pixelW / 2) + (myCamera.rect.x * 2 * pixelW));
+            float offsetY = -((pixelH / 2) + (myCamera.rect.y * 2 * pixelH));
+            //Debug.Log("UICamera.rect.x = " + myCamera.rect.x.ToString("F4") + "; UICamera.pixelWidth = " + myCamera.pixelWidth.ToString("F4"));
+            myRect.localPosition = new Vector3(screenPos.x + offsetX, screenPos.y + offsetY, 0);
+        }
+        else if(myCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+        {
+            Vector3 screenPos = myCamera.WorldToScreenPoint(myHookPointTrans.position);
+            transform.position = screenPos;
+        }
+
 
         //Vector3 vPPos = myCamera.WorldToViewportPoint(myHookPointTrans.position);
         //Vector3 screenPoint = RectTransformUtility.WorldToScreenPoint(myCamera, myHookPointTrans.position); //myCamera.WorldToScreenPoint(myHookPointTrans.position);
