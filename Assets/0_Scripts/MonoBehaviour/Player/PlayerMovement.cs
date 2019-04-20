@@ -15,14 +15,14 @@ public enum Team
 }
 public enum MoveState
 {
-    Moving,
-    NotMoving,//Not stunned, breaking
-    Knockback,//Stunned
-    MovingBreaking,//Moving but reducing speed by breakAcc till maxMovSpeed
-    Hooked,
-    Boost,
-    FixedJump,
-    NotBreaking
+    Moving=0,
+    NotMoving=1,//Not stunned, breaking
+    Knockback=2,//Stunned
+    MovingBreaking=3,//Moving but reducing speed by breakAcc till maxMovSpeed
+    Hooked=4,
+    Boost=5,
+    FixedJump=6,
+    NotBreaking=7
 }
 public enum JumpState
 {
@@ -72,7 +72,6 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
 
     //VARIABLES DE MOVIMIENTO
-    Vector3 objectiveVel;
     [HideInInspector]
     public float maxMoveSpeed = 10;
     float maxMoveSpeed2; // is the max speed from which we aply the joystick sensitivity value
@@ -307,6 +306,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         myPlayerHUD.KonoAwake();
         myPlayerCombat.KonoAwake();
         myPlayerAnimation.KonoAwake();
+        myPlayerAnimation_01.KonoAwake();
         myPlayerHook.KonoAwake();
         myPlayerWeap.KonoAwake();
         myPlayerBody.KonoAwake();
@@ -478,8 +478,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     #region MOVEMENT -----------------------------------------------
     public void SetVelocity(Vector3 vel)
     {
-        objectiveVel = vel;
-        currentVel = objectiveVel;
+        currentVel = vel;
+        currentSpeed = currentVel.magnitude;
     }
 
     public void CalculateMoveDir()
@@ -601,18 +601,17 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         {
             switch (moveSt)
             {
-                case MoveState.Moving:
+                case MoveState.Moving: //MOVING WITH JOYSTICK
                     currentVel = currentVel + currentMovDir * finalMovingAcc;
                     horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
                     if (horizontalVel.magnitude > currentMaxMoveSpeed)
                     {
                         horizontalVel = horizontalVel.normalized * currentMaxMoveSpeed;
-                        currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
-                        currentSpeed = currentMaxMoveSpeed;
+                        SetVelocity(new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z));
                     }
                     //print("Speed = " + currentSpeed+"; currentMaxMoveSpeed = "+currentMaxMoveSpeed);
                     break;
-                case MoveState.NotMoving:
+                case MoveState.NotMoving: //NOT MOVING JOYSTICK
                     Vector3 aux = currentVel.normalized * currentSpeed;
                     currentVel = new Vector3(aux.x, currentVel.y, aux.z);
                     break;
@@ -623,11 +622,10 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                     }
                     else//BOOST NORMAL
                     {
-                        currentVel = boostDir * finalMovingAcc;
-                        horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                        //boostDir: dirección normalizada en la que quieres hacer el boost
+                        horizontalVel = new Vector3(boostDir.x, 0, boostDir.z);
                         horizontalVel = horizontalVel.normalized * boostSpeed;
-                        currentVel = new Vector3(horizontalVel.x, 0, horizontalVel.z);
-                        currentSpeed = boostSpeed;
+                        SetVelocity(new Vector3(horizontalVel.x, 0, horizontalVel.z));
                     }
                     break;
                 case MoveState.Knockback:
@@ -745,6 +743,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) ||
                 (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
+                //PARA ORTU: PlayerAnimation_01.startJump = true;
                 result = true;
                 currentVel.y = jumpVelocity;
                 jumpSt = JumpState.Jumping;
@@ -812,6 +811,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             if (wall.GetComponent<StageScript>() == null || wall.GetComponent<StageScript>().wallJumpable)
             {
                 print("Wall jump");
+                //PARA ORTU: PlayerAnimation_01.startJump = true;
                 jumpSt = JumpState.wallJumping;
                 result = true;
                 //wallJumped = true;
@@ -943,6 +943,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         if (!noInput && boostReady && !haveFlag && !inWater)
         {
             boostReady = false;
+            //PARA ORTU: Variable para empezar boost
+
             moveSt = MoveState.Boost;
             boostTime = 0f;
             if (currentInputDir != Vector3.zero)//Usando el joystick o dirección
@@ -981,6 +983,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     void StopBoost()
     {
         boostTime = boostDuration;
+        //PARA ORTU: Variable para terminar boost
     }
     #endregion
 
@@ -1228,7 +1231,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         {
             noInput = false;
             hooked = false;
-            SetVelocity(currentVel / 3);
+            SetVelocity(currentVel / 2);
         }
     }
 
