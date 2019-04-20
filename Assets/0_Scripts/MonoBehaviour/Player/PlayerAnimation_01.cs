@@ -20,13 +20,13 @@ public class PlayerAnimation_01 : MonoBehaviour
     int pointScoreHash = Animator.StringToHash("PointScore");
     bool pointScore;
 
-    int groundHash = Animator.StringToHash("Ground");
+    int groundHash = Animator.StringToHash("Ground"); //Done
     bool ground;
 
     int walkHash = Animator.StringToHash("Walk");
     bool walk;
 
-    int runHash = Animator.StringToHash("Run");
+    int runHash = Animator.StringToHash("Run"); //Done
     bool run;
 
     int rollHash = Animator.StringToHash("Roll");
@@ -35,35 +35,35 @@ public class PlayerAnimation_01 : MonoBehaviour
     int airHash = Animator.StringToHash("Air");
     bool air;
 
-    int fallingHash = Animator.StringToHash("Falling");
+    int fallingHash = Animator.StringToHash("Falling"); //Done
     bool falling;
 
-    int startJumpHash = Animator.StringToHash("StartJump");
+    int startJumpHash = Animator.StringToHash("StartJump"); //Done
     bool startJump;
 
-    int toGroundHash = Animator.StringToHash("ToGround");
+    int toGroundHash = Animator.StringToHash("ToGround"); //Done
     bool toGround;
 
-    int toWaterHash = Animator.StringToHash("ToWater");
-    bool toWater;
+    //int toWaterHash = Animator.StringToHash("ToWater");
+    //bool toWater;
 
-    int waterHash = Animator.StringToHash("Water");
+    int waterHash = Animator.StringToHash("Water"); //Done
     bool water = false;
     [HideInInspector]
     public bool enterWater = false;
     [HideInInspector]
     public bool exitWater = false;
 
-    int idleWHash = Animator.StringToHash("IdleW");
+    int idleWHash = Animator.StringToHash("IdleW"); //Done
     bool idleW;
 
-    int swimmingHash = Animator.StringToHash("Swimming");
+    int swimmingHash = Animator.StringToHash("Swimming"); //Done
     bool swimming;
 
     int noControlHash = Animator.StringToHash("NoControl");
     bool noControl;
 
-    int dashHash = Animator.StringToHash("Dash");
+    int dashHash = Animator.StringToHash("Dash"); //Done
     bool dash;
 
     int hookedHash = Animator.StringToHash("Hooked");
@@ -154,15 +154,15 @@ public class PlayerAnimation_01 : MonoBehaviour
 
 
 
-        animator.SetBool("OnGround", myPlayerMovement.controller.collisions.below);
+        animator.SetBool("Ground", myPlayerMovement.controller.collisions.below);
 
 
 
-        if (myPlayerMovement.wallJumpAnim)
-        {
-            animator.SetTrigger("WallJump");
-            myPlayerMovement.wallJumpAnim = false;
-        }
+        ////if (myPlayerMovement.wallJumpAnim)
+        ////{
+        ////    animator.SetTrigger("WallJump");
+        ////    myPlayerMovement.wallJumpAnim = false;
+        ////}
 
         ResetVariables();
         ProcessVariableValues();
@@ -212,7 +212,7 @@ public class PlayerAnimation_01 : MonoBehaviour
         if (enterWater)
         {
             //TO DO:
-
+            water = true;
 
             enterWater = false;
         }
@@ -221,6 +221,7 @@ public class PlayerAnimation_01 : MonoBehaviour
         {
             //TO DO:
 
+            water = false;
 
             exitWater = false;
         }
@@ -232,8 +233,10 @@ public class PlayerAnimation_01 : MonoBehaviour
             animator.SetBool(runHash, run);
         }
 
-        if (startJump || (!myPlayerMovement.controller.collisions.below && myPlayerMovement.controller.collisions.lastBelow))
+        if (startJump || (!myPlayerMovement.controller.collisions.below && myPlayerMovement.controller.collisions.lastBelow)) //Si ya ha empezado el salto ó No hay colisoines abajo y además en el frame anterior si que habían
         {
+            //All variables to false in order to secure the state
+
             if (startJump)
             {
                 startJump = false;
@@ -249,8 +252,13 @@ public class PlayerAnimation_01 : MonoBehaviour
                 ground = false;
                 animator.SetBool(groundHash, ground);
             }
+            if (noControl)
+            {
+                noControl = false;
+                animator.SetBool(noControlHash, noControl);
+            }
 
-            falling = true;
+            falling = true; //Desde este estado se puede pasar a Ground, Water o No control
             animator.SetBool(fallingHash, falling);
         }
 
@@ -263,12 +271,13 @@ public class PlayerAnimation_01 : MonoBehaviour
         {
             if (falling)
             {
-                falling = false;
+                falling = false; //Because it is about to touch the ground
                 animator.SetBool(fallingHash, falling);
             }
             //print("SET TRIGGER LAND ");
-            ground = true;
-            animator.SetBool(groundHash, ground);
+            //Se activa la animación de empezar a tocar el suelo, desde ésta se puede ir a cualquier otro estado.
+            toGround = true;
+            animator.SetBool(toGroundHash, toGround);
         }
 
         if (myPlayerMovement.inWater && myPlayerMovement.currentSpeed > 0)
@@ -288,8 +297,8 @@ public class PlayerAnimation_01 : MonoBehaviour
                 swimming = false;
                 animator.SetBool(swimmingHash, swimming);
             }
-            swimming = true;
-            animator.SetBool(swimmingHash, swimming);
+            idleW = true;
+            animator.SetBool(idleWHash, idleW);
         }
         //////COMBAT ANIMATIONS
         ////if (!basicSwingValue && myPlayerCombat.attackStg == AttackStage.startup)

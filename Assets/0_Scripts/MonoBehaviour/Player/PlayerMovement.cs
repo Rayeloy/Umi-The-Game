@@ -945,6 +945,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             boostReady = false;
             //PARA ORTU: Variable para empezar boost
 
+            //PlayerAnimation_01.dash = true;
+
             moveSt = MoveState.Boost;
             boostTime = 0f;
             if (currentInputDir != Vector3.zero)//Usando el joystick o dirección
@@ -984,6 +986,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         boostTime = boostDuration;
         //PARA ORTU: Variable para terminar boost
+
+        //PlayerAnimation_01.dash = false;
     }
     #endregion
 
