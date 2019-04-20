@@ -49,6 +49,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     public PlayerWeapons myPlayerWeap;
     public PlayerPickups myPlayerPickups;
     public PlayerAnimation myPlayerAnimation;
+    public PlayerAnimation_01 myPlayerAnimation_01;
     public PlayerHook myPlayerHook;
     public Controller3D controller;
     public PlayerBody myPlayerBody;
@@ -1304,6 +1305,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         if (!inWater)
         {
+            myPlayerAnimation_01.enterWater = true;
             inWater = true;
             jumpedOutOfWater = false;
             maxTimePressingJump = 0f;
@@ -1337,6 +1339,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         if (inWater)
         {
+            myPlayerAnimation_01.exitWater = true;
             inWater = false;
             myPlayerWeap.AttatchWeapon();
         }

@@ -48,7 +48,11 @@ public class PlayerAnimation_01 : MonoBehaviour
     bool toWater;
 
     int waterHash = Animator.StringToHash("Water");
-    bool water;
+    bool water = false;
+    [HideInInspector]
+    public bool enterWater = false;
+    [HideInInspector]
+    public bool exitWater = false;
 
     int idleWHash = Animator.StringToHash("IdleW");
     bool idleW;
@@ -84,8 +88,14 @@ public class PlayerAnimation_01 : MonoBehaviour
     bool hammer;
 
 
-
-    //To be added all the combat bools
+    private void Update()
+    {
+        if (myPlayerMovement.inWater && !water)
+        {
+            water = true;
+        }
+    }
+    //All the combat bools to be added
 
 
 
@@ -199,6 +209,21 @@ public class PlayerAnimation_01 : MonoBehaviour
     {
         stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
+        if (enterWater)
+        {
+            //TO DO:
+
+
+            enterWater = false;
+        }
+
+        if (exitWater)
+        {
+            //TO DO:
+
+
+            exitWater = false;
+        }
 
 
         if (myPlayerMovement.currentSpeed != 0 && myPlayerMovement.controller.collisions.below)
@@ -206,11 +231,6 @@ public class PlayerAnimation_01 : MonoBehaviour
             run = true;
             animator.SetBool(runHash, run);
         }
-
-
-
-
-
 
         if (startJump || (!myPlayerMovement.controller.collisions.below && myPlayerMovement.controller.collisions.lastBelow))
         {
