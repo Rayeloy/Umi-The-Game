@@ -13,8 +13,7 @@ public class PlayerAnimation_01 : MonoBehaviour
     AnimatorStateInfo stateInfo;
 
 
-
-    int idleHash = Animator.StringToHash("Idle_01");
+    int idleHash = Animator.StringToHash("Idle_1"); //Done
     bool idle_01;
 
     int pointScoreHash = Animator.StringToHash("PointScore");
@@ -23,8 +22,8 @@ public class PlayerAnimation_01 : MonoBehaviour
     int groundHash = Animator.StringToHash("Ground"); //Done
     bool ground;
 
-    int walkHash = Animator.StringToHash("Walk");
-    bool walk;
+    //int walkHash = Animator.StringToHash("Walk");
+    //bool walk;
 
     int runHash = Animator.StringToHash("Run"); //Done
     bool run;
@@ -32,7 +31,7 @@ public class PlayerAnimation_01 : MonoBehaviour
     int rollHash = Animator.StringToHash("Roll");
     bool roll;
 
-    int airHash = Animator.StringToHash("Air");
+    int airHash = Animator.StringToHash("Air"); //Done
     bool air;
 
     int fallingHash = Animator.StringToHash("Falling"); //Done
@@ -72,8 +71,8 @@ public class PlayerAnimation_01 : MonoBehaviour
     int frontHitHash = Animator.StringToHash("FrontHit");
     bool frontHit;
 
-    int backHitHash = Animator.StringToHash("BackHit");
-    bool backHit;
+    //int backHitHash = Animator.StringToHash("BackHit");
+    //bool backHit;
 
     int bounceHash = Animator.StringToHash("Bounce");
     bool bounce;
@@ -87,14 +86,6 @@ public class PlayerAnimation_01 : MonoBehaviour
     int hammerHash = Animator.StringToHash("Hammer");
     bool hammer;
 
-
-    private void Update()
-    {
-        if (myPlayerMovement.inWater && !water)
-        {
-            water = true;
-        }
-    }
     //All the combat bools to be added
 
 
@@ -149,14 +140,16 @@ public class PlayerAnimation_01 : MonoBehaviour
             }
         }
 
-        animator.SetFloat("HorizontalSpeed", myPlayerMovement.currentSpeed);//new Vector2 (playerMovement.currentVel.x, playerMovement.currentVel.z).magnitude);
-        animator.SetFloat("VerticalSpeed", myPlayerMovement.currentVel.y);
+        //animator.SetFloat("HorizontalSpeed", myPlayerMovement.currentSpeed);//new Vector2 (playerMovement.currentVel.x, playerMovement.currentVel.z).magnitude);
+        //animator.SetFloat("VerticalSpeed", myPlayerMovement.currentVel.y);
 
 
 
         animator.SetBool("Ground", myPlayerMovement.controller.collisions.below);
+        animator.SetBool("ToGround", !myPlayerMovement.controller.collisions.below);
+        animator.SetBool("Air", !myPlayerMovement.controller.collisions.below);
 
-
+        animator.SetBool("StartJump", startJump);
 
         ////if (myPlayerMovement.wallJumpAnim)
         ////{
@@ -187,6 +180,11 @@ public class PlayerAnimation_01 : MonoBehaviour
             swimming = false;
             animator.SetBool(swimmingHash, swimming);
         }
+        if (idle_01 && myPlayerMovement.currentSpeed > 0)
+        {
+            idle_01 = false;
+            animator.SetBool(idleHash, idle_01);
+        }
         if (idleW && !myPlayerMovement.inWater)
         {
             idleW = false;
@@ -214,6 +212,8 @@ public class PlayerAnimation_01 : MonoBehaviour
             //TO DO:
             water = true;
 
+            //Activate particle system
+
             enterWater = false;
         }
 
@@ -222,10 +222,17 @@ public class PlayerAnimation_01 : MonoBehaviour
             //TO DO:
 
             water = false;
+            
+            //Activate particle system
 
             exitWater = false;
         }
 
+        if (myPlayerMovement.controller.collisions.below && myPlayerMovement.currentSpeed == 0)
+        {
+            idle_01 = true;
+            animator.SetBool(idleHash, idle_01);
+        }
 
         if (myPlayerMovement.currentSpeed != 0 && myPlayerMovement.controller.collisions.below)
         {
@@ -237,11 +244,11 @@ public class PlayerAnimation_01 : MonoBehaviour
         {
             //All variables to false in order to secure the state
 
-            if (startJump)
-            {
-                startJump = false;
-                animator.SetBool(startJumpHash, startJump);
-            }
+            //if (startJump)
+            //{
+            //    startJump = false;
+            //    animator.SetBool(startJumpHash, startJump);
+            //}
             if (swimming)
             {
                 swimming = false;
@@ -258,8 +265,6 @@ public class PlayerAnimation_01 : MonoBehaviour
                 animator.SetBool(noControlHash, noControl);
             }
 
-            falling = true; //Desde este estado se puede pasar a Ground, Water o No control
-            animator.SetBool(fallingHash, falling);
         }
 
         float timeToLand = myPlayerMovement.controller.collisions.distanceToFloor / Mathf.Abs(myPlayerMovement.currentVel.y);
@@ -271,6 +276,11 @@ public class PlayerAnimation_01 : MonoBehaviour
         {
             if (falling)
             {
+
+                //falling = true; //Desde este estado se puede pasar a Ground, Water o No control
+                //animator.SetBool(fallingHash, falling);
+
+                air = true;
                 falling = false; //Because it is about to touch the ground
                 animator.SetBool(fallingHash, falling);
             }
@@ -278,6 +288,7 @@ public class PlayerAnimation_01 : MonoBehaviour
             //Se activa la animación de empezar a tocar el suelo, desde ésta se puede ir a cualquier otro estado.
             toGround = true;
             animator.SetBool(toGroundHash, toGround);
+  
         }
 
         if (myPlayerMovement.inWater && myPlayerMovement.currentSpeed > 0)
@@ -310,7 +321,18 @@ public class PlayerAnimation_01 : MonoBehaviour
 
     public void SetJump(bool _jump)
     {
+        Debug.Log("pene");
+        Debug.Log(_jump);
+
         startJump = _jump;
+
+        Debug.Log(startJump);
+
         animator.SetBool(startJumpHash, startJump);
+
+        Debug.Log(startJump);
     }
+    //int startJumpHash = Animator.StringToHash("StartJump"); //Done
+    //bool startJump;
+
 }

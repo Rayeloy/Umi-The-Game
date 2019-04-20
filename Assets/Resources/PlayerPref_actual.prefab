@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 2847374190979902391}
   - component: {fileID: 2769956456207346307}
   - component: {fileID: 2741506816888055387}
+  - component: {fileID: 6540143348302519117}
   m_Layer: 10
   m_Name: Body
   m_TagString: Player
@@ -152,6 +153,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myPlayerMov: {fileID: 2740017724817165817}
+--- !u!95 &6540143348302519117
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852869321791633031}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: cf922255f00771345858be6e5aec22b4, type: 3}
+  m_Controller: {fileID: 9100000, guid: 7c1962560c6d3614c9736226e0261a75, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &2852978573330665781
 GameObject:
   m_ObjectHideFlags: 0
@@ -475,10 +495,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a0627521cbbb17429dc3dd05bc10f4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
+  animator: {fileID: 6540143348302519117}
   enterWater: 0
   exitWater: 0
-  maxTimeToLand: 1
+  maxTimeToLand: 0.3
 --- !u!1 &4490985865824122605
 GameObject:
   m_ObjectHideFlags: 0
@@ -595,6 +615,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ModeloCorrecto_umiboy
+      objectReference: {fileID: 0}
+    - target: {fileID: 2266972678162777980, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2175703407794122806, guid: 7fe8d16465f14ca4cb1a013784d61b03,
         type: 3}
