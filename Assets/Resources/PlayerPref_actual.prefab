@@ -170,6 +170,7 @@ GameObject:
   - component: {fileID: 2740053844141714977}
   - component: {fileID: 2739443829118614599}
   - component: {fileID: 2739915846295203843}
+  - component: {fileID: 7710956411820504780}
   m_Layer: 10
   m_Name: PlayerPref_actual
   m_TagString: Player
@@ -240,6 +241,7 @@ MonoBehaviour:
   myPlayerWeap: {fileID: 2740053844141714977}
   myPlayerPickups: {fileID: 2739443829118614599}
   myPlayerAnimation: {fileID: 2740049171833000137}
+  myPlayerAnimation_01: {fileID: 7710956411820504780}
   myPlayerHook: {fileID: 2739915846295203843}
   controller: {fileID: 2739408064946032661}
   myPlayerBody: {fileID: 2741506816888055387}
@@ -454,12 +456,29 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 22016
+  grappleSt: 0
   grappleColMask:
     serializedVersion: 2
     m_Bits: 512
   minDistanceToGrapple: 25
   hookPointMinDistToCameraCenter: 450
   grappleMaxCDTime: 0.3
+--- !u!114 &7710956411820504780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852978573330665781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a0627521cbbb17429dc3dd05bc10f4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 0}
+  enterWater: 0
+  exitWater: 0
+  maxTimeToLand: 1
 --- !u!1 &4490985865824122605
 GameObject:
   m_ObjectHideFlags: 0
