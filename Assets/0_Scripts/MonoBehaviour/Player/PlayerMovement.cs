@@ -15,14 +15,14 @@ public enum Team
 }
 public enum MoveState
 {
-    Moving=0,
-    NotMoving=1,//Not stunned, breaking
-    Knockback=2,//Stunned
-    MovingBreaking=3,//Moving but reducing speed by breakAcc till maxMovSpeed
-    Hooked=4,
-    Boost=5,
-    FixedJump=6,
-    NotBreaking=7
+    Moving = 0,
+    NotMoving = 1,//Not stunned, breaking
+    Knockback = 2,//Stunned
+    MovingBreaking = 3,//Moving but reducing speed by breakAcc till maxMovSpeed
+    Hooked = 4,
+    Boost = 5,
+    FixedJump = 6,
+    NotBreaking = 7
 }
 public enum JumpState
 {
@@ -859,7 +859,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                 for (int j = 0; j < columns && !success; j++)
                 {
                     Vector3 rayOrigin = rowOrigin + paralelToWall * rowsSpacing * j;
-                    Debug.Log("WallJump: Ray[" + i + "," + j + "] with origin = " + rayOrigin.ToString("F4")+"; rayLength ="+rayLength);
+                    Debug.Log("WallJump: Ray[" + i + "," + j + "] with origin = " + rayOrigin.ToString("F4") + "; rayLength =" + rayLength);
                     Debug.DrawRay(rayOrigin, dir * rayLength, Color.blue, 3);
 
                     if (Physics.Raycast(rayOrigin, dir, out hit, rayLength, auxLM, QueryTriggerInteraction.Ignore))
@@ -871,12 +871,12 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                         }
                         else
                         {
-                            Debug.Log("WallJump: this wall ("+hit.transform.gameObject+")is not the same wall that I started walljumping from (" + lastWall + ").");
+                            Debug.Log("WallJump: this wall (" + hit.transform.gameObject + ")is not the same wall that I started walljumping from (" + lastWall + ").");
                         }
                     }
                     else
                     {
-                        Debug.Log("WallJump: no hit on ray ["+i+","+j+"] when checking for wall!");
+                        Debug.Log("WallJump: no hit on ray [" + i + "," + j + "] when checking for wall!");
                     }
                 }
 
@@ -1121,6 +1121,9 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     public void StartRecieveHit(Vector3 _knockback, PlayerMovement attacker, float _maxTimeStun)
     {
         print("Recieve hit");
+        myPlayerHook.FinishAutoGrapple();
+        myPlayerHook.StopHook();
+
         maxTimeStun = _maxTimeStun;
         timeStun = 0;
         noInput = true;
@@ -1215,6 +1218,10 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             if (jumpSt == JumpState.wallJumping)
             {
                 StopWallJump();
+            }
+            if (moveSt == MoveState.Boost)
+            {
+                StopBoost();
             }
             //To Do:
             //Stop attacking

@@ -57,7 +57,7 @@ public class HitboxHookBig : MonoBehaviour
                         break;
                 }
             }
-            else if (myHook.grappleSt == PlayerHook.GrappleState.throwing)
+            else if (myHook.grappleSt == GrappleState.throwing)
             {
                 CollideWithHookPoint(col);
             }

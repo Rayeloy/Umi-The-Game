@@ -13,6 +13,8 @@ public class PlayerHUD : MonoBehaviour
     [HideInInspector]
     public GameControllerBase gC;
     [HideInInspector]
+    public PlayerMovement myPlayerMov;
+    [HideInInspector]
     public Camera myCamera;
     [HideInInspector]
     public Camera myUICamera;
@@ -49,7 +51,10 @@ public class PlayerHUD : MonoBehaviour
     //Grapple
     public Transform hookPointsParent;
     public GameObject hookPointHUDPrefab;
+    public GameObject cameraCenterPrefab;
     public GameObject pressButtonToGrappleMessage;
+    [HideInInspector]
+    public Vector2 cameraCenterPix;
     List<HookPointHUDInfo> hookPointHUDInfoList;
 
     public void KonoAwake()
@@ -72,6 +77,7 @@ public class PlayerHUD : MonoBehaviour
             SetupFlagSlider();
         }
         pressButtonToGrappleMessage.SetActive(false);
+        SetUpCameraCenter();
     }
 
     private void Update()
@@ -98,6 +104,16 @@ public class PlayerHUD : MonoBehaviour
             blueTeamScoreText.rectTransform.localScale = new Vector3(blueTeamScoreText.rectTransform.localScale.x * invScaleValue, blueTeamScoreText.rectTransform.localScale.y, 1);
             timeText.rectTransform.localScale = new Vector3(timeText.rectTransform.localScale.x, timeText.rectTransform.localScale.y * scaleValue, 1);
         }
+    }
+
+    public void SetUpCameraCenter()
+    {
+        cameraCenterPix = new Vector2(myCamera.pixelWidth / 2, myCamera.pixelHeight / 2);
+        cameraCenterPix += new Vector2(myCamera.pixelWidth / myCamera.rect.width * myCamera.rect.x, myCamera.pixelHeight / myCamera.rect.height * myCamera.rect.y);
+        Debug.Log("I'm player " + myPlayerMov.name +" and my center in the camera is  = " + cameraCenterPix.ToString("F4"));
+        cameraCenterPrefab.GetComponent<RectTransform>().anchoredPosition = cameraCenterPix;
+        Debug.Log("cameraCenterPrefab.rectTransform.localPosition = " + cameraCenterPrefab.GetComponent<RectTransform>().localPosition);
+        //cameraCenterPrefab.GetComponent<RectTransform>().position = cameraCenterPix;
     }
 
     public void SetPickupWeaponTextMessage(WeaponData _weap)
