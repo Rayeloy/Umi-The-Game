@@ -42,6 +42,8 @@ public class PlayerAnimation_01 : MonoBehaviour
 
     int toGroundHash = Animator.StringToHash("ToGround"); //Done
     bool toGround;
+    float maxToGroundTime=0.2f;
+    float toGroundTime = 0;
 
     //int toWaterHash = Animator.StringToHash("ToWater");
     //bool toWater;
@@ -127,7 +129,10 @@ public class PlayerAnimation_01 : MonoBehaviour
 
     public void KonoUpdate()
     {
-
+        if (toGround)
+        {
+            toGroundTime += Time.deltaTime;
+        }
         if (myPlayerMovement.gC.gameMode == GameMode.CaptureTheFlag)
         {
             if ((myPlayerMovement.gC as GameController_FlagMode).myScoreManager.End)
@@ -174,6 +179,11 @@ public class PlayerAnimation_01 : MonoBehaviour
         //    ground = false;
         //    animator.SetBool(groundHash, ground);
         //}
+        if (toGround && startJump)
+        {
+            toGround = false;
+            animator.SetBool(toGroundHash, toGround);
+        }
         if (ground)
         {
             if (!myPlayerMovement.controller.collisions.below)
@@ -181,7 +191,7 @@ public class PlayerAnimation_01 : MonoBehaviour
                 ground = false;
                 animator.SetBool(groundHash, ground);
             }
-            if (toGround)
+            if (toGround && toGroundTime >= maxToGroundTime)
             {
                 toGround = false;
                 animator.SetBool(toGroundHash, toGround);
@@ -273,6 +283,11 @@ public class PlayerAnimation_01 : MonoBehaviour
                 falling = true;
                 animator.SetBool(fallingHash, falling);
             }
+            if (startJump)
+            {
+                startJump = false;
+                animator.SetBool(startJumpHash,startJump);
+            }
 
             //if (swimming)
             //{
@@ -298,8 +313,9 @@ public class PlayerAnimation_01 : MonoBehaviour
 
             startJump = false;
             animator.SetBool(startJumpHash, startJump);
+            toGroundTime = 0;
             toGround = true; 
-            animator.SetBool(fallingHash, toGround);
+            animator.SetBool(toGroundHash, toGround);
             
 
         }
