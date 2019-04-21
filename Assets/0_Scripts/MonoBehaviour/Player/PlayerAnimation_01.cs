@@ -200,7 +200,12 @@ public class PlayerAnimation_01 : MonoBehaviour
             {
                 falling = false;
                 animator.SetBool(fallingHash, falling);
-            }                    
+            }            
+            if (water)
+            {
+                ground = false;
+                animator.SetBool(groundHash, ground);
+            }
         }
         if (swimming && !myPlayerMovement.inWater)
         {
