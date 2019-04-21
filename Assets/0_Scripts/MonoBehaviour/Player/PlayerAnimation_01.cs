@@ -209,11 +209,11 @@ public class PlayerAnimation_01 : MonoBehaviour
                 falling = false;
                 animator.SetBool(fallingHash, falling);
             }            
-            if (water)
-            {
-                ground = false;
-                animator.SetBool(groundHash, ground);
-            }
+            //if (water)
+            //{
+            //    ground = false;
+            //    animator.SetBool(groundHash, ground);
+            //}
         }
         if (swimming && !myPlayerMovement.inWater)
         {
@@ -249,10 +249,11 @@ public class PlayerAnimation_01 : MonoBehaviour
     {
         stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
-        if (myPlayerMovement.controller.collisions.below && !ground)
+        if (myPlayerMovement.controller.collisions.below && !ground && !myPlayerMovement.inWater)
         {
             ground = true;
             animator.SetBool(groundHash, ground);
+
         }
 
         if (enterWater)
