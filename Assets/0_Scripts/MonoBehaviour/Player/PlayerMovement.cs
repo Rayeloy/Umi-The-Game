@@ -1242,6 +1242,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     public void StopHooked()
     {
+        print("STOP HOOKED");
         if (hooked)
         {
             noInput = false;

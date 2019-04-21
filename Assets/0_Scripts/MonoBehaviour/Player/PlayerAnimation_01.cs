@@ -294,8 +294,6 @@ public class PlayerAnimation_01 : MonoBehaviour
             //Debug.Log("vel.y = " + myPlayerMovement.currentVel.y + "; below = " + myPlayerMovement.controller.collisions.below 
             //+ "; timeToLand = " + timeToLand + "; falling = " + falling + "; below = " + myPlayerMovement.controller.collisions.below);
 
-            Debug.Log(timeToLand);
-
             startJump = false;
             animator.SetBool(startJumpHash, startJump);
             toGround = true; 

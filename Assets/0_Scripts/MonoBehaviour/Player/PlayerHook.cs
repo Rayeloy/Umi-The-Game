@@ -382,15 +382,17 @@ public class PlayerHook : MonoBehaviour
 
     public void StopHook()
     {
-        //print("STOP HOOK");
+        print("STOP HOOK");
         if (usingHook)
         {
             StartReeling();
+            print("USING HOOK");
             if (somethingHooked)
             {
+                print("SOMETHING HOOKED");
                 if (enemyHooked)
                 {
-                    //print("DROP ENEMY FROM HOOK");
+                    print("DROP ENEMY FROM HOOK");
                     enemyHooked = false;
                     enemy.StopHooked();
                     enemy = null;
@@ -419,7 +421,7 @@ public class PlayerHook : MonoBehaviour
         switch (hookSt)
         {
             case HookState.reeling:
-                hookSt = HookState.cd;
+
                 myPlayerMov.StopHooking();
                 HandinObject();
                 StopHook();
@@ -430,6 +432,7 @@ public class PlayerHook : MonoBehaviour
                 {
                     myPlayerHUD.StopThrowHook();
                 }
+                hookSt = HookState.cd;
                 break;
             case HookState.grappling:
                 FinishHookGrappling();
@@ -655,6 +658,7 @@ public class PlayerHook : MonoBehaviour
                     Vector2 hookScreenPos = myCamera.WorldToScreenPoint(hookPoints[i].transform.position);
                     Vector3 distToCameraCenter = (hookScreenPos - myPlayerHUD.cameraCenterPix);
                     float screenScale = (float)myPlayerMov.myUICamera.pixelHeight / (float)myPlayerMov.myUICamera.pixelWidth;
+                    print("UpdateHookPoints: " + hookPoints[i].name+ " hookScreenPos = " + hookScreenPos);
                     //print("MY UI CAMERA = " + myPlayerMov.myUICamera.name + "; pixel width and height = (" + myPlayerMov.myUICamera.pixelWidth + "," + myPlayerMov.myUICamera.pixelHeight + ") ; my screenScale = "+screenScale);
                     //Debug.DrawLine(hookScreenPos, cameraCenterPix,Color.green);
                     //print("UpdateHookPoints: hookPoint is at " + distToCameraCenter.ToString("F4") + " pixels of distance to the center of the screen; min height is = "+ (hookPointMinDistToCameraCenter * screenScale));
