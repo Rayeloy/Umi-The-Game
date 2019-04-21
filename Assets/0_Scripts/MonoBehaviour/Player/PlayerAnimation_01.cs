@@ -208,12 +208,14 @@ public class PlayerAnimation_01 : MonoBehaviour
             {
                 falling = false;
                 animator.SetBool(fallingHash, falling);
-            }            
-            //if (water)
-            //{
-            //    ground = false;
-            //    animator.SetBool(groundHash, ground);
-            //}
+            }
+        
+            
+        }
+        if (water)
+        {
+            if (toGround) { toGround = false; animator.SetBool(toGroundHash, toGround); }
+            if (falling) { falling = false; animator.SetBool(fallingHash, falling); }
         }
         if (swimming && !myPlayerMovement.inWater)
         {
@@ -277,7 +279,7 @@ public class PlayerAnimation_01 : MonoBehaviour
             exitWater = false;
         }
 
-        if (myPlayerMovement.controller.collisions.below && myPlayerMovement.currentSpeed == 0)
+        if (myPlayerMovement.controller.collisions.below && myPlayerMovement.currentSpeed == 0 && !myPlayerMovement.inWater)
         {
             idle_01 = true;
             animator.SetBool(idleHash, idle_01);
@@ -301,6 +303,11 @@ public class PlayerAnimation_01 : MonoBehaviour
             {
                 startJump = false;
                 animator.SetBool(startJumpHash,startJump);
+            }
+            if (water)
+            {
+                falling = false;
+                animator.SetBool(fallingHash, falling);
             }
 
             //if (swimming)
@@ -337,11 +344,7 @@ public class PlayerAnimation_01 : MonoBehaviour
 
             if (myPlayerMovement.inWater && myPlayerMovement.currentSpeed > 0)
         {
-            if (swimming)
-            {
-                swimming = false;
-                animator.SetBool(swimmingHash, swimming);
-            }
+
             swimming = true;
             animator.SetBool(swimmingHash, swimming);
         }
