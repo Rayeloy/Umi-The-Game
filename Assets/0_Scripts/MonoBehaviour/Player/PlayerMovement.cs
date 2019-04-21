@@ -305,7 +305,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         myPlayerHUD.KonoAwake();
         myPlayerCombat.KonoAwake();
-        myPlayerAnimation.KonoAwake();
+        //myPlayerAnimation.KonoAwake();
         myPlayerAnimation_01.KonoAwake();
         myPlayerHook.KonoAwake();
         myPlayerWeap.KonoAwake();
@@ -382,7 +382,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();
 
-        myPlayerAnimation.KonoUpdate();
+        //myPlayerAnimation.KonoUpdate();
+        myPlayerAnimation_01.KonoUpdate();
         myPlayerWeap.KonoUpdate();
         myPlayerHook.KonoUpdate();
     }
@@ -687,6 +688,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         if (Actions.A.WasPressed)//Input.GetButtonDown(contName + "A"))
         {
             //print("JUMP");
+            //Debug.Log("pene");
             StartJump();
         }
 
@@ -743,12 +745,13 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) ||
                 (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
-                //PARA ORTU: PlayerAnimation_01.startJump = true;
+                //PlayerAnimation_01.startJump = true;
+                myPlayerAnimation_01.SetJump(true);
                 result = true;
                 currentVel.y = jumpVelocity;
                 jumpSt = JumpState.Jumping;
                 timePressingJump = 0;
-                myPlayerAnimation.SetJump(true);
+                //myPlayerAnimation.SetJump(true);
 
             }
             else
@@ -775,6 +778,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     void StopJump()
     {
+        myPlayerAnimation_01.SetJump(false);
         jumpSt = JumpState.none;
         timePressingJump = 0;
     }
