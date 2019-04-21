@@ -179,9 +179,17 @@ public class PlayerAnimation_01 : MonoBehaviour
         //    ground = false;
         //    animator.SetBool(groundHash, ground);
         //}
-        if (toGround && startJump)
+        if (toGround)
         {
-            toGround = false;
+            if (startJump)
+            {
+                toGround = false;
+            }
+            if (falling)
+            {
+                toGround = false;
+            }
+
             animator.SetBool(toGroundHash, toGround);
         }
         if (ground)
