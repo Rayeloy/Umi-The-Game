@@ -194,7 +194,7 @@ public class PlayerAnimation_01 : MonoBehaviour
         }
         if (ground)
         {
-            if (!myPlayerMovement.controller.collisions.below)
+            if (!myPlayerMovement.controller.collisions.safeBelow)
             {
                 ground = false;
                 animator.SetBool(groundHash, ground);
@@ -288,7 +288,7 @@ public class PlayerAnimation_01 : MonoBehaviour
             animator.SetBool(runHash, run);
         }
 
-        if (/*startJump || */!myPlayerMovement.controller.collisions.below && myPlayerMovement.currentVel.y < 0) //Si ya ha empezado el salto ó No hay colisoines abajo y además en el frame anterior si que habían
+        if (/*startJump || */!myPlayerMovement.controller.collisions.safeBelow && myPlayerMovement.currentVel.y < 0) //Si ya ha empezado el salto ó No hay colisoines abajo y además en el frame anterior si que habían
         {
 
             if (!falling)
@@ -317,10 +317,10 @@ public class PlayerAnimation_01 : MonoBehaviour
         //    + myPlayerMovement.controller.collisions.below);
 
 
-        if (myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.controller.collisions.below && timeToLand <= maxTimeToLand)
+        if (myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.controller.collisions.safeBelow && timeToLand <= maxTimeToLand && !toGround)
         {
-            //Debug.Log("vel.y = " + myPlayerMovement.currentVel.y + "; below = " + myPlayerMovement.controller.collisions.below 
-            //+ "; timeToLand = " + timeToLand + "; falling = " + falling + "; below = " + myPlayerMovement.controller.collisions.below);
+            Debug.Log("vel.y = " + myPlayerMovement.currentVel.y + "; below = " + myPlayerMovement.controller.collisions.safeBelow
+            + "; timeToLand = " + timeToLand + "; falling = " + falling + "; below = " + myPlayerMovement.controller.collisions.below);
 
             startJump = false;
             animator.SetBool(startJumpHash, startJump);

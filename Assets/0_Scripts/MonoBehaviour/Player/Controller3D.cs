@@ -56,6 +56,9 @@ public class Controller3D : MonoBehaviour
         }
 
         VerticalCollisionsDistanceCheck(ref vel);
+
+        UpdateSafeBelow();
+
         transform.Translate(vel, Space.World);
     }
 
@@ -975,6 +978,15 @@ public class Controller3D : MonoBehaviour
 
     #endregion
 
+    void UpdateSafeBelow()
+    {
+        if (!collisions.below && collisions.lastBelow)
+        {
+            collisions.StartSafeBelow();
+        }
+        collisions.ProcessSafeBelow();
+    }
+
     void UpdateRaycastOrigins()
     {
         Bounds bounds = coll.bounds;
@@ -1094,7 +1106,7 @@ public class Controller3D : MonoBehaviour
 
     public struct CollisionInfo
     {
-        public bool above, below, lastBelow;
+        public bool above, below, lastBelow, safeBelow;
         public bool left, right;
         public bool foward, behind;
         public bool collisionHorizontal
@@ -1107,6 +1119,8 @@ public class Controller3D : MonoBehaviour
         }
         public bool around;
         public bool finishedClimbing, lastFinishedClimbing;
+        public bool safeBelowStarted;
+        float safeBelowTime, safeBelowMaxTime;
 
         public MovingState moveSt;
         public MovingState lastMoveSt;
@@ -1167,6 +1181,44 @@ public class Controller3D : MonoBehaviour
             slopeAngleOld = slopeAngle;
             slopeAngle = 0;
             realSlopeAngle = 0;
+        }
+
+        public void StartSafeBelow()
+        {
+            if (!safeBelowStarted){
+                safeBelowStarted = true;
+                safeBelowMaxTime = 0.15f;
+                safeBelowTime = 0;
+            }
+        }
+
+        public void ProcessSafeBelow()
+        {
+            if(!lastBelow && below)
+            {
+                safeBelow = true;
+                if (safeBelowStarted)
+                {
+                    safeBelowStarted = false;
+                }
+            }
+
+            if (safeBelowStarted)
+            {
+                safeBelowTime += Time.deltaTime;
+                print("safeBelowTime = " + safeBelowTime);
+                if (safeBelowTime >= safeBelowMaxTime)
+                {
+                    EndSafeBelow();
+                }
+            }
+        }
+
+        void EndSafeBelow()
+        {
+            safeBelowStarted = false;
+            safeBelow = false;
+            safeBelowTime = 0;
         }
     }
 }
