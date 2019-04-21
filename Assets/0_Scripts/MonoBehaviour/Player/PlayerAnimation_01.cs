@@ -22,6 +22,9 @@ public class PlayerAnimation_01 : MonoBehaviour
     int groundHash = Animator.StringToHash("Ground"); //Done
     bool ground;
 
+    int safeBelowHash = Animator.StringToHash("SafeBelow"); //Done
+    bool safeBelow;
+
     //int walkHash = Animator.StringToHash("Walk");
     //bool walk;
 
@@ -194,7 +197,7 @@ public class PlayerAnimation_01 : MonoBehaviour
         }
         if (ground)
         {
-            if (!myPlayerMovement.controller.collisions.safeBelow)
+            if (!myPlayerMovement.controller.collisions.below)
             {
                 ground = false;
                 animator.SetBool(groundHash, ground);
@@ -251,11 +254,22 @@ public class PlayerAnimation_01 : MonoBehaviour
     {
         stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
-        if (myPlayerMovement.controller.collisions.below && !ground && !myPlayerMovement.inWater)
+        if (!ground && myPlayerMovement.controller.collisions.below && !myPlayerMovement.inWater)
         {
             ground = true;
             animator.SetBool(groundHash, ground);
 
+        }
+
+        if(!safeBelow && myPlayerMovement.controller.collisions.safeBelow)
+        {
+            safeBelow = true;
+            animator.SetBool(safeBelowHash, safeBelow);
+        }
+        else if (safeBelow && !myPlayerMovement.controller.collisions.safeBelow)
+        {
+            safeBelow = false;
+            animator.SetBool(safeBelowHash, safeBelow);
         }
 
         if (enterWater)
@@ -291,7 +305,7 @@ public class PlayerAnimation_01 : MonoBehaviour
             animator.SetBool(runHash, run);
         }
 
-        if (/*startJump || */!myPlayerMovement.controller.collisions.safeBelow && myPlayerMovement.currentVel.y < 0) //Si ya ha empezado el salto ó No hay colisoines abajo y además en el frame anterior si que habían
+        if (/*startJump || */!myPlayerMovement.controller.collisions.below && myPlayerMovement.currentVel.y < 0) //Si ya ha empezado el salto ó No hay colisoines abajo y además en el frame anterior si que habían
         {
 
             if (!falling)
@@ -325,9 +339,9 @@ public class PlayerAnimation_01 : MonoBehaviour
         //    + myPlayerMovement.controller.collisions.below);
 
 
-        if (myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.controller.collisions.safeBelow && timeToLand <= maxTimeToLand && !toGround)
+        if (myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.controller.collisions.below && timeToLand <= maxTimeToLand && !toGround)
         {
-            Debug.Log("vel.y = " + myPlayerMovement.currentVel.y + "; below = " + myPlayerMovement.controller.collisions.safeBelow
+            Debug.Log("vel.y = " + myPlayerMovement.currentVel.y + "; below = " + myPlayerMovement.controller.collisions.below
             + "; timeToLand = " + timeToLand + "; falling = " + falling + "; below = " + myPlayerMovement.controller.collisions.below);
 
             startJump = false;

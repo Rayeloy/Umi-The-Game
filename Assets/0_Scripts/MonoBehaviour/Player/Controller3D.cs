@@ -1187,7 +1187,7 @@ public class Controller3D : MonoBehaviour
         {
             if (!safeBelowStarted){
                 safeBelowStarted = true;
-                safeBelowMaxTime = 0.15f;
+                safeBelowMaxTime = 0.17f;
                 safeBelowTime = 0;
             }
         }
