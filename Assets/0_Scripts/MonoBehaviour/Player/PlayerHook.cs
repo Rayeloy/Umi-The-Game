@@ -114,7 +114,7 @@ public class PlayerHook : MonoBehaviour
     bool canAutoGrapple = false;
     HookPoint currentHookPoint;
     float currentGrappleDistance = 0;
-    float timeReeling = 0;
+    float timeGrappling = 0;
     Camera myCamera;
     Plane[] cameraPlanes;
     List<HookPoint> hookPointsInView;
@@ -221,6 +221,7 @@ public class PlayerHook : MonoBehaviour
             objectHooked = false;
             enemyHooked = false;
             currentDistance = 0;
+            lastCurrentDistance = 0;
             originPos = myPlayerMov.rotateObj.transform.TransformPoint(hookLocalOrigin);
             hookPos = originPos;
             myPlayerMov.StartHooking();
@@ -290,7 +291,9 @@ public class PlayerHook : MonoBehaviour
                 }
                 break;
             case HookState.grappling:
-                if (currentDistance <= hookMinDistance)
+                timeGrappling += Time.deltaTime;
+                float lastFrameDist = Mathf.Abs(lastCurrentDistance - currentDistance);
+                if (currentDistance <= hookMinDistance || (lastFrameDist < 0.01f && timeGrappling > 0.1f))
                 {
                     FinishHook();
                 }
@@ -369,6 +372,7 @@ public class PlayerHook : MonoBehaviour
     {
         if (hookSt == HookState.throwing)
         {
+            timeGrappling = 0;
             hookSt = HookState.grappling;
             //grappleOrigin = currentHook.transform.position;
             myPlayerMov.StopHooking();
@@ -382,17 +386,13 @@ public class PlayerHook : MonoBehaviour
 
     public void StopHook()
     {
-        print("STOP HOOK");
         if (usingHook)
         {
             StartReeling();
-            print("USING HOOK");
             if (somethingHooked)
             {
-                print("SOMETHING HOOKED");
                 if (enemyHooked)
                 {
-                    print("DROP ENEMY FROM HOOK");
                     enemyHooked = false;
                     enemy.StopHooked();
                     enemy = null;
@@ -536,7 +536,6 @@ public class PlayerHook : MonoBehaviour
         grappleSt = GrappleState.throwing;
         currentGrappleDistance = 0;
         lastCurrentDistance = 0;
-        timeReeling = 0;
         hookPos = originPos;
         myPlayerMov.StartHooking();
 
@@ -575,10 +574,10 @@ public class PlayerHook : MonoBehaviour
                 UpdateDistance();
                 hookRopeEndPos = hookRopeEnd.position;
                 myHook.UpdateRopeLine(originPos, hookRopeEndPos);
-                timeReeling += Time.deltaTime;
+                timeGrappling += Time.deltaTime;
 
                 float lastFrameDist = Mathf.Abs(lastCurrentDistance - currentDistance);
-                if (currentDistance <= hookMinDistance || (lastFrameDist < 0.01f && timeReeling > 0.1f))
+                if (currentDistance <= hookMinDistance || (lastFrameDist < 0.01f && timeGrappling > 0.1f))
                 {
                     FinishAutoGrapple();
                 }
@@ -606,6 +605,7 @@ public class PlayerHook : MonoBehaviour
         if (grappleSt == GrappleState.throwing)
         {
             //print("START REELING GRAPPLE");
+            timeGrappling = 0;
             grappleSt = GrappleState.reeling;
             myPlayerMov.StopHooking();
             myPlayerMov.StartHooked();
@@ -635,34 +635,24 @@ public class PlayerHook : MonoBehaviour
 
     void UpdateHookPoints()
     {
-        //print("UpdateHookPoints: Start");
         List<HookPoint> hookPoints = myPlayerMov.myPlayerObjectDetection.hookPoints;
         HookPoint closestHookPoint = null;//HookPoint that is in range of grapple, in front of the camera (in view) and has the lowest angle with the camera Z+
-        float lowestAngle = float.MaxValue;
+        float lowestDistToCamCenter = float.MaxValue;
 
         Vector2 minDist = new Vector2(hookPointMinDistToCameraCenter * myCamera.rect.width, hookPointMinDistToCameraCenter * myCamera.rect.height);
-        //Debug.Log("I'm player " + myPlayerMov.name);
         for (int i = 0; i < hookPoints.Count; i++)
         {
             bool success = false;
             float dist = (hookPoints[i].transform.position - myPlayerMov.transform.position).magnitude;
-            //print("UpdateHookPoints: hookPoints[" + i + "]: " + hookPoints[i].name+"; Dist to player = "+dist);
             if (dist <= minDistanceToGrapple)
             {
-                //print("UpdateHookPoints: dist ("+dist+") <= minDistanceToGrapple ("+minDistanceToGrapple+")");
                 Collider col = hookPoints[i].smallTrigger.GetComponent<Collider>();
                 cameraPlanes = GeometryUtility.CalculateFrustumPlanes(myCamera);
                 if (GeometryUtility.TestPlanesAABB(cameraPlanes, col.bounds))
                 {
-                    //print("UpdateHookPoints: hookPoint in camera view range");
                     Vector2 hookScreenPos = myCamera.WorldToScreenPoint(hookPoints[i].transform.position);
                     Vector3 distToCameraCenter = (hookScreenPos - myPlayerHUD.cameraCenterPix);
                     float screenScale = (float)myPlayerMov.myUICamera.pixelHeight / (float)myPlayerMov.myUICamera.pixelWidth;
-                    print("UpdateHookPoints: " + hookPoints[i].name+ " hookScreenPos = " + hookScreenPos);
-                    //print("MY UI CAMERA = " + myPlayerMov.myUICamera.name + "; pixel width and height = (" + myPlayerMov.myUICamera.pixelWidth + "," + myPlayerMov.myUICamera.pixelHeight + ") ; my screenScale = "+screenScale);
-                    //Debug.DrawLine(hookScreenPos, cameraCenterPix,Color.green);
-                    //print("UpdateHookPoints: hookPoint is at " + distToCameraCenter.ToString("F4") + " pixels of distance to the center of the screen; min height is = "+ (hookPointMinDistToCameraCenter * screenScale));
-                    //Debug.Log("  and my center in the camera is  = " + cameraCenterPix.ToString("F4") + "; hookScreenPos = " + hookScreenPos.ToString("F4"));
                     if (Mathf.Abs(distToCameraCenter.x) <= minDist.x && Mathf.Abs(distToCameraCenter.y) <= (minDist.y * screenScale))
                     {
                         success = true;
@@ -672,12 +662,10 @@ public class PlayerHook : MonoBehaviour
                             myPlayerHUD.ShowHookPointHUD(hookPoints[i]);
                         }
 
-                        Vector3 objectVector = hookPoints[i].transform.position - transform.position;
-                        float newAngle = Vector3.Angle(myCamera.transform.forward, objectVector);
-                        if (newAngle < lowestAngle)
+                        float newDist = (myPlayerHUD.cameraCenterPix - hookScreenPos).magnitude;
+                        if (newDist < lowestDistToCamCenter)
                         {
-                            //print("UpdateHookPoints: New lowest Angle found");
-                            lowestAngle = newAngle;
+                            lowestDistToCamCenter = newDist;
                             closestHookPoint = hookPoints[i];
                         }
                     }
@@ -692,7 +680,6 @@ public class PlayerHook : MonoBehaviour
         }
         if (closestHookPoint != null)
         {
-            //print("UpdateHookPoints: closestHookPoint ("+ closestHookPoint .name+ ") found; currentHookPoint = "+ currentHookPoint);
             if (closestHookPoint != currentHookPoint)
             {
                 canAutoGrapple = true;

@@ -26,7 +26,6 @@ public class PlayerHUD : MonoBehaviour
     public Image crosshairReduced;
     public Image Hook;
     public Image Boost;
-    public Slider flagSlider;
     public TMPro.TextMeshProUGUI redTeamScoreText;
     public TMPro.TextMeshProUGUI blueTeamScoreText;
     public TMPro.TextMeshProUGUI timeText;
@@ -38,17 +37,28 @@ public class PlayerHUD : MonoBehaviour
     //public Text pressText;
     public Image interactButtonImage;
 
+    //Flag Slider
+    [Header("Flag Slider")]
+    public RectTransform flagSlider;
+    public RectTransform flagSliderStart;
+    public RectTransform flagSliderEnd;
+    float flagSliderStartX;
+    float flagSliderEndX;
     Vector3 blueFlagHomePos;
     Vector3 redFlagHomePos;
+    float sliderTotalDist;
     Transform flag;
+    Flag flagForSlider;
     Vector3 flagPos;
 
+    [Header("Flag Arrow")]
     [SerializeField]
     Transform Arrow;
     [SerializeField]
     Transform Wale;
 
     //Grapple
+    [Header("AutoGrapple")]
     public Transform hookPointsParent;
     public GameObject hookPointHUDPrefab;
     public GameObject cameraCenterPrefab;
@@ -64,6 +74,7 @@ public class PlayerHUD : MonoBehaviour
     }
     public void KonoStart()
     {
+        flagForSlider = (gC as GameController_FlagMode).flags[0];
         if (gC.gameMode == GameMode.Tutorial)
         {
             Arrow.gameObject.SetActive(false);
@@ -110,9 +121,10 @@ public class PlayerHUD : MonoBehaviour
     {
         cameraCenterPix = new Vector2(myCamera.pixelWidth / 2, myCamera.pixelHeight / 2);
         cameraCenterPix += new Vector2(myCamera.pixelWidth / myCamera.rect.width * myCamera.rect.x, myCamera.pixelHeight / myCamera.rect.height * myCamera.rect.y);
-        Debug.Log("I'm player " + myPlayerMov.name +" and my center in the camera is  = " + cameraCenterPix.ToString("F4"));
-        cameraCenterPrefab.GetComponent<RectTransform>().anchoredPosition = cameraCenterPix;
-        Debug.Log("cameraCenterPrefab.rectTransform.localPosition = " + cameraCenterPrefab.GetComponent<RectTransform>().localPosition);
+        //Debug.Log("I'm player " + myPlayerMov.name +" and my center in the camera is  = " + cameraCenterPix.ToString("F4"));
+        cameraCenterPrefab.SetActive(false);
+        //cameraCenterPrefab.GetComponent<RectTransform>().anchoredPosition = cameraCenterPix;
+        //Debug.Log("cameraCenterPrefab.rectTransform.localPosition = " + cameraCenterPrefab.GetComponent<RectTransform>().localPosition);
         //cameraCenterPrefab.GetComponent<RectTransform>().position = cameraCenterPix;
     }
 
@@ -142,6 +154,10 @@ public class PlayerHUD : MonoBehaviour
         redFlagHomePos = (gC as GameController_FlagMode).redTeamFlagHome.position;
         blueFlagHomePos.y = 0;
         redFlagHomePos.y = 0;
+        flagSliderStartX = flagSliderStart.localPosition.x;
+        flagSliderEndX = flagSliderEnd.localPosition.x;
+        sliderTotalDist = (flagSliderStart.localPosition - flagSliderEnd.localPosition).magnitude;
+        flagSlider.localPosition = (flagSliderStart.localPosition - flagSliderEnd.localPosition)/2;
 
         //Flecha bola
         Arrow.gameObject.SetActive(false);
@@ -151,23 +167,24 @@ public class PlayerHUD : MonoBehaviour
     Vector3 ArrowPointing;
     void UpdateFlagSlider()
     {
-        flagPos = flag.position;
-        flagPos.y = 0;
-        Vector3 blueToFlagDir = blueFlagHomePos - flagPos;
-        float distFromBlue = blueToFlagDir.magnitude;
-        Vector3 union = (blueFlagHomePos - redFlagHomePos).normalized;
-        float angle = Vector3.Angle(blueToFlagDir.normalized, union);
-        //cos(angle) = finalDist/distFromBlue
-        float currentDist = Mathf.Cos(angle * Mathf.Deg2Rad) * distFromBlue;
-        float totalDist = (blueFlagHomePos - redFlagHomePos).magnitude;
-        float progress = Mathf.Clamp01(currentDist / totalDist);
-        flagSlider.value = progress;
-        /*
-        float distFromRed = (redFlagHomePos - flagPos).magnitude;
-        float diff = distFromBlue - distFromRed;
-        float coef = diff + totalDist / 2;
-        */
-        //print("totalDist = " + totalDist + "; distFromBlue = " + distFromBlue + "; distFromRed = " + distFromRed + "; diff = " + diff + "; coef = " + coef + "; progress = " + progress);
+        float progress = 0.5f;
+        if (!flagForSlider.respawning)
+        {
+            flagPos = flag.position;
+            flagPos.y = 0;
+            Vector3 blueToFlagDir = blueFlagHomePos - flagPos;
+            float distFromBlue = blueToFlagDir.magnitude;
+            Vector3 union = (blueFlagHomePos - redFlagHomePos).normalized;
+            float angle = Vector3.Angle(blueToFlagDir.normalized, union);
+            float currentDist = Mathf.Cos(angle * Mathf.Deg2Rad) * distFromBlue;
+            float totalDist = (blueFlagHomePos - redFlagHomePos).magnitude;
+            progress = Mathf.Clamp01(currentDist / totalDist);
+        }
+
+        float currentX = progress * sliderTotalDist;
+        Vector3 newPos = flagSliderStart.localPosition;
+        newPos.x += currentX;
+        flagSlider.localPosition = newPos;
 
         // Flecha a Bola
         ArrowToFlag();

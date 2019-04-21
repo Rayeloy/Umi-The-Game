@@ -28,7 +28,8 @@ public class Flag : MonoBehaviour
     public float maxTimeToRespawnGoal;
     float maxTimeToRespawn;
     float timeToRespawn = 0;
-    bool respawning = false;
+    [HideInInspector]
+    public bool respawning = false;
     [Tooltip("NOT USED YET")]
     public float maxTimeToPick;
     float timeToPick = 0;
@@ -226,6 +227,7 @@ public class Flag : MonoBehaviour
 
     public void FinishRespawn()
     {
+        respawning = false;
         ResetFlag();
     }
 
