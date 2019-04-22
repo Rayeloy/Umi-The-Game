@@ -74,7 +74,10 @@ public class PlayerHUD : MonoBehaviour
     }
     public void KonoStart()
     {
-        flagForSlider = (gC as GameController_FlagMode).flags[0];
+        if (gC.gameMode == GameMode.CaptureTheFlag)
+        {
+            flagForSlider = (gC as GameController_FlagMode).flags[0];
+        }
         if (gC.gameMode == GameMode.Tutorial)
         {
             Arrow.gameObject.SetActive(false);
