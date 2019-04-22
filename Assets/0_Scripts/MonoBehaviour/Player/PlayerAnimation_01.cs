@@ -331,6 +331,26 @@ public class PlayerAnimation_01 : MonoBehaviour
             frontHit = false;
             animator.SetBool(frontHitHash, frontHit);
         }
+
+        if (!hooked && myPlayerMovement.hooked)
+        {
+            noControl = true;
+            animator.SetBool(noControlHash, noControl);
+
+            hooked = true;
+            animator.SetBool(hookedHash, hooked);
+        }
+        else if (hooked && !myPlayerMovement.hooked)
+        {
+            noControl = false;
+            animator.SetBool(noControlHash, noControl);
+
+            hooked = false;
+            animator.SetBool(hookedHash, hooked);
+        }
+
+
+
         //if (!jumpout && myPlayerMovement.jumpedOutOfWater)
         //{
         //    jumpout = true;
