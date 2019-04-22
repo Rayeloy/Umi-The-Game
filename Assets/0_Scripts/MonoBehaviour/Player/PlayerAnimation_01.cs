@@ -172,7 +172,11 @@ public class PlayerAnimation_01 : MonoBehaviour
             animator.SetBool(waterHash, water);
             safeBelow = false;
             animator.SetBool(safeBelowHash, safeBelow);
-            }
+            falling = false;
+            animator.SetBool(fallingHash, falling);
+            startJump = false;
+            animator.SetBool(startJumpHash, startJump);
+        }
 
              //animator.SetBool("StartJump", startJump);
 
@@ -376,7 +380,7 @@ public class PlayerAnimation_01 : MonoBehaviour
             animator.SetBool(runHash, run);
         }
 
-        if (/*startJump || */!myPlayerMovement.controller.collisions.below && myPlayerMovement.currentVel.y < 0) //Si ya ha empezado el salto ó No hay colisoines abajo y además en el frame anterior si que habían
+        if (/*startJump || */!myPlayerMovement.controller.collisions.below && myPlayerMovement.currentVel.y < 0 && !noControl) //Si ya ha empezado el salto ó No hay colisoines abajo y además en el frame anterior si que habían
         {
 
             if (!falling)
