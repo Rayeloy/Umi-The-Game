@@ -980,6 +980,10 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             {
                 if (Actions.A.WasPressed)
                 {
+                    if (myPlayerHUD.dashHUDDepleteAnimStarted)
+                    {
+                        myPlayerHUD.StopDashHUDDepleteAnimation();
+                    }
                     StopBoost();
                 }
                 moveSt = MoveState.Boost;

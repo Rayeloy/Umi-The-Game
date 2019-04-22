@@ -81,6 +81,20 @@ public class PlayerHUD : MonoBehaviour
     public GameObject dashCamVFX;
     public GameObject RecieveHitCamVFX;
     public GameObject PickFlagCamVFX;
+    GameObject currentCameraEffect;
+    CameraVFX currentCamVFX = CameraVFX.None;
+
+    //DASH HUD
+    [Header("DASH HUD")]
+    public RectTransform dashHUDStartPos;
+    public RectTransform dashHUDEndPos;
+    public RectTransform dashHUDWater;
+    float dashHUDTotalDist = 0;
+
+    [HideInInspector]
+    public bool dashHUDDepleteAnimStarted = false;
+    public float dashHUDDepleteMaxTime = 0.5f;
+    float dashHUDDepleteTime = 0;
 
 
     public void KonoAwake()
@@ -390,11 +404,8 @@ public class PlayerHUD : MonoBehaviour
         }
     }
 
-
     //EFECTOS DE CÁMARA
 
-    GameObject currentCameraEffect;
-    CameraVFX currentCamVFX = CameraVFX.None;
     public void StartCamVFX(CameraVFX camVFX)
     {
         if (currentCamVFX != CameraVFX.None)
@@ -418,14 +429,6 @@ public class PlayerHUD : MonoBehaviour
     }
 
     //DASH HUD
-    public RectTransform dashHUDStartPos;
-    public RectTransform dashHUDEndPos;
-    public RectTransform dashHUDWater;
-    float dashHUDTotalDist = 0;
-
-    bool dashHUDDepleteAnimStarted = false;
-    public float dashHUDDepleteMaxTime = 0.5f;
-    float dashHUDDepleteTime = 0;
 
     void SetupDashHUD()
     {
@@ -481,7 +484,7 @@ public class PlayerHUD : MonoBehaviour
             }
         }
     }
-    void StopDashHUDDepleteAnimation()
+    public void StopDashHUDDepleteAnimation()
     {
         if (dashHUDDepleteAnimStarted)
         {
