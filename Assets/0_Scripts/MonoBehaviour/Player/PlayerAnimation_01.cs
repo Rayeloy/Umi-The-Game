@@ -89,6 +89,15 @@ public class PlayerAnimation_01 : MonoBehaviour
     int attackHash = Animator.StringToHash("Attack");
     bool attack;
 
+    int softHitHash = Animator.StringToHash("SoftHit");
+    bool softhit;
+
+    int hardHitHash = Animator.StringToHash("HardHit");
+    bool hardhit;
+
+    int spAtHash = Animator.StringToHash("SpAt");
+    bool spAt;
+
     int q_TipHash = Animator.StringToHash("Q_Tip");
     bool q_Tip;
 
@@ -274,6 +283,9 @@ public class PlayerAnimation_01 : MonoBehaviour
         ////    basicSwingValue = false;
         ////    animator.SetBool(basicSwingHash, basicSwingValue);
         ////}
+        ///
+               
+
     }
 
     public void ProcessVariableValues()
@@ -349,8 +361,77 @@ public class PlayerAnimation_01 : MonoBehaviour
             animator.SetBool(hookedHash, hooked);
         }
 
+        //if (myPlayerCombat.attackStg == AttackStage.ready)
+        //{
+        //    softhit = false;
+        //    animator.SetBool(softHitHash, softhit);
+        //    hardhit = false;
+        //    animator.SetBool(hardHitHash, hardhit);
+        //    spAt = false;
+        //    animator.SetBool(spAtHash, spAt);
+        //}
+
+            if (myPlayerCombat.attackStg != AttackStage.ready && !noControl)//ESTAMOS ATACANDO
+        {
+
+            switch (myPlayerCombat.attackIndex)
+            {
+                case 0://ataque debil
+                    if (!softhit)
+                    {
+                        softhit = true;
+                        animator.SetBool(softHitHash, softhit);
+                    }
+                    hardhit = false;
+                    animator.SetBool(hardHitHash, hardhit);
+                    spAt = false;
+                    animator.SetBool(spAtHash, spAt);
+                    break;
+                case 1://ataque fuerte
+                    if (!hardhit)
+                    {
+                        hardhit = true;
+                        animator.SetBool(hardHitHash, hardhit);
+                    }
+                    softhit = false;
+                    animator.SetBool(softHitHash, softhit);
+                    spAt = false;
+                    animator.SetBool(spAtHash, spAt);
+                    break;
+                case 2://ataque especial
+                    if (!spAt)
+                    {
+                        spAt = true;
+                        animator.SetBool(spAtHash, spAt);
+                    }
+                    hardhit = false;
+                    animator.SetBool(hardHitHash, hardhit);
+                    softhit = false;
+                    animator.SetBool(softHitHash, softhit);
+                    break;
+            }
+        }
+        else
+        {
+            softhit = false;
+            animator.SetBool(softHitHash, softhit);
+            hardhit = false;
+            animator.SetBool(hardHitHash, hardhit);
+            spAt = false;
+            animator.SetBool(spAtHash, spAt);
+        }
 
 
+        if (attack && myPlayerCombat.attackStg == AttackStage.ready)
+        {
+            attack = false;
+            animator.SetBool(attackHash, attack);
+        }
+        else if (!attack && myPlayerCombat.attackStg == AttackStage.startup && !noControl)
+        {
+            attack = true;
+            animator.SetBool(attackHash, attack);
+        }
         //if (!jumpout && myPlayerMovement.jumpedOutOfWater)
         //{
         //    jumpout = true;
