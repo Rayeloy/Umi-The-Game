@@ -109,7 +109,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             _boostTime = value;
         }
     }
-    bool boostReady = true;
+    [HideInInspector]
+    public bool boostReady = true;
     Vector3 boostDir;
 
     [Header("ACCELERATIONS")]
@@ -964,6 +965,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                 currentMovDir = boostDir = new Vector3(currentCamFacingDir.x, 0, currentCamFacingDir.z);//nos movemos en la dirección en la que mire la cámara
                 RotateCharacter(currentMovDir);
             }
+
+           myPlayerHUD.StartDashHUDDepleteAnimation();
         }
 
     }

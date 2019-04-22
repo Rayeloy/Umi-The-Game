@@ -3,6 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+public enum CameraVFX
+{
+    None,
+    Dash,
+    RecieveHit,
+    Water,
+    PickFlag
+}
 public class PlayerHUD : MonoBehaviour
 {
     [SerializeField]
@@ -67,11 +76,19 @@ public class PlayerHUD : MonoBehaviour
     public Vector2 cameraCenterPix;
     List<HookPointHUDInfo> hookPointHUDInfoList;
 
+    //CameraVFX
+    [Header("Camera VFX")]
+    public GameObject dashCamVFX;
+    public GameObject RecieveHitCamVFX;
+    public GameObject PickFlagCamVFX;
+
+
     public void KonoAwake()
     {
         hookPointHUDInfoList = new List<HookPointHUDInfo>();
         myCanvas = GetComponent<Canvas>();
     }
+
     public void KonoStart()
     {
         flagForSlider = (gC as GameController_FlagMode).flags[0];
@@ -89,6 +106,7 @@ public class PlayerHUD : MonoBehaviour
         }
         pressButtonToGrappleMessage.SetActive(false);
         SetUpCameraCenter();
+        SetupDashHUD();
     }
 
     private void Update()
@@ -98,6 +116,7 @@ public class PlayerHUD : MonoBehaviour
             UpdateFlagSlider();
         }
         UpdateAllHookPointHUDs();
+        UpdateDashHUDCD();
     }
 
     public void AdaptCanvasHeightScale()
@@ -367,6 +386,105 @@ public class PlayerHUD : MonoBehaviour
             }
         }
     }
+
+
+    //EFECTOS DE CÁMARA
+
+    GameObject currentCameraEffect;
+    CameraVFX currentCamVFX = CameraVFX.None;
+    public void StartCamVFX(CameraVFX camVFX)
+    {
+        if (currentCamVFX != CameraVFX.None)
+        {
+            switch (camVFX)
+            {
+                case CameraVFX.Dash:
+                    currentCamVFX = CameraVFX.Dash;
+                    break;
+                case CameraVFX.RecieveHit:
+                    currentCamVFX = CameraVFX.RecieveHit;
+                    break;
+                case CameraVFX.PickFlag:
+                    currentCamVFX = CameraVFX.PickFlag;
+                    break;
+                case CameraVFX.Water:
+                    currentCamVFX = CameraVFX.Water;
+                    break;
+            }
+        }
+    }
+
+    //DASH HUD
+    public RectTransform dashHUDStartPos;
+    public RectTransform dashHUDEndPos;
+    public RectTransform dashHUDWater;
+    float dashHUDTotalDist = 0;
+
+    bool dashHUDDepleteAnimStarted = false;
+    public float dashHUDDepleteMaxTime = 0.5f;
+    float dashHUDDepleteTime = 0;
+
+    void SetupDashHUD()
+    {
+        dashHUDTotalDist = Mathf.Abs(dashHUDStartPos.localPosition.y - dashHUDEndPos.localPosition.y);
+    }
+
+    void UpdateDashHUDCD()
+    {
+        float progress = 0;
+        if (myPlayerMov.boostReady)
+        {
+            progress = 1;
+        }
+        else if (dashHUDDepleteAnimStarted)
+        {
+            ProcessDashHUDDepleteAnimation();
+        }
+        else
+        {
+            progress = myPlayerMov.boostTime/myPlayerMov.boostCD;
+            float currentY = progress * dashHUDTotalDist;
+            dashHUDWater.localPosition = new Vector3(dashHUDStartPos.localPosition.x, dashHUDStartPos.localPosition.y + currentY, 1);
+            print("DASH CD = " + myPlayerMov.boostTime+"; progress = "+progress);
+        }
+    }
+
+    public void StartDashHUDDepleteAnimation()
+    {
+        if (!dashHUDDepleteAnimStarted)
+        {
+            dashHUDDepleteMaxTime = Mathf.Clamp(dashHUDDepleteMaxTime, 0, myPlayerMov.boostDuration);
+            dashHUDDepleteTime = 0;
+            dashHUDDepleteAnimStarted = true;
+        }
+    }
+
+    void ProcessDashHUDDepleteAnimation()
+    {
+        if (dashHUDDepleteAnimStarted)
+        {
+            dashHUDDepleteTime += Time.deltaTime;
+
+            //Move Down water
+            float progress = dashHUDDepleteTime / dashHUDDepleteMaxTime;
+            progress = 1 - progress;
+            float currentY = progress * dashHUDTotalDist;
+            dashHUDWater.localPosition = new Vector3(dashHUDStartPos.localPosition.x, dashHUDStartPos.localPosition.y + currentY, 1);
+            print("DASH Deplete Anim progress = " + progress);
+
+            if (dashHUDDepleteTime >= dashHUDDepleteMaxTime)
+            {
+                StopDashHUDDepleteAnimation();
+            }
+        }
+    }
+    void StopDashHUDDepleteAnimation()
+    {
+        if (dashHUDDepleteAnimStarted)
+        {
+            dashHUDDepleteAnimStarted = false;
+        }
+    }
 }
 public class HookPointHUDInfo
 {
@@ -374,7 +492,7 @@ public class HookPointHUDInfo
     public bool showing = false;
     public bool chosenOne = false;
     Color green = new Color(0.46f, 1, 0, 0.75f);
-    Color gray = new Color(0.5f , 0.5f, 0.5f, 0.75f);
+    Color gray = new Color(0.5f, 0.5f, 0.5f, 0.75f);
 
     public HookPointHUDInfo()
     {

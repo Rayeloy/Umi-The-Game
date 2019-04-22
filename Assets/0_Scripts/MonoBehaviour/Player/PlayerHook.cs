@@ -107,6 +107,7 @@ public class PlayerHook : MonoBehaviour
     [Header(" --- Grapple --- ")]
     [Tooltip("Layers that we can collide with, like walls, or the hookPoint. If it's a wall (checking via tags) we won't be able to grapple.")]
     public LayerMask grappleColMask;
+    public float grappleStopMinDistance = 0.1f;
     public float minDistanceToGrapple;
     public float hookPointMinDistToCameraCenter;
     public float grappleMaxCDTime;
@@ -517,8 +518,8 @@ public class PlayerHook : MonoBehaviour
             else
             {
                 float distFromOriginToHookPoint = (originPos - rayEnd).magnitude;
-                float hookPointRadius = currentHookPoint.GetComponent<SphereCollider>().radius;
-                if (distFromOriginToHookPoint < hookPointRadius)
+                float hookPointRadius = currentHookPoint.GetComponentInChildren<SphereCollider>().bounds.extents.x;
+                if (distFromOriginToHookPoint <= hookPointRadius)
                 {
                     StartAutoGrapple();
                 }
@@ -577,7 +578,7 @@ public class PlayerHook : MonoBehaviour
                 timeGrappling += Time.deltaTime;
 
                 float lastFrameDist = Mathf.Abs(lastCurrentDistance - currentDistance);
-                if (currentDistance <= hookMinDistance || (lastFrameDist < 0.01f && timeGrappling > 0.1f))
+                if (currentDistance <= grappleStopMinDistance || (lastFrameDist < 0.01f && timeGrappling > 0.1f))
                 {
                     FinishAutoGrapple();
                 }
