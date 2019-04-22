@@ -1206,7 +1206,7 @@ public class Controller3D : MonoBehaviour
             if (safeBelowStarted)
             {
                 safeBelowTime += Time.deltaTime;
-                print("safeBelowTime = " + safeBelowTime);
+                //print("safeBelowTime = " + safeBelowTime);
                 if (safeBelowTime >= safeBelowMaxTime)
                 {
                     EndSafeBelow();
