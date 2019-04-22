@@ -341,8 +341,8 @@ public class PlayerAnimation_01 : MonoBehaviour
 
         if (myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.controller.collisions.below && timeToLand <= maxTimeToLand && !toGround)
         {
-            Debug.Log("vel.y = " + myPlayerMovement.currentVel.y + "; below = " + myPlayerMovement.controller.collisions.below
-            + "; timeToLand = " + timeToLand + "; falling = " + falling + "; below = " + myPlayerMovement.controller.collisions.below);
+            //Debug.Log("vel.y = " + myPlayerMovement.currentVel.y + "; below = " + myPlayerMovement.controller.collisions.below
+            //+ "; timeToLand = " + timeToLand + "; falling = " + falling + "; below = " + myPlayerMovement.controller.collisions.below);
 
             startJump = false;
             animator.SetBool(startJumpHash, startJump);
