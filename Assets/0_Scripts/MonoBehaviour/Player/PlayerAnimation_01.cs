@@ -64,11 +64,15 @@ public class PlayerAnimation_01 : MonoBehaviour
     int swimmingHash = Animator.StringToHash("Swimming"); //Done
     bool swimming;
 
+    int jumpOutHash = Animator.StringToHash("JumpOut");
+    bool jumpout;
+
     int noControlHash = Animator.StringToHash("NoControl");
     bool noControl;
 
     int dashHash = Animator.StringToHash("Dash"); //Done
-    bool dash;
+    [HideInInspector]
+    public bool dash;
 
     int hookedHash = Animator.StringToHash("Hooked");
     bool hooked;
@@ -156,7 +160,21 @@ public class PlayerAnimation_01 : MonoBehaviour
 
         animator.SetBool("Water", myPlayerMovement.inWater);
 
-        //animator.SetBool("StartJump", startJump);
+            if (noControl)
+            {
+            air = false;
+            animator.SetBool(airHash, air);
+            ground = false;
+            animator.SetBool(groundHash, ground);
+            run = false;
+            animator.SetBool(runHash, run);
+            water = false;
+            animator.SetBool(waterHash, water);
+            safeBelow = false;
+            animator.SetBool(safeBelowHash, safeBelow);
+            }
+
+             //animator.SetBool("StartJump", startJump);
 
         ////if (myPlayerMovement.wallJumpAnim)
         ////{
@@ -182,6 +200,7 @@ public class PlayerAnimation_01 : MonoBehaviour
         //    ground = false;
         //    animator.SetBool(groundHash, ground);
         //}
+
         if (toGround)
         {
             if (startJump)
@@ -197,6 +216,9 @@ public class PlayerAnimation_01 : MonoBehaviour
         }
         if (ground)
         {
+            jumpout = false;
+            animator.SetBool(jumpOutHash, jumpout);
+
             if (!myPlayerMovement.controller.collisions.below)
             {
                 ground = false;
@@ -254,14 +276,13 @@ public class PlayerAnimation_01 : MonoBehaviour
     {
         stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
-        if (!ground && myPlayerMovement.controller.collisions.below && !myPlayerMovement.inWater)
+        if (!ground && myPlayerMovement.controller.collisions.below && !myPlayerMovement.inWater && !noControl)
         {
             ground = true;
             animator.SetBool(groundHash, ground);
-
         }
 
-        if(!safeBelow && myPlayerMovement.controller.collisions.safeBelow)
+        if(!safeBelow && myPlayerMovement.controller.collisions.safeBelow && !noControl)
         {
             safeBelow = true;
             animator.SetBool(safeBelowHash, safeBelow);
@@ -272,11 +293,58 @@ public class PlayerAnimation_01 : MonoBehaviour
             animator.SetBool(safeBelowHash, safeBelow);
         }
 
+        if (!dash && myPlayerMovement.moveSt == MoveState.Boost)
+        {
+            noControl = true;
+            animator.SetBool(noControlHash, noControl);
+
+            dash = true;
+            animator.SetBool(dashHash, dash);
+        }
+        else if (dash && myPlayerMovement.moveSt != MoveState.Boost)
+        {
+            noControl = false;
+            animator.SetBool(noControlHash, noControl);
+
+            dash = false;
+            animator.SetBool(dashHash, dash);
+        }
+
+
+        if (!frontHit && myPlayerMovement.moveSt == MoveState.Knockback)
+        {
+            noControl = true;
+            animator.SetBool(noControlHash, noControl);
+
+            frontHit = true;
+            animator.SetBool(frontHitHash, frontHit);
+        }
+        else if (frontHit && myPlayerMovement.moveSt != MoveState.Knockback)
+        {
+            noControl = false;
+            animator.SetBool(noControlHash, noControl);
+
+            frontHit = false;
+            animator.SetBool(frontHitHash, frontHit);
+        }
+        //if (!jumpout && myPlayerMovement.jumpedOutOfWater)
+        //{
+        //    jumpout = true;
+        //    animator.SetBool(jumpOutHash, jumpout);
+        //}
+        //else if (jumpout && !myPlayerMovement.jumpedOutOfWater)
+        //{
+        //    jumpout = false;
+        //    animator.SetBool(jumpOutHash, jumpout);
+        //}
+
         if (enterWater)
         {
             //TO DO:
             water = true;
 
+            jumpout = false;
+            animator.SetBool(jumpOutHash, jumpout);
             //Activate particle system
 
             enterWater = false;
@@ -287,7 +355,10 @@ public class PlayerAnimation_01 : MonoBehaviour
             //TO DO:
 
             water = false;
-            
+
+            jumpout = true;
+            animator.SetBool(jumpOutHash, jumpout);
+
             //Activate particle system
 
             exitWater = false;
@@ -299,7 +370,7 @@ public class PlayerAnimation_01 : MonoBehaviour
             animator.SetBool(idleHash, idle_01);
         }
 
-        if (myPlayerMovement.currentSpeed != 0 && myPlayerMovement.controller.collisions.below)
+        if (myPlayerMovement.currentSpeed != 0 && myPlayerMovement.controller.collisions.below && !noControl)
         {
             run = true;
             animator.SetBool(runHash, run);
@@ -390,6 +461,8 @@ public class PlayerAnimation_01 : MonoBehaviour
         animator.SetBool(startJumpHash, startJump);
 
     }
+
+
     //int startJumpHash = Animator.StringToHash("StartJump"); //Done
     //bool startJump;
 

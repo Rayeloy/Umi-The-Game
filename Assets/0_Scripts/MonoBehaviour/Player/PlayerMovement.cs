@@ -252,7 +252,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
 
     //WATER
-    bool jumpedOutOfWater = true;
+    [HideInInspector]
+    public bool jumpedOutOfWater = true;
 
     BufferedInput[] inputsBuffer;//Eloy: para Juan: esta variable iría aquí? o a "Variables", JUAN: A variables mejor
     #endregion
@@ -679,6 +680,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         if (!jumpedOutOfWater && !inWater && controller.collisions.below)
         {
             jumpedOutOfWater = true;
+
             maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
         }
         if (lastWallAngle >= 0 && controller.collisions.below)
@@ -949,7 +951,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             boostReady = false;
             //PARA ORTU: Variable para empezar boost
 
-            //PlayerAnimation_01.dash = true;
+            //myPlayerAnimation_01.dash = true;
 
             moveSt = MoveState.Boost;
             boostTime = 0f;
@@ -991,7 +993,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         boostTime = boostDuration;
         //PARA ORTU: Variable para terminar boost
 
-        //PlayerAnimation_01.dash = false;
+        //myPlayerAnimation_01.dash = false;
     }
     #endregion
 
