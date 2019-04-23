@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4670833508464459672}
   - component: {fileID: 5783533290957510579}
   m_Layer: 0
-  m_Name: GameController_FlagMode_Tutorial
+  m_Name: GameController_Tutorial
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3195e5756717533438c0f34698954c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myGameInterface: {fileID: 0}
   gameMode: 2
   playerPrefab: {fileID: 2852978573330665781, guid: 359ea8a2f0d0c12429faf38f313e88e4,
     type: 3}
@@ -57,40 +58,25 @@ MonoBehaviour:
   playersCanvasParent: {fileID: 0}
   playersCamerasParent: {fileID: 0}
   playersUICamerasParent: {fileID: 0}
-  allWeapons:
-  - {fileID: 11400000, guid: 15b874004fd9fc843b3dd52a1a5b0c17, type: 2}
-  - {fileID: 11400000, guid: 62e907f90cd3a02418417962b53df879, type: 2}
-  blueTeamSpawn: {fileID: 0}
-  redTeamSpawn: {fileID: 0}
-  contador: []
-  powerUpPanel: []
+  allBufferedInputs:
+  - {fileID: 11400000, guid: 5be981359aa5af64f9ab89d0f694fc30, type: 2}
+  blueTeamSpawns: []
+  redTeamSpawns: []
   scaleDos: 1.25
   scaleCuatro: 1.25
-  gameOverMenu: {fileID: 0}
-  veil: {fileID: 0}
-  victoryRed: {fileID: 0}
-  victoryBlue: {fileID: 0}
-  gameOverPressStart: {fileID: 0}
-  gameOverFirstButton: {fileID: 0}
-  ResetButton: {fileID: 0}
-  sceneLoadedOnReset: 
-  menuScene: 
-  Button: {fileID: 0}
+  startingWeaponBlue: {fileID: 0}
+  startingWeaponRed: {fileID: 0}
+  gameOverStarted: 0
   playerNum: 1
-  winnerTeam: 1
   gamePaused: 0
   playing: 0
-  offline: 0
-  attackX: {fileID: 11400000, guid: 8effc5015e16c2949913cfbcd884371e, type: 2}
-  attackY: {fileID: 11400000, guid: f966ce84c6d7ddd4f8ee9bf2d3992d62, type: 2}
-  attackB: {fileID: 11400000, guid: 62b70d52c7fb6024eafbe61034f7d534, type: 2}
-  scoreManager: {fileID: 0}
-  flagPrefab: {fileID: 1751600940884742, guid: b65fe97042153d54abc8f26b7532c126, type: 3}
-  flagsParent: {fileID: 0}
-  flags: []
-  blueTeamFlagHome: {fileID: 0}
-  redTeamFlagHome: {fileID: 0}
-  centerCameraParent: {fileID: 0}
+  online: 0
+  tutorialLanes: []
+  ringSpawnPoint: {fileID: 0}
+  battleText: {fileID: 0}
+  battleMaxTimeToStart: 0
+  fightTextshowingMaxTime: 0
+  startRingTeamBattle: 0
 --- !u!82 &5783533290957510579
 AudioSource:
   m_ObjectHideFlags: 0
