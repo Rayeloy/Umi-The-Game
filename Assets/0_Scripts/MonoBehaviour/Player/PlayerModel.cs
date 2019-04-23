@@ -52,6 +52,32 @@ public class PlayerModel : MonoBehaviour
     #endregion
 
     #region ----[ PUBLIC FUNCTIONS ]----
+    public void SwitchTeam(Team team)
+    {
+        switch (team)
+        {
+            case Team.blue:
+                //myPlayerWeap.AttachWeapon("Churro Azul");
+                //Body.material = teamBlueMat;
+                //myBody = Instantiate(playerBodyPrefabs[0], bodyParent);
+                hair.material = hairMats[0];
+                skin.material = skinMats[0];
+                wetsuit.material = wetsuitMats[0];
+                accesories.material = accesoriesMats[0];
+                boots.material = bootsMats[0];
+                break;
+            case Team.red:
+                //myPlayerWeap.AttachWeapon("Churro Rojo");
+                //Body.material = teamRedMat;
+                //myBody = Instantiate(playerBodyPrefabs[1], bodyParent);
+                hair.material = hairMats[1];
+                skin.material = skinMats[1];
+                wetsuit.material = wetsuitMats[1];
+                accesories.material = accesoriesMats[1];
+                boots.material = bootsMats[1];
+                break;
+        }
+    }
     #endregion
 
     #region ----[ PUN CALLBACKS ]----

@@ -15,7 +15,7 @@ public enum Team
 }
 public enum MoveState
 {
-    None=0,
+    None = 0,
     Moving = 1,
     NotMoving = 2,//Not stunned, breaking
     Knockback = 3,//Stunned
@@ -101,21 +101,27 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     [Header("BOOST")]
     public float boostSpeed = 20f;
-    public float boostCD = 5f;
-    public float boostMaxDuration = 1f;
-    float _boostTime = 0f;
+    public float boostCapacity = 1f;
+    [Tooltip("1 = 1 capacity per second")]
+    public float boostDepletingSpeed = 1f;
+    [Tooltip("1 = 1 capacity per second")]
+    public float boostRechargingSpeed = 0.3f;
+    [HideInInspector]
+    public float boostCurrentFuel = 1;
+    public float boostCDMaxTime = 0.3f;
+    float boostCDTime = 0;
     bool boostCDStarted = false;
-    public float boostTime
+    [Tooltip("0-> none; 1-> All the fuel")]
+    [Range(0, 1)]
+    public float boostFuelLostOnStart = 0.15f;
+    [HideInInspector]
+    public bool boostReady
     {
-        get { return _boostTime; }
-        set
+        get
         {
-            myPlayerHUD.setBoostUI(_boostTime / boostCD);
-            _boostTime = value;
+            return ((boostCurrentFuel > boostCapacity / 5) && !boostCDStarted);
         }
     }
-    [HideInInspector]
-    public bool boostReady = true;
     Vector3 boostDir;
 
     [Header("ACCELERATIONS")]
@@ -278,38 +284,14 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         maxMoveSpeed = 10;
         currentSpeed = 0;
         currentRotationSpeed = rotationSpeed;
+        boostCurrentFuel = boostCapacity;
         noInput = false;
         lastWallAngle = 0;
         SetupInputsBuffer();
         myPlayerHook.myCameraBase = myCamera;
 
-        //PLAYER BODY
-
-        GameObject myBody = null;
-        switch (team)
-        {
-            case Team.blue:
-                //myPlayerWeap.AttachWeapon("Churro Azul");
-                //Body.material = teamBlueMat;
-                //myBody = Instantiate(playerBodyPrefabs[0], bodyParent);
-                myPlayerModel.hair.material = myPlayerModel.hairMats[0];
-                myPlayerModel.skin.material = myPlayerModel.skinMats[0];
-                myPlayerModel.wetsuit.material = myPlayerModel.wetsuitMats[0];
-                myPlayerModel.accesories.material = myPlayerModel.accesoriesMats[0];
-                myPlayerModel.boots.material = myPlayerModel.bootsMats[0];
-                break;
-            case Team.red:
-                //myPlayerWeap.AttachWeapon("Churro Rojo");
-                //Body.material = teamRedMat;
-                //myBody = Instantiate(playerBodyPrefabs[1], bodyParent);
-                myPlayerModel.hair.material = myPlayerModel.hairMats[1];
-                myPlayerModel.skin.material = myPlayerModel.skinMats[1];
-                myPlayerModel.wetsuit.material = myPlayerModel.wetsuitMats[1];
-                myPlayerModel.accesories.material = myPlayerModel.accesoriesMats[1];
-                myPlayerModel.boots.material = myPlayerModel.bootsMats[1];
-                break;
-        }
-        //myPlayerModel = myBody.GetComponent<PlayerModel>();
+        //PLAYER MODEL
+        myPlayerModel.SwitchTeam(team);
 
         //WALLJUMP
         rows = 5;
@@ -430,6 +412,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         {
             flag.SetAway(false);
         }
+        boostCurrentFuel = boostCapacity;
         //myPlayerWeap.DropWeapon();
         //controller.collisionMask = LayerMask.GetMask("Stage", "WaterFloor", "SpawnWall");
     }
@@ -572,13 +555,13 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         {
 
             ProcessFixedJump();
-        }else if (moveSt == MoveState.Boost)
-        {
-            ProcessBoost();
         }
+
+        ProcessBoost();
+
         #endregion
         #region //----------------------------------------------------- Efecto interno --------------------------------------------
-        if (!hooked && !fixedJumping && moveSt!=MoveState.Boost)
+        if (!hooked && !fixedJumping && moveSt != MoveState.Boost)
         {
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
@@ -592,9 +575,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             ProcessWater();
             ProcessAiming();
             ProcessHooking();
-            ProcessBoostCD();
             currentMaxMoveSpeed = (joystickSens / 1) * maxMoveSpeed2;
-            if (currentSpeed > currentMaxMoveSpeed && moveSt == MoveState.Moving)
+            if (currentSpeed > currentMaxMoveSpeed && (moveSt == MoveState.Moving || moveSt == MoveState.NotMoving))
             {
                 moveSt = MoveState.MovingBreaking;
             }
@@ -624,7 +606,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         #endregion
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
-        //print("MoveState = " + moveSt+"; speed = "+currentSpeed);
+        print("MoveState = " + moveSt + "; currentSpeed = " + currentSpeed + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
         if (jumpSt != JumpState.wallJumping)
         {
             switch (moveSt)
@@ -940,7 +922,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         currentMovDir = new Vector3(finalDir.x, 0, finalDir.z);
         RotateCharacter(currentMovDir);
 
-        myPlayerAnimation.SetJump(true);
+        //myPlayerAnimation.SetJump(true);
 
         Debug.DrawLine(anchorPoint, circleCenter, Color.white, 20);
         Debug.DrawLine(anchorPoint, circumfPoint, Color.yellow, 20);
@@ -974,14 +956,13 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         if (!noInput && boostReady && !haveFlag && !inWater)
         {
-            boostReady = false;
             //noInput = true;
             //PARA ORTU: Variable para empezar boost
 
             //myPlayerAnimation_01.dash = true;
-
+            boostCurrentFuel -= boostCapacity*boostFuelLostOnStart;
+            boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
             moveSt = MoveState.Boost;
-            boostTime = 0f;
             if (currentInputDir != Vector3.zero)//Usando el joystick o dirección
             {
                 boostDir = currentMovDir;
@@ -991,21 +972,20 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                 currentMovDir = boostDir = new Vector3(currentCamFacingDir.x, 0, currentCamFacingDir.z);//nos movemos en la dirección en la que mire la cámara
                 RotateCharacter(currentMovDir);
             }
-
-           myPlayerHUD.StartDashHUDDepleteAnimation();
         }
 
     }
 
     void ProcessBoost()
     {
-        if (moveSt==MoveState.Boost)
+        if (moveSt == MoveState.Boost)
         {
-            print("PROCESS BOOST: boostTime = " + boostTime+"; boostDuration = "+ boostMaxDuration);
-            boostTime += Time.deltaTime;
-            if (boostTime < boostMaxDuration)
+            //print("PROCESS BOOST: boostTime = " + boostCurrentFuel + "; boostDuration = "+ boostCapacity);
+            boostCurrentFuel -= boostDepletingSpeed * Time.deltaTime;
+            boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
+            if (boostCurrentFuel > 0)
             {
-                if (Actions.A.WasPressed)
+                if (Actions.R2.WasReleased)
                 {
                     StopBoost();
                 }
@@ -1016,29 +996,42 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                 StopBoost();
             }
         }
+        else
+        {
+            if (boostCurrentFuel < boostCapacity)
+            {
+                ProcessBoostRecharge();
+            }
+            ProcessBoostCD();
+        }
     }
 
     void StopBoost()
     {
         print("STOP BOOST");
         moveSt = MoveState.None;
-        //noInput = false;
-        if (myPlayerHUD.dashHUDDepleteAnimStarted)
-        {
-            myPlayerHUD.StopDashHUDDepleteAnimation();
-        }
         StartBoostCD();
+        //noInput = false;
         //PARA ORTU: Variable para terminar boost
 
         //myPlayerAnimation_01.dash = false;
     }
 
+    void ProcessBoostRecharge()
+    {
+        if (moveSt != MoveState.Boost && boostCurrentFuel < boostCapacity)
+        {
+            boostCurrentFuel += boostRechargingSpeed * Time.deltaTime;
+            boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
+        }
+    }
+
     void StartBoostCD()
     {
-        if(!boostCDStarted)
+        if (!boostCDStarted)
         {
             boostCDStarted = true;
-            boostTime = 0;
+            boostCDTime = 0;
         }
     }
 
@@ -1046,8 +1039,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         if (boostCDStarted)
         {
-            boostTime += Time.deltaTime;
-            if (boostTime >= boostCD)
+            boostCDTime += Time.deltaTime;
+            if (boostCDTime >= boostCDMaxTime)
             {
                 StopBoostCD();
             }
@@ -1059,9 +1052,9 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         if (boostCDStarted)
         {
             boostCDStarted = false;
-            boostReady = true;
         }
     }
+
     #endregion
 
     #region  FACING DIR AND ANGLE & BODY ROTATION---------------------------------------------

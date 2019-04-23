@@ -65,9 +65,9 @@ public class PlayerActions : PlayerActionSet
 		var actions = new PlayerActions();
 
         actions.R1.AddDefaultBinding(Key.T);
-        actions.R2.AddDefaultBinding( Key.Q );
+        actions.R2.AddDefaultBinding( Key.LeftShift );
         actions.L1.AddDefaultBinding(Key.G);
-        actions.L2.AddDefaultBinding( Key.E );
+        actions.L2.AddDefaultBinding( Mouse.RightButton);
 
         actions.A.AddDefaultBinding(Key.Space);
         actions.X.AddDefaultBinding( Key.Key1 );

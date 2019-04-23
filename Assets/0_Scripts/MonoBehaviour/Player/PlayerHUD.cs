@@ -91,11 +91,6 @@ public class PlayerHUD : MonoBehaviour
     public RectTransform dashHUDWater;
     float dashHUDTotalDist = 0;
 
-    [HideInInspector]
-    public bool dashHUDDepleteAnimStarted = false;
-    public float dashHUDDepleteMaxTime = 0.5f;
-    float dashHUDDepleteTime = 0;
-
 
     public void KonoAwake()
     {
@@ -133,7 +128,7 @@ public class PlayerHUD : MonoBehaviour
             UpdateFlagSlider();
         }
         UpdateAllHookPointHUDs();
-        UpdateDashHUDCD();
+        UpdateDashHUDFuel();
     }
 
     public void AdaptCanvasHeightScale()
@@ -436,63 +431,15 @@ public class PlayerHUD : MonoBehaviour
         SetDashHUDProgress(1);
     }
 
-    void UpdateDashHUDCD()
+    void UpdateDashHUDFuel()
     {
-        float progress = 0;
-        if (myPlayerMov.boostReady)
-        {
-            progress = 1;
-        }
-        else if (dashHUDDepleteAnimStarted)//dashHUDDepleteAnimStarted = (moveSt == MoveState.Boost) DURING BOOST
-        {
-            ProcessDashHUDDepleteAnimation();
-        }
-        else//When the boost is finished and the CD is counting
-        {
-            progress = myPlayerMov.boostTime/myPlayerMov.boostCD;
+            float progress = myPlayerMov.boostCurrentFuel/myPlayerMov.boostCapacity;
             SetDashHUDProgress(progress);
-            print("DASH CD = " + myPlayerMov.boostTime+"; progress = "+progress);
-        }
-    }
-
-    public void StartDashHUDDepleteAnimation()
-    {
-        if (!dashHUDDepleteAnimStarted)
-        {
-            dashHUDDepleteMaxTime = Mathf.Clamp(dashHUDDepleteMaxTime, 0, myPlayerMov.boostMaxDuration);
-            dashHUDDepleteTime = 0;
-            dashHUDDepleteAnimStarted = true;
-        }
-    }
-
-    void ProcessDashHUDDepleteAnimation()
-    {
-        if (dashHUDDepleteAnimStarted)
-        {
-            dashHUDDepleteTime += Time.deltaTime;
-
-            //Move Down water
-            float progress = dashHUDDepleteTime / dashHUDDepleteMaxTime;
-            progress = 1 - progress;
-            SetDashHUDProgress(progress);
-            //print("DASH Deplete Anim progress = " + progress);
-
-            if (dashHUDDepleteTime >= dashHUDDepleteMaxTime)
-            {
-                StopDashHUDDepleteAnimation();
-            }
-        }
-    }
-    public void StopDashHUDDepleteAnimation()
-    {
-        if (dashHUDDepleteAnimStarted)
-        {
-            dashHUDDepleteAnimStarted = false;
-        }
     }
 
     void SetDashHUDProgress(float progress)
     {
+        progress = Mathf.Clamp01(progress);
         float currentY = progress * dashHUDTotalDist;
         dashHUDWater.localPosition = new Vector3(dashHUDStartPos.localPosition.x, dashHUDStartPos.localPosition.y + currentY, 1);
     }
