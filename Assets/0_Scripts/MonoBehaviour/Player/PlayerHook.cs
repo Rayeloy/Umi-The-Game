@@ -640,6 +640,7 @@ public class PlayerHook : MonoBehaviour
             currentHookPointPos = null;
             grappleSt = GrappleState.cd;
             myPlayerMov.StopHooked();
+            myPlayerMov.StopHooking();
             StoringManager.instance.StoreObject(currentHook.transform);
             currentHook = null;
             grappleCDTime = 0;

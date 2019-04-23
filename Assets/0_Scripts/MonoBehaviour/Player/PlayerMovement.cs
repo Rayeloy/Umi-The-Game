@@ -108,12 +108,15 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     [Tooltip("0-> none; 1-> All the fuel")]
     [Range(0, 1)]
     public float boostFuelLostOnStart = 0.15f;
+    [Tooltip("0-> none; 1-> All the fuel")]
+    [Range(0, 1)]
+    public float boostMinFuelNeeded = 0.2f;
     [HideInInspector]
     public bool boostReady
     {
         get
         {
-            return ((boostCurrentFuel > boostCapacity / 5) && !boostCDStarted);
+            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !boostCDStarted);
         }
     }
     Vector3 boostDir;

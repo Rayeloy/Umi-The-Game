@@ -90,6 +90,8 @@ public class PlayerHUD : MonoBehaviour
     public RectTransform dashHUDEndPos;
     public RectTransform dashHUDWater;
     float dashHUDTotalDist = 0;
+    public Image background, minLine;
+    public Color[] backgroundColor, minLineColor;//0 -> COLOR WHEN BOOST READY; 1 -> COLOR WHEN BOOST NOT READY
 
 
     public void KonoAwake()
@@ -188,7 +190,7 @@ public class PlayerHUD : MonoBehaviour
         flagSliderStartX = flagSliderStart.localPosition.x;
         flagSliderEndX = flagSliderEnd.localPosition.x;
         sliderTotalDist = (flagSliderStart.localPosition - flagSliderEnd.localPosition).magnitude;
-        flagSlider.localPosition = (flagSliderStart.localPosition - flagSliderEnd.localPosition)/2;
+        flagSlider.localPosition = (flagSliderStart.localPosition - flagSliderEnd.localPosition) / 2;
 
         //Flecha bola
         Arrow.gameObject.SetActive(false);
@@ -350,7 +352,7 @@ public class PlayerHUD : MonoBehaviour
     public void ShowHookPointHUD(HookPoint hookPoint)
     {
         bool found = false;
-        for(int i=0; i < hookPointHUDInfoList.Count && !found; i++)
+        for (int i = 0; i < hookPointHUDInfoList.Count && !found; i++)
         {
             if (hookPointHUDInfoList[i].hookPointHUD.myHookPoint == hookPoint)
             {
@@ -382,7 +384,7 @@ public class PlayerHUD : MonoBehaviour
 
     public void SetChosenHookPointHUD(HookPoint hookPoint)
     {
-        print("SetChosenHookPointHUD("+hookPoint.name+")");
+        print("SetChosenHookPointHUD(" + hookPoint.name + ")");
         for (int i = 0; i < hookPointHUDInfoList.Count; i++)
         {
             if (hookPointHUDInfoList[i].hookPointHUD.myHookPoint == hookPoint && !hookPointHUDInfoList[i].chosenOne)
@@ -429,12 +431,31 @@ public class PlayerHUD : MonoBehaviour
     {
         dashHUDTotalDist = Mathf.Abs(dashHUDStartPos.localPosition.y - dashHUDEndPos.localPosition.y);
         SetDashHUDProgress(1);
+        background.color = backgroundColor[0];
+        minLine.color = minLineColor[0];
     }
 
     void UpdateDashHUDFuel()
     {
-            float progress = myPlayerMov.boostCurrentFuel/myPlayerMov.boostCapacity;
-            SetDashHUDProgress(progress);
+        if (myPlayerMov.boostReady)
+        {
+            background.color = backgroundColor[0];
+            minLine.color = backgroundColor[0];
+        }
+        else
+        {
+            background.color = backgroundColor[1];
+            if (myPlayerMov.boostCurrentFuel < myPlayerMov.boostMinFuelNeeded * myPlayerMov.boostCapacity)
+            {
+                minLine.color = backgroundColor[1];
+            }
+            else
+            {
+                minLine.color = backgroundColor[0];
+            }
+        }
+        float progress = myPlayerMov.boostCurrentFuel / myPlayerMov.boostCapacity;
+        SetDashHUDProgress(progress);
     }
 
     void SetDashHUDProgress(float progress)
