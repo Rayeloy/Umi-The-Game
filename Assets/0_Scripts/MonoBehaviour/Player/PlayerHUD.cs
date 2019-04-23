@@ -433,6 +433,7 @@ public class PlayerHUD : MonoBehaviour
     void SetupDashHUD()
     {
         dashHUDTotalDist = Mathf.Abs(dashHUDStartPos.localPosition.y - dashHUDEndPos.localPosition.y);
+        SetDashHUDProgress(1);
     }
 
     void UpdateDashHUDCD()
@@ -442,15 +443,14 @@ public class PlayerHUD : MonoBehaviour
         {
             progress = 1;
         }
-        else if (dashHUDDepleteAnimStarted)
+        else if (dashHUDDepleteAnimStarted)//dashHUDDepleteAnimStarted = (moveSt == MoveState.Boost) DURING BOOST
         {
             ProcessDashHUDDepleteAnimation();
         }
-        else
+        else//When the boost is finished and the CD is counting
         {
             progress = myPlayerMov.boostTime/myPlayerMov.boostCD;
-            float currentY = progress * dashHUDTotalDist;
-            dashHUDWater.localPosition = new Vector3(dashHUDStartPos.localPosition.x, dashHUDStartPos.localPosition.y + currentY, 1);
+            SetDashHUDProgress(progress);
             print("DASH CD = " + myPlayerMov.boostTime+"; progress = "+progress);
         }
     }
@@ -459,7 +459,7 @@ public class PlayerHUD : MonoBehaviour
     {
         if (!dashHUDDepleteAnimStarted)
         {
-            dashHUDDepleteMaxTime = Mathf.Clamp(dashHUDDepleteMaxTime, 0, myPlayerMov.boostDuration);
+            dashHUDDepleteMaxTime = Mathf.Clamp(dashHUDDepleteMaxTime, 0, myPlayerMov.boostMaxDuration);
             dashHUDDepleteTime = 0;
             dashHUDDepleteAnimStarted = true;
         }
@@ -474,9 +474,8 @@ public class PlayerHUD : MonoBehaviour
             //Move Down water
             float progress = dashHUDDepleteTime / dashHUDDepleteMaxTime;
             progress = 1 - progress;
-            float currentY = progress * dashHUDTotalDist;
-            dashHUDWater.localPosition = new Vector3(dashHUDStartPos.localPosition.x, dashHUDStartPos.localPosition.y + currentY, 1);
-            print("DASH Deplete Anim progress = " + progress);
+            SetDashHUDProgress(progress);
+            //print("DASH Deplete Anim progress = " + progress);
 
             if (dashHUDDepleteTime >= dashHUDDepleteMaxTime)
             {
@@ -490,6 +489,12 @@ public class PlayerHUD : MonoBehaviour
         {
             dashHUDDepleteAnimStarted = false;
         }
+    }
+
+    void SetDashHUDProgress(float progress)
+    {
+        float currentY = progress * dashHUDTotalDist;
+        dashHUDWater.localPosition = new Vector3(dashHUDStartPos.localPosition.x, dashHUDStartPos.localPosition.y + currentY, 1);
     }
 }
 public class HookPointHUDInfo

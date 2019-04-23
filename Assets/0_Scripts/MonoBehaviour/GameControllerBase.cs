@@ -774,7 +774,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         //player.myCamera.transform.localRotation = player.rotateObj.transform.localRotation;
         //player.myCamera.SwitchCamera(player.myCamera.camMode);
         player.ResetPlayer();
-        player.myPlayerAnimation.RestartAnimation();
+        player.myPlayerAnimation_01.RestartAnimation();
     }
 
     private void SwitchGameOverMenu()

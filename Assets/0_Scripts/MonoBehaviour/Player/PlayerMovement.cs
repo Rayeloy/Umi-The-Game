@@ -15,14 +15,15 @@ public enum Team
 }
 public enum MoveState
 {
-    Moving = 0,
-    NotMoving = 1,//Not stunned, breaking
-    Knockback = 2,//Stunned
-    MovingBreaking = 3,//Moving but reducing speed by breakAcc till maxMovSpeed
-    Hooked = 4,
-    Boost = 5,
-    FixedJump = 6,
-    NotBreaking = 7
+    None=0,
+    Moving = 1,
+    NotMoving = 2,//Not stunned, breaking
+    Knockback = 3,//Stunned
+    MovingBreaking = 4,//Moving but reducing speed by breakAcc till maxMovSpeed
+    Hooked = 5,
+    Boost = 6,
+    FixedJump = 7,
+    NotBreaking = 8
 }
 public enum JumpState
 {
@@ -101,8 +102,9 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     [Header("BOOST")]
     public float boostSpeed = 20f;
     public float boostCD = 5f;
-    public float boostDuration = 1f;
+    public float boostMaxDuration = 1f;
     float _boostTime = 0f;
+    bool boostCDStarted = false;
     public float boostTime
     {
         get { return _boostTime; }
@@ -570,10 +572,13 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         {
 
             ProcessFixedJump();
+        }else if (moveSt == MoveState.Boost)
+        {
+            ProcessBoost();
         }
         #endregion
         #region //----------------------------------------------------- Efecto interno --------------------------------------------
-        if (!hooked && !fixedJumping)
+        if (!hooked && !fixedJumping && moveSt!=MoveState.Boost)
         {
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
@@ -582,12 +587,12 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             {
                 StartBoost();
             }
-            ProcessBoost();
             //------------------------------- Max Move Speed -------------------------------
             maxMoveSpeed2 = maxMoveSpeed;
             ProcessWater();
             ProcessAiming();
             ProcessHooking();
+            ProcessBoostCD();
             currentMaxMoveSpeed = (joystickSens / 1) * maxMoveSpeed2;
             if (currentSpeed > currentMaxMoveSpeed && moveSt == MoveState.Moving)
             {
@@ -970,6 +975,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         if (!noInput && boostReady && !haveFlag && !inWater)
         {
             boostReady = false;
+            //noInput = true;
             //PARA ORTU: Variable para empezar boost
 
             //myPlayerAnimation_01.dash = true;
@@ -993,34 +999,68 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     void ProcessBoost()
     {
-        if (!boostReady)
+        if (moveSt==MoveState.Boost)
         {
+            print("PROCESS BOOST: boostTime = " + boostTime+"; boostDuration = "+ boostMaxDuration);
             boostTime += Time.deltaTime;
-            if (boostTime < boostDuration)
+            if (boostTime < boostMaxDuration)
             {
                 if (Actions.A.WasPressed)
                 {
-                    if (myPlayerHUD.dashHUDDepleteAnimStarted)
-                    {
-                        myPlayerHUD.StopDashHUDDepleteAnimation();
-                    }
                     StopBoost();
                 }
-                moveSt = MoveState.Boost;
+                //moveSt = MoveState.Boost;
             }
-            if (boostTime >= boostCD)
+            else
             {
-                boostReady = true;
+                StopBoost();
             }
         }
     }
 
     void StopBoost()
     {
-        boostTime = boostDuration;
+        print("STOP BOOST");
+        moveSt = MoveState.None;
+        //noInput = false;
+        if (myPlayerHUD.dashHUDDepleteAnimStarted)
+        {
+            myPlayerHUD.StopDashHUDDepleteAnimation();
+        }
+        StartBoostCD();
         //PARA ORTU: Variable para terminar boost
 
         //myPlayerAnimation_01.dash = false;
+    }
+
+    void StartBoostCD()
+    {
+        if(!boostCDStarted)
+        {
+            boostCDStarted = true;
+            boostTime = 0;
+        }
+    }
+
+    void ProcessBoostCD()
+    {
+        if (boostCDStarted)
+        {
+            boostTime += Time.deltaTime;
+            if (boostTime >= boostCD)
+            {
+                StopBoostCD();
+            }
+        }
+    }
+
+    void StopBoostCD()
+    {
+        if (boostCDStarted)
+        {
+            boostCDStarted = false;
+            boostReady = true;
+        }
     }
     #endregion
 
@@ -1112,7 +1152,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                             {
                                 float oppositeAngle = currentRotation + 180;
                                 oppositeAngle = oppositeAngle > 360 ? oppositeAngle - 360 : oppositeAngle;
-                                print("oppositeAngle = " + oppositeAngle);
+                                //print("oppositeAngle = " + oppositeAngle);
                                 sign = oppositeAngle < targetRotation ? -1 : 1;
                             }
                             #endregion
