@@ -67,13 +67,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     //CONTROLES
     public PlayerActions Actions { get; set; }
 
-    [Header("Body and body color")]
-    public Transform bodyParent;
-    public GameObject[] playerBodyPrefabs;//0 = A(green); 1 = B(Pink);
-    public SkinnedMeshRenderer Body;
-    public Material teamBlueMat;
-    public Material teamRedMat;
-
+    //[Header("Body and body color")]
 
     //VARIABLES DE MOVIMIENTO
     [HideInInspector]
@@ -114,12 +108,15 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     [Tooltip("0-> none; 1-> All the fuel")]
     [Range(0, 1)]
     public float boostFuelLostOnStart = 0.15f;
+    [Tooltip("0-> none; 1-> All the fuel")]
+    [Range(0, 1)]
+    public float boostMinFuelNeeded = 0.2f;
     [HideInInspector]
     public bool boostReady
     {
         get
         {
-            return ((boostCurrentFuel > boostCapacity / 5) && !boostCDStarted);
+            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !boostCDStarted);
         }
     }
     Vector3 boostDir;
@@ -606,7 +603,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         #endregion
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
-        print("MoveState = " + moveSt + "; currentSpeed = " + currentSpeed + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
+        //print("MoveState = " + moveSt + "; currentSpeed = " + currentSpeed + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
         if (jumpSt != JumpState.wallJumping)
         {
             switch (moveSt)

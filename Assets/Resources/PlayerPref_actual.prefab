@@ -271,13 +271,6 @@ MonoBehaviour:
   myCamera: {fileID: 0}
   cameraFollow: {fileID: 2847219716704171441}
   rotateObj: {fileID: 2847339013141467789}
-  bodyParent: {fileID: 2847374190979902391}
-  playerBodyPrefabs:
-  - {fileID: 7159981351234049454, guid: fd0825d1b723ed145b17f9970feffd82, type: 3}
-  - {fileID: 7870187082068882509, guid: b37440b00856b08478d136126be5ba48, type: 3}
-  Body: {fileID: 2772850078638722801}
-  teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
-  teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
   maxMoveSpeed: 10
   rotationSpeed: 950
   instantRotationMaxAngle: 130
@@ -288,7 +281,7 @@ MonoBehaviour:
   maxSpeedInWater: 5
   maxVerticalSpeedInWater: 3
   boostSpeed: 25
-  boostCapacity: 0.8
+  boostCapacity: 1
   boostDepletingSpeed: 1
   boostRechargingSpeed: 0.15
   boostCurrentFuel: 1
@@ -632,11 +625,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2266972678162777980, guid: 7fe8d16465f14ca4cb1a013784d61b03,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2175703407794122806, guid: 7fe8d16465f14ca4cb1a013784d61b03,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -692,6 +680,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2266972678162777980, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2266972678162777980, guid: 7fe8d16465f14ca4cb1a013784d61b03, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 7fe8d16465f14ca4cb1a013784d61b03, type: 3}
@@ -713,9 +706,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a4ad5e66adb44246982df3dc31406e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!137 &2772850078638722801 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 2290518430479889030, guid: 7fe8d16465f14ca4cb1a013784d61b03,
-    type: 3}
-  m_PrefabInstance: {fileID: 4157572412794338423}
-  m_PrefabAsset: {fileID: 0}
