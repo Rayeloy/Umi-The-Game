@@ -5,24 +5,26 @@ using UnityEngine;
 public class HitboxHookBig : MonoBehaviour
 {
     PlayerMovement myPlayerMov;
-    PlayerHook myHook;
+    PlayerHook myPlayerHook;
+    Hook myHook;
 
     public void KonoAwake(PlayerMovement playerMov, PlayerHook hook)
     {
         myPlayerMov = playerMov;
-        myHook = hook;
+        myPlayerHook = hook;
+        myHook = GetComponentInParent<Hook>();
     }
     private void OnTriggerEnter(Collider col)
     {
         //print("Hook: Collision with " + col.name);
         if (col.gameObject != myPlayerMov.gameObject)
         {
-            if (myHook.canHookSomething)
+            if (myPlayerHook.canHookSomething)
             {
                 switch (col.tag)
                 {
                     case "Flag":
-                        myHook.HookObject(col.transform);
+                        myPlayerHook.HookObject(col.transform);
                         break;
                     case "Player":
                         PlayerMovement otherPlayer = col.GetComponent<PlayerBody>().myPlayerMov;
@@ -30,14 +32,14 @@ public class HitboxHookBig : MonoBehaviour
                         {
                             if (!otherPlayer.inWater)// OUTSIDE WATER
                             {
-                                myHook.HookPlayer(otherPlayer);
+                                myPlayerHook.HookPlayer(otherPlayer);
                             }
                         }
                         else
                         {
                             if (otherPlayer.inWater)//IF ALLY IN WATER
                             {
-                                myHook.HookPlayer(otherPlayer);
+                                myPlayerHook.HookPlayer(otherPlayer);
                             }
                         }
                         break;
@@ -57,7 +59,7 @@ public class HitboxHookBig : MonoBehaviour
                         break;
                 }
             }
-            else if (myHook.grappleSt == GrappleState.throwing)
+            else if (myPlayerHook.grappleSt == GrappleState.throwing)
             {
                 CollideWithHookPoint(col);
             }
@@ -73,24 +75,26 @@ public class HitboxHookBig : MonoBehaviour
             if (hookPoint != null)
             {
                 RaycastHit hit;
-                Vector3 rayOrigin = myHook.currentHook.transform.position;
+                Vector3 rayOrigin = myPlayerHook.currentHook.transform.position;
                 Vector3 rayEnd = col.transform.parent.position;
                 LayerMask lm = LayerMask.GetMask("Stage");
                 Debug.DrawLine(rayOrigin, rayEnd, Color.yellow, 3);
                 //Debug.Log("hook pos = " + rayOrigin.ToString("F4"));
 
+                Transform hookPos;
                 if (Physics.Linecast(rayOrigin, rayEnd, out hit, lm, QueryTriggerInteraction.Collide))
                 {
-                    Vector3 hookPos = hookPoint.GetHookPoint(hit.point);//col.ClosestPointOnBounds(myHook.transform.position));
-                    myHook.StartGrappling(hookPos, col.transform.parent.GetComponent<HookPoint>());
+                    hookPos = hookPoint.GetHookPoint(hit.point);//col.ClosestPointOnBounds(myHook.transform.position));
                 }
                 else
                 {
                     //Debug.Log("Error: Can't find a collision point between the hook and the hookPoint. " +
                     //    "There must be one since we already collided and we are just trying to find a collisions point");
-                    Vector3 hookPos = hookPoint.GetHookPoint(col.ClosestPointOnBounds(myHook.transform.position));
-                    myHook.StartGrappling(hookPos, col.transform.parent.GetComponent<HookPoint>());
+                    hookPos = hookPoint.GetHookPoint(col.ClosestPointOnBounds(myPlayerHook.transform.position));
                 }
+                myHook.transform.position = hookPos.position;
+                myPlayerHook.StartGrappling(col.transform.parent.GetComponent<HookPoint>(),hookPos);
+                //myHook.transform.parent = col.transform.parent.GetComponent<HookPoint>().transform;
             }
         }
     }

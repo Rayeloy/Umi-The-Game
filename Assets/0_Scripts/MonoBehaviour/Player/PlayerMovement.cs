@@ -67,13 +67,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     //CONTROLES
     public PlayerActions Actions { get; set; }
 
-    [Header("Body and body color")]
-    public Transform bodyParent;
-    public GameObject[] playerBodyPrefabs;//0 = A(green); 1 = B(Pink);
-    public SkinnedMeshRenderer Body;
-    public Material teamBlueMat;
-    public Material teamRedMat;
-
+    //[Header("Body and body color")]
 
     //VARIABLES DE MOVIMIENTO
     [HideInInspector]
@@ -606,7 +600,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         #endregion
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
-        print("MoveState = " + moveSt + "; currentSpeed = " + currentSpeed + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
+        //print("MoveState = " + moveSt + "; currentSpeed = " + currentSpeed + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
         if (jumpSt != JumpState.wallJumping)
         {
             switch (moveSt)

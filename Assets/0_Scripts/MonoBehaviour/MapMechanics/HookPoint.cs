@@ -9,7 +9,7 @@ public class HookPoint : MonoBehaviour
     public GameObject bigTrigger;
 
 
-    public Vector3 GetHookPoint(Vector3 collisionPoint)
+    public Transform GetHookPoint(Vector3 collisionPoint)
     {
         //print("collision point world pos = " + collisionPoint.ToString("F4"));
         collisionPoint = transform.InverseTransformPoint(collisionPoint);
@@ -19,12 +19,12 @@ public class HookPoint : MonoBehaviour
             if (collisionPoint.x >= 0)//Cuadrante 1
             {
                 //print("Cuadrante 1");
-                return hookPoints[0].position;
+                return hookPoints[0];
             }
             else//Cuadrante 4
             {
                 //print("Cuadrante 4");
-                return hookPoints[3].position;
+                return hookPoints[3];
             }
         }
         else
@@ -32,12 +32,12 @@ public class HookPoint : MonoBehaviour
             if (collisionPoint.x >= 0)//Cuadrante 2
             {
                 //print("Cuadrante 2");
-                return hookPoints[1].position;
+                return hookPoints[1];
             }
             else//Cuadrante 3
             {
                 //print("Cuadrante 3");
-                return hookPoints[2].position;
+                return hookPoints[2];
             }
         }
     }
