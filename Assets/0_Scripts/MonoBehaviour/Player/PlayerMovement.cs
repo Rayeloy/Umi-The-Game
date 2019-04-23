@@ -54,6 +54,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     public Controller3D controller;
     public PlayerBody myPlayerBody;
     public PlayerObjectDetection myPlayerObjectDetection;
+    public PlayerModel myPlayerModel;
 
     public GameControllerBase gC;
     public CameraController myCamera;
@@ -66,6 +67,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     public PlayerActions Actions { get; set; }
 
     [Header("Body and body color")]
+    public Transform bodyParent;
+    public GameObject[] playerBodyPrefabs;//0 = A(green); 1 = B(Pink);
     public SkinnedMeshRenderer Body;
     public Material teamBlueMat;
     public Material teamRedMat;
@@ -278,6 +281,34 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         SetupInputsBuffer();
         myPlayerHook.myCameraBase = myCamera;
 
+        //PLAYER BODY
+
+        GameObject myBody = null;
+        switch (team)
+        {
+            case Team.blue:
+                //myPlayerWeap.AttachWeapon("Churro Azul");
+                //Body.material = teamBlueMat;
+                //myBody = Instantiate(playerBodyPrefabs[0], bodyParent);
+                myPlayerModel.hair.material = myPlayerModel.hairMats[0];
+                myPlayerModel.skin.material = myPlayerModel.skinMats[0];
+                myPlayerModel.wetsuit.material = myPlayerModel.wetsuitMats[0];
+                myPlayerModel.accesories.material = myPlayerModel.accesoriesMats[0];
+                myPlayerModel.boots.material = myPlayerModel.bootsMats[0];
+                break;
+            case Team.red:
+                //myPlayerWeap.AttachWeapon("Churro Rojo");
+                //Body.material = teamRedMat;
+                //myBody = Instantiate(playerBodyPrefabs[1], bodyParent);
+                myPlayerModel.hair.material = myPlayerModel.hairMats[1];
+                myPlayerModel.skin.material = myPlayerModel.skinMats[1];
+                myPlayerModel.wetsuit.material = myPlayerModel.wetsuitMats[1];
+                myPlayerModel.accesories.material = myPlayerModel.accesoriesMats[1];
+                myPlayerModel.boots.material = myPlayerModel.bootsMats[1];
+                break;
+        }
+        //myPlayerModel = myBody.GetComponent<PlayerModel>();
+
         //WALLJUMP
         rows = 5;
         columns = 5;
@@ -325,18 +356,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         print("wallJumpRaduis = " + wallJumpRadius + "; tan(wallJumpAngle)= " + Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad));
         wallJumpMinHorizAngle = Mathf.Clamp(wallJumpMinHorizAngle, 0, 90);
         print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
-        //Body.material = team == Team.blue ? teamBlueMat : teamRedMat;
-        switch (team)
-        {
-            case Team.blue:
-                //myPlayerWeap.AttachWeapon("Churro Azul");
-                Body.material = teamBlueMat;
-                break;
-            case Team.red:
-                //myPlayerWeap.AttachWeapon("Churro Rojo");
-                Body.material = teamRedMat;
-                break;
-        }
+
         currentMaxMoveSpeed = maxMoveSpeed2 = maxMoveSpeed;
         knockbackBreakAcc = Mathf.Clamp(knockbackBreakAcc, -float.MaxValue, breakAcc);//menos de break Acc lo haría ver raro
 

@@ -15,11 +15,13 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
     public PlayerMovement myPlayerMovement;
     public PlayerCombat myPlayerCombat;
     PlayerHUD myPlayerHUD;
+    [HideInInspector]
+    public PlayerModel myPlayerModel;
 
-    [Header("WEAPONS ATTACH")]
-    public Transform senaka;//ESPALDA
-    public Transform rightHand;
-    public Transform leftHand;
+    //[Header("WEAPONS ATTACH")]
+    //public Transform senaka;//ESPALDA
+    //public Transform rightHand;
+    //public Transform leftHand;
     #endregion
 
     #region ----[ PROPERTIES ]----
@@ -73,6 +75,7 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
         myPlayerAnim = myPlayerMovement.myPlayerAnimation;
         myPlayerCombat = myPlayerMovement.myPlayerCombat;
         myPlayerHUD = myPlayerMovement.myPlayerHUD;
+        myPlayerModel = myPlayerMovement.myPlayerModel;
         weaponsNearby = new List<Weapon>();
     }
     #endregion
@@ -185,7 +188,7 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
 
     public void AttatchWeapon()
     {
-        currentWeapObject.SetParent(rightHand);
+        currentWeapObject.SetParent(myPlayerModel.rightHand);
         currentWeapObject.localPosition = currentWeapon.weaponData.handPosition;
         currentWeapObject.localRotation = Quaternion.Euler(currentWeapon.weaponData.handRotation.x, currentWeapon.weaponData.handRotation.y, currentWeapon.weaponData.handRotation.z);
         currentWeapObject.localScale = currentWeapon.weaponData.handScale;
@@ -194,7 +197,7 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
     public void AttatchWeapon(Weapon weapon)
     {
         currentWeapon = weapon;
-        currentWeapObject = Instantiate(currentWeapon.currentWeaponPrefab, rightHand).transform;
+        currentWeapObject = Instantiate(currentWeapon.currentWeaponPrefab, myPlayerModel.rightHand).transform;
         AttatchWeapon();
     }
 
@@ -202,7 +205,7 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
     {
         if (!PhotonNetwork.IsConnected)
         {
-            currentWeapObject.SetParent(senaka);
+            currentWeapObject.SetParent(myPlayerModel.senaka);
             currentWeapObject.localPosition = currentWeapon.weaponData.backPosition;
             currentWeapObject.localRotation = Quaternion.Euler(currentWeapon.weaponData.backRotation.x, currentWeapon.weaponData.backRotation.y, currentWeapon.weaponData.backRotation.z);
             currentWeapObject.localScale = currentWeapon.weaponData.backScale;

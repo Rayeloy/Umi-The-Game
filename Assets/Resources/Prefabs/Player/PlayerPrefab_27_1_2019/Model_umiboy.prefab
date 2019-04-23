@@ -600,7 +600,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2175703407794122806}
-  - component: {fileID: 2266972678162777980}
   - component: {fileID: 3591323914173192954}
   m_Layer: 0
   m_Name: Model_umiboy
@@ -632,25 +631,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &2266972678162777980
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2171998722439508168}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: cf922255f00771345858be6e5aec22b4, type: 3}
-  m_Controller: {fileID: 9100000, guid: 91e16feba2608044caffa75a1137ad8f, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &3591323914173192954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -663,9 +643,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a4ad5e66adb44246982df3dc31406e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hair: {fileID: 2290109225923599592}
+  skin: {fileID: 2290942448767739846}
+  wetsuit: {fileID: 2290518430479889030}
+  accesories: {fileID: 2290510151037854778}
+  boots: {fileID: 2290081578932003886}
   senaka: {fileID: 2175270307721140502}
   rightHand: {fileID: 2175031340322691898}
   leftHand: {fileID: 2175730928356006898}
+  hairMats:
+  - {fileID: 2100000, guid: 2fd89cb8cdf2be44da7388072ff4785d, type: 2}
+  - {fileID: 2100000, guid: 0feefcc2d42a0e74bb767afb5dbea8d5, type: 2}
+  skinMats:
+  - {fileID: 2100000, guid: 3eb11a5d62a44534ca502ec1f2203684, type: 2}
+  - {fileID: 2100000, guid: b09b59a029967ad40b6e2aff5e923aee, type: 2}
+  wetsuitMats:
+  - {fileID: 2100000, guid: efe79327c82a6434abb4fe674f6fc556, type: 2}
+  - {fileID: 2100000, guid: 861c4c96eeae3314e9c55032bc6e0f67, type: 2}
+  accesoriesMats:
+  - {fileID: 2100000, guid: 5e1721c7e4652f84eb3e9b2a010cad1f, type: 2}
+  - {fileID: 2100000, guid: db2431cafec886345a1e87e8736ad761, type: 2}
+  bootsMats:
+  - {fileID: 2100000, guid: efe79327c82a6434abb4fe674f6fc556, type: 2}
+  - {fileID: 2100000, guid: 861c4c96eeae3314e9c55032bc6e0f67, type: 2}
 --- !u!1 &2172001897673925600
 GameObject:
   m_ObjectHideFlags: 0
@@ -1402,7 +1402,7 @@ GameObject:
   - component: {fileID: 2175060525966855202}
   - component: {fileID: 2290081578932003886}
   m_Layer: 0
-  m_Name: Neopreno_grp
+  m_Name: Boots_grp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
