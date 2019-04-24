@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public enum CameraVFX
+public enum CameraVFXType
 {
     None,
     Dash,
@@ -78,14 +78,14 @@ public class PlayerHUD : MonoBehaviour
 
     //CameraVFX
     [Header("Camera VFX")]
-    public GameObject dashCamVFX;
-    public GameObject RecieveHitCamVFX;
-    public GameObject PickFlagCamVFX;
-    GameObject currentCameraEffect;
-    CameraVFX currentCamVFX = CameraVFX.None;
+    public CameraVFX[] cameraVFX;
+    CameraVFX currentCameraVFX;
+    public RectTransform CameraVFXParent;
+
 
     //DASH HUD
     [Header("DASH HUD")]
+    public RectTransform dashHUDParent;
     public RectTransform dashHUDStartPos;
     public RectTransform dashHUDEndPos;
     public RectTransform dashHUDWater;
@@ -98,6 +98,7 @@ public class PlayerHUD : MonoBehaviour
     {
         hookPointHUDInfoList = new List<HookPointHUDInfo>();
         myCanvas = GetComponent<Canvas>();
+        CameraVFXAwakes();
     }
 
     public void KonoStart()
@@ -147,6 +148,8 @@ public class PlayerHUD : MonoBehaviour
             redTeamScoreText.rectTransform.localScale = new Vector3(redTeamScoreText.rectTransform.localScale.x * invScaleValue, redTeamScoreText.rectTransform.localScale.y, 1);
             blueTeamScoreText.rectTransform.localScale = new Vector3(blueTeamScoreText.rectTransform.localScale.x * invScaleValue, blueTeamScoreText.rectTransform.localScale.y, 1);
             timeText.rectTransform.localScale = new Vector3(timeText.rectTransform.localScale.x, timeText.rectTransform.localScale.y * scaleValue, 1);
+            dashHUDParent.localScale = new Vector3(dashHUDParent.localScale.x * scaleValue, dashHUDParent.localScale.y, 1);
+            //CameraVFXParent.localScale = new Vector3(CameraVFXParent.localScale.x * scaleValue, CameraVFXParent.localScale.y, 1);
         }
     }
 
@@ -403,26 +406,65 @@ public class PlayerHUD : MonoBehaviour
 
     //EFECTOS DE CÁMARA
 
-    public void StartCamVFX(CameraVFX camVFX)
+    void CameraVFXAwakes()
     {
-        if (currentCamVFX != CameraVFX.None)
+        for(int i=0; i<cameraVFX.Length; i++)
         {
-            switch (camVFX)
+            cameraVFX[i].KonoAwake();
+        }
+    }
+
+    public void StartCamVFX(CameraVFXType camVFXType)
+    {
+        for(int i = 0; i < cameraVFX.Length; i++)
+        {
+            if(cameraVFX[i].effectType == camVFXType)
             {
-                case CameraVFX.Dash:
-                    currentCamVFX = CameraVFX.Dash;
-                    break;
-                case CameraVFX.RecieveHit:
-                    currentCamVFX = CameraVFX.RecieveHit;
-                    break;
-                case CameraVFX.PickFlag:
-                    currentCamVFX = CameraVFX.PickFlag;
-                    break;
-                case CameraVFX.Water:
-                    currentCamVFX = CameraVFX.Water;
-                    break;
+                if (currentCameraVFX != null)
+                {
+                    if (cameraVFX[i].priority >= currentCameraVFX.priority)
+                    {
+                        StopCamVFX(currentCameraVFX);
+                        StartCamVFX(cameraVFX[i]);
+                    }
+                }
+                else
+                {
+                    StartCamVFX(cameraVFX[i]);
+                }
             }
         }
+    }
+
+    void StartCamVFX(CameraVFX camVFX)
+    {
+        camVFX.Activate();
+        currentCameraVFX = camVFX;
+    }
+
+
+    public void StopCamVFX(CameraVFXType camVFXType)
+    {
+        for (int i = 0; i < cameraVFX.Length; i++)
+        {
+            if (cameraVFX[i].effectType == camVFXType)
+            {
+                cameraVFX[i].Deactivate();
+            }
+        }
+        currentCameraVFX = null;
+    }
+
+    public void StopCamVFX(CameraVFX camVFX)
+    {
+        for (int i = 0; i < cameraVFX.Length; i++)
+        {
+            if(cameraVFX[i]== camVFX)
+            {
+                cameraVFX[i].Deactivate();
+            }
+        }
+        currentCameraVFX = null;
     }
 
     //DASH HUD
@@ -465,6 +507,41 @@ public class PlayerHUD : MonoBehaviour
         dashHUDWater.localPosition = new Vector3(dashHUDStartPos.localPosition.x, dashHUDStartPos.localPosition.y + currentY, 1);
     }
 }
+[System.Serializable]
+public class CameraVFX
+{
+    public CameraVFXType effectType;
+    public GameObject prefab;
+    [Tooltip("The higher, the bigger prority")]
+    public int priority;
+    public float speed = 1;
+
+    public void KonoAwake()
+    {
+        prefab.GetComponent<Animator>().speed = speed;
+        prefab.SetActive(false);
+    }
+
+    public void Activate()
+    {
+        if (!prefab.activeInHierarchy)
+        {
+            Debug.Log("ACTIVATE CAMERA VFX : " + effectType);
+            prefab.SetActive(true);
+            //prefab.GetComponent<Animator>().Play("dashCameraVFX",0);
+        }
+    }
+
+    public void Deactivate()
+    {
+        if (prefab.activeInHierarchy)
+        {
+            prefab.SetActive(false);
+        }
+    }
+
+}
+
 public class HookPointHUDInfo
 {
     public HookPointHUD hookPointHUD;

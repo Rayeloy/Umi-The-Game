@@ -109,6 +109,33 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     Camera onlineUICamera;
     [HideInInspector]
     public PlayerActions BaseGameActions { get; set; }
+
+    [HideInInspector]
+    public bool HasPlayerFlatCamera(PlayerMovement pM)
+    {
+        if (allPlayers.Count == 2)
+        {
+            return true;
+        }
+        else if(allPlayers.Count == 3)
+        {
+            for(int i=0; i<allPlayers.Count; i++)
+            {
+                if (allPlayers[i] == pM)
+                {
+                    if (i == 2)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        return false;
+    }
     #endregion
 
     #region ----[ VARIABLES ]----

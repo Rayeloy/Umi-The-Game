@@ -56,6 +56,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     public PlayerBody myPlayerBody;
     public PlayerObjectDetection myPlayerObjectDetection;
     public PlayerModel myPlayerModel;
+    public PlayerVFX myPlayerVFX;
 
     public GameControllerBase gC;
     public CameraController myCamera;
@@ -324,6 +325,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         myPlayerHook.KonoAwake();
         myPlayerWeap.KonoAwake();
         myPlayerBody.KonoAwake();
+        myPlayerVFX.KonoAwake();
     }
     #endregion
 
@@ -969,6 +971,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                 currentMovDir = boostDir = new Vector3(currentCamFacingDir.x, 0, currentCamFacingDir.z);//nos movemos en la dirección en la que mire la cámara
                 RotateCharacter(currentMovDir);
             }
+            myPlayerHUD.StartCamVFX(CameraVFXType.Dash);
         }
 
     }
@@ -1003,11 +1006,15 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         }
     }
 
-    void StopBoost()
+    public void StopBoost()
     {
-        print("STOP BOOST");
-        moveSt = MoveState.None;
-        StartBoostCD();
+        if(moveSt == MoveState.Boost)
+        {
+            print("STOP BOOST");
+            moveSt = MoveState.None;
+            StartBoostCD();
+            myPlayerHUD.StopCamVFX(CameraVFXType.Dash);
+        }
         //noInput = false;
         //PARA ORTU: Variable para terminar boost
 
@@ -1355,6 +1362,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         flag.transform.localPosition = new Vector3(0, 0, -0.5f);
         flag.transform.localRotation = Quaternion.Euler(0, -135, 0);
         HideFlagFlow();
+        StopBoost();
     }
 
     public void LoseFlag()
@@ -1398,6 +1406,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             {
                 (gC as GameController_FlagMode).myScoreManager.PlayerEliminado();
             }
+            myPlayerVFX.ActivateEffect(PlayerVFXType.SwimmingEffect);
+            myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
         }
     }
 
@@ -1420,6 +1430,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             myPlayerAnimation_01.exitWater = true;
             inWater = false;
             myPlayerWeap.AttatchWeapon();
+            myPlayerVFX.DeactivateEffect(PlayerVFXType.SwimmingEffect);
         }
     }
     #endregion

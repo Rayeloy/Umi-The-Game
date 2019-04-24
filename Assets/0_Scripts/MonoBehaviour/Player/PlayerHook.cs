@@ -152,22 +152,6 @@ public class PlayerHook : MonoBehaviour
         ProcessAutoGrapple();
 
         //TO DO: Revisar este código porque me parece mal colocado o innecesario.
-        if (hookSt != HookState.ready && hookSt != HookState.cd)
-        {
-            UpdateDistance();
-            if (currentDistance >= hookMaxDistance)
-            {
-                StartReeling();
-            }
-            Vector3 hookRopeEndPos = hookRopeEnd.position;
-            myHook.UpdateRopeLine(originPos, hookRopeEndPos);
-            //Debug.DrawLine(originPos, hookRopeEndPos, Color.red);
-            RaycastHit hit;
-            if (Physics.Linecast(originPos, hookRopeEndPos, out hit, collisionMask, QueryTriggerInteraction.Ignore))
-            {
-                StopHook();
-            }
-        }
         ProcessHook();
     }
 
@@ -202,6 +186,7 @@ public class PlayerHook : MonoBehaviour
         print("START GRAPPLING");
         currentGrapplingHookPoint = hookPoint;
         currentHookPointPos=_currentHookPointPos;
+        myPlayerMov.StopBoost();
         if (grappleSt == GrappleState.throwing)
         {
             StartGrapplingAutoGrapple();
@@ -262,6 +247,22 @@ public class PlayerHook : MonoBehaviour
 
     void ProcessHook()
     {
+        if (hookSt != HookState.ready && hookSt != HookState.cd)
+        {
+            UpdateDistance();
+            if (currentDistance >= hookMaxDistance)
+            {
+                StopHook();
+            }
+            Vector3 hookRopeEndPos = hookRopeEnd.position;
+            myHook.UpdateRopeLine(originPos, hookRopeEndPos);
+            //Debug.DrawLine(originPos, hookRopeEndPos, Color.red);
+            RaycastHit hit;
+            if (Physics.Linecast(originPos, hookRopeEndPos, out hit, collisionMask, QueryTriggerInteraction.Ignore))
+            {
+                StopHook();
+            }
+        }
         Vector3 reelingDir;
         switch (hookSt)
         {
@@ -564,13 +565,25 @@ public class PlayerHook : MonoBehaviour
 
     void ProcessAutoGrapple()
     {
+        if (grappleSt != GrappleState.ready && grappleSt != GrappleState.cd)
+        {
+            UpdateDistance();
+            Vector3 hookRopeEndPos = hookRopeEnd.position;
+            myHook.UpdateRopeLine(originPos, hookRopeEndPos);
+            //Debug.DrawLine(originPos, hookRopeEndPos, Color.red);
+            RaycastHit hit;
+            if (Physics.Linecast(originPos, hookRopeEndPos, out hit, collisionMask, QueryTriggerInteraction.Ignore))
+            {
+                FinishAutoGrapple();
+            }
+        }
         Vector3 reelingDir;
         switch (grappleSt)
         {
             case GrappleState.throwing:
                 print("THROWING AUTOGRAPPLE");
                 MoveHook(hookMovingVel);
-                UpdateDistance();
+                //UpdateDistance();
                 Vector3 hookRopeEndPos = hookRopeEnd.position;
                 myHook.UpdateRopeLine(originPos, hookRopeEndPos);
                 //Debug.DrawLine(originPos, hookRopeEndPos, Color.red);
@@ -588,7 +601,7 @@ public class PlayerHook : MonoBehaviour
             case GrappleState.grappling:
                 print("AUTO GRAPPLING");
                 currentHook.transform.position = currentHookPointPos.position;
-                UpdateDistance();
+                //UpdateDistance();
                 hookRopeEndPos = hookRopeEnd.position;
                 myHook.UpdateRopeLine(originPos, hookRopeEndPos);
                 timeGrappling += Time.deltaTime;
@@ -663,6 +676,12 @@ public class PlayerHook : MonoBehaviour
         float lowestDistToCamCenter = float.MaxValue;
 
         Vector2 minDist = new Vector2(hookPointMinDistToCameraCenter * myCamera.rect.width, hookPointMinDistToCameraCenter * myCamera.rect.height);
+        if (myPlayerMov.gC.HasPlayerFlatCamera(myPlayerMov))
+         {
+            print("FLAT CAMERA ("+name+")");
+            minDist.y += (1 * myCamera.pixelHeight);
+            minDist.x -= (0.1f * myCamera.pixelWidth);
+         }
         for (int i = 0; i < hookPoints.Count; i++)
         {
             bool success = false;
