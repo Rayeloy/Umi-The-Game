@@ -72,7 +72,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     #region ----[ PROPERTIES ]----
 
-    protected int playerNumBlue = 0, playerNumRed = 0;
+    protected int playerNumTeamA = 0, playerNumTeamB = 0;
     private PlayerActions playerActions;
 
     //GAME OVER MENU
@@ -429,11 +429,11 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     //Juan: esta función se ejecuta antes de instanciar al jugador, PhotonNetwrok.Instantiate  así spawneará al jugador en su respectivo lugar desde el principio haya o no comenzado el juego
     public Team SetOnlineTeam()
     {
-        Team myTeam = Team.blue;
+        Team myTeam = Team.A;
         int playercount = (int)PhotonNetwork.CurrentRoom.PlayerCount;
         if (playercount % 2 != 0) //Juan: Pares al azul impares al rojo
         {
-            myTeam = Team.red;
+            myTeam = Team.B;
         }
         return myTeam;
     }
@@ -462,11 +462,11 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                         // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
                         Team newPlayerTeam = SetOnlineTeam();
                         Vector3 respawn = new Vector3(-200, -200, -200);
-                        if (newPlayerTeam == Team.blue)
+                        if (newPlayerTeam == Team.A)
                         {
                             respawn = blueTeamSpawns[0].position;
                         }
-                        else if (newPlayerTeam == Team.red)
+                        else if (newPlayerTeam == Team.B)
                         {
                             respawn = redTeamSpawns[0].position;
                         }
@@ -576,7 +576,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         List<PlayerMovement> bluePlayers = new List<PlayerMovement>();
         for (int i = 0; i < allPlayers.Count; i++)
         {
-            if (allPlayers[i].team == Team.blue)
+            if (allPlayers[i].team == Team.A)
             {
                 bluePlayers.Add(allPlayers[i]);
             }
@@ -587,8 +587,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
         
         
-        int playerNumBlueCopy = playerNumBlue = bluePlayers.Count;
-        int playerNumRedCopy = playerNumRed = redPlayers.Count;
+        int playerNumBlueCopy = playerNumTeamA = bluePlayers.Count;
+        int playerNumRedCopy = playerNumTeamB = redPlayers.Count;
         print("Blue players: " + playerNumBlueCopy + "; Red Players: " + playerNumRedCopy);
 
         //Divide number of players in a team by number of spawns in that team && set spawnRotation of players (because is more efficient to do it here)
@@ -598,10 +598,10 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
         int playersPerSpawn = 0;
         //BLUE TEAM PLAYERS PER SPAWN
-        if (blueTeamSpawns.Length > 0 && playerNumBlue > 0)
+        if (blueTeamSpawns.Length > 0 && playerNumTeamA > 0)
         {
             print("Blue Team Spawns Players:");
-            float pps = (float)playerNumBlue / (float)blueTeamSpawns.Length;
+            float pps = (float)playerNumTeamA / (float)blueTeamSpawns.Length;
             playersPerSpawn = Mathf.CeilToInt(Mathf.Clamp(pps, 1,float.MaxValue));
             //print("playerNumBlue = "+ playerNumBlue + "; blueTeamSpawns.Length = "+ blueTeamSpawns.Length + "; playersPerSpawn = " + pps + "; rounded number = "+playersPerSpawn);
             for (int i = 0; i < blueTeamSpawns.Length && playerNumBlueCopy > 0; i++)
@@ -620,10 +620,10 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
 
         //RED TEAM PLAYERS PER SPAWN
-        if (redTeamSpawns.Length > 0 && playerNumRed>0)
+        if (redTeamSpawns.Length > 0 && playerNumTeamB > 0)
         {
             print("Red Team Spawns Players:");
-            float pps = (float)playerNumRed / (float)redTeamSpawns.Length;
+            float pps = (float)playerNumTeamB / (float)redTeamSpawns.Length;
             playersPerSpawn = Mathf.CeilToInt(Mathf.Clamp(pps, 1, float.MaxValue));
             for (int i = 0; i < redTeamSpawns.Length && playerNumRedCopy > 0; i++)
             {
@@ -641,22 +641,22 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         //ALL SPAWN POSITIONS CONCATENATED
         List<Vector3> spawnPosBlue = new List<Vector3>();
         List<Vector3> spawnPosRed = new List<Vector3>();
-        for(int i=0; i < blueTeamSpawns.Length && playerNumBlue > 0; i++)
+        for(int i=0; i < blueTeamSpawns.Length && playerNumTeamA > 0; i++)
         {
             List<Vector3> auxPositions = blueTeamSpawns[i].GetComponent<Respawn>().SetSpawnPositions(blueSpawnsNumPlayers[i]);
             spawnPosBlue.AddRange(auxPositions);
         }
 
-        for (int i = 0; i < redTeamSpawns.Length && playerNumRed > 0; i++)
+        for (int i = 0; i < redTeamSpawns.Length && playerNumTeamB > 0; i++)
         {
             List<Vector3> auxPositions = redTeamSpawns[i].GetComponent<Respawn>().SetSpawnPositions(redSpawnsNumPlayers[i]);
             spawnPosRed.AddRange(auxPositions);
         }
-        if (spawnPosBlue.Count != playerNumBlue) Debug.LogError("Error: Spawn positions("+spawnPosBlue.Count+") for blue team are not equal to number of blue team players("+playerNumBlue+").");
-        if (spawnPosRed.Count != playerNumRed) Debug.LogError("Error: Spawn positions (" + spawnPosRed.Count + ") for red team are not equal to number of red team players(" + playerNumRed + ").");
+        if (spawnPosBlue.Count != playerNumTeamA) Debug.LogError("Error: Spawn positions("+spawnPosBlue.Count+") for blue team are not equal to number of blue team players("+ playerNumTeamA + ").");
+        if (spawnPosRed.Count != playerNumTeamB) Debug.LogError("Error: Spawn positions (" + spawnPosRed.Count + ") for red team are not equal to number of red team players(" + playerNumTeamB + ").");
         for (int i = 0; i < allPlayers.Count; i++)
         {
-            if (allPlayers[i].team == Team.blue)
+            if (allPlayers[i].team == Team.A)
             {
                 allPlayers[i].spawnPosition = spawnPosBlue[0];
                 spawnPosBlue.RemoveAt(0);

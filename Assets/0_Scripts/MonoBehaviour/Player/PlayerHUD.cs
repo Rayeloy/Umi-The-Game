@@ -250,6 +250,8 @@ public class PlayerHUD : MonoBehaviour
         }
     }
 
+    // --- Hook ---
+
     public void StartAim()
     {
         crosshair.enabled = true;
@@ -273,6 +275,8 @@ public class PlayerHUD : MonoBehaviour
         crosshair.enabled = false;
         crosshairReduced.enabled = false;
     }
+
+    // --- Hook CD and Boost CD ---
 
     public void setHookUI(float f)
     {
@@ -404,7 +408,8 @@ public class PlayerHUD : MonoBehaviour
         }
     }
 
-    //EFECTOS DE CÁMARA
+
+    // --- EFECTOS DE CÁMARA ---
 
     void CameraVFXAwakes()
     {
@@ -442,7 +447,6 @@ public class PlayerHUD : MonoBehaviour
         currentCameraVFX = camVFX;
     }
 
-
     public void StopCamVFX(CameraVFXType camVFXType)
     {
         for (int i = 0; i < cameraVFX.Length; i++)
@@ -467,7 +471,7 @@ public class PlayerHUD : MonoBehaviour
         currentCameraVFX = null;
     }
 
-    //DASH HUD
+    // --- DASH HUD --- 
 
     void SetupDashHUD()
     {

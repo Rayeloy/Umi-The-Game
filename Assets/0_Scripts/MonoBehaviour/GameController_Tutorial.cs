@@ -85,19 +85,19 @@ public class GameController_Tutorial : GameControllerBase
 
     void CheckStartRingTeamBattle()
     {
-        int bluePlayersInRing = 0;
-        int redPlayersInRing = 0;
+        int teamAPlayersInRing = 0;
+        int teamBPlayersInRing = 0;
         bool start = false;
 
         for(int i=0; i < playersInRing.Count; i++)
         {
-            if (playersInRing[i].team == Team.blue)
-                bluePlayersInRing++;
-            if (playersInRing[i].team == Team.red)
-                redPlayersInRing++;
+            if (playersInRing[i].team == Team.A)
+                teamAPlayersInRing++;
+            if (playersInRing[i].team == Team.B)
+                teamBPlayersInRing++;
         }
-        if (bluePlayersInRing == playerNumBlue &&  playerNumBlue>0) start = true;
-        if (redPlayersInRing == playerNumRed && playerNumRed>0) start = true;
+        //Debug.Log("CheckStartRingTeamBattle: Team A players in ring= " + teamAPlayersInRing + ";  Team B players in ring= " + teamBPlayersInRing);
+        if ((teamAPlayersInRing == playerNumTeamA && playerNumTeamA > 0) || (teamBPlayersInRing == playerNumTeamB && playerNumTeamB > 0)) start = true;
         if (start)
         {
             StartCountdownRingTeamBattle();
@@ -162,20 +162,20 @@ public class GameController_Tutorial : GameControllerBase
                 }
             }
 
-            int bluePlayersInRing = 0;
-            int redPlayersInRing = 0;
+            int teamAPlayersInRing = 0;
+            int teamBPlayersInRing = 0;
             for (int i = 0; 0 <= allPlayers.Count; i++)
             {
                 if (allPlayers[i].inWater)
                 {
-                    if (playersInRing[i].team == Team.blue)
-                        bluePlayersInRing++;
-                    if (playersInRing[i].team == Team.red)
-                        redPlayersInRing++;
+                    if (playersInRing[i].team == Team.A)
+                        teamAPlayersInRing++;
+                    if (playersInRing[i].team == Team.B)
+                        teamBPlayersInRing++;
                 }
             }
-            if (bluePlayersInRing == playerNumBlue) FinishRingTeamBattle(Team.blue);
-            if (redPlayersInRing == playerNumRed) FinishRingTeamBattle(Team.red);
+            if (teamAPlayersInRing == playerNumTeamA) FinishRingTeamBattle(Team.A);
+            if (teamBPlayersInRing == playerNumTeamB) FinishRingTeamBattle(Team.B);
         }
     }
 
@@ -190,6 +190,7 @@ public class GameController_Tutorial : GameControllerBase
     #region ----[ PUBLIC FUNCTIONS ]----
     public void ProgressLane(int laneNumber)
     {
+        Debug.Log("Lane " + laneNumber + ": ProgressLane -> " +tutorialLanes[laneNumber].phase);
         switch (tutorialLanes[laneNumber].phase)
         {
             case TutorialPhase.StartPhase:
@@ -203,7 +204,7 @@ public class GameController_Tutorial : GameControllerBase
             case TutorialPhase.GrapplePhase:
                 break;
             case TutorialPhase.CannonPhase:
-                StartRingTeamBattle();
+                //StartRingTeamBattle();
                 break;
             case TutorialPhase.RingBattlePhase:
 
@@ -215,11 +216,13 @@ public class GameController_Tutorial : GameControllerBase
 
     public void PlayerEnterRing(PlayerMovement player)
     {
+        print("PLAYER ENTER RING");
         playersInRing.Add(player);
     }
 
     public void playerExitRing(PlayerMovement player)
     {
+        print("PLAYER EXIT RING");
         playersInRing.Remove(player);
     }
 

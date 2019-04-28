@@ -599,7 +599,7 @@ public class PlayerHook : MonoBehaviour
 
                 break;
             case GrappleState.grappling:
-                print("AUTO GRAPPLING");
+                //print("AUTO GRAPPLING");
                 currentHook.transform.position = currentHookPointPos.position;
                 //UpdateDistance();
                 hookRopeEndPos = hookRopeEnd.position;
@@ -619,7 +619,7 @@ public class PlayerHook : MonoBehaviour
                     hookMovingVel = reelingDir * hookGrapplingSpeed;
                     myPlayerMov.currentVel = hookMovingVel;
                     myPlayerMov.currentSpeed = hookGrapplingSpeed;
-                    print("MOVING TO HOOKPOINT WITH SPEED = " + myPlayerMov.currentSpeed);
+                    //print("MOVING TO HOOKPOINT WITH SPEED = " + myPlayerMov.currentSpeed);
                 }
                 break;
             case GrappleState.cd:
@@ -678,7 +678,7 @@ public class PlayerHook : MonoBehaviour
         Vector2 minDist = new Vector2(hookPointMinDistToCameraCenter * myCamera.rect.width, hookPointMinDistToCameraCenter * myCamera.rect.height);
         if (myPlayerMov.gC.HasPlayerFlatCamera(myPlayerMov))
          {
-            print("FLAT CAMERA ("+name+")");
+            //print("FLAT CAMERA ("+name+")");
             minDist.y += (1 * myCamera.pixelHeight);
             minDist.x -= (0.1f * myCamera.pixelWidth);
          }
@@ -726,14 +726,14 @@ public class PlayerHook : MonoBehaviour
             {
                 canAutoGrapple = true;
                 currentHookPointInSight = closestHookPoint;
-                myPlayerHUD.ShowGrappleMessage();
+                //myPlayerHUD.ShowGrappleMessage();
                 myPlayerHUD.SetChosenHookPointHUD(closestHookPoint);
             }
         }
         else
         {
             canAutoGrapple = false;
-            myPlayerHUD.HideGrappleMessage();
+            //myPlayerHUD.HideGrappleMessage();
             currentHookPointInSight = null;
         }
     }

@@ -9,8 +9,8 @@ using Photon.Realtime;
 #region ----[ PUBLIC ENUMS ]----
 public enum Team
 {
-    red,
-    blue,
+    A,// Blue - Green
+    B,// Red - Pink
     none
 }
 public enum MoveState
@@ -182,7 +182,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     public bool noInput = false;
     //EQUIPO
     [HideInInspector]
-    public Team team = Team.blue;
+    public Team team = Team.A;
     //ESTADO DE MOVIMIENTO Y SALTO
     [HideInInspector]
     public MoveState moveSt = MoveState.NotMoving;
@@ -421,11 +421,11 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         //print("EQUIP WEAPON AT START");
         switch (team)
         {
-            case Team.blue:
+            case Team.A:
                 //print("EQUIP BLUE WEAPON");
                 myPlayerWeap.PickupWeapon(gC.startingWeaponBlue);
                 break;
-            case Team.red:
+            case Team.B:
                 //print("EQUIP RED WEAPON");
                 myPlayerWeap.PickupWeapon(gC.startingWeaponRed);
                 break;
@@ -1508,10 +1508,10 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         switch (team)
         {
-            case Team.blue:
+            case Team.A:
                 myCamera.myCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("BlueLightBeam");
                 break;
-            case Team.red:
+            case Team.B:
                 myCamera.myCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("RedLightBeam");
                 break;
         }
@@ -1521,11 +1521,11 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         switch (team)
         {
-            case Team.blue:
+            case Team.A:
                 print("HIDE BLUE TEAM LIGHT BEAM");
                 myCamera.myCamera.GetComponent<Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("BlueLightBeam"));
                 break;
-            case Team.red:
+            case Team.B:
                 print("HIDE RED TEAM LIGHT BEAM");
                 myCamera.myCamera.GetComponent<Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("RedLightBeam"));
                 break;

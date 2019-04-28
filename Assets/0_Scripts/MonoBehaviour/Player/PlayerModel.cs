@@ -56,7 +56,7 @@ public class PlayerModel : MonoBehaviour
     {
         switch (team)
         {
-            case Team.blue:
+            case Team.A:
                 //myPlayerWeap.AttachWeapon("Churro Azul");
                 //Body.material = teamBlueMat;
                 //myBody = Instantiate(playerBodyPrefabs[0], bodyParent);
@@ -66,7 +66,7 @@ public class PlayerModel : MonoBehaviour
                 accesories.material = accesoriesMats[0];
                 boots.material = bootsMats[0];
                 break;
-            case Team.red:
+            case Team.B:
                 //myPlayerWeap.AttachWeapon("Churro Rojo");
                 //Body.material = teamRedMat;
                 //myBody = Instantiate(playerBodyPrefabs[1], bodyParent);

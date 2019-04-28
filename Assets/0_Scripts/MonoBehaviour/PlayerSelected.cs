@@ -66,9 +66,9 @@ public class PlayerSelected : MonoBehaviour
                 switch (team)
                 {
                     case Team.none:
-                        changeTeam(Team.blue);
+                        changeTeam(Team.A);
                         break;
-                    case Team.red:
+                    case Team.B:
                         changeTeam(Team.none);
                         break;
                 }
@@ -79,9 +79,9 @@ public class PlayerSelected : MonoBehaviour
                 switch (team)
                 {
                     case Team.none:
-                        changeTeam(Team.red);
+                        changeTeam(Team.B);
                         break;
-                    case Team.blue:
+                    case Team.A:
                         changeTeam(Team.none);
                         break;
                 }
@@ -108,11 +108,11 @@ public class PlayerSelected : MonoBehaviour
         team = t;
         switch (t)
         {
-            case Team.blue:
+            case Team.A:
                 Body.material = teamBlueMat;
                 playerSelecionUI.TeamSelect.sprite = PlayerSelectBlue;
                 break;
-            case Team.red:
+            case Team.B:
                 Body.material = teamRedMat;
                 playerSelecionUI.TeamSelect.sprite = PlayerSelectRed;
                 break;
@@ -135,10 +135,10 @@ public class PlayerSelected : MonoBehaviour
             playerSelecionUI.AcctionsText.text = "B to back";
             switch (team)
             {
-                case Team.blue:
+                case Team.A:
                     playerSelecionUI.TeamSelect.sprite = PlayerSelectedBlue;
                     break;
-                case Team.red:
+                case Team.B:
                     playerSelecionUI.TeamSelect.sprite = PlayerSelectedRed;
                     break;
                 case Team.none:
@@ -151,10 +151,10 @@ public class PlayerSelected : MonoBehaviour
             playerSelecionUI.AcctionsText.text = "Press to choose";
             switch (team)
             {
-                case Team.blue:
+                case Team.A:
                     playerSelecionUI.TeamSelect.sprite = PlayerSelectBlue;
                     break;
-                case Team.red:
+                case Team.B:
                     playerSelecionUI.TeamSelect.sprite = PlayerSelectRed;
                     break;
                 case Team.none:

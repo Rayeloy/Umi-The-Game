@@ -26,8 +26,8 @@ public class GameController_FlagMode : GameControllerBase
     protected override void SpecificAwake()
     {
         CreateFlag();
-        HideFlagHomeLightBeam(Team.blue);
-        HideFlagHomeLightBeam(Team.red);
+        HideFlagHomeLightBeam(Team.A);
+        HideFlagHomeLightBeam(Team.B);
     }
 
     public override void StartGame()

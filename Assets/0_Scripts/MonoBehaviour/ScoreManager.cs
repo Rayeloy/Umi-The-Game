@@ -117,7 +117,7 @@ public class ScoreManager : MonoBehaviour {
             }
             else
             {
-                winner = _blueTeamScore > _redTeamScore ? Team.blue : Team.red;
+                winner = _blueTeamScore > _redTeamScore ? Team.A : Team.B;
                 gC.StartGameOver(winner);
             }
         }
@@ -126,9 +126,9 @@ public class ScoreManager : MonoBehaviour {
 	public void ScorePoint (Team scoringTeam){
         switch (scoringTeam)
         {
-            case Team.blue:
+            case Team.A:
                 _blueTeamScore++;
-                RandomOrcaSpawn(Team.blue);
+                RandomOrcaSpawn(Team.A);
                 blueFireworks.Play(true);
                 for( int i = 0; i < blueTeamScore_Text.Count; i++)
                 {
@@ -139,9 +139,9 @@ public class ScoreManager : MonoBehaviour {
                     gC.StartGameOver(scoringTeam);
                 }
                 break;
-            case Team.red:
+            case Team.B:
                 _redTeamScore++;
-                RandomOrcaSpawn(Team.red);
+                RandomOrcaSpawn(Team.B);
                 redFireworks.Play(true);
                 for( int i = 0; i < redTeamScore_Text.Count; i++)//foreach (TextMeshProUGUI tM in redTeamScore_Text)
                 {
@@ -158,7 +158,7 @@ public class ScoreManager : MonoBehaviour {
     private void RandomOrcaSpawn (Team team){
         switch (team)
         {
-            case Team.blue:
+            case Team.A:
                 if (orcasBlueIndex.Count == 0)
                 {
                     return;
@@ -168,7 +168,7 @@ public class ScoreManager : MonoBehaviour {
                 orcasBlueTeam[index].SetActive(true);
                 orcasBlueIndex.RemoveAt(i);
                 break;
-            case Team.red:
+            case Team.B:
                 if (orcasRedIndex.Count == 0)
                 {
                     return;

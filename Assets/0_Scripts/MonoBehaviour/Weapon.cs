@@ -19,10 +19,10 @@ public class Weapon : MonoBehaviour
                 //Debug.Log("Q TIP PICKUP");
                 switch (myRespawn.team)
                 {
-                    case Team.blue:
+                    case Team.A:
                         SetSkin("Blue");
                         break;
-                    case Team.red:
+                    case Team.B:
                         SetSkin("Red");
                         break;
                 }

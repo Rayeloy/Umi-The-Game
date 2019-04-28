@@ -84,11 +84,11 @@ public class GameInterface : MonoBehaviour
     public void StartGameOver(Team _winnerTeam)
     {
         veil.SetActive(true);
-        if (_winnerTeam == Team.blue)
+        if (_winnerTeam == Team.A)
         {
             victoryBlue.gameObject.SetActive(true);
         }
-        else if (_winnerTeam == Team.red)
+        else if (_winnerTeam == Team.B)
         {
             victoryRed.gameObject.SetActive(true);
         }

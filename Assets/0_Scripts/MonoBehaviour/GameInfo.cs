@@ -27,22 +27,22 @@ public class GameInfo : MonoBehaviour
         int nRojo = 0;
         foreach (Team t in playerTeamList)
         {
-            if (t == Team.blue)
+            if (t == Team.A)
                 nAzul++;
-            else if (t == Team.red)
+            else if (t == Team.B)
                 nRojo++;
         }
         if(nAzul == nRojo) //Mismo num de jugadores rojos que azules, random
         {
             if (Random.value < 0.5f)
-                return Team.blue;
+                return Team.A;
             else
-                return Team.red;
+                return Team.B;
         }
        else if (nAzul > nRojo)  //mas numero de jugadores azules
-           return Team.red;
+           return Team.B;
        else                     //mas numero de jugadores rojos
-           return Team.blue;
+           return Team.A;
 //       else
 //       {
 //           if (Random.value < 0.5f){

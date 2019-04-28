@@ -6,60 +6,67 @@ public class TutorialPhasesTrigger : MonoBehaviour
 {
     public GameController_Tutorial gC;
     public TutorialPhase myTutorialPhase;
+    public int laneNumber;
 
     private void OnTriggerEnter(Collider col)
     {
-        switch (myTutorialPhase)
+        if(col.tag == "Player")
         {
-            case TutorialPhase.StartPhase:
-                if(gC.tutorialLanes[(int)myTutorialPhase].phase==TutorialPhase.StartPhase)
-                gC.ProgressLane((int)myTutorialPhase);
-                break;
-            case TutorialPhase.CannonPhase:
-                PlayerMovement player = col.GetComponent<PlayerMovement>();
-                if (player != null)
-                {
-                    gC.PlayerEnterRing(player);
-                }
-                break;
-            case TutorialPhase.RingBattlePhase:
-                if (gC.startRingTeamBattle)
-                {
+            Debug.LogWarning("Name:"+name+"; TUTORIAL PHASE TRIGGER ACTIVATED: myTutorialPhase: " + myTutorialPhase + "; laneNumber: " + laneNumber+"; collision with : "+col.name);
+            switch (myTutorialPhase)
+            {
+                case TutorialPhase.StartPhase:
+                    if (gC.tutorialLanes[laneNumber].phase == TutorialPhase.StartPhase)
+                        gC.ProgressLane(laneNumber);
+                    break;
+                case TutorialPhase.CannonPhase:
+                    PlayerMovement player = col.GetComponent<PlayerMovement>();
+                    if (player != null)
+                    {
 
-                }
-                break;
-            default:
-                gC.ProgressLane((int)myTutorialPhase);
-                break;
-
+                        gC.PlayerEnterRing(player);
+                    }
+                    break;
+                case TutorialPhase.RingBattlePhase:
+                    if (gC.startRingTeamBattle)
+                    {
+                        //print("RING TEAM BATTLE: Player exits ring");
+                    }
+                    break;
+                default:
+                    gC.ProgressLane((int)myTutorialPhase);
+                    break;
+            }
         }
-
     }
 
     private void OnTriggerExit(Collider col)
     {
-        switch (myTutorialPhase)
+        if (col.tag == "Player")
         {
-            case TutorialPhase.CannonPhase:
-                if (!gC.startRingTeamBattle)
-                {
-                    PlayerMovement player = col.GetComponent<PlayerMovement>();
-                    if (player != null)
+            switch (myTutorialPhase)
+            {
+                case TutorialPhase.CannonPhase:
+                    if (!gC.startRingTeamBattle)
                     {
-                        gC.playerExitRing(player);
+                        PlayerMovement player = col.GetComponent<PlayerMovement>();
+                        if (player != null)
+                        {
+                            gC.playerExitRing(player);
+                        }
                     }
-                }
-                break;
-            case TutorialPhase.RingBattlePhase:
-                if (gC.startRingTeamBattle)
-                {
-                    PlayerMovement player = col.GetComponent<PlayerMovement>();
-                    if (player != null)
+                    break;
+                case TutorialPhase.RingBattlePhase:
+                    if (gC.startRingTeamBattle)
                     {
-                        gC.playerExitRing(player);
+                        PlayerMovement player = col.GetComponent<PlayerMovement>();
+                        if (player != null)
+                        {
+                            gC.playerExitRing(player);
+                        }
                     }
-                }
-                break;
+                    break;
+            }
         }
     }
 }
