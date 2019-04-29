@@ -522,10 +522,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3073400957517536789}
     m_Modifications:
-    - target: {fileID: 100000, guid: 293dfda3b9f3da8478cdd5b25d86438a, type: 3}
-      propertyPath: m_Name
-      value: HookGrabber
-      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 293dfda3b9f3da8478cdd5b25d86438a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -582,6 +578,22 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 14
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 293dfda3b9f3da8478cdd5b25d86438a, type: 3}
+      propertyPath: m_Name
+      value: HookGrabber
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: 293dfda3b9f3da8478cdd5b25d86438a, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: cae587dd0b367174ea410b7eeccb7e1f, type: 2}
+    - target: {fileID: 2300000, guid: 293dfda3b9f3da8478cdd5b25d86438a, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: a96dedcf52acdb149893168b15d30c6d, type: 2}
+    - target: {fileID: 2300000, guid: 293dfda3b9f3da8478cdd5b25d86438a, type: 3}
+      propertyPath: m_Materials.Array.data[2]
+      value: 
+      objectReference: {fileID: 2100000, guid: a96dedcf52acdb149893168b15d30c6d, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 293dfda3b9f3da8478cdd5b25d86438a, type: 3}
 --- !u!4 &3181565945591443978 stripped
