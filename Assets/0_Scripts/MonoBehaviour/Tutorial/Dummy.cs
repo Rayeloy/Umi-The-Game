@@ -327,6 +327,7 @@ public class Dummy : MonoBehaviour
         currentHP--;
         if (currentHP == 0)
         {
+            print("Invoke lane progress function from GC");
             phaseProgressFunction.Invoke(0);
         }
     }

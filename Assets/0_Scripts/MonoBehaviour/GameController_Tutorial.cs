@@ -71,9 +71,11 @@ public class GameController_Tutorial : GameControllerBase
                 {
                     tutorialLanes[i].Update();
                 }
+                //NO CAMBIAR EL ORDEN DE ESTAS 3
                 CheckStartRingTeamBattle();
-                CountdownRingTeamBattle();
                 ProcessRingTeamBattle();
+                CountdownRingTeamBattle();
+                //---------------------------
             }
         }
     }
@@ -85,31 +87,37 @@ public class GameController_Tutorial : GameControllerBase
 
     void CheckStartRingTeamBattle()
     {
-        int teamAPlayersInRing = 0;
-        int teamBPlayersInRing = 0;
-        bool start = false;
+        if (!cdToStartRingTeamBattle && !startRingTeamBattle)
+        {
+            int teamAPlayersInRing = 0;
+            int teamBPlayersInRing = 0;
+            bool start = false;
 
-        for(int i=0; i < playersInRing.Count; i++)
-        {
-            if (playersInRing[i].team == Team.A)
-                teamAPlayersInRing++;
-            if (playersInRing[i].team == Team.B)
-                teamBPlayersInRing++;
-        }
-        //Debug.Log("CheckStartRingTeamBattle: Team A players in ring= " + teamAPlayersInRing + ";  Team B players in ring= " + teamBPlayersInRing);
-        if ((teamAPlayersInRing == playerNumTeamA && playerNumTeamA > 0) || (teamBPlayersInRing == playerNumTeamB && playerNumTeamB > 0)) start = true;
-        if (start)
-        {
-            StartCountdownRingTeamBattle();
+            for (int i = 0; i < playersInRing.Count; i++)
+            {
+                if (playersInRing[i].team == Team.A)
+                    teamAPlayersInRing++;
+                if (playersInRing[i].team == Team.B)
+                    teamBPlayersInRing++;
+            }
+            //Debug.Log("CheckStartRingTeamBattle: Team A players in ring= " + teamAPlayersInRing + ";  Team B players in ring= " + teamBPlayersInRing);
+            if ((teamAPlayersInRing == playerNumTeamA && playerNumTeamA > 0) || (teamBPlayersInRing == playerNumTeamB && playerNumTeamB > 0)) start = true;
+            if (start)
+            {
+                StartCountdownRingTeamBattle();
+            }
         }
     }
 
     void StartCountdownRingTeamBattle()
     {
-        print("START COUNTDOWN RING TEAM BATTLE");
-        battleTimeToStart = battleMaxTimeToStart;
-        cdToStartRingTeamBattle = true;
-        battleText.gameObject.SetActive(true);
+        if (!cdToStartRingTeamBattle)
+        {
+            print("START COUNTDOWN RING TEAM BATTLE");
+            battleTimeToStart = battleMaxTimeToStart;
+            cdToStartRingTeamBattle = true;
+            battleText.gameObject.SetActive(true);
+        }
     }
 
     void CountdownRingTeamBattle()
@@ -117,7 +125,7 @@ public class GameController_Tutorial : GameControllerBase
         if (cdToStartRingTeamBattle)
         {
             battleTimeToStart -= Time.deltaTime;
-            battleText.text = (int)battleTimeToStart + "seconds to start the team battle!";
+            battleText.text = (int)battleTimeToStart + " seconds to start the team battle!";
             if (battleTimeToStart <= 0)
             {
                 StopCountdownRingTeamBattle();
@@ -127,33 +135,39 @@ public class GameController_Tutorial : GameControllerBase
 
     void StopCountdownRingTeamBattle()
     {
-        cdToStartRingTeamBattle = false;
-        battleText.text = "FIGHT!";
-
-        //Teleport playeres out of the ring
-        for(int i = 0; 0 <= allPlayers.Count; i++)
+        if (cdToStartRingTeamBattle)
         {
-            if (!playersInRing.Contains(allPlayers[i]))
+            cdToStartRingTeamBattle = false;
+            battleText.fontSize = 100;
+            battleText.text = "FIGHT!";
+
+            //Teleport playeres out of the ring
+            for (int i = 0; i < allPlayers.Count; i++)
             {
-                allPlayers[i].transform.position = ringSpawnPoint.position;
+                Debug.Log("allPlayers.count = " + allPlayers.Count + "; playersInRing.Count = " + playersInRing.Count);
+                if (!playersInRing.Contains(allPlayers[i]))
+                {
+                    allPlayers[i].TeleportPlayer(ringSpawnPoint.position); 
+                }
             }
+            StartRingTeamBattle();
         }
-        StartRingTeamBattle();
     }
 
     void StartRingTeamBattle()
     {
-        startRingTeamBattle = true;
-        fightTextShowingTime = 0;
-
-
+        if (!startRingTeamBattle)
+        {
+            startRingTeamBattle = true;
+            fightTextShowingTime = 0;
+        }
     }
 
     void ProcessRingTeamBattle()
     {
         if (startRingTeamBattle)
         {
-            if (battleText.enabled)
+            if (battleText.gameObject.activeInHierarchy)
             {
                 fightTextShowingTime += Time.deltaTime;
                 if (fightTextShowingTime >= fightTextshowingMaxTime)
@@ -164,25 +178,26 @@ public class GameController_Tutorial : GameControllerBase
 
             int teamAPlayersInRing = 0;
             int teamBPlayersInRing = 0;
-            for (int i = 0; 0 <= allPlayers.Count; i++)
+            for (int i = 0; i < playersInRing.Count; i++)
             {
-                if (allPlayers[i].inWater)
-                {
                     if (playersInRing[i].team == Team.A)
                         teamAPlayersInRing++;
                     if (playersInRing[i].team == Team.B)
                         teamBPlayersInRing++;
-                }
             }
-            if (teamAPlayersInRing == playerNumTeamA) FinishRingTeamBattle(Team.A);
-            if (teamBPlayersInRing == playerNumTeamB) FinishRingTeamBattle(Team.B);
+            if (teamAPlayersInRing == 0) FinishRingTeamBattle(Team.A);
+            if (teamBPlayersInRing == 0) FinishRingTeamBattle(Team.B);
         }
     }
 
     void FinishRingTeamBattle(Team winner)
     {
-        startRingTeamBattle = false;
-        StartGameOver(winner);
+        if (startRingTeamBattle)
+        {
+            battleText.gameObject.SetActive(false);
+            startRingTeamBattle = false;
+            StartGameOver(winner);
+        }
     }
 
     #endregion
@@ -242,115 +257,6 @@ public class GameController_Tutorial : GameControllerBase
 }
 
 #region ----[ STRUCTS & CLASSES ]----
-[System.Serializable]
-public class TutorialLane
-{
-    public int laneNumber;
-    [HideInInspector]
-    public TutorialPhase phase;
-    [Tooltip("Add 1 entry for every phase, then add as many invisible walls as you want for each phase.")]
-    public PhaseInvisibleWalls[] lanePhases;
-    public Dummy dummy;
-    public InflatableWall[] inflatableWalls = new InflatableWall[2];
-    [Header(" --- Shitty Animations --- ")]
-    [Header("Cannon")]
-    public GameObject cannon;
-    public GameObject cannonShootingAlembic;
-    public float cannonAnimMaxTime;
-    float cannonAnimTime = 0;
-    bool startShootingCannon = false;
-
-
-
-    public TutorialLane(int _laneNumber = 0)
-    {
-        phase = TutorialPhase.StartPhase;
-        laneNumber = _laneNumber;
-        cannon.SetActive(true);
-        cannonShootingAlembic.SetActive(false);
-        for (int i = 0; i < inflatableWalls.Length; i++)
-        {
-            inflatableWalls[i].KonoAwake();
-        }
-    }
-
-    public void Awake()
-    {
-        cannon.SetActive(true);
-        cannonShootingAlembic.SetActive(false);
-        for(int i = 0; i < inflatableWalls.Length; i++)
-        {
-            inflatableWalls[i].KonoAwake();
-        }
-    }
-
-    public void Update()
-    {
-        for (int i = 0; i < inflatableWalls.Length; i++)
-        {
-            inflatableWalls[i].KonoUpdate();
-        }
-    }
-
-    public void ProgressPhase()
-    {/*
-        for (int i = 0; i < lanePhases[(int)phase].invisibleWalls.Length; i++)
-        {
-            lanePhases[(int)phase].invisibleWalls[i].SetActive(false);
-        }
-        */
-        phase++;
-    }
-
-    public void InflateDummyAndWalls()
-    {
-        Debug.Log("INFLATE DUMMY AND WALLS");
-        dummy.StartInflatingDummy();
-        //Inflate walls animation
-        for (int i = 0; i < inflatableWalls.Length; i++)
-        {
-            inflatableWalls[i].StartInflatingWall();
-        }
-    }
-
-    public void DeflateDummyAndWalls()
-    {
-        dummy.StartDeflateDummy();
-        //Inflate walls animation
-        for (int i = 0; i < inflatableWalls.Length; i++)
-        {
-            inflatableWalls[i].StartBreakingWall();
-        }
-    }
-
-    public void StartShootingCannon()
-    {
-        startShootingCannon = true;
-        cannonAnimTime = 0;
-        cannon.SetActive(false);
-        cannonShootingAlembic.SetActive(true);
-    }
-
-    void ShootingCannon()
-    {
-        if (startShootingCannon)
-        {
-            cannonAnimTime += Time.deltaTime;
-            if (cannonAnimTime >= cannonAnimMaxTime)
-            {
-                StopShootingCannon();
-            }
-        }
-    }
-
-    void StopShootingCannon()
-    {
-        startShootingCannon = false;
-        cannon.SetActive(true);
-        cannonShootingAlembic.SetActive(false);
-    }
-
-}
 
 [System.Serializable]
 public class PhaseInvisibleWalls

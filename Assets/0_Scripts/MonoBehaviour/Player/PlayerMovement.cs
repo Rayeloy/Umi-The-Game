@@ -432,6 +432,16 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         }
     }
 
+    public void TeleportPlayer(Vector3 worldPos)
+    {
+        ExitWater();
+        StopBoost();
+        StopHooked();
+        StopHooking();
+        StopWallJump();
+        transform.position = worldPos;
+    }
+
     #region INPUTS BUFFERING
 
     void SetupInputsBuffer()
@@ -943,7 +953,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         Vector3 circleCenter = transform.position;
         Vector3 circumfPoint = CalculateReflectPoint(1, controller.collisions.wallNormal, circleCenter);
         Vector3 finalDir = (circumfPoint - circleCenter).normalized;
-        Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
+        //Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
 
         currentVel = finalDir * currentVel.magnitude;
         currentSpeed = currentVel.magnitude;
@@ -1010,7 +1020,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         if(moveSt == MoveState.Boost)
         {
-            print("STOP BOOST");
+            //print("STOP BOOST");
             moveSt = MoveState.None;
             StartBoostCD();
             myPlayerHUD.StopCamVFX(CameraVFXType.Dash);
@@ -1242,6 +1252,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         noMoveMaxTime = _noMoveMaxTime;
         noMoveTime = 0;
         knockback = vel;
+        StopBoost();
 
     }
 
@@ -1571,7 +1582,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             float complementaryAng = 90 - angle;
             angle += complementaryAng * 2;
         }
-        Debug.LogWarning("ANGLE = " + angle);
+        //Debug.LogWarning("ANGLE = " + angle);
         float offsetAngleDir = Vector3.Angle(wallDirLeft, Vector3.forward) > 90 ? -1 : 1;
         float offsetAngle = Vector3.Angle(Vector3.right, wallDirLeft) * offsetAngleDir;
         angle += offsetAngle;
@@ -1580,8 +1591,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         float pz = circleCenter.z + (radius * Mathf.Sin(angle * Mathf.Deg2Rad));
         Vector3 circumfPoint = new Vector3(px, circleCenter.y, pz);
 
-        Debug.LogWarning("; circleCenter= " + circleCenter + "; circumfPoint = " + circumfPoint + "; angle = " + angle + "; offsetAngle = " + offsetAngle + "; offsetAngleDir = " + offsetAngleDir
-    + ";wallDirLeft = " + wallDirLeft);
+        //Debug.LogWarning("; circleCenter= " + circleCenter + "; circumfPoint = " + circumfPoint + "; angle = " + angle + "; offsetAngle = " + offsetAngle + "; offsetAngleDir = " + offsetAngleDir
+    //+ ";wallDirLeft = " + wallDirLeft);
         Debug.DrawLine(circleCenter, circumfPoint, Color.white, 20);
 
         return circumfPoint;

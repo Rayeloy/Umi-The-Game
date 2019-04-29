@@ -32,7 +32,7 @@ public class Cañon : MonoBehaviour
         LaunchData launchData = CalculateLaunchData(pm.gravity);
         //if (pm != null && pm.currentVel.y <= playerSpeed)
         //print("CANNON VELOCITY = "+launchData.initialVolicity);
-	    pm.StartFixedJump(launchData.initialVolicity, launchData.timeToTarget);
+	    pm.StartFixedJump(launchData.initialVelocity, launchData.timeToTarget);
     }
 
     /*void Launch(){
@@ -48,7 +48,7 @@ public class Cañon : MonoBehaviour
         const int resolution = 30;
         for (int i = 1; i<=resolution; i++){
             float simulationTime = i / (float)resolution * launchData.timeToTarget;
-            Vector3 displacement = launchData.initialVolicity * simulationTime + Vector3.up * g * simulationTime * simulationTime / 2;
+            Vector3 displacement = launchData.initialVelocity * simulationTime + Vector3.up * g * simulationTime * simulationTime / 2;
             Vector3 drawPoint = transform.position + displacement;
             Debug.DrawLine (previousDrawPoint, drawPoint, Color.green);
             previousDrawPoint = drawPoint;
@@ -69,12 +69,12 @@ public class Cañon : MonoBehaviour
     }
 
     struct LaunchData{
-        public readonly Vector3 initialVolicity;
+        public readonly Vector3 initialVelocity;
         public readonly float timeToTarget;
 
-        public LaunchData(Vector3 initialVolicity, float timeToTarget){
-            print("initialVolicity = " + initialVolicity);
-            this.initialVolicity = initialVolicity;
+        public LaunchData(Vector3 initialVelocity, float timeToTarget){
+            print("initialVelicity = " + initialVelocity);
+            this.initialVelocity = initialVelocity;
             this.timeToTarget = timeToTarget;
         }
     }

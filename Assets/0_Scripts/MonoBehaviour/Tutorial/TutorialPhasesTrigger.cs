@@ -16,25 +16,20 @@ public class TutorialPhasesTrigger : MonoBehaviour
             switch (myTutorialPhase)
             {
                 case TutorialPhase.StartPhase:
-                    if (gC.tutorialLanes[laneNumber].phase == TutorialPhase.StartPhase)
+                    print("GC = " + gC + "; GC.TutorialLanes["+ laneNumber + "] = " + gC.tutorialLanes[laneNumber]+ "; gC.tutorialLanes["+ laneNumber + "].phase = "+ gC.tutorialLanes[laneNumber].phase);
+                    if (gC.tutorialLanes[laneNumber].phase == TutorialPhase.StartPhase)//Solo si la linea está en la startphase
+                    {
                         gC.ProgressLane(laneNumber);
+                        gameObject.SetActive(false);
+                    }
                     break;
                 case TutorialPhase.CannonPhase:
-                    PlayerMovement player = col.GetComponent<PlayerMovement>();
+                    PlayerMovement player = col.GetComponent<PlayerBody>().myPlayerMov;
                     if (player != null)
                     {
 
                         gC.PlayerEnterRing(player);
                     }
-                    break;
-                case TutorialPhase.RingBattlePhase:
-                    if (gC.startRingTeamBattle)
-                    {
-                        //print("RING TEAM BATTLE: Player exits ring");
-                    }
-                    break;
-                default:
-                    gC.ProgressLane((int)myTutorialPhase);
                     break;
             }
         }

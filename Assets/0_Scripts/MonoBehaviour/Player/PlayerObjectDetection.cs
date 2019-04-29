@@ -43,7 +43,7 @@ public class PlayerObjectDetection : MonoBehaviour
                     {
                         if (!hookPoints.Contains(hookPoint))
                         {
-                            print("hookpoint added");
+                            //print("hookpoint added");
                             hookPoints.Add(hookPoint);
                         }
                     }

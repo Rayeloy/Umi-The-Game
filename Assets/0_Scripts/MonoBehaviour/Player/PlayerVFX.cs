@@ -131,7 +131,7 @@ public class effect
     {
         if (forceStart || (!forceStart && !effectParticleSystem.isPlaying))
         {
-            Debug.Log("Activated effect " +effectType+ "; effectParticleSystem = "+ effectParticleSystem.name+ "; effectParticleSystem.isPlaying = "+ effectParticleSystem.isPlaying);
+            //Debug.Log("Activated effect " +effectType+ "; effectParticleSystem = "+ effectParticleSystem.name+ "; effectParticleSystem.isPlaying = "+ effectParticleSystem.isPlaying);
             effectParticleSystem.Play();
         }
     }

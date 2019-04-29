@@ -111,6 +111,9 @@ public class PlayerHUD : MonoBehaviour
         {
             Arrow.gameObject.SetActive(false);
             Wale.gameObject.SetActive(false);
+            contador.gameObject.SetActive(false);
+
+
         }
         Interaction_Message.SetActive(false);
         crosshair.enabled = false;
