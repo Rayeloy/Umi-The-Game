@@ -12,8 +12,8 @@ public class GameController_FlagMode : GameControllerBase
     [HideInInspector]
     public List<Flag> flags;
     //Posiciones de las porterias
-    public Transform blueTeamFlagHome;
-    public Transform redTeamFlagHome;
+    public Transform FlagHome_TeamA;
+    public Transform FlagHome_TeamB;
     public Transform centerCameraParent;
 
     public float minDistToSeeBeam;
@@ -74,9 +74,9 @@ public class GameController_FlagMode : GameControllerBase
         }
     }
 
-    public void ScorePoint(Team _winnerTeam)
+    public void ScorePoint(Team _scoringTeam)
     {
-        myScoreManager.ScorePoint(_winnerTeam);
+        myScoreManager.ScorePoint(_scoringTeam);
     }
 
     #region FLAG FUNCTIONS

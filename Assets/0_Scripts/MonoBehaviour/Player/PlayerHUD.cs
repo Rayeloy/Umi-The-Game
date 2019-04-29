@@ -189,8 +189,8 @@ public class PlayerHUD : MonoBehaviour
     void SetupFlagSlider()
     {
         flag = (gC as GameController_FlagMode).flags[0].transform;
-        blueFlagHomePos = (gC as GameController_FlagMode).blueTeamFlagHome.position;
-        redFlagHomePos = (gC as GameController_FlagMode).redTeamFlagHome.position;
+        blueFlagHomePos = (gC as GameController_FlagMode).FlagHome_TeamA.position;
+        redFlagHomePos = (gC as GameController_FlagMode).FlagHome_TeamB.position;
         blueFlagHomePos.y = 0;
         redFlagHomePos.y = 0;
         flagSliderStartX = flagSliderStart.localPosition.x;
