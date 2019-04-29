@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2906337491605710006}
   - component: {fileID: 2966382598342687424}
   m_Layer: 13
-  m_Name: RedSpawnTrigger
+  m_Name: RedSpawnTriggerB
   m_TagString: Respawn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6f8d93c1844ce6d44a8920158f0e4dd8, type: 2}
+  - {fileID: 2100000, guid: 62e232dbe1d53d343ab3de5bc03ccb5b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -104,5 +104,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faa455278de4099499381678b419cc37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team: 0
+  team: 1
   maxSpacing: 2
