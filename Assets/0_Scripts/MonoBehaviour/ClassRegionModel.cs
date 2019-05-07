@@ -7,14 +7,13 @@ using UnityEngine;
 
 public class RegionClassModel
 {
-    #region ----[ VARIABLES FOR DESIGNERS ]----
+    #region ----[ VARIABLES FOR DESIGNERS ]---- 
+    // PUBLIC VARIABLES FOR DESIGNERS HERE
     //Referencias
     #endregion
 
     #region ----[ PROPERTIES ]----
-    #endregion
-
-    #region ----[ VARIABLES ]----
+    // PRIVATE AND [HideInInspector] PUBLIC VARIABLES HERE
     #endregion
 
     #region ----[ MONOBEHAVIOUR FUNCTIONS ]----

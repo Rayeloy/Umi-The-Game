@@ -227,36 +227,36 @@ MonoBehaviour:
   - {fileID: 1909984392524275721}
   layoutElements:
   - rect: {fileID: 5369223005124494464}
-    horDistToNextElement: 62.9094
+    horDistToNextElement: 62.260334
   - rect: {fileID: 273446834886727318}
-    horDistToNextElement: 94.65869
+    horDistToNextElement: 93.11231
   - rect: {fileID: 1909984392524275721}
     horDistToNextElement: 0
   transformInfos:
   - transform: {fileID: 2818554262979730756}
-    position: {x: 889, y: 354.1667, z: 0}
+    position: {x: 883.50006, y: 352.04166, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 1, y: 1, z: 1}
-    width: 1780.5586
-    height: 234.99997
+    width: 1769.5428
+    height: 233.59003
   - transform: {fileID: 5369223005124494464}
-    position: {x: 626.5172, y: 353.34418, z: 0}
+    position: {x: 622.2908, y: 351.2241, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 0.6042296, y: 0.6042296, z: 0.6042296}
-    width: 94.999954
-    height: 174.60498
+    width: 95.00003
+    height: 173.83939
   - transform: {fileID: 273446834886727318}
-    position: {x: 759.8323, y: 354.1667, z: 0}
+    position: {x: 754.781, y: 352.04166, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 0.6042296, y: 0.6042296, z: 0.6042296}
-    width: 138.04279
-    height: 142.95999
+    width: 137.46094
+    height: 142.32425
   - transform: {fileID: 1909984392524275721}
-    position: {x: 1038.1897, y: 359.1667, z: 0}
+    position: {x: 1031.4163, y: 357.01166, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 0.6042296, y: 0.6042296, z: 0.6042296}
     width: 470
-    height: 164.95999
+    height: 164.26425
   executeAutoCenter: 0
   updateFreq: 2
 --- !u!1 &806834691329288638
@@ -1212,7 +1212,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.47300002, y: 0.2745532}
   m_AnchorMax: {x: 0.6758877, y: 0.768}
-  m_AnchoredPosition: {x: 16.638062, y: 0.000011444092}
+  m_AnchoredPosition: {x: 16.184631, y: 0}
   m_SizeDelta: {x: 0, y: 49}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3190888281608812634
@@ -1350,7 +1350,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.39170414, y: 0.2745532}
   m_AnchorMax: {x: 0.44452056, y: 0.7254468}
-  m_AnchoredPosition: {x: 16.638031, y: 0.000011444092}
+  m_AnchoredPosition: {x: 16.184631, y: 0}
   m_SizeDelta: {x: 44, y: 37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8886709675184849556
@@ -1533,7 +1533,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.319663, y: 0.22500001}
   m_AnchorMax: {x: 0.36681646, y: 0.768}
-  m_AnchoredPosition: {x: 16.638062, y: 0}
+  m_AnchoredPosition: {x: 16.184723, y: 0}
   m_SizeDelta: {x: 0, y: 47}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5223072370466229471
@@ -2333,7 +2333,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 70.95
+  m_fontSize: 70.5
   m_fontSizeBase: 35.7
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2641,7 +2641,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc74bac4e8f92194c81e88e92bf5f869, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offsetPantalla: 0
   gC: {fileID: 0}
   myPlayerMov: {fileID: 0}
   myCamera: {fileID: 0}
@@ -2664,6 +2663,7 @@ MonoBehaviour:
   flagSliderEnd: {fileID: 5296954678826298783}
   Arrow: {fileID: 7083783714437192190}
   Wale: {fileID: 9007470323697557155}
+  offsetPantalla: 0
   hookPointsParent: {fileID: 6730511427904192069}
   hookPointHUDPrefab: {fileID: 1967426814883445900, guid: cd646d744c6ca2142abc48af9ee2971b,
     type: 3}
@@ -2680,14 +2680,21 @@ MonoBehaviour:
   dashHUDStartPos: {fileID: 652362967403324218}
   dashHUDEndPos: {fileID: 8423827951112381486}
   dashHUDWater: {fileID: 2385897166634812580}
-  background: {fileID: 2256131067718348908}
-  minLine: {fileID: 6213941742675086648}
-  backgroundColor:
+  dashHUDBackground: {fileID: 2256131067718348908}
+  dashHUDMinLine: {fileID: 6213941742675086648}
+  dashHUDEdges: {fileID: 5714342729562592736}
+  dashHUDBackgroundColor:
   - {r: 0, g: 0, b: 0, a: 0.49019608}
-  - {r: 1, g: 0, b: 0, a: 0.69803923}
-  minLineColor:
+  - {r: 1, g: 0, b: 0.045656204, a: 0.49019608}
+  dashHUDMinLineColor:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}
+  dashHUDEdgesColor:
+  - {r: 0.3301887, g: 0.3301887, b: 0.3301887, a: 1}
+  - {r: 1, g: 0, b: 0, a: 1}
+  dashHUDCantDoAnimMaxCycleTime: 0.1
+  dashHUDCantDoAnimMaxTime: 0.5
+  dashHUDCantDoAnimMaxXIncrement: 0
 --- !u!1 &8126616222945785876
 GameObject:
   m_ObjectHideFlags: 0
@@ -2940,7 +2947,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 40.1
+  m_fontSize: 39.9
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -3137,14 +3144,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 1725321355410114403, guid: 7b3f6e4c07cf171429c40a1f48327916,
+  m_Sprite: {fileID: -2070476300451565309, guid: e07170dbc05cc2642981185887c1e8eb,
     type: 3}
   m_Type: 0
   m_PreserveAspect: 0

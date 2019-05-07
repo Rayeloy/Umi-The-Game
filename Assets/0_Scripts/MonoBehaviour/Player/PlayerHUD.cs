@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-
+#region ----[ PUBLIC ENUMS ]----
 public enum CameraVFXType
 {
     None,
@@ -12,12 +12,12 @@ public enum CameraVFXType
     Water,
     PickFlag
 }
+#endregion
+
 public class PlayerHUD : MonoBehaviour
 {
-    [SerializeField]
-    [Tooltip("Offset de la pantalla al que se bloquea la flecha de la bola")]
-    float offsetPantalla;
-
+    #region ----[ VARIABLES FOR DESIGNERS ]----
+    //Referencias
     [Header("Referencias")]
     [HideInInspector]
     public GameControllerBase gC;
@@ -60,11 +60,15 @@ public class PlayerHUD : MonoBehaviour
     Flag flagForSlider;
     Vector3 flagPos;
 
+    //Flag Arrow
     [Header("Flag Arrow")]
     [SerializeField]
     Transform Arrow;
     [SerializeField]
     Transform Wale;
+    [SerializeField]
+    [Tooltip("Offset de la pantalla al que se bloquea la flecha de la bola")]
+    float offsetPantalla;
 
     //Grapple
     [Header("AutoGrapple")]
@@ -90,17 +94,34 @@ public class PlayerHUD : MonoBehaviour
     public RectTransform dashHUDEndPos;
     public RectTransform dashHUDWater;
     float dashHUDTotalDist = 0;
-    public Image background, minLine;
-    public Color[] backgroundColor, minLineColor;//0 -> COLOR WHEN BOOST READY; 1 -> COLOR WHEN BOOST NOT READY
+    public Image dashHUDBackground, dashHUDMinLine, dashHUDEdges;
+    public Color[] dashHUDBackgroundColor, dashHUDMinLineColor, dashHUDEdgesColor;//0 -> COLOR WHEN BOOST READY; 1 -> COLOR WHEN BOOST NOT READY;
+    int dashHUDCantDoAnimState = 0;//0 -> not started; 1-> Started, going right; 2 -> Started, going left
+    public float dashHUDCantDoAnimMaxCycleTime=0.1f;
+    float dashHUDCantDoAnimCycleTime = 0;
+    public float dashHUDCantDoAnimMaxTime = 0.5f;
+    float dashHUDCantDoAnimTime = 0;
+    public float dashHUDCantDoAnimMaxXIncrement;
+    float dashHUDCantDoAnimXTotalSpace;
+    float dashHUDCantDoAnimXIncrement = 0;
+    #endregion
 
+    #region ----[ PROPERTIES ]----
+    #endregion
 
+    #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
+
+    #region Awake
     public void KonoAwake()
     {
         hookPointHUDInfoList = new List<HookPointHUDInfo>();
         myCanvas = GetComponent<Canvas>();
         CameraVFXAwakes();
+        dashHUDCantDoAnimXTotalSpace = dashHUDCantDoAnimMaxXIncrement * 2;
     }
+    #endregion
 
+    #region Start
     public void KonoStart()
     {
         if (gC.gameMode == GameMode.CaptureTheFlag)
@@ -126,7 +147,9 @@ public class PlayerHUD : MonoBehaviour
         SetUpCameraCenter();
         SetupDashHUD();
     }
+    #endregion
 
+    #region Update
     private void Update()
     {
         if (gC.gameMode == GameMode.CaptureTheFlag)// && !PhotonNetwork.IsConnected)
@@ -136,6 +159,11 @@ public class PlayerHUD : MonoBehaviour
         UpdateAllHookPointHUDs();
         UpdateDashHUDFuel();
     }
+    #endregion
+
+    #endregion
+
+    #region ----[ FUNCTIONS ]----
 
     public void AdaptCanvasHeightScale()
     {
@@ -185,6 +213,8 @@ public class PlayerHUD : MonoBehaviour
         //interactButtonImage.enabled = false;
         if (Interaction_Message.activeInHierarchy) Interaction_Message.SetActive(false);
     }
+
+    #region --- FLAG SLIDER ---
 
     void SetupFlagSlider()
     {
@@ -252,49 +282,21 @@ public class PlayerHUD : MonoBehaviour
             Wale.transform.position = Arrow.transform.position;
         }
     }
+    #endregion
 
-    // --- Hook ---
-
-    public void StartAim()
-    {
-        crosshair.enabled = true;
-        crosshairReduced.enabled = false;
-    }
-
-    public void StartThrowHook()
-    {
-        crosshair.enabled = false;
-        crosshairReduced.enabled = true;
-    }
-
-    public void StopThrowHook()
-    {
-        crosshair.enabled = true;
-        crosshairReduced.enabled = false;
-    }
-
-    public void StopAim()
-    {
-        crosshair.enabled = false;
-        crosshairReduced.enabled = false;
-    }
-
-    // --- Hook CD and Boost CD ---
-
-    public void setHookUI(float f)
-    {
-        //print("SetHookUI: fillAmout= " + f);
-        Hook.fillAmount = Mathf.Clamp01(f);
-    }
-
-    public void setBoostUI(float f)
-    {
-        //print("SetBoostUI: fillAmout= " + f);
-        Boost.fillAmount = Mathf.Clamp01(f);
-    }
-
-
+    #region --- GRAPPLE//HOOK POINT ---
     // --- GRAPPLE//Hook Point ---
+    void UpdateAllHookPointHUDs()
+    {
+        for (int i = 0; i < hookPointHUDInfoList.Count; i++)
+        {
+            if (hookPointHUDInfoList[i].showing)
+            {
+                hookPointHUDInfoList[i].hookPointHUD.KonoUpdate();
+            }
+        }
+    }
+
     public void ShowGrappleMessage()
     {
         //Debug.LogWarning("SHOW GRAPPLE MESSAGE");
@@ -329,34 +331,15 @@ public class PlayerHUD : MonoBehaviour
     //    }
     //}
 
-    void UpdateAllHookPointHUDs()
+    void AddHookPointHUD(HookPoint hookPoint)
     {
-        for (int i = 0; i < hookPointHUDInfoList.Count; i++)
-        {
-            if (hookPointHUDInfoList[i].showing)
-            {
-                hookPointHUDInfoList[i].hookPointHUD.KonoUpdate();
-            }
-        }
-    }
-
-    public void HideHookPointHUD(HookPoint hookPoint)
-    {
-        for (int i = 0; i < hookPointHUDInfoList.Count; i++)
-        {
-            if (hookPointHUDInfoList[i].hookPointHUD.myHookPoint == hookPoint)
-            {
-                if (hookPointHUDInfoList[i].showing)
-                {
-                    hookPointHUDInfoList[i].showing = false;
-                    if (hookPointHUDInfoList[i].chosenOne)
-                    {
-                        hookPointHUDInfoList[i].SwitchChosenOne();
-                    }
-                    hookPointHUDInfoList[i].hookPointHUD.gameObject.SetActive(false);
-                }
-            }
-        }
+        print("CREATE NEW hookPointHUDObject");
+        GameObject hookPointHUDObject = Instantiate(hookPointHUDPrefab, transform, false);
+        hookPointHUDObject.transform.SetParent(hookPointsParent, true);
+        HookPointHUDInfo auxHookPointHUDInfo = new HookPointHUDInfo(hookPointHUDObject.GetComponent<HookPointHUD>());
+        auxHookPointHUDInfo.hookPointHUD.KonoAwake(hookPoint, myUICamera, myCanvas);
+        auxHookPointHUDInfo.showing = true;
+        hookPointHUDInfoList.Add(auxHookPointHUDInfo);
     }
 
     public void ShowHookPointHUD(HookPoint hookPoint)
@@ -381,15 +364,23 @@ public class PlayerHUD : MonoBehaviour
 
     }
 
-    void AddHookPointHUD(HookPoint hookPoint)
+    public void HideHookPointHUD(HookPoint hookPoint)
     {
-        print("CREATE NEW hookPointHUDObject");
-        GameObject hookPointHUDObject = Instantiate(hookPointHUDPrefab, transform, false);
-        hookPointHUDObject.transform.SetParent(hookPointsParent, true);
-        HookPointHUDInfo auxHookPointHUDInfo = new HookPointHUDInfo(hookPointHUDObject.GetComponent<HookPointHUD>());
-        auxHookPointHUDInfo.hookPointHUD.KonoAwake(hookPoint, myUICamera, myCanvas);
-        auxHookPointHUDInfo.showing = true;
-        hookPointHUDInfoList.Add(auxHookPointHUDInfo);
+        for (int i = 0; i < hookPointHUDInfoList.Count; i++)
+        {
+            if (hookPointHUDInfoList[i].hookPointHUD.myHookPoint == hookPoint)
+            {
+                if (hookPointHUDInfoList[i].showing)
+                {
+                    hookPointHUDInfoList[i].showing = false;
+                    if (hookPointHUDInfoList[i].chosenOne)
+                    {
+                        hookPointHUDInfoList[i].SwitchChosenOne();
+                    }
+                    hookPointHUDInfoList[i].hookPointHUD.gameObject.SetActive(false);
+                }
+            }
+        }
     }
 
     public void SetChosenHookPointHUD(HookPoint hookPoint)
@@ -411,22 +402,30 @@ public class PlayerHUD : MonoBehaviour
         }
     }
 
+    #endregion
 
+    #region --- CAMERA VFX ---
     // --- EFECTOS DE CÁMARA ---
 
     void CameraVFXAwakes()
     {
-        for(int i=0; i<cameraVFX.Length; i++)
+        for (int i = 0; i < cameraVFX.Length; i++)
         {
             cameraVFX[i].KonoAwake();
         }
     }
 
+    void StartCamVFX(CameraVFX camVFX)
+    {
+        camVFX.Activate();
+        currentCameraVFX = camVFX;
+    }
+
     public void StartCamVFX(CameraVFXType camVFXType)
     {
-        for(int i = 0; i < cameraVFX.Length; i++)
+        for (int i = 0; i < cameraVFX.Length; i++)
         {
-            if(cameraVFX[i].effectType == camVFXType)
+            if (cameraVFX[i].effectType == camVFXType)
             {
                 if (currentCameraVFX != null)
                 {
@@ -442,12 +441,6 @@ public class PlayerHUD : MonoBehaviour
                 }
             }
         }
-    }
-
-    void StartCamVFX(CameraVFX camVFX)
-    {
-        camVFX.Activate();
-        currentCameraVFX = camVFX;
     }
 
     public void StopCamVFX(CameraVFXType camVFXType)
@@ -466,7 +459,7 @@ public class PlayerHUD : MonoBehaviour
     {
         for (int i = 0; i < cameraVFX.Length; i++)
         {
-            if(cameraVFX[i]== camVFX)
+            if (cameraVFX[i] == camVFX)
             {
                 cameraVFX[i].Deactivate();
             }
@@ -474,33 +467,37 @@ public class PlayerHUD : MonoBehaviour
         currentCameraVFX = null;
     }
 
+    #endregion
+
+    #region --- DASH HUD ---
     // --- DASH HUD --- 
 
     void SetupDashHUD()
     {
         dashHUDTotalDist = Mathf.Abs(dashHUDStartPos.localPosition.y - dashHUDEndPos.localPosition.y);
         SetDashHUDProgress(1);
-        background.color = backgroundColor[0];
-        minLine.color = minLineColor[0];
+        dashHUDBackground.color = dashHUDBackgroundColor[0];
+        dashHUDMinLine.color = dashHUDMinLineColor[0];
+        dashHUDEdges.color = dashHUDEdgesColor[0];
     }
 
     void UpdateDashHUDFuel()
     {
         if (myPlayerMov.boostReady)
         {
-            background.color = backgroundColor[0];
-            minLine.color = backgroundColor[0];
+            dashHUDBackground.color = dashHUDBackgroundColor[0];
+            dashHUDMinLine.color = dashHUDMinLineColor[0];
         }
         else
         {
-            background.color = backgroundColor[1];
+            dashHUDBackground.color = dashHUDBackgroundColor[1];
             if (myPlayerMov.boostCurrentFuel < myPlayerMov.boostMinFuelNeeded * myPlayerMov.boostCapacity)
             {
-                minLine.color = backgroundColor[1];
+                dashHUDMinLine.color = dashHUDMinLineColor[1];
             }
             else
             {
-                minLine.color = backgroundColor[0];
+                dashHUDMinLine.color = dashHUDMinLineColor[0];
             }
         }
         float progress = myPlayerMov.boostCurrentFuel / myPlayerMov.boostCapacity;
@@ -513,7 +510,110 @@ public class PlayerHUD : MonoBehaviour
         float currentY = progress * dashHUDTotalDist;
         dashHUDWater.localPosition = new Vector3(dashHUDStartPos.localPosition.x, dashHUDStartPos.localPosition.y + currentY, 1);
     }
+
+    public void StartDashHUDCantUseAnimation()
+    {
+        dashHUDCantDoAnimState = 1;
+        dashHUDCantDoAnimTime = 0;
+        dashHUDCantDoAnimXIncrement = 0;
+        dashHUDCantDoAnimCycleTime = dashHUDCantDoAnimMaxCycleTime / 2;
+    }
+
+    void ProcessDashHUDCantUseAnimation()
+    {
+        if (dashHUDCantDoAnimState != 0)
+        {
+            float progress = dashHUDCantDoAnimCycleTime / dashHUDCantDoAnimMaxCycleTime;
+            switch (dashHUDCantDoAnimState)
+            {
+                case 1://GOING RIGHT
+                    break;
+                case 2://GOING LEFT
+                    break;
+            }
+            dashHUDCantDoAnimCycleTime += Time.deltaTime;
+            if (dashHUDCantDoAnimCycleTime >= dashHUDCantDoAnimMaxCycleTime)
+            {
+                dashHUDCantDoAnimState = dashHUDCantDoAnimState==2?1:2;
+                dashHUDCantDoAnimCycleTime = 0;
+            }
+            dashHUDCantDoAnimTime += Time.deltaTime;
+            if(dashHUDCantDoAnimTime >= dashHUDCantDoAnimMaxTime)
+            {
+                StopDashHUDCantUseAnimation();
+            }
+        }
+    }
+
+    public void StopDashHUDCantUseAnimation()
+    {
+        if (dashHUDCantDoAnimState != 0)
+        {
+            dashHUDCantDoAnimState = 0;
+        }
+    }
+    #endregion
+
+    #region --- HOOK ---
+    // --- Hook ---
+
+    public void StartAim()
+    {
+        crosshair.enabled = true;
+        crosshairReduced.enabled = false;
+    }
+
+    public void StartThrowHook()
+    {
+        crosshair.enabled = false;
+        crosshairReduced.enabled = true;
+    }
+
+    public void StopThrowHook()
+    {
+        crosshair.enabled = true;
+        crosshairReduced.enabled = false;
+    }
+
+    public void StopAim()
+    {
+        crosshair.enabled = false;
+        crosshairReduced.enabled = false;
+    }
+    #endregion
+
+    #region --- HOOK CD AND BOOST CD ---
+    // --- Hook CD and Boost CD ---
+
+    public void setHookUI(float f)
+    {
+        //print("SetHookUI: fillAmout= " + f);
+        Hook.fillAmount = Mathf.Clamp01(f);
+    }
+
+    public void setBoostUI(float f)
+    {
+        //print("SetBoostUI: fillAmout= " + f);
+        Boost.fillAmount = Mathf.Clamp01(f);
+    }
+    #endregion
+
+    #endregion
+
+    #region ----[ PUN CALLBACKS ]----
+    #endregion
+
+    #region ----[ RPC ]----
+    #endregion
+
+    #region ----[ NETWORK FUNCTIONS ]----
+    #endregion
+
+    #region ----[ IPUNOBSERVABLE ]----
+    #endregion
 }
+
+#region ----[ STRUCTS & CLASSES ]----
 [System.Serializable]
 public class CameraVFX
 {
@@ -548,7 +648,6 @@ public class CameraVFX
     }
 
 }
-
 public class HookPointHUDInfo
 {
     public HookPointHUD hookPointHUD;
@@ -587,3 +686,6 @@ public class HookPointHUDInfo
         }
     }
 }
+#endregion
+
+
