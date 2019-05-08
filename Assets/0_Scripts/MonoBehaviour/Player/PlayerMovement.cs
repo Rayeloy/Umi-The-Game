@@ -117,7 +117,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         get
         {
-            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !boostCDStarted);
+            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !boostCDStarted && !haveFlag);
         }
     }
     Vector3 boostDir;
@@ -711,40 +711,42 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
             StartJump();
         }
 
-        switch (jumpSt)
+        if(moveSt!= MoveState.Boost)
         {
-            case JumpState.none:
-                currentVel.y += gravity * Time.deltaTime;
-                break;
-            case JumpState.Jumping:
-                currentVel.y += gravity * Time.deltaTime;
-                timePressingJump += Time.deltaTime;
-                if (timePressingJump >= maxTimePressingJump)
-                {
-                    StopJump();
-                }
-                else
-                {
-                    if (Actions.A.WasReleased)//Input.GetButtonUp(contName + "A"))
+            switch (jumpSt)
+            {
+                case JumpState.none:
+                    currentVel.y += gravity * Time.deltaTime;
+                    break;
+                case JumpState.Jumping:
+                    currentVel.y += gravity * Time.deltaTime;
+                    timePressingJump += Time.deltaTime;
+                    if (timePressingJump >= maxTimePressingJump)
                     {
-                        jumpSt = JumpState.Breaking;
+                        StopJump();
                     }
-                }
-                break;
-            case JumpState.Breaking:
-                currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
-                if (currentVel.y <= 0)
-                {
-                    jumpSt = JumpState.none;
-                }
+                    else
+                    {
+                        if (Actions.A.WasReleased)//Input.GetButtonUp(contName + "A"))
+                        {
+                            jumpSt = JumpState.Breaking;
+                        }
+                    }
+                    break;
+                case JumpState.Breaking:
+                    currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
+                    if (currentVel.y <= 0)
+                    {
+                        jumpSt = JumpState.none;
+                    }
 
-                break;
-            case JumpState.wallJumping:
-                currentVel.y += wallJumpSlidingAcc * Time.deltaTime;
-                break;
-
-
+                    break;
+                case JumpState.wallJumping:
+                    currentVel.y += wallJumpSlidingAcc * Time.deltaTime;
+                    break;
+            }
         }
+
         if (inWater)
         {
             currentVel.y = Mathf.Clamp(currentVel.y, -maxVerticalSpeedInWater, float.MaxValue);
@@ -958,12 +960,12 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
         currentVel = finalDir * currentVel.magnitude;
         currentSpeed = currentVel.magnitude;
         boostDir = new Vector3(finalDir.x, 0, finalDir.z);
-        RotateCharacter();
+        RotateCharacter(boostDir);
     }
 
     void StartBoost()
     {
-        if (!noInput && boostReady && !haveFlag && !inWater)
+        if (!noInput && boostReady && !inWater)
         {
             //noInput = true;
             //PARA ORTU: Variable para empezar boost
@@ -982,6 +984,10 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
                 RotateCharacter(currentMovDir);
             }
             myPlayerHUD.StartCamVFX(CameraVFXType.Dash);
+        }
+        else
+        {
+            myPlayerHUD.StartDashHUDCantDoAnimation();
         }
 
     }

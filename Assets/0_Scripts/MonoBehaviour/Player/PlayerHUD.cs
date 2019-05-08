@@ -96,14 +96,9 @@ public class PlayerHUD : MonoBehaviour
     float dashHUDTotalDist = 0;
     public Image dashHUDBackground, dashHUDMinLine, dashHUDEdges;
     public Color[] dashHUDBackgroundColor, dashHUDMinLineColor, dashHUDEdgesColor;//0 -> COLOR WHEN BOOST READY; 1 -> COLOR WHEN BOOST NOT READY;
-    int dashHUDCantDoAnimState = 0;//0 -> not started; 1-> Started, going right; 2 -> Started, going left
-    public float dashHUDCantDoAnimMaxCycleTime=0.1f;
-    float dashHUDCantDoAnimCycleTime = 0;
-    public float dashHUDCantDoAnimMaxTime = 0.5f;
+    bool dashHUDCantDoAnimStarted = false;
+    public UIAnimation dashHUDCantDoAnimation;
     float dashHUDCantDoAnimTime = 0;
-    public float dashHUDCantDoAnimMaxXIncrement;
-    float dashHUDCantDoAnimXTotalSpace;
-    float dashHUDCantDoAnimXIncrement = 0;
     #endregion
 
     #region ----[ PROPERTIES ]----
@@ -116,8 +111,7 @@ public class PlayerHUD : MonoBehaviour
     {
         hookPointHUDInfoList = new List<HookPointHUDInfo>();
         myCanvas = GetComponent<Canvas>();
-        CameraVFXAwakes();
-        dashHUDCantDoAnimXTotalSpace = dashHUDCantDoAnimMaxXIncrement * 2;
+        SetupCameraVFX();
     }
     #endregion
 
@@ -158,6 +152,7 @@ public class PlayerHUD : MonoBehaviour
         }
         UpdateAllHookPointHUDs();
         UpdateDashHUDFuel();
+        ProcessDashHUDCantDoAnimation();
     }
     #endregion
 
@@ -407,6 +402,15 @@ public class PlayerHUD : MonoBehaviour
     #region --- CAMERA VFX ---
     // --- EFECTOS DE CÁMARA ---
 
+    void SetupCameraVFX()
+    {
+        if (!CameraVFXParent.gameObject.activeInHierarchy)
+        {
+            CameraVFXParent.gameObject.SetActive(true);
+        }
+        CameraVFXAwakes();
+    }
+
     void CameraVFXAwakes()
     {
         for (int i = 0; i < cameraVFX.Length; i++)
@@ -479,6 +483,9 @@ public class PlayerHUD : MonoBehaviour
         dashHUDBackground.color = dashHUDBackgroundColor[0];
         dashHUDMinLine.color = dashHUDMinLineColor[0];
         dashHUDEdges.color = dashHUDEdgesColor[0];
+
+        float cameraProportion = Mathf.Min(myUICamera.rect.width, myUICamera.rect.height);
+        dashHUDCantDoAnimStarted = false;
     }
 
     void UpdateDashHUDFuel()
@@ -511,45 +518,33 @@ public class PlayerHUD : MonoBehaviour
         dashHUDWater.localPosition = new Vector3(dashHUDStartPos.localPosition.x, dashHUDStartPos.localPosition.y + currentY, 1);
     }
 
-    public void StartDashHUDCantUseAnimation()
+    public void StartDashHUDCantDoAnimation()
     {
-        dashHUDCantDoAnimState = 1;
+        print("Start DashHUD Cant Use Animation");
+        dashHUDCantDoAnimStarted = true;
         dashHUDCantDoAnimTime = 0;
-        dashHUDCantDoAnimXIncrement = 0;
-        dashHUDCantDoAnimCycleTime = dashHUDCantDoAnimMaxCycleTime / 2;
+        dashHUDEdges.color = dashHUDEdgesColor[1];
+        GameInfo.instance.StartAnimation(dashHUDCantDoAnimation, myUICamera);
     }
 
-    void ProcessDashHUDCantUseAnimation()
+    void ProcessDashHUDCantDoAnimation()
     {
-        if (dashHUDCantDoAnimState != 0)
+        if (dashHUDCantDoAnimStarted)
         {
-            float progress = dashHUDCantDoAnimCycleTime / dashHUDCantDoAnimMaxCycleTime;
-            switch (dashHUDCantDoAnimState)
-            {
-                case 1://GOING RIGHT
-                    break;
-                case 2://GOING LEFT
-                    break;
-            }
-            dashHUDCantDoAnimCycleTime += Time.deltaTime;
-            if (dashHUDCantDoAnimCycleTime >= dashHUDCantDoAnimMaxCycleTime)
-            {
-                dashHUDCantDoAnimState = dashHUDCantDoAnimState==2?1:2;
-                dashHUDCantDoAnimCycleTime = 0;
-            }
             dashHUDCantDoAnimTime += Time.deltaTime;
-            if(dashHUDCantDoAnimTime >= dashHUDCantDoAnimMaxTime)
+            if(dashHUDCantDoAnimTime >= dashHUDCantDoAnimation.duration)
             {
-                StopDashHUDCantUseAnimation();
+                StopDashHUDCantDoAnimation();
             }
         }
     }
 
-    public void StopDashHUDCantUseAnimation()
+    public void StopDashHUDCantDoAnimation()
     {
-        if (dashHUDCantDoAnimState != 0)
+        if (dashHUDCantDoAnimStarted)
         {
-            dashHUDCantDoAnimState = 0;
+            dashHUDCantDoAnimStarted = false;
+            dashHUDEdges.color = dashHUDEdgesColor[0];
         }
     }
     #endregion
