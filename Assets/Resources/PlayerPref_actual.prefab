@@ -239,7 +239,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2847353080688889697}
-  - component: {fileID: 2771429764278541069}
   - component: {fileID: 2833859408238283959}
   - component: {fileID: 2740017724817165817}
   - component: {fileID: 2739787249420687251}
@@ -273,20 +272,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &2771429764278541069
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2852978573330665781}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 0
-  m_Radius: 0.4
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &2833859408238283959
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -424,7 +409,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c515b7e1049281419f36a8f533abb98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllRays: 1
+  disableAllRays: 0
   collisionMask:
     serializedVersion: 2
     m_Bits: 279040
@@ -760,6 +745,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SwimEffect
       objectReference: {fileID: 0}
+    - target: {fileID: 199000011437046790, guid: 3f7958af7c1cb6543815e6a8d97712dd,
+        type: 3}
+      propertyPath: m_MotionVectors
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4000012858824988, guid: 3f7958af7c1cb6543815e6a8d97712dd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -802,11 +792,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4000012858824988, guid: 3f7958af7c1cb6543815e6a8d97712dd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 199000011437046790, guid: 3f7958af7c1cb6543815e6a8d97712dd,
-        type: 3}
-      propertyPath: m_MotionVectors
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

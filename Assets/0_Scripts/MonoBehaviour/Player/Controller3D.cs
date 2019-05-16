@@ -29,6 +29,50 @@ public class Controller3D : MonoBehaviour
     RaycastOrigins raycastOrigins;
     public CollisionInfo collisions;
 
+    [Header("Vertical Collisions")]
+    public bool showVerticalRays;
+    public bool showVerticalLimits;
+    public bool showDistanceCheckRays;
+    public int verticalRows;
+    public int verticalRaysPerRow;
+    float verticalRowSpacing;
+    float verticalRaySpacing;
+
+    [Header("Horizontal Collisions")]
+    public bool showHorizontalRays;
+    public bool showHorizontalLimits;
+    public bool showWallRays;
+    public bool showWallLimits;
+    public int horizontalRows;
+    public int horizontalRaysPerRow;
+    float horizontalRowSpacing;
+    float horizontalRaySpacing;
+
+    [Header("In Water Collisions")]
+    public bool showWaterRays;
+    public int aroundRaysPerCircle;
+    public int aroundCircles;
+    public float aroundRaycastsLength = 3f;
+    float aroundCirclesSpacing;
+    float aroundAngleSpacing;
+
+    public enum MovingState
+    {
+        none,
+        wall,
+        climbing,
+        descending,
+        sliping,
+        crossingPeak
+    }
+
+    public enum SlideState // for sliding against WALLS
+    {
+        none,
+        left,
+        right
+    }
+
     private void Start()
     {
         CalculateRaySpacing();
@@ -54,7 +98,7 @@ public class Controller3D : MonoBehaviour
         {
             NewVerticalCollisions2(ref vel);
         }
-
+        Debug.Log("below = "+collisions.below+ "; MovingState = "+ collisions.moveSt);
         VerticalCollisionsDistanceCheck(ref vel);
 
         UpdateSafeBelow();
@@ -751,13 +795,16 @@ public class Controller3D : MonoBehaviour
         Vector3 rowsOrigin = directionY == -1 ? raycastOrigins.BottomLFCornerReal : raycastOrigins.TopLFCornerReal;
         Vector3 rowOrigin = rowsOrigin;
         Vector3 wallNormal = new Vector3(collisions.wallNormal.x, 0, collisions.wallNormal.z).normalized;
-        if (collisions.floorAngle >= 0 && collisions.floorAngle < 0.2f)//SEPARATION FROM WALL IN CASE WE ARE STANDING ON FLOOR AN COLLIDING WITH WALL
+        //SEPARATION FROM WALL IN CASE WE ARE STANDING ON FLOOR AND COLLIDING WITH WALL
+        if (collisions.floorAngle >= 0 && collisions.floorAngle < 0.2f)
         {
             rowOrigin += wallNormal * 0.01f;
         }
+
         //Check for peak under
         bool peak = false;
         MovingState lastSlopeType = MovingState.none;
+
         //print("----------NEW SET OF RAYS------------");
         for (int i = 0; i < verticalRows; i++)
         {
@@ -779,7 +826,7 @@ public class Controller3D : MonoBehaviour
                     Debug.DrawRay(rayOrigin, Vector3.up * directionY * rayLength, Color.red);
                 }
 
-                if (Physics.Raycast(rayOrigin, Vector3.up * directionY, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
+                if (Physics.Raycast(rayOrigin, Vector3.up * directionY, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore)) // throw raycast here
                 {
                     float slopeAngle = GetSlopeAngle(hit);
                     //print("Vertical Hit");
@@ -793,7 +840,8 @@ public class Controller3D : MonoBehaviour
                         collisions.closestVerRaycast = new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, wallAngle, Raycast.Axis.Y, i, 0);
                     }
                     MovingState slopeType = CheckSlopeType(ref vel, new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, 0, Raycast.Axis.Y, i, 0));
-                    if (slopeType == MovingState.climbing || slopeType == MovingState.descending)
+                    Debug.Log("Vertical collisions slopeType = " + slopeType);
+                    if ((slopeType == MovingState.climbing || slopeType == MovingState.descending) && !peak)
                     {
                         if (lastSlopeType == MovingState.none)
                         {
@@ -802,7 +850,7 @@ public class Controller3D : MonoBehaviour
                         else if (lastSlopeType != slopeType)
                         {
                             peak = true;
-                            //Debug.LogWarning("I'm on a peak");
+                            Debug.LogWarning("I'm on a peak");
                         }
                     }
                     //STORE ALL THE RAYCASTS
@@ -814,10 +862,11 @@ public class Controller3D : MonoBehaviour
 
         if (collisions.closestVerRaycast.axis != Raycast.Axis.none)//si ha habido una collision vertical
         {
-            MovingState value = CheckSlopeType(ref vel, collisions.closestVerRaycast);
+            MovingState value;
             //print("COLLISION VER: " + value + "; slopeAngle=" + collisions.closestVerRaycast.slopeAngle);
             if (!peak)
             {
+                value = CheckSlopeType(ref vel, collisions.closestVerRaycast);
                 value = value == MovingState.climbing ? MovingState.none : value;
             }
             else
@@ -938,7 +987,7 @@ public class Controller3D : MonoBehaviour
                 Vector3 lastOrigin = rowOrigin;
                 for (int j = 0; j < verticalRaysPerRow; j++)
                 {
-                    if (i % 2 == 0 && j % 2 == 0)
+                    if (i % 2 == 0 && j % 2 == 0)// Every even number throw a ray. This is to reduce raycasts to half since not so many are needed.
                     {
                         Vector3 rayOrigin = new Vector3(rowOrigin.x + (verticalRaySpacing * j), rowOrigin.y, rowOrigin.z);
                         lastOrigin = rayOrigin;
@@ -1016,33 +1065,6 @@ public class Controller3D : MonoBehaviour
 
     }
 
-    [Header("Vertical Collisions")]
-    public bool showVerticalRays;
-    public bool showVerticalLimits;
-    public bool showDistanceCheckRays;
-    public int verticalRows;
-    public int verticalRaysPerRow;
-    float verticalRowSpacing;
-    float verticalRaySpacing;
-
-    [Header("Horizontal Collisions")]
-    public bool showHorizontalRays;
-    public bool showHorizontalLimits;
-    public bool showWallRays;
-    public bool showWallLimits;
-    public int horizontalRows;
-    public int horizontalRaysPerRow;
-    float horizontalRowSpacing;
-    float horizontalRaySpacing;
-
-    [Header("In Water Collisions")]
-    public bool showWaterRays;
-    public int aroundRaysPerCircle;
-    public int aroundCircles;
-    public float aroundRaycastsLength = 3f;
-    float aroundCirclesSpacing;
-    float aroundAngleSpacing;
-
     void CalculateRaySpacing()
     {
         Bounds bounds = coll.bounds;
@@ -1085,23 +1107,6 @@ public class Controller3D : MonoBehaviour
         public Vector3 Center;
         public float AroundRadius;
 
-    }
-
-    public enum MovingState
-    {
-        none,
-        wall,
-        climbing,
-        descending,
-        sliping,
-        crossingPeak
-    }
-
-    public enum SlideState
-    {
-        none,
-        left,
-        right
     }
 
     public struct CollisionInfo
@@ -1149,6 +1154,7 @@ public class Controller3D : MonoBehaviour
             verRaycastsY = new Raycast[0,0];
             verWall = null;
         }
+
         public void ResetHorizontal()
         {
             left = right = false;
@@ -1169,10 +1175,12 @@ public class Controller3D : MonoBehaviour
             lastFinishedClimbing = finishedClimbing;
             finishedClimbing = false;
         }
+
         public void ResetAround()
         {
             around = false;
         }
+
         public void ResetClimbingSlope()
         {
             lastMoveSt = moveSt;

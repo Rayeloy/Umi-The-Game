@@ -117,7 +117,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
     {
         get
         {
-            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !boostCDStarted && !haveFlag);
+            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !boostCDStarted && !haveFlag && !inWater);
         }
     }
     Vector3 boostDir;
@@ -1325,7 +1325,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks
 
     public void StopHooked()
     {
-        print("STOP HOOKED");
+        //print("STOP HOOKED");
         if (hooked)
         {
             noInput = false;

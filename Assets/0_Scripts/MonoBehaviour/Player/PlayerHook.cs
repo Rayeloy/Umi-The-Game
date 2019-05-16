@@ -73,7 +73,7 @@ public class PlayerHook : MonoBehaviour
         }
     }
 
-    [Header("Parameters")]
+    [Header("--- HOOK ---")]
     public float hookFowardSpeed;
     public float hookBackwardsSpeed;
     public float hookGrapplingSpeed;
@@ -104,7 +104,7 @@ public class PlayerHook : MonoBehaviour
     // --- Grapple --- 
     [HideInInspector]
     public GrappleState grappleSt = GrappleState.ready;
-    [Header(" --- Grapple --- ")]
+    [Header(" --- AUTO GRAPPLE --- ")]
     [Tooltip("Layers that we can collide with, like walls, or the hookPoint. If it's a wall (checking via tags) we won't be able to grapple.")]
     public LayerMask grappleColMask;
     public float grappleStopMinDistance = 0.1f;
@@ -500,19 +500,20 @@ public class PlayerHook : MonoBehaviour
     {
         if (grappleSt == GrappleState.ready && !usingHook )
         {
-            Debug.Log("Grapple: Starting Grapple");
+            //Debug.Log("Grapple: Starting Grapple");
             originPos = myPlayerMov.rotateObj.transform.TransformPoint(hookLocalOrigin);
 
             //Calculate trayectory
             Vector3 rayOrigin = originPos;
             float dist = (minDistanceToGrapple + 0.1f);
             Vector3 rayEnd = currentHookPointInSight.transform.position;
-            Debug.Log("Grapple: Checking for walls in the middle; rayOrigin = " + rayOrigin.ToString("F4"));
+            //Debug.Log("Grapple: Checking for walls in the middle; rayOrigin = " + rayOrigin.ToString("F4"));
 
             Debug.DrawLine(rayOrigin, rayEnd, Color.white, 5);
             RaycastHit hit;
             if (Physics.Linecast(rayOrigin, rayEnd, out hit, grappleColMask, QueryTriggerInteraction.Collide))
             {
+                //print("AUTOGRAPPLE: collided with something in the middle: " + hit.transform.name);
                 if (hit.transform.tag == "Stage")
                 {
                     Debug.LogWarning("Warning: Can't grapple because there is a wall or something similar in the middle (" + hit.transform.name + ")");
@@ -541,7 +542,7 @@ public class PlayerHook : MonoBehaviour
 
     void StartAutoGrapple()
     {
-        print("START THROWING AUTOGRAPPLE");
+        //print("START THROWING AUTOGRAPPLE");
         //VARIABLES
         grappleSt = GrappleState.throwing;
         currentGrappleDistance = 0;
@@ -581,7 +582,6 @@ public class PlayerHook : MonoBehaviour
         switch (grappleSt)
         {
             case GrappleState.throwing:
-                print("THROWING AUTOGRAPPLE");
                 MoveHook(hookMovingVel);
                 //UpdateDistance();
                 Vector3 hookRopeEndPos = hookRopeEnd.position;
@@ -636,7 +636,7 @@ public class PlayerHook : MonoBehaviour
     {
         if (grappleSt == GrappleState.throwing)
         {
-            print("START AUTOGRAPPLING");
+            //print("START AUTOGRAPPLING");
             timeGrappling = 0;
             grappleSt = GrappleState.grappling;
             myPlayerMov.StopHooking();
@@ -648,7 +648,7 @@ public class PlayerHook : MonoBehaviour
     {
         if (usingAutoGrapple)
         {
-            print("FINISH AUTOGRAPPLE");
+            //print("FINISH AUTOGRAPPLE");
             currentGrapplingHookPoint = null;
             currentHookPointPos = null;
             grappleSt = GrappleState.cd;
