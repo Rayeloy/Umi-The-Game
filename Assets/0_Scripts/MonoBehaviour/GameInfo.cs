@@ -16,6 +16,7 @@ public class GameInfo : MonoBehaviour
     public List<PlayerActions> playerActionsList;
     public List<Team> playerTeamList;
     public int nPlayers;
+    public PlayerActions myControls;
 
     List<UIAnimation> uIAnimations;
 

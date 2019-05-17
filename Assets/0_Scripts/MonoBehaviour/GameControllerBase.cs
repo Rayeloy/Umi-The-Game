@@ -212,7 +212,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             int playernumber = PhotonNetwork.CurrentRoom.PlayerCount;
             CreatePlayer(""+playernumber);
 
-            onlinePlayer.Actions = PlayerActions.CreateWithKeyboardBindings(); //Juan: hay que hacer la toma de valores de TeamSetupManager aquí pero bueh...
+            onlinePlayer.Actions = GameInfo.instance.myControls == null?PlayerActions.CreateWithKeyboardBindings():GameInfo.instance.myControls;
+            //Juan: hay que hacer la toma de valores de TeamSetupManager aquí pero bueh...
             onlineCamera.myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
             onlineUICamera.rect = new Rect(0, 0, 1, 1);
 
@@ -426,17 +427,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
-    //Juan: esta función se ejecuta antes de instanciar al jugador, PhotonNetwrok.Instantiate  así spawneará al jugador en su respectivo lugar desde el principio haya o no comenzado el juego
-    public Team SetOnlineTeam()
-    {
-        Team myTeam = Team.A;
-        int playercount = (int)PhotonNetwork.CurrentRoom.PlayerCount;
-        if (playercount % 2 != 0) //Juan: Pares al azul impares al rojo
-        {
-            myTeam = Team.B;
-        }
-        return myTeam;
-    }
 
     public virtual void CreatePlayer(string playerNumber)
     {
@@ -460,7 +450,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 {
                         Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
                         // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-                        Team newPlayerTeam = SetOnlineTeam();
+                        Team newPlayerTeam = GameInfo.instance.NoneTeamSelect();
                         Vector3 respawn = new Vector3(-200, -200, -200);
                         if (newPlayerTeam == Team.A)
                         {
@@ -483,6 +473,19 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                         newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
 
                         InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
+
+                        
+                        if (GameInfo.instance.playerTeamList[0] == Team.none)
+                        {
+                            GameInfo.instance.playerTeamList[0] = GameInfo.instance.NoneTeamSelect();
+                        }
+
+                        allPlayers[0].team = GameInfo.instance.playerTeamList[0];
+                        onlinePlayer = newPlayer;
+                        onlineCamera = newPlayerCamera;
+                        onlineCanvas = newPlayerCanvas;
+                        onlineUICamera = newPlayerUICamera;
+
                 }
                 else
                 {
@@ -537,14 +540,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         allUICameras.Add(UICamera);
         contador.Add(playerHUD.contador);
         powerUpPanel.Add(playerHUD.powerUpPanel);
-
-        if (online)
-        {
-            onlinePlayer = player;
-            onlineCamera = cameraBase;
-            onlineCanvas = canvas;
-            onlineUICamera = UICamera;
-        }
     }
 
     //actualmente en desuso
