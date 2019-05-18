@@ -98,7 +98,11 @@ public class Controller3D : MonoBehaviour
         {
             NewVerticalCollisions2(ref vel);
         }
-        Debug.Log("below = "+collisions.below+ "; MovingState = "+ collisions.moveSt);
+        //Debug.Log("below = "+collisions.below+ "; MovingState = "+ collisions.moveSt);
+        if (collisions.lastMoveSt == MovingState.crossingPeak && collisions.moveSt != MovingState.crossingPeak)
+        {
+            Debug.LogError("We stopped crossing peak");
+        }
         VerticalCollisionsDistanceCheck(ref vel);
 
         UpdateSafeBelow();
@@ -840,7 +844,7 @@ public class Controller3D : MonoBehaviour
                         collisions.closestVerRaycast = new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, wallAngle, Raycast.Axis.Y, i, 0);
                     }
                     MovingState slopeType = CheckSlopeType(ref vel, new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, 0, Raycast.Axis.Y, i, 0));
-                    Debug.Log("Vertical collisions slopeType = " + slopeType);
+                    //Debug.Log("Vertical collisions slopeType = " + slopeType);
                     if ((slopeType == MovingState.climbing || slopeType == MovingState.descending) && !peak)
                     {
                         if (lastSlopeType == MovingState.none)
@@ -968,6 +972,19 @@ public class Controller3D : MonoBehaviour
         }
     }
 
+    //void ProcessAllCollisions(ref Vector3 vel)
+    //{
+    //    if (vel.x != 0 || vel.z != 0)
+    //    {
+    //        NewHorizontalCollisions2(ref vel);
+    //    }
+
+    //    if (vel.y != 0 || vel.x != 0 || vel.z != 0)
+    //    {
+    //        NewVerticalCollisions2(ref vel);
+    //    }
+    //}
+
     void VerticalCollisionsDistanceCheck(ref Vector3 vel)
     {
         if (vel.y != 0)
@@ -1043,22 +1060,28 @@ public class Controller3D : MonoBehaviour
         raycastOrigins.BottomLFCornerReal = new Vector3(bounds.min.x, bounds.min.y, bounds.max.z);
         raycastOrigins.BottomRFCornerReal = new Vector3(bounds.max.x, bounds.min.y, bounds.max.z);
         raycastOrigins.BottomLBCornerReal = new Vector3(bounds.min.x, bounds.min.y, bounds.min.z);
+        raycastOrigins.BottomRBCornerReal = new Vector3(bounds.max.x, bounds.min.y, bounds.min.z);
 
         raycastOrigins.TopLFCornerReal = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z);
+        raycastOrigins.TopRFCornerReal = new Vector3(bounds.max.x, bounds.max.y, bounds.max.z);
+        raycastOrigins.TopLBCornerReal = new Vector3(bounds.min.x, bounds.max.y, bounds.min.z);
+        raycastOrigins.TopRBCornerReal = new Vector3(bounds.max.x, bounds.max.y, bounds.min.z);
+
+        raycastOrigins.planeXn = new Plane();
         //--------------------------------- BOUNDS REDUCED BY SKINWIDTH ---------------------------------
         bounds.Expand(skinWidth * -2);
 
-        raycastOrigins.TopCenter = new Vector3(bounds.center.x, bounds.max.y, bounds.center.z);
-        raycastOrigins.TopEnd = new Vector3(bounds.center.x, bounds.max.y, bounds.max.z);
-        raycastOrigins.TopLFCorner = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z);
-        raycastOrigins.BottomCenter = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
+        //raycastOrigins.TopCenter = new Vector3(bounds.center.x, bounds.max.y, bounds.center.z);
+        //raycastOrigins.TopEnd = new Vector3(bounds.center.x, bounds.max.y, bounds.max.z);
+        //raycastOrigins.TopLFCorner = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z);
+        //raycastOrigins.BottomCenter = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
         raycastOrigins.BottomEnd = new Vector3(bounds.center.x, bounds.min.y, bounds.max.z);
 
-        raycastOrigins.BottomCenterH = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
+        //raycastOrigins.BottomCenterH = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
         //raycastOrigins.BottomLeft = new Vector3(bounds.min.x, bounds.min.y, bounds.center.z);
-        raycastOrigins.BottomLFCorner = new Vector3(bounds.min.x, bounds.min.y, bounds.max.z);
-        raycastOrigins.BottomRFCorner = new Vector3(bounds.max.x, bounds.min.y, bounds.max.z);
-        raycastOrigins.BottomLBCorner = new Vector3(bounds.min.x, bounds.min.y, bounds.min.z);
+        //raycastOrigins.BottomLFCorner = new Vector3(bounds.min.x, bounds.min.y, bounds.max.z);
+        //raycastOrigins.BottomRFCorner = new Vector3(bounds.max.x, bounds.min.y, bounds.max.z);
+        //raycastOrigins.BottomLBCorner = new Vector3(bounds.min.x, bounds.min.y, bounds.min.z);
 
         raycastOrigins.Center = bounds.center;
         raycastOrigins.AroundRadius = bounds.size.z / 2;
@@ -1093,19 +1116,21 @@ public class Controller3D : MonoBehaviour
 
     struct RaycastOrigins
     {
-        public Vector3 TopCenter, TopEnd;//TopEnd= center x, max y, max z
-        public Vector3 TopLFCorner, TopLFCornerReal;
+        //public Vector3 TopCenter, TopEnd;//TopEnd= center x, max y, max z
+        //public Vector3 TopLFCorner;
         public Vector3 BottomCenter, BottomEnd;//TopEnd= center x, min y, max z
-        public Vector3 BottomCenterH;
+        //public Vector3 BottomCenterH;
         //public Vector3 BottomLeft;//min x, miny, center z 
-        public Vector3 BottomLFCorner, BottomRFCorner;
-        public Vector3 BottomLBCorner;
+        //public Vector3 BottomLFCorner, BottomRFCorner;
+        //public Vector3 BottomLBCorner;
 
-        public Vector3 BottomLFCornerReal, BottomRFCornerReal;
-        public Vector3 BottomLBCornerReal;
+        public Vector3 BottomLFCornerReal, BottomRFCornerReal, BottomLBCornerReal, BottomRBCornerReal;
+        public Vector3 TopLFCornerReal, TopRFCornerReal, TopLBCornerReal, TopRBCornerReal;
 
         public Vector3 Center;
         public float AroundRadius;
+
+        public Plane planeXp, planeXn, planeZp, planeZn;
 
     }
 

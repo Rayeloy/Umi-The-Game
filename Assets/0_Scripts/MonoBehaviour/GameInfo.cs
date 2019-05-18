@@ -16,6 +16,10 @@ public class GameInfo : MonoBehaviour
     public List<PlayerActions> playerActionsList;
     public List<Team> playerTeamList;
     public int nPlayers;
+
+    //1 player & online controls
+    PlayerActions keyboardListener;
+    PlayerActions joystickListener;
     public PlayerActions myControls;
 
     List<UIAnimation> uIAnimations;
@@ -28,12 +32,32 @@ public class GameInfo : MonoBehaviour
         playerTeamList = new List<Team>();
 
         uIAnimations = new List<UIAnimation>();
+        myControls = PlayerActions.CreateWithKeyboardBindings();
     }
 
     private void Update()
     {
+        UpdateControls();
         ProcessUIAnimations();
+        if (myControls.A.WasPressed)
+        {
+            Debug.Log("My controls: jump");
+        }
     }
+
+    void OnEnable()
+    {
+        keyboardListener = PlayerActions.CreateWithKeyboardBindings();
+        joystickListener = PlayerActions.CreateWithJoystickBindings();
+    }
+
+
+    void OnDisable()
+    {
+        joystickListener.Destroy();
+        keyboardListener.Destroy();
+    }
+
     public Team NoneTeamSelect()
     {
         int nAzul = 0;
@@ -67,6 +91,45 @@ public class GameInfo : MonoBehaviour
 //               return Team.red;
 //           }
 //       }
+    }
+
+    bool ButtonWasPressedOnListener(PlayerActions actions)
+    {
+        return actions.AnyButtonWasPressed();
+    }
+
+
+    void UpdateControls()
+    {
+        if (ButtonWasPressedOnListener(joystickListener))
+        {
+            Debug.Log("NEW CONTROLS: Joystick");
+            InputDevice inputDevice = InputManager.ActiveDevice;
+            SetMyControls(inputDevice);
+        }
+
+        if (ButtonWasPressedOnListener(keyboardListener))
+        {
+            Debug.Log("NEW CONTROLS: Keyboard");
+            SetMyControls(null);
+        }
+    }
+
+    void SetMyControls(InputDevice inputDevice)
+    {
+        if (inputDevice == null)
+        {
+            if(myControls.controlsType != ControlsType.keyboard)
+            {
+                myControls = PlayerActions.CreateWithKeyboardBindings();
+            }
+        }
+        else
+        {
+            PlayerActions actions = PlayerActions.CreateWithJoystickBindings();
+            actions.Device = inputDevice;
+            myControls = actions;
+        }
     }
 
     #region UIAnimations

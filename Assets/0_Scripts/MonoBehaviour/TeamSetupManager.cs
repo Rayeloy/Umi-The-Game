@@ -222,7 +222,7 @@ public class TeamSetupManager : MonoBehaviour
 
     bool JoinButtonWasPressedOnListener( PlayerActions actions )
 	{
-		return actions.X.WasPressed || actions.Y.WasPressed || actions.B.WasPressed || (actions != keyboardListener && actions.A.WasPressed);
+		return actions.X.WasPressed || actions.Y.WasPressed || actions.B.WasPressed || actions.A.WasPressed;
 	}
 
 	PlayerSelected FindPlayerUsingJoystick( InputDevice inputDevice )
@@ -315,7 +315,6 @@ public class TeamSetupManager : MonoBehaviour
 
 		return null;
 	}
-
 
 	void RemovePlayer( PlayerSelected player )
 	{

@@ -291,6 +291,10 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region Update
     void Update()
     {
+        if (playerNum == 1)
+        {
+            allPlayers[0].Actions = GameInfo.instance.myControls;
+        }
         //if (scoreManager.End) return;
         SlowMotion();
 

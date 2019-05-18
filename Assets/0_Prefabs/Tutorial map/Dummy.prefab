@@ -209,7 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c515b7e1049281419f36a8f533abb98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllRays: 0
+  disableAllRays: 1
   collisionMask:
     serializedVersion: 2
     m_Bits: 279040
@@ -232,17 +232,17 @@ MonoBehaviour:
   showVerticalRays: 0
   showVerticalLimits: 1
   showDistanceCheckRays: 0
-  verticalRows: 20
-  verticalRaysPerRow: 20
+  verticalRows: 10
+  verticalRaysPerRow: 10
   showHorizontalRays: 0
   showHorizontalLimits: 1
   showWallRays: 0
   showWallLimits: 1
-  horizontalRows: 20
-  horizontalRaysPerRow: 20
+  horizontalRows: 10
+  horizontalRaysPerRow: 10
   showWaterRays: 0
-  aroundRaysPerCircle: 10
-  aroundCircles: 10
+  aroundRaysPerCircle: 0
+  aroundCircles: 0
   aroundRaycastsLength: 1.5
 --- !u!114 &1692125511000293926
 MonoBehaviour:
