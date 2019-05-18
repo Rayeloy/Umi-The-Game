@@ -671,8 +671,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     /// </summary>
     private void SetUpCanvases()//Para PantallaDividida
     {
-        if (!online)
-        {
             for(int i = 0; i < allCanvas.Count; i++)
             {
                 allCanvas[i].GetComponent<PlayerHUD>().AdaptCanvasHeightScale();
@@ -713,7 +711,6 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             //    powerUpPanel[2].localScale /= scaleCuatro;
             //    powerUpPanel[3].localScale /= scaleCuatro;
             //}
-        }
     }
 
     //Eloy: this is for checking if the inputsBuffer array is well set up

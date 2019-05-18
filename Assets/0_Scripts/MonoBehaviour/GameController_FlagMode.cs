@@ -84,7 +84,7 @@ public class GameController_FlagMode : GameControllerBase
     public void CreateFlag()
     {
         Flag newFlag;
-        if (online)
+        if (online && PhotonNetwork.IsMasterClient)
         {
             newFlag = PhotonNetwork.Instantiate(this.flagPrefab.name, flagsParent.position, Quaternion.identity, 0).GetComponent<Flag>();
         }

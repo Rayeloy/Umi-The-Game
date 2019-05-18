@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4636526452034152236}
   - component: {fileID: 2159948544499626671}
+  - component: {fileID: 4180938866177338103}
+  - component: {fileID: 4628607921689178196}
   m_Layer: 29
   m_Name: Effects
   m_TagString: Untagged
@@ -57,6 +59,43 @@ MonoBehaviour:
     playOnAwake: 0
     forceStart: 1
     effectParticleSystem: {fileID: 0}
+--- !u!114 &4180938866177338103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 493627781755112655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 1
+  OwnershipTransfer: 0
+  ObservedComponents:
+  - {fileID: 4628607921689178196}
+  viewIdField: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &4628607921689178196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 493627781755112655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
 --- !u!1 &2852381263137244687
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,7 +286,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
+  Synchronization: 1
   OwnershipTransfer: 0
   ObservedComponents:
   - {fileID: 5818937340216835165}
@@ -270,96 +309,96 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: ToWater
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Idle_1
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: PointScore
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Ground
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Walk
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Run
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Roll
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Air
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Falling
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: StartJump
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: ToGround
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: SafeBelow
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Water
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: IdleW
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Swimming
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: JumpOut
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: NoControl
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Dash
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Hooked
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: FrontHit
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: BackHit
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Bounce
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Attack
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Q_Tip
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Hammer
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: Boxing
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: SoftHit
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: HardHit
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: SpAt
   m_SynchronizeLayers:
-  - SynchronizeType: 0
+  - SynchronizeType: 2
     LayerIndex: 0
-  - SynchronizeType: 0
+  - SynchronizeType: 2
     LayerIndex: 1
 --- !u!1 &2852978573330665781
 GameObject:
@@ -696,7 +735,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
+  Synchronization: 1
   OwnershipTransfer: 0
   ObservedComponents:
   - {fileID: 790145978865703247}
