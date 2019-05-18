@@ -253,6 +253,11 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             allPlayers[0].ResetPlayer();
             allPlayers[0].myPlayerAnimation.RestartAnimation();
 
+            if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1)
+            {
+                StartGame();
+            }
+
             //if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
             //{
             //    Debug.Log("GameControllerBase: Empezamos el juego pues se han unido todos los jugadores");
@@ -478,7 +483,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                             respawn = redTeamSpawns[0].position;
                         }
                         newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, respawn, Quaternion.identity, 0).GetComponent<PlayerMovement>();
-                    
+                        newPlayer.team = newPlayerTeam;
+
                         newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
                         newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
                         newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
