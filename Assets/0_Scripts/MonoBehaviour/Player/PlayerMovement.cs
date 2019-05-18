@@ -504,7 +504,7 @@ public class PlayerMovement : MonoBehaviour
             float horiz = Actions.LeftJoystick.X;//Input.GetAxisRaw(contName + "H");
             float vert = Actions.LeftJoystick.Y;//-Input.GetAxisRaw(contName + "V");
                                                 // Check that they're not BOTH zero - otherwise dir would reset because the joystick is neutral.
-            if (horiz != 0 || vert != 0)Debug.Log("Actions.LeftJoystick.X = "+ Actions.LeftJoystick.X+ "Actions.LeftJoystick.Y" + Actions.LeftJoystick.Y);
+            //if (horiz != 0 || vert != 0)Debug.Log("Actions.LeftJoystick.X = "+ Actions.LeftJoystick.X+ "Actions.LeftJoystick.Y" + Actions.LeftJoystick.Y);
             Vector3 temp = new Vector3(horiz, 0, vert);
             joystickSens = temp.magnitude;
             //print("temp.magnitude = " + temp.magnitude);
