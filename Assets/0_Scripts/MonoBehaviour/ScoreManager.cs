@@ -48,13 +48,13 @@ public class ScoreManager : MonoBehaviour {
         blueTeamScore_Text = new List<TextMeshProUGUI>();
         redTeamScore_Text = new List<TextMeshProUGUI>();
         time_Text = new List<TextMeshProUGUI>();
-    }
-
-    public void KonoStart(){
         _Tiempo = Tiempo;
         _tiempoProrroga = tiempoProrroga;
         orcasBlueIndex = new List<int>();
         orcasRedIndex = new List<int>();
+    }
+
+    public void KonoStart(){
 
         for ( int i = 0; i < orcasRedTeam.Length; i++){
             orcasRedTeam[i].SetActive(false);
