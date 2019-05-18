@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
-using Photon.Pun;
 
 #region ----[ PUBLIC ENUMS ]----
 public enum GameMode
@@ -15,7 +14,7 @@ public enum GameMode
 }
 #endregion
 
-public class GameControllerBase : MonoBehaviourPunCallbacks
+public class GameControllerBase : MonoBehaviour
 {
 
     #region ----[ VARIABLES FOR DESIGNERS ]----
@@ -149,7 +148,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region Awake
     protected virtual void Awake()
     {
-        online = PhotonNetwork.IsConnected;
+        //online = PhotonNetwork.IsConnected;
+        online = false;
         if (online)
         {
             Debug.Log("GameControllerBase: estamos conectados y la base del game controller está funcionando correctamente");
@@ -209,8 +209,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             //PlayerSetupOnline?
             //No hace falta SetUpCanvas creo
             //Haz los awakes, y haz el awake de cada jugador nuevo(esto ultimo hay que buscar donde ponerlo... en el CreatePlayer?
-            int playernumber = PhotonNetwork.CurrentRoom.PlayerCount;
-            CreatePlayer(""+playernumber);
+            //int playernumber = PhotonNetwork.CurrentRoom.PlayerCount;
+            //CreatePlayer(""+playernumber);
 
             onlinePlayer.Actions = GameInfo.instance.myControls == null?PlayerActions.CreateWithKeyboardBindings():GameInfo.instance.myControls;
             //Juan: hay que hacer la toma de valores de TeamSetupManager aquí pero bueh...
@@ -260,10 +260,10 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             onlinePlayer.ResetPlayer();
             onlinePlayer.myPlayerAnimation.RestartAnimation();
 
-            if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
-            {
-                Debug.Log("GameControllerBase: Empezamos el juego pues se han unido todos los jugadores");
-            }
+            //if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
+            //{
+            //    Debug.Log("GameControllerBase: Empezamos el juego pues se han unido todos los jugadores");
+            //}
         }
     }
 
@@ -452,7 +452,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
                 if (PlayerMovement.LocalPlayerInstance == null)
                 {
-                        Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
+                        //Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
                         // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
                         Team newPlayerTeam = GameInfo.instance.NoneTeamSelect();
                         Vector3 respawn = new Vector3(-200, -200, -200);
@@ -464,13 +464,14 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                         {
                             respawn = redTeamSpawns[0].position;
                         }
-                        newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, respawn, Quaternion.identity, 0).GetComponent<PlayerMovement>();
+                        //newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, respawn, Quaternion.identity, 0).GetComponent<PlayerMovement>();
                         
                         newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
                         newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
                         newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
 
                         //nombrado de objetos nuevos
+                        newPlayer = null;
                         newPlayer.gameObject.name = "Player " + playerNumber;
                         newPlayerCanvas.gameObject.name = "Canvas " + playerNumber;
                         newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;

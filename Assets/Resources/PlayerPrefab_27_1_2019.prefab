@@ -1774,8 +1774,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2847133323354770497}
   - component: {fileID: 2794287542818142987}
-  - component: {fileID: 6827146679137472721}
-  - component: {fileID: 2843051644897843485}
   m_Layer: 0
   m_Name: ModeloCorrecto_umiboy
   m_TagString: Untagged
@@ -1825,97 +1823,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &6827146679137472721
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2852704085592378559}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  ObservedComponents:
-  - {fileID: 2843051644897843485}
-  viewIdField: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
---- !u!114 &2843051644897843485
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2852704085592378559}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowLayerWeightsInspector: 0
-  ShowParameterInspector: 1
-  m_SynchronizeParameters:
-  - Type: 1
-    SynchronizeType: 1
-    Name: HorizontalSpeed
-  - Type: 1
-    SynchronizeType: 1
-    Name: VerticalSpeed
-  - Type: 9
-    SynchronizeType: 1
-    Name: Hit
-  - Type: 4
-    SynchronizeType: 1
-    Name: Gancho_Apuntar
-  - Type: 9
-    SynchronizeType: 1
-    Name: CambioDeDireccion
-  - Type: 9
-    SynchronizeType: 1
-    Name: CogerLaOrca
-  - Type: 4
-    SynchronizeType: 1
-    Name: OnGround
-  - Type: 9
-    SynchronizeType: 1
-    Name: WallJump
-  - Type: 1
-    SynchronizeType: 1
-    Name: mierdiSpeed
-  - Type: 4
-    SynchronizeType: 1
-    Name: Land
-  - Type: 4
-    SynchronizeType: 1
-    Name: Jump
-  - Type: 4
-    SynchronizeType: 1
-    Name: Jumping
-  - Type: 4
-    SynchronizeType: 2
-    Name: SwimmingIdle
-  - Type: 4
-    SynchronizeType: 2
-    Name: Swimming
-  - Type: 4
-    SynchronizeType: 1
-    Name: EndGame
-  - Type: 4
-    SynchronizeType: 2
-    Name: Running
-  - Type: 4
-    SynchronizeType: 1
-    Name: BasicSwing
-  m_SynchronizeLayers:
-  - SynchronizeType: 0
-    LayerIndex: 0
 --- !u!1 &2852713458427250799
 GameObject:
   m_ObjectHideFlags: 0
@@ -2829,8 +2736,6 @@ GameObject:
   - component: {fileID: 2740053844141714977}
   - component: {fileID: 2739443829118614599}
   - component: {fileID: 2739915846295203843}
-  - component: {fileID: 680465717757116161}
-  - component: {fileID: 7062506349727393188}
   m_Layer: 10
   m_Name: PlayerPrefab_27_1_2019
   m_TagString: Player
@@ -2900,27 +2805,34 @@ MonoBehaviour:
   myPlayerWeap: {fileID: 2740053844141714977}
   myPlayerPickups: {fileID: 2739443829118614599}
   myPlayerAnimation: {fileID: 2740049171833000137}
+  myPlayerAnimation_01: {fileID: 0}
   myPlayerHook: {fileID: 2739915846295203843}
   controller: {fileID: 2739408064946032661}
   myPlayerBody: {fileID: 2741506816888055387}
+  myPlayerObjectDetection: {fileID: 0}
+  myPlayerModel: {fileID: 0}
+  myPlayerVFX: {fileID: 0}
   gC: {fileID: 0}
   myCamera: {fileID: 0}
   cameraFollow: {fileID: 2847219716704171441}
   rotateObj: {fileID: 2847339013141467789}
-  Body: {fileID: 2772850078638722801}
-  teamBlueMat: {fileID: 2100000, guid: 05b1217d2b01f1b4cbc3cd5c7031595a, type: 2}
-  teamRedMat: {fileID: 2100000, guid: fd251d415d4b978418fd8d80db559e7f, type: 2}
   maxMoveSpeed: 10
   rotationSpeed: 1
   instantRotationMaxAngle: 130
   maxKnockbackSpeed: 300
   maxAimingSpeed: 5
   maxHookingSpeed: 3.5
+  maxGrapplingSpeed: 3.5
   maxSpeedInWater: 5
   maxVerticalSpeedInWater: 3
   boostSpeed: 25
-  boostCD: 3
-  boostDuration: 0.5
+  boostCapacity: 1
+  boostDepletingSpeed: 1
+  boostRechargingSpeed: 0.3
+  boostCurrentFuel: 1
+  boostCDMaxTime: 0.3
+  boostFuelLostOnStart: 0.15
+  boostMinFuelNeeded: 0.2
   initialAcc: 30
   breakAcc: -30
   movingAcc: 2
@@ -2934,6 +2846,8 @@ MonoBehaviour:
   pressingJumpActiveProportion: 0.7
   maxTimeJumpInsurance: 0.3
   wallJumpVelocity: 15
+  wallJumpSlidingAcc: -2.5
+  wallJumpMinHeightPercent: 55
   stopWallMaxTime: 0.1
   wallJumpAngle: 25.5
   wallJumpMinHorizAngle: 30
@@ -2957,6 +2871,8 @@ MonoBehaviour:
   online: 0
   spawnPosition: {x: 0, y: 0, z: 0}
   spawnRotation: {x: 0, y: 0, z: 0, w: 0}
+  hooked: 0
+  jumpedOutOfWater: 1
 --- !u!114 &2739787249420687251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3058,9 +2974,7 @@ MonoBehaviour:
   myPlayerAnim: {fileID: 2740049171833000137}
   myPlayerMovement: {fileID: 0}
   myPlayerCombat: {fileID: 0}
-  senaka: {fileID: 2847038872594785633}
-  rightHand: {fileID: 2854694397609994061}
-  leftHand: {fileID: 2847143392388605829}
+  myPlayerModel: {fileID: 0}
   currentWeapon: {fileID: 0}
   weaponsNearby: []
 --- !u!114 &2739443829118614599
@@ -3097,6 +3011,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 264b8cf1ef769c948a0a19b7ff58980d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myCameraBase: {fileID: 0}
+  hookSt: 0
+  currentHook: {fileID: 0}
   hookLocalOrigin: {x: -0.2, y: 0.381, z: 0.511}
   hookMaxDistance: 20
   hookFowardSpeed: 45
@@ -3107,43 +3024,14 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 22016
---- !u!114 &680465717757116161
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2852978573330665781}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 1
-  OwnershipTransfer: 0
-  ObservedComponents:
-  - {fileID: 7062506349727393188}
-  viewIdField: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
---- !u!114 &7062506349727393188
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2852978573330665781}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
+  grappleSt: 0
+  grappleColMask:
+    serializedVersion: 2
+    m_Bits: 0
+  grappleStopMinDistance: 0.1
+  minDistanceToGrapple: 0
+  hookPointMinDistToCameraCenter: 0
+  grappleMaxCDTime: 0
 --- !u!1 &2852981069719698953
 GameObject:
   m_ObjectHideFlags: 0

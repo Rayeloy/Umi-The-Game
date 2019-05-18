@@ -1,12 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
 
 
 #region ----[ PUBLIC ENUMS ]----
 #endregion
-public class PlayerWeapons : MonoBehaviourPunCallbacks {
+public class PlayerWeapons : MonoBehaviour {
 
     #region ----[ VARIABLES FOR DESIGNERS ]----
     //Referencias
@@ -203,13 +202,13 @@ public class PlayerWeapons : MonoBehaviourPunCallbacks {
 
     public void AttachWeaponToBack()
     {
-        if (!PhotonNetwork.IsConnected)
-        {
+        //if (!PhotonNetwork.IsConnected)
+        //{
             currentWeapObject.SetParent(myPlayerModel.senaka);
             currentWeapObject.localPosition = currentWeapon.weaponData.backPosition;
             currentWeapObject.localRotation = Quaternion.Euler(currentWeapon.weaponData.backRotation.x, currentWeapon.weaponData.backRotation.y, currentWeapon.weaponData.backRotation.z);
             currentWeapObject.localScale = currentWeapon.weaponData.backScale;
-        }
+        //}
     }
 
     public void AddWeaponNearby(Weapon weapPickup)
