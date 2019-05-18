@@ -116,6 +116,7 @@ public class GameInfo : MonoBehaviour
         //}
     }
 
+    //NO SE USA
     void SetMyControls(InputDevice inputDevice)
     {
         if (inputDevice == null)

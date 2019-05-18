@@ -68,39 +68,6 @@ public class PlayerActions : PlayerActionSet
     {
         var actions = new PlayerActions();
 
-        actions.controlsType = InputDeviceClass.Keyboard;
-
-        actions.R1.AddDefaultBinding(Key.T);
-        actions.R2.AddDefaultBinding(Key.LeftShift);
-        actions.L1.AddDefaultBinding(Key.G);
-        actions.L2.AddDefaultBinding(Mouse.RightButton);
-
-        actions.A.AddDefaultBinding(Key.Space);
-        actions.X.AddDefaultBinding(Key.Key1);
-        actions.Y.AddDefaultBinding(Key.Key2);
-        actions.B.AddDefaultBinding(Key.Key3);
-
-        actions.RJUp.AddDefaultBinding(Mouse.PositiveY);
-        actions.RJDown.AddDefaultBinding(Mouse.NegativeY);
-        actions.RJLeft.AddDefaultBinding(Mouse.NegativeX);
-        actions.RJRight.AddDefaultBinding(Mouse.PositiveX);
-
-        actions.LJUp.AddDefaultBinding(Key.W);
-        actions.LJDown.AddDefaultBinding(Key.S);
-        actions.LJLeft.AddDefaultBinding(Key.A);
-        actions.LJRight.AddDefaultBinding(Key.D);
-
-        actions.L3.AddDefaultBinding(Key.Key4);
-        actions.R3.AddDefaultBinding(Key.Key5);
-
-        actions.Start.AddDefaultBinding(Key.Escape);
-        return actions;
-    }
-
-    public static PlayerActions CreateWithKeyboardBindings()
-    {
-        var actions = new PlayerActions();
-
         //KEYBOARD AND MOUSE
         actions.controlsType = InputDeviceClass.Keyboard;
 
@@ -158,6 +125,40 @@ public class PlayerActions : PlayerActionSet
         actions.Start.AddDefaultBinding(InputControlType.Start);
         return actions;
     }
+
+    public static PlayerActions CreateWithKeyboardBindings()
+    {
+        var actions = new PlayerActions();
+
+        actions.controlsType = InputDeviceClass.Keyboard;
+
+        actions.R1.AddDefaultBinding(Key.T);
+        actions.R2.AddDefaultBinding(Key.LeftShift);
+        actions.L1.AddDefaultBinding(Key.G);
+        actions.L2.AddDefaultBinding(Mouse.RightButton);
+
+        actions.A.AddDefaultBinding(Key.Space);
+        actions.X.AddDefaultBinding(Key.Key1);
+        actions.Y.AddDefaultBinding(Key.Key2);
+        actions.B.AddDefaultBinding(Key.Key3);
+
+        actions.RJUp.AddDefaultBinding(Mouse.PositiveY);
+        actions.RJDown.AddDefaultBinding(Mouse.NegativeY);
+        actions.RJLeft.AddDefaultBinding(Mouse.NegativeX);
+        actions.RJRight.AddDefaultBinding(Mouse.PositiveX);
+
+        actions.LJUp.AddDefaultBinding(Key.W);
+        actions.LJDown.AddDefaultBinding(Key.S);
+        actions.LJLeft.AddDefaultBinding(Key.A);
+        actions.LJRight.AddDefaultBinding(Key.D);
+
+        actions.L3.AddDefaultBinding(Key.Key4);
+        actions.R3.AddDefaultBinding(Key.Key5);
+
+        actions.Start.AddDefaultBinding(Key.Escape);
+        return actions;
+    }
+
     public static PlayerActions CreateWithJoystickBindings()
     {
         var actions = new PlayerActions();

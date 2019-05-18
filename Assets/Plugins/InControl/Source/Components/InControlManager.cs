@@ -38,7 +38,7 @@ namespace InControl
 		public List<string> customProfiles = new List<string>();
 
 
-		void OnEnable()
+		public void OnEnable()
 		{
 			if (EnforceSingleton)
 			{

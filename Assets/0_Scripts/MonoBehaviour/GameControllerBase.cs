@@ -369,6 +369,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                     //LE DAMOS AL JUGADOR SUS CONTROLES (Mando/teclado) y SU EQUIPO
                     if (allPlayers.Count == 1)
                     {
+                        GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
+                        Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
                         allPlayers[0].Actions = GameInfo.instance.myControls;
                     }
                     else
