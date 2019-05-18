@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using Photon.Pun;
 
 #region ----[ PUBLIC ENUMS ]----
 public enum GameMode
@@ -14,7 +15,7 @@ public enum GameMode
 }
 #endregion
 
-public class GameControllerBase : MonoBehaviour
+public class GameControllerBase : MonoBehaviourPunCallbacks
 {
 
     #region ----[ VARIABLES FOR DESIGNERS ]----
@@ -99,14 +100,6 @@ public class GameControllerBase : MonoBehaviour
 
     // variables para nuestro jugador online
     [HideInInspector]
-    PlayerMovement onlinePlayer;
-    [HideInInspector]
-    CameraController onlineCamera;
-    [HideInInspector]
-    GameObject onlineCanvas;
-    [HideInInspector]
-    Camera onlineUICamera;
-    [HideInInspector]
     public PlayerActions BaseGameActions { get; set; }
 
     [HideInInspector]
@@ -148,8 +141,7 @@ public class GameControllerBase : MonoBehaviour
     #region Awake
     protected virtual void Awake()
     {
-        //online = PhotonNetwork.IsConnected;
-        online = false;
+        online = PhotonNetwork.IsConnected;
         if (online)
         {
             Debug.Log("GameControllerBase: estamos conectados y la base del game controller está funcionando correctamente");
@@ -209,17 +201,18 @@ public class GameControllerBase : MonoBehaviour
             //PlayerSetupOnline?
             //No hace falta SetUpCanvas creo
             //Haz los awakes, y haz el awake de cada jugador nuevo(esto ultimo hay que buscar donde ponerlo... en el CreatePlayer?
-            //int playernumber = PhotonNetwork.CurrentRoom.PlayerCount;
-            //CreatePlayer(""+playernumber);
+            int playernumber = PhotonNetwork.CurrentRoom.PlayerCount;
+            CreatePlayer(""+playernumber);
 
-            onlinePlayer.Actions = GameInfo.instance.myControls == null?PlayerActions.CreateWithKeyboardBindings():GameInfo.instance.myControls;
+            Debug.Log("Nuestro jugador es: "+ GameInfo.instance.myControls);
+            allPlayers[0].Actions = GameInfo.instance.myControls == null?PlayerActions.CreateWithKeyboardBindings():GameInfo.instance.myControls;
             //Juan: hay que hacer la toma de valores de TeamSetupManager aquí pero bueh...
-            onlineCamera.myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-            onlineUICamera.rect = new Rect(0, 0, 1, 1);
+            allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+            allUICameras[0].rect = new Rect(0, 0, 1, 1);
 
             myGameInterface.KonoAwake(this);
-            onlinePlayer.KonoAwake();
-            onlineCamera.KonoAwake();
+            allPlayers[0].KonoAwake();
+            allCameraBases[0].KonoAwake();
 
             gameOverStarted = false;
             contador[0].anchoredPosition = new Vector3(contador[0].anchoredPosition.x, 100, contador[0].anchoredPosition.y);
@@ -250,15 +243,15 @@ public class GameControllerBase : MonoBehaviour
         }
         else
         {
-            onlinePlayer.KonoStart();
+            allPlayers[0].KonoStart();
             playing = true;
             gamePaused = false;
 
-            onlinePlayer.SetVelocity(Vector3.zero);
-            onlinePlayer.myCamera.InstantPositioning();
-            onlinePlayer.myCamera.InstantRotation();
-            onlinePlayer.ResetPlayer();
-            onlinePlayer.myPlayerAnimation.RestartAnimation();
+            allPlayers[0].SetVelocity(Vector3.zero);
+            allPlayers[0].myCamera.InstantPositioning();
+            allPlayers[0].myCamera.InstantRotation();
+            allPlayers[0].ResetPlayer();
+            allPlayers[0].myPlayerAnimation.RestartAnimation();
 
             //if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
             //{
@@ -440,6 +433,17 @@ public class GameControllerBase : MonoBehaviour
         }
     }
 
+    public Team SetRandomOnlineTeam(int SROT_playernum)
+    {
+        if (SROT_playernum % 2 == 0)
+        {
+            return Team.A;
+        }
+        else
+        {
+            return Team.B;
+        }
+    }
 
     public virtual void CreatePlayer(string playerNumber)
     {
@@ -461,9 +465,9 @@ public class GameControllerBase : MonoBehaviour
                 //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
                 if (PlayerMovement.LocalPlayerInstance == null)
                 {
-                        //Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
+                        Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
                         // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-                        Team newPlayerTeam = GameInfo.instance.NoneTeamSelect();
+                        Team newPlayerTeam = SetRandomOnlineTeam(PhotonNetwork.CountOfPlayers);
                         Vector3 respawn = new Vector3(-200, -200, -200);
                         if (newPlayerTeam == Team.A)
                         {
@@ -473,8 +477,8 @@ public class GameControllerBase : MonoBehaviour
                         {
                             respawn = redTeamSpawns[0].position;
                         }
-                    //newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, respawn, Quaternion.identity, 0).GetComponent<PlayerMovement>();
-                    newPlayer = null;
+                        newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, respawn, Quaternion.identity, 0).GetComponent<PlayerMovement>();
+                    
                         newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
                         newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
                         newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
@@ -483,22 +487,9 @@ public class GameControllerBase : MonoBehaviour
                         newPlayer.gameObject.name = "Player " + playerNumber;
                         newPlayerCanvas.gameObject.name = "Canvas " + playerNumber;
                         newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
-                        newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
+                        newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;                       
 
                         InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
-
-                        
-                        if (GameInfo.instance.playerTeamList[0] == Team.none)
-                        {
-                            GameInfo.instance.playerTeamList[0] = GameInfo.instance.NoneTeamSelect();
-                        }
-
-                        allPlayers[0].team = GameInfo.instance.playerTeamList[0];
-                        onlinePlayer = newPlayer;
-                        onlineCamera = newPlayerCamera;
-                        onlineCanvas = newPlayerCanvas;
-                        onlineUICamera = newPlayerUICamera;
-
                 }
                 else
                 {

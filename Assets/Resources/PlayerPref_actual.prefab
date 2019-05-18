@@ -162,6 +162,8 @@ GameObject:
   - component: {fileID: 2769956456207346307}
   - component: {fileID: 2741506816888055387}
   - component: {fileID: 6540143348302519117}
+  - component: {fileID: 1949681967784375633}
+  - component: {fileID: 5818937340216835165}
   m_Layer: 10
   m_Name: Body
   m_TagString: Player
@@ -230,6 +232,135 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1949681967784375633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852869321791633031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  ObservedComponents:
+  - {fileID: 5818937340216835165}
+  viewIdField: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &5818937340216835165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852869321791633031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 4
+    SynchronizeType: 1
+    Name: ToWater
+  - Type: 4
+    SynchronizeType: 1
+    Name: Idle_1
+  - Type: 4
+    SynchronizeType: 1
+    Name: PointScore
+  - Type: 4
+    SynchronizeType: 1
+    Name: Ground
+  - Type: 4
+    SynchronizeType: 1
+    Name: Walk
+  - Type: 4
+    SynchronizeType: 1
+    Name: Run
+  - Type: 4
+    SynchronizeType: 1
+    Name: Roll
+  - Type: 4
+    SynchronizeType: 1
+    Name: Air
+  - Type: 4
+    SynchronizeType: 1
+    Name: Falling
+  - Type: 4
+    SynchronizeType: 1
+    Name: StartJump
+  - Type: 4
+    SynchronizeType: 1
+    Name: ToGround
+  - Type: 4
+    SynchronizeType: 1
+    Name: SafeBelow
+  - Type: 4
+    SynchronizeType: 1
+    Name: Water
+  - Type: 4
+    SynchronizeType: 1
+    Name: IdleW
+  - Type: 4
+    SynchronizeType: 1
+    Name: Swimming
+  - Type: 4
+    SynchronizeType: 1
+    Name: JumpOut
+  - Type: 4
+    SynchronizeType: 1
+    Name: NoControl
+  - Type: 4
+    SynchronizeType: 1
+    Name: Dash
+  - Type: 4
+    SynchronizeType: 1
+    Name: Hooked
+  - Type: 4
+    SynchronizeType: 1
+    Name: FrontHit
+  - Type: 4
+    SynchronizeType: 1
+    Name: BackHit
+  - Type: 4
+    SynchronizeType: 1
+    Name: Bounce
+  - Type: 4
+    SynchronizeType: 1
+    Name: Attack
+  - Type: 4
+    SynchronizeType: 1
+    Name: Q_Tip
+  - Type: 4
+    SynchronizeType: 1
+    Name: Hammer
+  - Type: 4
+    SynchronizeType: 1
+    Name: Boxing
+  - Type: 4
+    SynchronizeType: 1
+    Name: SoftHit
+  - Type: 4
+    SynchronizeType: 1
+    Name: HardHit
+  - Type: 4
+    SynchronizeType: 1
+    Name: SpAt
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
+  - SynchronizeType: 0
+    LayerIndex: 1
 --- !u!1 &2852978573330665781
 GameObject:
   m_ObjectHideFlags: 0
@@ -248,6 +379,8 @@ GameObject:
   - component: {fileID: 2739443829118614599}
   - component: {fileID: 2739915846295203843}
   - component: {fileID: 7710956411820504780}
+  - component: {fileID: 5484495752802555663}
+  - component: {fileID: 790145978865703247}
   m_Layer: 10
   m_Name: PlayerPref_actual
   m_TagString: Player
@@ -548,6 +681,43 @@ MonoBehaviour:
   exitWater: 0
   dash: 0
   maxTimeToLand: 0.154
+--- !u!114 &5484495752802555663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852978573330665781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  ObservedComponents:
+  - {fileID: 790145978865703247}
+  viewIdField: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &790145978865703247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852978573330665781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
 --- !u!1 &4490985865824122605
 GameObject:
   m_ObjectHideFlags: 0

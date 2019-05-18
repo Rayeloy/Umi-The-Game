@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class GameController_FlagMode : GameControllerBase
 {
@@ -82,7 +83,15 @@ public class GameController_FlagMode : GameControllerBase
 
     public void CreateFlag()
     {
-        Flag newFlag = Instantiate(flagPrefab,flagsParent).GetComponent<Flag>();
+        Flag newFlag;
+        if (online)
+        {
+            newFlag = PhotonNetwork.Instantiate(this.flagPrefab.name, flagsParent.position, Quaternion.identity, 0).GetComponent<Flag>();
+        }
+        else
+        {
+            newFlag = Instantiate(flagPrefab, flagsParent).GetComponent<Flag>();
+        }
         newFlag.gC = this;
         flags.Add(newFlag);
     }
