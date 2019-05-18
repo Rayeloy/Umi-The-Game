@@ -136,8 +136,8 @@ public class CameraController : MonoBehaviour
             //Vector3 screenPos = myCamera.GetComponent<Camera>().WorldToScreenPoint((myPlayerMov.gC as GameController_FlagMode).flags[0].transform.position);
             //Debug.Log("Flag is " + screenPos.ToString("F4") + " pixels from the left");
 
-            float inputX = myPlayerMov.Actions.LeftJoystick.X;//Input.GetAxis(myPlayerMov.contName + "H2");
-            float inputZ = -myPlayerMov.Actions.LeftJoystick.Y;//Input.GetAxis(myPlayerMov.contName + "V2");
+            float inputX = myPlayerMov.Actions.RightJoystick.X;//Input.GetAxis(myPlayerMov.contName + "H2");
+            float inputZ = -myPlayerMov.Actions.RightJoystick.Y;//Input.GetAxis(myPlayerMov.contName + "V2");
             //mouseX = Input.GetAxis("Mouse X");                                                                             
             //mouseY = Input.GetAxis("Mouse Y");
             Vector3 input = new Vector2(inputX, inputZ);

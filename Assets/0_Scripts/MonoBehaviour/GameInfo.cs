@@ -37,7 +37,7 @@ public class GameInfo : MonoBehaviour
 
     private void Update()
     {
-        UpdateControls();
+        //UpdateControls();
         ProcessUIAnimations();
         if (myControls.A.WasPressed)
         {
@@ -104,6 +104,7 @@ public class GameInfo : MonoBehaviour
         if (ButtonWasPressedOnListener(joystickListener))
         {
             Debug.Log("NEW CONTROLS: Joystick");
+            Debug.Log("Input Device = " + InputManager.ActiveDevice.Name);
             InputDevice inputDevice = InputManager.ActiveDevice;
             SetMyControls(inputDevice);
         }
@@ -111,6 +112,7 @@ public class GameInfo : MonoBehaviour
         if (ButtonWasPressedOnListener(keyboardListener))
         {
             Debug.Log("NEW CONTROLS: Keyboard");
+            Debug.Log("Input Device = " + InputManager.ActiveDevice.Name);
             SetMyControls(null);
         }
     }
@@ -119,7 +121,7 @@ public class GameInfo : MonoBehaviour
     {
         if (inputDevice == null)
         {
-            if(myControls.controlsType != ControlsType.keyboard)
+            if(myControls.controlsType != InputDeviceClass.Keyboard)
             {
                 myControls = PlayerActions.CreateWithKeyboardBindings();
             }

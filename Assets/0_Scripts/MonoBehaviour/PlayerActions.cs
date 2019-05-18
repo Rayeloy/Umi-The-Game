@@ -1,14 +1,10 @@
-﻿using InControl;
+﻿using UnityEngine;
+using InControl;
 
-public enum ControlsType
-{
-    none,
-    keyboard,
-    xboxController
-}
+
 public class PlayerActions : PlayerActionSet
 {
-    public ControlsType controlsType;
+    public InputDeviceClass controlsType;
 
     public PlayerAction R1;
     public PlayerAction R2;
@@ -71,7 +67,7 @@ public class PlayerActions : PlayerActionSet
     {
         var actions = new PlayerActions();
 
-        actions.controlsType = ControlsType.keyboard;
+        actions.controlsType = InputDeviceClass.Keyboard;
 
         actions.R1.AddDefaultBinding(Key.T);
         actions.R2.AddDefaultBinding(Key.LeftShift);
@@ -83,15 +79,15 @@ public class PlayerActions : PlayerActionSet
         actions.Y.AddDefaultBinding(Key.Key2);
         actions.B.AddDefaultBinding(Key.Key3);
 
-        actions.RJUp.AddDefaultBinding(Key.W);
-        actions.RJDown.AddDefaultBinding(Key.S);
-        actions.RJLeft.AddDefaultBinding(Key.A);
-        actions.RJRight.AddDefaultBinding(Key.D);
+        actions.RJUp.AddDefaultBinding(Mouse.PositiveY);
+        actions.RJDown.AddDefaultBinding(Mouse.NegativeY);
+        actions.RJLeft.AddDefaultBinding(Mouse.NegativeX);
+        actions.RJRight.AddDefaultBinding(Mouse.PositiveX);
 
-        actions.LJUp.AddDefaultBinding(Mouse.PositiveY);
-        actions.LJDown.AddDefaultBinding(Mouse.NegativeY);
-        actions.LJLeft.AddDefaultBinding(Mouse.NegativeX);
-        actions.LJRight.AddDefaultBinding(Mouse.PositiveX);
+        actions.LJUp.AddDefaultBinding(Key.W);
+        actions.LJDown.AddDefaultBinding(Key.S);
+        actions.LJLeft.AddDefaultBinding(Key.A);
+        actions.LJRight.AddDefaultBinding(Key.D);
 
         actions.L3.AddDefaultBinding(Key.Key4);
         actions.R3.AddDefaultBinding(Key.Key5);
@@ -103,7 +99,7 @@ public class PlayerActions : PlayerActionSet
     {
         var actions = new PlayerActions();
 
-        actions.controlsType = ControlsType.xboxController;
+        actions.controlsType = InputDeviceClass.Controller;
 
         actions.R1.AddDefaultBinding(InputControlType.RightBumper);
         actions.R2.AddDefaultBinding(InputControlType.RightTrigger);
@@ -115,15 +111,15 @@ public class PlayerActions : PlayerActionSet
         actions.Y.AddDefaultBinding(InputControlType.Action4);
         actions.B.AddDefaultBinding(InputControlType.Action2);
 
-        actions.RJUp.AddDefaultBinding(InputControlType.LeftStickUp);
-        actions.RJDown.AddDefaultBinding(InputControlType.LeftStickDown);
-        actions.RJLeft.AddDefaultBinding(InputControlType.LeftStickLeft);
-        actions.RJRight.AddDefaultBinding(InputControlType.LeftStickRight);
+        actions.RJUp.AddDefaultBinding(InputControlType.RightStickUp);
+        actions.RJDown.AddDefaultBinding(InputControlType.RightStickDown);
+        actions.RJLeft.AddDefaultBinding(InputControlType.RightStickLeft);
+        actions.RJRight.AddDefaultBinding(InputControlType.RightStickRight);
 
-        actions.LJUp.AddDefaultBinding(InputControlType.RightStickUp);
-        actions.LJDown.AddDefaultBinding(InputControlType.RightStickDown);
-        actions.LJLeft.AddDefaultBinding(InputControlType.RightStickLeft);
-        actions.LJRight.AddDefaultBinding(InputControlType.RightStickRight);
+        actions.LJUp.AddDefaultBinding(InputControlType.LeftStickUp);
+        actions.LJDown.AddDefaultBinding(InputControlType.LeftStickDown);
+        actions.LJLeft.AddDefaultBinding(InputControlType.LeftStickLeft);
+        actions.LJRight.AddDefaultBinding(InputControlType.LeftStickRight);
 
         actions.R3.AddDefaultBinding(InputControlType.RightStickButton);
         actions.L3.AddDefaultBinding(InputControlType.LeftStickButton);
@@ -134,11 +130,20 @@ public class PlayerActions : PlayerActionSet
 
     public bool AnyButtonWasPressed()
     {
-        //RJUp.WasPressed || RJLeft.WasPressed || RJRight.WasPressed || RJDown.WasPressed || LJUp.WasPressed || LJDown.WasPressed || LJLeft.WasPressed || LJRight.WasPressed  
+        //RJUp.WasPressed || RJLeft.WasPressed || RJRight.WasPressed || RJDown.WasPressed || LJUp.WasPressed || LJDown.WasPressed || LJLeft.WasPressed || LJRight.WasPressed
         if (R1.WasPressed || R2.WasPressed || L1.WasPressed || L2.WasPressed || A.WasPressed || B.WasPressed || X.WasPressed || Y.WasPressed ||
-            RightJoystick.X!=0 || RightJoystick.Y != 0 || LeftJoystick.X != 0 || LeftJoystick.Y != 0|| R3.WasPressed || L3.WasPressed || Start.WasPressed)
+            (RightJoystick.X>0.2f || RightJoystick.X < -0.2f) || (RightJoystick.Y > 0.2f || RightJoystick.Y < -0.2f) || (LeftJoystick.X > 0.2f || LeftJoystick.X < -0.2f) ||
+            (LeftJoystick.Y > 0.2f || LeftJoystick.Y < -0.2f) || R3.WasPressed || L3.WasPressed || Start.WasPressed)
         {
-            return true;
+        //if (InputManager.AnyKeyIsPressed && (InputManager.ActiveDevice == this.ActiveDevice) || (this.ActiveDevice == null && Input.anyKeyDown))
+        //{
+        if(LeftJoystick.X !=0)
+            {
+                Debug.Log("LeftJoystick.X = " + LeftJoystick.X);
+            }
+        return true;
+        //}
+
         }
         return false;
     }
