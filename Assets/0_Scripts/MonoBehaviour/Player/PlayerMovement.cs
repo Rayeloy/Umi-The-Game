@@ -356,6 +356,7 @@ public class PlayerMovement : MonoBehaviour
     #region UPDATE
     public void KonoUpdate()
     {
+        Debug.Log("Mis acciones son " + Actions);
         if (Actions.Start.WasPressed) gC.PauseGame(Actions);
 
         if ((controller.collisions.above || controller.collisions.below) && !hooked)

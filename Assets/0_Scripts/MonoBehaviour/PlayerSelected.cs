@@ -60,7 +60,7 @@ public class PlayerSelected : MonoBehaviour
 
         if (!Ready)
         {
-            if (Actions.RightJoystick.X < -0.5f && joystickNeutral)
+            if (Actions.LeftJoystick.X < -0.5f && joystickNeutral)
             {
                 joystickNeutral = false;
                 switch (team)
@@ -73,7 +73,7 @@ public class PlayerSelected : MonoBehaviour
                         break;
                 }
             }
-            else if (Actions.RightJoystick.X > 0.5f && joystickNeutral)
+            else if (Actions.LeftJoystick.X > 0.5f && joystickNeutral)
             {
                 joystickNeutral = false;
                 switch (team)
@@ -85,7 +85,7 @@ public class PlayerSelected : MonoBehaviour
                         changeTeam(Team.none);
                         break;
                 }
-            }else if (Actions.RightJoystick.X >= -0.5f && Actions.RightJoystick.X <= 0.5f)
+            }else if (Actions.LeftJoystick.X >= -0.5f && Actions.LeftJoystick.X <= 0.5f)
             {
                 joystickNeutral = true;
             }

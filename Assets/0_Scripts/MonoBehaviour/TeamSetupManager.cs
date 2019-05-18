@@ -65,6 +65,7 @@ public class TeamSetupManager : MonoBehaviour
             stockGameInfo.SetActive(true);
             stockGameInfo.GetComponent<GameInfo>().Awake();
             stockInControlManager.SetActive(true);
+            stockInControlManager.GetComponent<InControlManager>().OnEnable();
         }
         instance = this;
         minNumPlayers = Mathf.Clamp(minNumPlayers, 1, 6);
@@ -230,7 +231,7 @@ public class TeamSetupManager : MonoBehaviour
 
     bool JoinButtonWasPressedOnListener( PlayerActions actions )
 	{
-		return actions.X.WasPressed || actions.Y.WasPressed || actions.B.WasPressed || actions.A.WasPressed;
+		return actions.X.WasPressed || actions.Y.WasPressed || actions.B.WasPressed || (actions.Device!=null && actions.A.WasPressed);
 	}
 
 	PlayerSelected FindPlayerUsingJoystick( InputDevice inputDevice )
