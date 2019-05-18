@@ -18,13 +18,13 @@ public class GameInfo : MonoBehaviour
     public int nPlayers;
 
     //1 player & online controls
-    PlayerActions keyboardListener;
-    PlayerActions joystickListener;
+    //PlayerActions keyboardListener;
+    //PlayerActions joystickListener;
     public PlayerActions myControls;
 
     List<UIAnimation> uIAnimations;
 
-    private void Awake()
+    public void Awake()
     {
         DontDestroyOnLoad(this);
         instance = this;
@@ -32,7 +32,7 @@ public class GameInfo : MonoBehaviour
         playerTeamList = new List<Team>();
 
         uIAnimations = new List<UIAnimation>();
-        myControls = PlayerActions.CreateWithKeyboardBindings();
+        myControls = PlayerActions.CreateDefaultBindings();
     }
 
     private void Update()
@@ -47,15 +47,14 @@ public class GameInfo : MonoBehaviour
 
     void OnEnable()
     {
-        keyboardListener = PlayerActions.CreateWithKeyboardBindings();
-        joystickListener = PlayerActions.CreateWithJoystickBindings();
+        //keyboardListener = PlayerActions.CreateWithKeyboardBindings();
+        //joystickListener = PlayerActions.CreateWithJoystickBindings();
     }
-
 
     void OnDisable()
     {
-        joystickListener.Destroy();
-        keyboardListener.Destroy();
+        //joystickListener.Destroy();
+        //keyboardListener.Destroy();
     }
 
     public Team NoneTeamSelect()
@@ -93,28 +92,28 @@ public class GameInfo : MonoBehaviour
 //       }
     }
 
+    #region Controls
     bool ButtonWasPressedOnListener(PlayerActions actions)
     {
         return actions.AnyButtonWasPressed();
     }
 
-
     void UpdateControls()
     {
-        if (ButtonWasPressedOnListener(joystickListener))
-        {
-            Debug.Log("NEW CONTROLS: Joystick");
-            Debug.Log("Input Device = " + InputManager.ActiveDevice.Name);
-            InputDevice inputDevice = InputManager.ActiveDevice;
-            SetMyControls(inputDevice);
-        }
+        //if (ButtonWasPressedOnListener(joystickListener))
+        //{
+        //    Debug.Log("NEW CONTROLS: Joystick");
+        //    Debug.Log("Input Device = " + InputManager.ActiveDevice.Name);
+        //    InputDevice inputDevice = InputManager.ActiveDevice;
+        //    SetMyControls(inputDevice);
+        //}
 
-        if (ButtonWasPressedOnListener(keyboardListener))
-        {
-            Debug.Log("NEW CONTROLS: Keyboard");
-            Debug.Log("Input Device = " + InputManager.ActiveDevice.Name);
-            SetMyControls(null);
-        }
+        //if (ButtonWasPressedOnListener(keyboardListener))
+        //{
+        //    Debug.Log("NEW CONTROLS: Keyboard");
+        //    Debug.Log("Input Device = " + InputManager.ActiveDevice.Name);
+        //    SetMyControls(null);
+        //}
     }
 
     void SetMyControls(InputDevice inputDevice)
@@ -133,6 +132,7 @@ public class GameInfo : MonoBehaviour
             myControls = actions;
         }
     }
+    #endregion
 
     #region UIAnimations
 

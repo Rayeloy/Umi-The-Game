@@ -291,10 +291,10 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region Update
     void Update()
     {
-        if (playerNum == 1)
-        {
-            allPlayers[0].Actions = GameInfo.instance.myControls;
-        }
+        //if (playerNum == 1)
+        //{
+        //    allPlayers[0].Actions = GameInfo.instance.myControls;
+        //}
         //if (scoreManager.End) return;
         SlowMotion();
 
@@ -374,7 +374,14 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 if (i < playerNum)
                 {
                     //LE DAMOS AL JUGADOR SUS CONTROLES (Mando/teclado) y SU EQUIPO
-                    allPlayers[i].Actions = GameInfo.instance.playerActionsList[i];
+                    if (allPlayers.Count == 1)
+                    {
+                        allPlayers[0].Actions = GameInfo.instance.myControls;
+                    }
+                    else
+                    {
+                        allPlayers[i].Actions = GameInfo.instance.playerActionsList[i];
+                    }
 
                     if (GameInfo.instance.playerTeamList[i] == Team.none)
                     {

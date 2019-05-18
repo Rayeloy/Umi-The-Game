@@ -24,6 +24,8 @@ public class TeamSetupManager : MonoBehaviour
 {
     //public static List<PlayerActions> playerActionsList = new List<PlayerActions>();
     public static TeamSetupManager instance;
+    public GameObject stockGameInfo;
+    public GameObject stockInControlManager;
 
     [Range(1,6)]
     public int minNumPlayers;
@@ -58,6 +60,12 @@ public class TeamSetupManager : MonoBehaviour
 
     private void Awake()
     {
+        if(GameInfo.instance == null)
+        {
+            stockGameInfo.SetActive(true);
+            stockGameInfo.GetComponent<GameInfo>().Awake();
+            stockInControlManager.SetActive(true);
+        }
         instance = this;
         minNumPlayers = Mathf.Clamp(minNumPlayers, 1, 6);
         //We use the GameInfo.instance.inControlManager value to know if we have controls or not set, and therefore we will allow to play the game directly or we will load the TeamSetup scene.
