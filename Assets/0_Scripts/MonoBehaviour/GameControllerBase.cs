@@ -257,6 +257,10 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             {
                 StartGame();
             }
+            else
+            {
+                StartGame();
+            }
 
             //if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
             //{
