@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
+using Photon.Realtime;
 
 #region ----[ PUBLIC ENUMS ]----
 public enum Team
@@ -271,7 +273,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Awake()
     {
-        //online = PhotonNetwork.IsConnected;
+        online = PhotonNetwork.IsConnected;
     }
 
     public void KonoAwake()
@@ -299,13 +301,13 @@ public class PlayerMovement : MonoBehaviour
 
         // #Important
         // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
-        if (online)
-        {
-            //if (photonView.IsMine)
-            //{
-            //    PlayerMovement.LocalPlayerInstance = this.gameObject;
-            //}
-        }
+        //if (online)
+        //{
+        //    if (photonV)
+        //    {
+        //        PlayerMovement.LocalPlayerInstance = this.gameObject;
+        //    }
+        //}
         // #Critical
         // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
         //DontDestroyOnLoad(this.gameObject);

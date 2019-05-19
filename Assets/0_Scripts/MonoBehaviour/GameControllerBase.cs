@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using Photon.Pun;
+using Photon.Realtime;
 
 #region ----[ PUBLIC ENUMS ]----
 public enum GameMode
@@ -101,6 +102,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     // variables para nuestro jugador online
     [HideInInspector]
     public PlayerActions BaseGameActions { get; set; }
+    [HideInInspector]
+    bool jugadaGalaxia = true;//esto es pura caca porque no sabemos usar photonview, revisar pis
 
     [HideInInspector]
     public bool HasPlayerFlatCamera(PlayerMovement pM)
@@ -204,12 +207,13 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             int playernumber = PhotonNetwork.CurrentRoom.PlayerCount;
             CreatePlayer(""+playernumber);
 
-            Debug.Log("Nuestro jugador es: "+ GameInfo.instance.myControls);
-            allPlayers[0].Actions = GameInfo.instance.myControls == null?PlayerActions.CreateWithKeyboardBindings():GameInfo.instance.myControls;
-            //Juan: hay que hacer la toma de valores de TeamSetupManager aquí pero bueh...
             allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
             allUICameras[0].rect = new Rect(0, 0, 1, 1);
+            //Debug.Log("Nuestro jugador es: "+ GameInfo.instance.myControls);
+            allPlayers[0].Actions = GameInfo.instance.myControls == null?PlayerActions.CreateWithKeyboardBindings():GameInfo.instance.myControls;
 
+
+            allCanvas[0].GetComponent<PlayerHUD>().AdaptCanvasHeightScale();
             myGameInterface.KonoAwake(this);
             allPlayers[0].KonoAwake();
             allCameraBases[0].KonoAwake();
@@ -239,21 +243,22 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         {
             StartPlayers();
             StartGame();
-            Debug.Log("GameController Start terminado");
         }
         else
         {
             allPlayers[0].KonoStart();
-            playing = true;
-            gamePaused = false;
+            //StartPlayer(0);
+            //playing = true;
+            //gamePaused = false;
 
             allPlayers[0].SetVelocity(Vector3.zero);
-            allPlayers[0].myCamera.InstantPositioning();
-            allPlayers[0].myCamera.InstantRotation();
-            allPlayers[0].ResetPlayer();
-            allPlayers[0].myPlayerAnimation.RestartAnimation();
+            //allPlayers[0].myCamera.InstantPositioning();
+            //allPlayers[0].myCamera.InstantRotation();
+            //allPlayers[0].ResetPlayer();
+            //allPlayers[0].myPlayerAnimation.RestartAnimation();
 
-            if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1)
+            Debug.Log("PhotonNetwork.IsMasterClient = "+ PhotonNetwork.IsMasterClient + "; PhotonNetwork.CurrentRoom.PlayerCount = " + PhotonNetwork.CurrentRoom.PlayerCount);
+            if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount >= 1)
             {
                 StartGame();
             }
@@ -267,6 +272,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             //    Debug.Log("GameControllerBase: Empezamos el juego pues se han unido todos los jugadores");
             //}
         }
+        Debug.Log("GameController Start terminado");
     }
 
     //Funcion que llama al Start de los jugadores. Eloy: Juan, ¿solo pantalla dividida?, JUAN: Sí Eloy, sólo pantalla dividida.
@@ -274,9 +280,15 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         for (int i = 0; i < playerNum; i++)
         {
-            allPlayers[i].KonoStart();
+            StartPlayer(i);
         }
     }
+
+    void StartPlayer(int n)
+    {
+        allPlayers[n].KonoStart();
+    }
+
 
     //Funcion que se llama al comenzar la partida, que inicicia las variables necesarias, y que posiciona a los jugadores y ¿bandera?
     public virtual void StartGame()
@@ -434,9 +446,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     protected virtual void AllAwakes()
     {
+        myGameInterface.KonoAwake(this);
         for (int i = 0; i < allCameraBases.Count; i++)
         {
-            myGameInterface.KonoAwake(this);
             allPlayers[i].KonoAwake();
             allCameraBases[i].KonoAwake();
         }
@@ -549,9 +561,24 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         //Añadir a los arrays todos los componentes del jugador
         //guarda jugador
         allPlayers.Add(player);
-        allCanvas.Add(canvas);
-        allCameraBases.Add(cameraBase);
-        allUICameras.Add(UICamera);
+        if (online)
+        {
+            if (jugadaGalaxia)
+            {
+                jugadaGalaxia = false;
+                allCanvas.Add(canvas);
+                allCameraBases.Add(cameraBase);
+                allUICameras.Add(UICamera);
+            }
+        }
+        else
+        {
+            allCanvas.Add(canvas);
+            allCameraBases.Add(cameraBase);
+            allUICameras.Add(UICamera);
+        }
+
+        //ignore this
         contador.Add(playerHUD.contador);
         powerUpPanel.Add(playerHUD.powerUpPanel);
     }
@@ -795,8 +822,11 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         //print("RESPAWN PLAYER");
         player.SetVelocity(Vector3.zero);
-        player.transform.position = player.spawnPosition;
-        player.rotateObj.transform.rotation = player.spawnRotation;
+        if (!online)
+        {
+            player.transform.position = player.spawnPosition;
+            player.rotateObj.transform.rotation = player.spawnRotation;
+        }
         //print("Player " + player.gameObject.name + " respawn rotation = " + player.spawnRotation.eulerAngles);
 
         //player.myCamera.KonoAwake();
@@ -897,6 +927,10 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #endregion
 
     #region ----[ PUN CALLBACKS ]----
+    public override void OnPlayerEnteredRoom(Player newplayer)
+    {
+        Debug.Log("El jugador "+newplayer.NickName+" acaba de entrar en la sala");
+    }
     #endregion
 
     #region ----[ RPC ]----
