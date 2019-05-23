@@ -41,7 +41,7 @@ public class GameController_FlagMode : GameControllerBase
         myScoreManager.KonoUpdate();
     }
 
-    public override void CreatePlayer(string playerNumber)
+    public override void CreatePlayer(int playerNumber)
     {
         base.CreatePlayer(playerNumber);
         if (!online)//Eloy: para Juan: en online habrá que solamente referenciar en el score manager a su player, no los de todos.
@@ -49,6 +49,10 @@ public class GameController_FlagMode : GameControllerBase
             myScoreManager.blueTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().blueTeamScoreText);
             myScoreManager.redTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().redTeamScoreText);
             myScoreManager.time_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().timeText);
+        }
+        else
+        {
+            Debug.LogError("Error: aquí falta código por escribir. En online habrá que solamente referenciar en el score manager a su player, no los de todos.");
         }
     }
 

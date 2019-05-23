@@ -171,6 +171,10 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region ----[ PROPERTIES ]----
+    //Eloy: FOR ONLINE
+    [HideInInspector]
+    public int playerNumber; //from 0 to maxPlayers
+
     //Referencias que no se asignan en el inspector
     [HideInInspector]
     public Camera myUICamera;
@@ -214,9 +218,7 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector]
     public bool online = false;
     [HideInInspector]
-    public Vector3 spawnPosition;
-    [HideInInspector]
-    public Quaternion spawnRotation;
+    public PlayerSpawnInfo mySpawnInfo;
     #endregion
 
     #region ----[ VARIABLES ]----    

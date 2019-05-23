@@ -55,8 +55,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     [Header(" --- Spawn positions ---")]
     //Posiciones de los spawns
-    public Transform[] blueTeamSpawns;
-    public Transform[] redTeamSpawns;
+    public Transform[] teamASpawns;
+    public Transform[] teamBSpawns;
 
     //Variables de HUDS
     [Header(" --- Players HUD --- ")]
@@ -75,6 +75,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     protected int playerNumTeamA = 0, playerNumTeamB = 0;
     private PlayerActions playerActions;
+    private PlayerSpawnInfo[] playerSpawnInfoList;
 
     //GAME OVER MENU
     [HideInInspector]
@@ -112,9 +113,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         {
             return true;
         }
-        else if(allPlayers.Count == 3)
+        else if (allPlayers.Count == 3)
         {
-            for(int i=0; i<allPlayers.Count; i++)
+            for (int i = 0; i < allPlayers.Count; i++)
             {
                 if (allPlayers[i] == pM)
                 {
@@ -189,7 +190,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             playerNum = Mathf.Clamp(playerNum, 1, 4);
             for (int i = 0; i < playerNum; i++)
             {
-                CreatePlayer(""+(i+1));
+                CreatePlayer(i + 1);
             }
 
             //AUTOMATIC PLAYERS & CAMERAS/CANVAS SETUP
@@ -199,18 +200,22 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
         else //Eloy: para Juan: aqui inicia al host! playerNum deberia estar a 0 y luego ponerse a 1 cuando se crea el jugador
         {
+            //Calculate spawns
+            SetSpawnPositions();
             //CreatePlayer
-            //PlayerSetup
+            int playernumber = PhotonNetwork.CurrentRoom.PlayerCount - 1;//ELOY: Para Juan: ESTO NO ESTA PREPARADO PARA CUANDO SE SALE ALGUIEN. Si eran 10 jugadores y se sale el 3
+            //no se rellena el 3, sino el 10. Hay que buscar con un for el numero más bajo por rellenar.
+            print("Creating player number " + playernumber);
+            CreatePlayer(playernumber);
             //PlayerSetupOnline?
             //No hace falta SetUpCanvas creo
             //Haz los awakes, y haz el awake de cada jugador nuevo(esto ultimo hay que buscar donde ponerlo... en el CreatePlayer?
-            int playernumber = PhotonNetwork.CurrentRoom.PlayerCount;
-            CreatePlayer(""+playernumber);
+
 
             allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
             allUICameras[0].rect = new Rect(0, 0, 1, 1);
             //Debug.Log("Nuestro jugador es: "+ GameInfo.instance.myControls);
-            allPlayers[0].Actions = GameInfo.instance.myControls == null?PlayerActions.CreateWithKeyboardBindings():GameInfo.instance.myControls;
+            allPlayers[0].Actions = GameInfo.instance.myControls == null ? PlayerActions.CreateWithKeyboardBindings() : GameInfo.instance.myControls;
 
 
             allCanvas[0].GetComponent<PlayerHUD>().AdaptCanvasHeightScale();
@@ -233,7 +238,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         //code for children's awake
     }
- 
+
     #endregion
 
     #region Start
@@ -257,7 +262,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             //allPlayers[0].ResetPlayer();
             //allPlayers[0].myPlayerAnimation.RestartAnimation();
 
-            Debug.Log("PhotonNetwork.IsMasterClient = "+ PhotonNetwork.IsMasterClient + "; PhotonNetwork.CurrentRoom.PlayerCount = " + PhotonNetwork.CurrentRoom.PlayerCount);
+            Debug.Log("PhotonNetwork.IsMasterClient = " + PhotonNetwork.IsMasterClient + "; PhotonNetwork.CurrentRoom.PlayerCount = " + PhotonNetwork.CurrentRoom.PlayerCount);
             if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount >= 1)
             {
                 StartGame();
@@ -374,7 +379,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     #region ----[ CLASS FUNCTIONS ]----
 
-    #region AWAKE / CREATE PLAYERS / SPAWN POSITIONS
+    #region --- AWAKE / CREATE PLAYERS / SPAWN POSITIONS ---
 
     /// <summary>
     /// Funcion que Inicializa valores de todos los jugadores y sus cámaras.
@@ -439,9 +444,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                     allUICameras[3].rect = new Rect(0.5f, 0, 0.5f, 0.5f);
                     break;
             }
-
-            SetSpawnPositions();//Eloy: Para Juan: Esto tendrás que usarlo en online también supongo... JUAN: nup, con el photonNetwork.Instantiate ya les coloco en los spawns de entrada
+            SetSpawnPositions();
         }
+
     }
 
     protected virtual void AllAwakes()
@@ -466,7 +471,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
-    public virtual void CreatePlayer(string playerNumber)
+    public virtual void CreatePlayer(int playerNumber)
     {
         PlayerMovement newPlayer;
         GameObject newPlayerCanvas;
@@ -486,32 +491,37 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
                 if (PlayerMovement.LocalPlayerInstance == null)
                 {
-                        Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
-                        // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-                        Team newPlayerTeam = SetRandomOnlineTeam(PhotonNetwork.CountOfPlayers);
-                        Vector3 respawn = new Vector3(-200, -200, -200);
-                        if (newPlayerTeam == Team.A)
-                        {
-                            respawn = blueTeamSpawns[0].position;
-                        }
-                        else if (newPlayerTeam == Team.B)
-                        {
-                            respawn = redTeamSpawns[0].position;
-                        }
-                        newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, respawn, Quaternion.identity, 0).GetComponent<PlayerMovement>();
-                        newPlayer.team = newPlayerTeam;
+                    Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
+                    // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
+                    Team newPlayerTeam = SetRandomOnlineTeam(playerNumber);
+                    ////Vector3 respawn = new Vector3(-200, -200, -200);
+                    ////if (newPlayerTeam == Team.A)
+                    ////{
+                    ////    respawn = teamASpawns[0].position;
+                    ////}
+                    ////else if (newPlayerTeam == Team.B)
+                    ////{
+                    ////    respawn = teamBSpawns[0].position;
+                    ////}
+                    PlayerSpawnInfo auxSpawnInfo= GetSpawnPosition(playerNumber);
+                    newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, auxSpawnInfo.position, Quaternion.identity, 0).GetComponent<PlayerMovement>();
+                    newPlayer.team = newPlayerTeam;
+                    newPlayer.mySpawnInfo = auxSpawnInfo;
+                    //newPlayer.rotateObj.transform.rotation = newPlayer.mySpawnInfo.rotation;
 
-                        newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
-                        newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
-                        newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
+                    newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
+                    newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
+                    newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
 
-                        //nombrado de objetos nuevos
-                        newPlayer.gameObject.name = "Player " + playerNumber;
-                        newPlayerCanvas.gameObject.name = "Canvas " + playerNumber;
-                        newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
-                        newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;                       
+                    //nombrado de objetos nuevos
+                    newPlayer.gameObject.name = "Player " + playerNumber;
+                    newPlayerCanvas.gameObject.name = "Canvas " + playerNumber;
+                    newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
+                    newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
 
-                        InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
+                    newPlayer.playerNumber = PhotonNetwork.CurrentRoom.PlayerCount;
+
+                    InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
                 }
                 else
                 {
@@ -522,6 +532,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         else
         {
             newPlayer = Instantiate(playerPrefab, playersParent).GetComponent<PlayerMovement>();
+            newPlayer.mySpawnInfo = new PlayerSpawnInfo();
+
             newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
             newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
             newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
@@ -532,7 +544,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
             newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
 
-            InitializePlayerReferences(newPlayer,newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
+            InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
         }
     }
 
@@ -603,104 +615,180 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
+    PlayerSpawnInfo GetSpawnPosition(int playerNumber)
+    {
+            print("Setting spawn pos for Player number " + playerNumber);
+            return playerSpawnInfoList[playerNumber];
+    }
+
     /// <summary>
     /// Calcula las posiciones de spawn dentro de cada spawn (rojo y azul), de manera equidistante y centrada y se las da a los Players.
     /// </summary>
     void SetSpawnPositions()
     {
-        List<PlayerMovement> redPlayers = new List<PlayerMovement>();
-        List<PlayerMovement> bluePlayers = new List<PlayerMovement>();
-        for (int i = 0; i < allPlayers.Count; i++)
+        int maxPlayers = online ? PhotonNetwork.CurrentRoom.MaxPlayers : allPlayers.Count;
+        int playerNumACopy, playerNumBCopy;
+        List<PlayerMovement> teamBPlayers = new List<PlayerMovement>();
+        List<PlayerMovement> teamAPlayers = new List<PlayerMovement>();
+        if (online)
         {
-            if (allPlayers[i].team == Team.A)
+            if (teamASpawns.Length == 0) Debug.LogError("Error: there must be at least one spawn for team A in online mode");
+            if (teamBSpawns.Length == 0) Debug.LogError("Error: there must be at least one spawn for team B in online mode");
+            playerSpawnInfoList = new PlayerSpawnInfo[maxPlayers];
+            for(int i=0; i < playerSpawnInfoList.Length; i++)
             {
-                bluePlayers.Add(allPlayers[i]);
+                playerSpawnInfoList[i] = new PlayerSpawnInfo();
             }
-            else
-            {
-                redPlayers.Add(allPlayers[i]);
-            }
+            playerNumACopy = playerNumBCopy = playerNumACopy = playerNumTeamA = playerNumTeamB = maxPlayers / 2;
         }
-        
-        
-        int playerNumBlueCopy = playerNumTeamA = bluePlayers.Count;
-        int playerNumRedCopy = playerNumTeamB = redPlayers.Count;
-        print("Blue players: " + playerNumBlueCopy + "; Red Players: " + playerNumRedCopy);
+        else
+        {
+            for (int i = 0; i < maxPlayers; i++)
+            {
+                if (allPlayers[i].team == Team.A)
+                {
+                    teamAPlayers.Add(allPlayers[i]);
+                }
+                else
+                {
+                    teamBPlayers.Add(allPlayers[i]);
+                }
+            }
+            playerNumACopy = playerNumTeamA = teamAPlayers.Count;
+            playerNumBCopy = playerNumTeamB = teamBPlayers.Count;
+        }
+        print("Blue players: " + playerNumACopy + "; Red Players: " + playerNumBCopy);
 
         //Divide number of players in a team by number of spawns in that team && set spawnRotation of players (because is more efficient to do it here)
-        int[] blueSpawnsNumPlayers = new int[blueTeamSpawns.Length];
-        int[] redSpawnsNumPlayers = new int[redTeamSpawns.Length];
+        //this is an array where each position is each spawn in the respective team, and the int inside is the number of players of that team that spawn there.
+        int[] teamASpawnsNumPlayers = new int[teamASpawns.Length];
+        int[] teamBSpawnsNumPlayers = new int[teamBSpawns.Length];
 
 
         int playersPerSpawn = 0;
         //BLUE TEAM PLAYERS PER SPAWN
-        if (blueTeamSpawns.Length > 0 && playerNumTeamA > 0)
+        if (teamASpawns.Length > 0 && playerNumTeamA > 0)
         {
             print("Blue Team Spawns Players:");
-            float pps = (float)playerNumTeamA / (float)blueTeamSpawns.Length;
-            playersPerSpawn = Mathf.CeilToInt(Mathf.Clamp(pps, 1,float.MaxValue));
+            //pps= Players Per Spawn not rounded
+            float pps = (float)playerNumTeamA / (float)teamASpawns.Length;
+            //we clamp the number so that is minimum 1 and then round it
+            playersPerSpawn = Mathf.CeilToInt(Mathf.Clamp(pps, 1, float.MaxValue));
             //print("playerNumBlue = "+ playerNumBlue + "; blueTeamSpawns.Length = "+ blueTeamSpawns.Length + "; playersPerSpawn = " + pps + "; rounded number = "+playersPerSpawn);
-            for (int i = 0; i < blueTeamSpawns.Length && playerNumBlueCopy > 0; i++)
+            for (int i = 0; i < teamASpawns.Length && playerNumACopy > 0; i++)
             {
-                blueSpawnsNumPlayers[i] = Mathf.Clamp(playerNumBlueCopy, 0, playersPerSpawn);
-                playerNumBlueCopy -= blueSpawnsNumPlayers[i];
+                teamASpawnsNumPlayers[i] = Mathf.Clamp(playerNumACopy, 0, playersPerSpawn);
+                playerNumACopy -= teamASpawnsNumPlayers[i];
                 //print("Respawn "+ i + ": " + blueSpawnsNumPlayers[i] + " players");
-                for (int j = 0; j < blueSpawnsNumPlayers[i]; j++)
+                if (online)
                 {
-                    bluePlayers[0].spawnRotation = Quaternion.Euler(0, blueTeamSpawns[i].rotation.eulerAngles.y, 0);
-                    //print("SpawnRotation " + bluePlayers[0].gameObject.name + " = " + bluePlayers[0].spawnRotation.eulerAngles);
-                    bluePlayers.RemoveAt(0);
+                    int auxTeamASpawnNumPlayers = teamASpawnsNumPlayers[i];
+                    for (int j = 0; j < playerSpawnInfoList.Length && auxTeamASpawnNumPlayers>0; j++)
+                    {
+                        if (j % 2 == 0)//Team A
+                        {
+                            auxTeamASpawnNumPlayers--;
+                            playerSpawnInfoList[j].rotation = Quaternion.Euler(0, teamASpawns[i].rotation.eulerAngles.y, 0);
+                        }
+                    } 
+                }
+                else
+                {
+                    for (int j = 0; j < teamASpawnsNumPlayers[i]; j++)
+                    {
+                        teamAPlayers[0].mySpawnInfo.rotation = Quaternion.Euler(0, teamASpawns[i].rotation.eulerAngles.y, 0);
+                        //print("SpawnRotation " + bluePlayers[0].gameObject.name + " = " + bluePlayers[0].spawnRotation.eulerAngles);
+                        teamAPlayers.RemoveAt(0);
+                    }
                 }
             }
         }
 
 
         //RED TEAM PLAYERS PER SPAWN
-        if (redTeamSpawns.Length > 0 && playerNumTeamB > 0)
+        if (teamBSpawns.Length > 0 && playerNumTeamB > 0)
         {
             print("Red Team Spawns Players:");
-            float pps = (float)playerNumTeamB / (float)redTeamSpawns.Length;
+            //pps= Players Per Spawn not rounded
+            float pps = (float)playerNumTeamB / (float)teamBSpawns.Length;
+            //we clamp the number so that is minimum 1 and then round it
             playersPerSpawn = Mathf.CeilToInt(Mathf.Clamp(pps, 1, float.MaxValue));
-            for (int i = 0; i < redTeamSpawns.Length && playerNumRedCopy > 0; i++)
+            for (int i = 0; i < teamBSpawns.Length && playerNumBCopy > 0; i++)
             {
-                redSpawnsNumPlayers[i] = Mathf.Clamp(playerNumRedCopy, 0, playersPerSpawn);
-                playerNumRedCopy -= redSpawnsNumPlayers[i];
-                print(i + ": " + redSpawnsNumPlayers[i] + " players");
-                for (int j = 0; j < redSpawnsNumPlayers[i]; j++)
+                teamBSpawnsNumPlayers[i] = Mathf.Clamp(playerNumBCopy, 0, playersPerSpawn);
+                playerNumBCopy -= teamBSpawnsNumPlayers[i];
+                //print(i + ": " + redSpawnsNumPlayers[i] + " players");
+                if (online)
                 {
-                    redPlayers[0].spawnRotation = Quaternion.Euler(0, redTeamSpawns[i].rotation.eulerAngles.y, 0);
-                    redPlayers.RemoveAt(0);
+                    int auxTeamBSpawnNumPlayers = teamBSpawnsNumPlayers[i];
+                    for (int j = 0; j < playerSpawnInfoList.Length && auxTeamBSpawnNumPlayers > 0; j++)
+                    {
+                        if (j % 2 != 0)//Team B
+                        {
+                            auxTeamBSpawnNumPlayers--;
+                            playerSpawnInfoList[j].rotation = Quaternion.Euler(0, teamBSpawns[i].rotation.eulerAngles.y, 0);
+                        }
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < teamBSpawnsNumPlayers[i]; j++)
+                    {
+                        teamBPlayers[0].mySpawnInfo.rotation = Quaternion.Euler(0, teamBSpawns[i].rotation.eulerAngles.y, 0);
+                        teamBPlayers.RemoveAt(0);
+                    }
                 }
             }
         }
 
         //ALL SPAWN POSITIONS CONCATENATED
-        List<Vector3> spawnPosBlue = new List<Vector3>();
-        List<Vector3> spawnPosRed = new List<Vector3>();
-        for(int i=0; i < blueTeamSpawns.Length && playerNumTeamA > 0; i++)
+        List<Vector3> spawnPosTeamA = new List<Vector3>();
+        List<Vector3> spawnPosTeamB = new List<Vector3>();
+        for (int i = 0; i < teamASpawns.Length && playerNumTeamA > 0; i++)
         {
-            List<Vector3> auxPositions = blueTeamSpawns[i].GetComponent<Respawn>().SetSpawnPositions(blueSpawnsNumPlayers[i]);
-            spawnPosBlue.AddRange(auxPositions);
+            List<Vector3> auxPositions = teamASpawns[i].GetComponent<Respawn>().SetSpawnPositions(teamASpawnsNumPlayers[i]);
+            spawnPosTeamA.AddRange(auxPositions);
         }
 
-        for (int i = 0; i < redTeamSpawns.Length && playerNumTeamB > 0; i++)
+        for (int i = 0; i < teamBSpawns.Length && playerNumTeamB > 0; i++)
         {
-            List<Vector3> auxPositions = redTeamSpawns[i].GetComponent<Respawn>().SetSpawnPositions(redSpawnsNumPlayers[i]);
-            spawnPosRed.AddRange(auxPositions);
+            List<Vector3> auxPositions = teamBSpawns[i].GetComponent<Respawn>().SetSpawnPositions(teamBSpawnsNumPlayers[i]);
+            spawnPosTeamB.AddRange(auxPositions);
         }
-        if (spawnPosBlue.Count != playerNumTeamA) Debug.LogError("Error: Spawn positions("+spawnPosBlue.Count+") for blue team are not equal to number of blue team players("+ playerNumTeamA + ").");
-        if (spawnPosRed.Count != playerNumTeamB) Debug.LogError("Error: Spawn positions (" + spawnPosRed.Count + ") for red team are not equal to number of red team players(" + playerNumTeamB + ").");
-        for (int i = 0; i < allPlayers.Count; i++)
+        if (spawnPosTeamA.Count != playerNumTeamA) Debug.LogError("Error: Spawn positions (" + spawnPosTeamA.Count + ") for blue team are not equal to number of blue team players(" + playerNumTeamA + ").");
+        if (spawnPosTeamB.Count != playerNumTeamB) Debug.LogError("Error: Spawn positions (" + spawnPosTeamB.Count + ") for red team are not equal to number of red team players(" + playerNumTeamB + ").");
+        if (online)
         {
-            if (allPlayers[i].team == Team.A)
+            for(int i = 0; i < playerSpawnInfoList.Length; i++)
             {
-                allPlayers[i].spawnPosition = spawnPosBlue[0];
-                spawnPosBlue.RemoveAt(0);
+                Vector3 pos;
+                if (i % 2 == 0)
+                {
+                    pos = spawnPosTeamA[0];
+                    spawnPosTeamA.RemoveAt(0);
+                }
+                else
+                {
+                    pos = spawnPosTeamB[0];
+                    spawnPosTeamB.RemoveAt(0);
+                }
+                playerSpawnInfoList[i].position = pos;
             }
-            else
+        }
+        else
+        {
+            for (int i = 0; i < allPlayers.Count; i++)
             {
-                allPlayers[i].spawnPosition = spawnPosRed[0];
-                spawnPosRed.RemoveAt(0);
+                if (allPlayers[i].team == Team.A)
+                {
+                    allPlayers[i].mySpawnInfo.position = spawnPosTeamA[0];
+                    spawnPosTeamA.RemoveAt(0);
+                }
+                else
+                {
+                    allPlayers[i].mySpawnInfo.position = spawnPosTeamB[0];
+                    spawnPosTeamB.RemoveAt(0);
+                }
             }
         }
     }
@@ -710,46 +798,46 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     /// </summary>
     private void SetUpCanvases()//Para PantallaDividida
     {
-            for(int i = 0; i < allCanvas.Count; i++)
-            {
-                allCanvas[i].GetComponent<PlayerHUD>().AdaptCanvasHeightScale();
-            }
+        for (int i = 0; i < allCanvas.Count; i++)
+        {
+            allCanvas[i].GetComponent<PlayerHUD>().AdaptCanvasHeightScale();
+        }
 
-            //for(int i = 0; playerNum >= 2 && i < contador.Count;i++)
-            //{
-            //    contador[i].anchoredPosition = new Vector3(contador[i].anchoredPosition.x, 100, contador[i].anchoredPosition.y);
-            //}
+        //for(int i = 0; playerNum >= 2 && i < contador.Count;i++)
+        //{
+        //    contador[i].anchoredPosition = new Vector3(contador[i].anchoredPosition.x, 100, contador[i].anchoredPosition.y);
+        //}
 
-            //if (playerNum == 2)
-            //{
-            //    contador[0].localScale /= scaleDos;
-            //    contador[1].localScale /= scaleDos;
+        //if (playerNum == 2)
+        //{
+        //    contador[0].localScale /= scaleDos;
+        //    contador[1].localScale /= scaleDos;
 
-            //    powerUpPanel[0].localScale /= scaleDos;
-            //    powerUpPanel[1].localScale /= scaleDos;
-            //}
-            //else if (playerNum == 3)
-            //{
-            //    contador[0].localScale /= scaleCuatro;
-            //    contador[1].localScale /= scaleCuatro;
-            //    contador[2].localScale /= scaleDos;
+        //    powerUpPanel[0].localScale /= scaleDos;
+        //    powerUpPanel[1].localScale /= scaleDos;
+        //}
+        //else if (playerNum == 3)
+        //{
+        //    contador[0].localScale /= scaleCuatro;
+        //    contador[1].localScale /= scaleCuatro;
+        //    contador[2].localScale /= scaleDos;
 
-            //    powerUpPanel[0].localScale /= scaleCuatro;
-            //    powerUpPanel[1].localScale /= scaleCuatro;
-            //    powerUpPanel[2].localScale /= scaleDos;
-            //}
-            //else if (playerNum == 4)
-            //{
-            //    contador[0].localScale /= scaleCuatro;
-            //    contador[1].localScale /= scaleCuatro;
-            //    contador[2].localScale /= scaleCuatro;
-            //    contador[3].localScale /= scaleCuatro;
+        //    powerUpPanel[0].localScale /= scaleCuatro;
+        //    powerUpPanel[1].localScale /= scaleCuatro;
+        //    powerUpPanel[2].localScale /= scaleDos;
+        //}
+        //else if (playerNum == 4)
+        //{
+        //    contador[0].localScale /= scaleCuatro;
+        //    contador[1].localScale /= scaleCuatro;
+        //    contador[2].localScale /= scaleCuatro;
+        //    contador[3].localScale /= scaleCuatro;
 
-            //    powerUpPanel[0].localScale /= scaleCuatro;
-            //    powerUpPanel[1].localScale /= scaleCuatro;
-            //    powerUpPanel[2].localScale /= scaleCuatro;
-            //    powerUpPanel[3].localScale /= scaleCuatro;
-            //}
+        //    powerUpPanel[0].localScale /= scaleCuatro;
+        //    powerUpPanel[1].localScale /= scaleCuatro;
+        //    powerUpPanel[2].localScale /= scaleCuatro;
+        //    powerUpPanel[3].localScale /= scaleCuatro;
+        //}
     }
 
     //Eloy: this is for checking if the inputsBuffer array is well set up
@@ -780,66 +868,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     #endregion
 
-    void SlowMotion()
-    {
-        if (Input.GetKeyDown(KeyCode.Keypad0))
-        {
-            switch (slowmo)
-            {
-                case 0:
-                    Time.timeScale = 0.25f;
-                    slowmo = 1;
-                    break;
-                case 1:
-                    Time.timeScale = 0.075f;
-                    slowmo = 2;
-                    break;
-                case 2:
-                    Time.timeScale = 0.025f;
-                    slowmo = 3;
-                    break;
-                case 3:
-                    Time.timeScale = 1;
-                    slowmo = 0;
-                    break;
-            }
-        }
-    }
-
-    public virtual void StartGameOver(Team _winnerTeam)
-    {
-        //print("GAME OVER");
-        if (!gameOverStarted && !online)
-        {
-            playing = false;
-            gamePaused = true;
-            gameOverStarted = true;
-            myGameInterface.StartGameOver(_winnerTeam);
-        }
-    }
-
-    public void RespawnPlayer(PlayerMovement player)
-    {
-        //print("RESPAWN PLAYER");
-        player.SetVelocity(Vector3.zero);
-        if (!online)
-        {
-            player.transform.position = player.spawnPosition;
-            player.rotateObj.transform.rotation = player.spawnRotation;
-        }
-        //print("Player " + player.gameObject.name + " respawn rotation = " + player.spawnRotation.eulerAngles);
-
-        //player.myCamera.KonoAwake();
-        //player.myCamera.SwitchCamera(player.myCamera.camMode);
-        //player.myCamera.LateUpdate();
-        player.myCamera.InstantPositioning();
-        player.myCamera.InstantRotation();
-        //player.myCamera.transform.localRotation = player.rotateObj.transform.localRotation;
-        //player.myCamera.SwitchCamera(player.myCamera.camMode);
-        player.ResetPlayer();
-        player.myPlayerAnimation_01.RestartAnimation();
-    }
-
+    #region --- MENU --- 
     private void SwitchGameOverMenu()
     {
         if (gameOverStarted)
@@ -880,6 +909,41 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         gamePaused = false;
     }
 
+    #endregion
+
+    #region --- GAME FLOW FUNCTIONS ---
+
+    public virtual void StartGameOver(Team _winnerTeam)
+    {
+        //print("GAME OVER");
+        if (!gameOverStarted && !online)
+        {
+            playing = false;
+            gamePaused = true;
+            gameOverStarted = true;
+            myGameInterface.StartGameOver(_winnerTeam);
+        }
+    }
+
+    public void RespawnPlayer(PlayerMovement player)
+    {
+        //print("RESPAWN PLAYER");
+        player.SetVelocity(Vector3.zero);
+        player.transform.position = player.mySpawnInfo.position;
+        player.rotateObj.transform.rotation = player.mySpawnInfo.rotation;
+        //print("Player " + player.gameObject.name + " respawn rotation = " + player.spawnRotation.eulerAngles);
+
+        //player.myCamera.KonoAwake();
+        //player.myCamera.SwitchCamera(player.myCamera.camMode);
+        //player.myCamera.LateUpdate();
+        player.myCamera.InstantPositioning();
+        player.myCamera.InstantRotation();
+        //player.myCamera.transform.localRotation = player.rotateObj.transform.localRotation;
+        //player.myCamera.SwitchCamera(player.myCamera.camMode);
+        player.ResetPlayer();
+        player.myPlayerAnimation_01.RestartAnimation();
+    }
+
     public virtual void ResetGame()//Eloy: habrá que resetear muchas más cosas
     {
         Time.timeScale = 1;
@@ -900,7 +964,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     void DeactivatePlayerComponents()
     {
         int count = playersParent.childCount;
-        for(int i=0; i < count; i++)
+        for (int i = 0; i < count; i++)
         {
             playersParent.GetChild(i).gameObject.SetActive(false);
         }
@@ -921,7 +985,34 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
     }
 
-    #region Auxiliar
+    #endregion
+
+    #region --- AUXILIAR ---
+    void SlowMotion()
+    {
+        if (Input.GetKeyDown(KeyCode.Keypad0))
+        {
+            switch (slowmo)
+            {
+                case 0:
+                    Time.timeScale = 0.25f;
+                    slowmo = 1;
+                    break;
+                case 1:
+                    Time.timeScale = 0.075f;
+                    slowmo = 2;
+                    break;
+                case 2:
+                    Time.timeScale = 0.025f;
+                    slowmo = 3;
+                    break;
+                case 3:
+                    Time.timeScale = 1;
+                    slowmo = 0;
+                    break;
+            }
+        }
+    }
     #endregion
 
     #endregion
@@ -929,7 +1020,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region ----[ PUN CALLBACKS ]----
     public override void OnPlayerEnteredRoom(Player newplayer)
     {
-        Debug.Log("El jugador "+newplayer.NickName+" acaba de entrar en la sala");
+        Debug.Log("El jugador " + newplayer.NickName + " acaba de entrar en la sala");
     }
     #endregion
 
@@ -944,4 +1035,21 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 }
 
 #region Struct
+public class PlayerSpawnInfo
+{
+    public Vector3 position = Vector3.zero;
+    public Quaternion rotation = Quaternion.identity;
+
+    public PlayerSpawnInfo()
+    {
+        position = Vector3.zero;
+        rotation = Quaternion.identity;
+    }
+
+    public PlayerSpawnInfo(Vector3 _position, Quaternion _rotation)
+    {
+        position = _position;
+        rotation = _rotation;
+    }
+}
 #endregion
