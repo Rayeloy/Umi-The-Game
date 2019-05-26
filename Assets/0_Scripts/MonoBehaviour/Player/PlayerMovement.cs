@@ -227,7 +227,7 @@ public class PlayerMovement : MonoBehaviour
     float walJumpConeHeight = 1;
     float lastWallAngle = -1;
     GameObject lastWall;
-    Raycast.Axis wallJumpRaycastAxis = Raycast.Axis.none;
+    Axis wallJumpRaycastAxis = Axis.none;
     int rows = 5;
     int columns = 5;
     float rowsSpacing;
@@ -372,9 +372,9 @@ public class PlayerMovement : MonoBehaviour
         UpdateFlagLightBeam();
         ProcessInputsBuffer();
 
-        //print("CurrentVel 1= " + currentVel);
+        //print("CurrentVel 1= " + currentVel.ToString("F6"));
         HorizontalMovement();
-        //print("CurrentVel 2= " + currentVel);
+        //print("CurrentVel 2= " + currentVel.ToString("F6"));
         //print("vel = " + currentVel.ToString("F4"));
         UpdateFacingDir();
         VerticalMovement();
@@ -384,7 +384,7 @@ public class PlayerMovement : MonoBehaviour
 
         //Debug.Log("currentVel = " + currentVel + "; Time.deltaTime = " + Time.deltaTime + "; currentVel * Time.deltaTime = " + (currentVel * Time.deltaTime) + "; Time.fixedDeltaTime = " + Time.fixedDeltaTime);
 
-        //print("CurrentVel 3= " + currentVel);
+        //print("CurrentVel 3= " + currentVel.ToString("F6"));
         controller.Move(currentVel * Time.deltaTime);
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();
@@ -498,7 +498,8 @@ public class PlayerMovement : MonoBehaviour
     public void SetVelocity(Vector3 vel)
     {
         currentVel = vel;
-        currentSpeed = currentVel.magnitude;
+        Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
+        currentSpeed = horVel.magnitude;
     }
 
     public void CalculateMoveDir()
@@ -568,7 +569,6 @@ public class PlayerMovement : MonoBehaviour
 
             ProcessFixedJump();
         }
-
         ProcessBoost();
 
         #endregion
@@ -588,8 +588,9 @@ public class PlayerMovement : MonoBehaviour
             ProcessAiming();
             ProcessHooking();
             currentMaxMoveSpeed = (joystickSens / 1) * maxMoveSpeed2;
-            if (currentSpeed > currentMaxMoveSpeed && (moveSt == MoveState.Moving || moveSt == MoveState.NotMoving))
+            if (currentSpeed > (maxMoveSpeed2+0.1f) &&(moveSt == MoveState.Moving || moveSt == MoveState.NotMoving))
             {
+                Debug.LogWarning("Warning: moveSt set to MovingBreaking!: currentSpeed = "+currentSpeed+ "; maxMoveSpeed2 = " + maxMoveSpeed2 + "; currentVel.magnitude = "+currentVel.magnitude);
                 moveSt = MoveState.MovingBreaking;
             }
             //------------------------------- Acceleration -------------------------------
@@ -619,6 +620,7 @@ public class PlayerMovement : MonoBehaviour
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
         //print("MoveState = " + moveSt + "; currentSpeed = " + currentSpeed + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
+        //print("CurrentVel 1.3= " + currentVel.ToString("F6")+ "MoveState = " + moveSt);
         if (jumpSt != JumpState.wallJumping)
         {
             switch (moveSt)
@@ -691,6 +693,7 @@ public class PlayerMovement : MonoBehaviour
 
             }
         }
+        //print("CurrentVel 1.4= " + currentVel.ToString("F6"));
         #endregion
     }
 
@@ -922,7 +925,7 @@ public class PlayerMovement : MonoBehaviour
         wallJumping = false;
         wallJumpAnim = true;
         jumpSt = JumpState.none;
-        wallJumpRaycastAxis = Raycast.Axis.none;
+        wallJumpRaycastAxis = Axis.none;
         //CALCULATE JUMP DIR
         //LEFT OR RIGHT ORIENTATION?
         //Angle

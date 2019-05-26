@@ -39,10 +39,6 @@ public class GameInfo : MonoBehaviour
     {
         //UpdateControls();
         ProcessUIAnimations();
-        if (myControls.A.WasPressed)
-        {
-            Debug.Log("My controls: jump");
-        }
     }
 
     void OnEnable()

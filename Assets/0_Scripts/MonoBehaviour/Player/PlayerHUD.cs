@@ -628,7 +628,7 @@ public class CameraVFX
     {
         if (!prefab.activeInHierarchy)
         {
-            Debug.Log("ACTIVATE CAMERA VFX : " + effectType);
+            //Debug.Log("ACTIVATE CAMERA VFX : " + effectType);
             prefab.SetActive(true);
             //prefab.GetComponent<Animator>().Play("dashCameraVFX",0);
         }

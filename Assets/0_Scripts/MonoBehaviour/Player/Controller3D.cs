@@ -8,10 +8,10 @@ public class Controller3D : MonoBehaviour
     public LayerMask collisionMask;
     public LayerMask collisionMaskAround;
     public float FloorMaxDistanceCheck = 5;
+    public bool corsbOn= true;
 
     const float skinWidth = 0.1f;
     [Header("Slopes")]
-    [Tooltip("DO NOT CHANGE. Space the first horizontal raycast (feet) is lifted up to avoid colliding horizontally (like it was a wall) when on the edge of floor.")]
     public float maxClimbAngle = 60f;
     public float minClimbAngle = 0f;
     public float maxDescendAngle = 60f;
@@ -19,6 +19,7 @@ public class Controller3D : MonoBehaviour
     public float precisClimbSlopeInsideWall = 0.000f;
     [Header("Precision distances")]
     public float skinWidthHeight = 0.0001f;
+    [Tooltip("DO NOT CHANGE. Space the first horizontal raycast (feet) is lifted up to avoid colliding horizontally (like it was a wall) when on the edge of floor.")]
     public float precisionHeight = 0.01f;
     public float precisionSpaceFromSlideWall = 0.001f;
     public float rayExtraLengthPeak = 0.1f;
@@ -47,6 +48,14 @@ public class Controller3D : MonoBehaviour
     public int horizontalRaysPerRow;
     float horizontalRowSpacing;
     float horizontalRaySpacing;
+    public float maxHeightToClimbStep=0.3f;
+    // --- CORSB ---
+    //"Cutting Out Raycast Skinwidth Borders". this is the 20% of horizontalRaysPerRow. 
+    //It's used to only do the CORSB system to the first 20% and the last 20% (border rays)
+    int corsbBorderHorRaysPerRow;
+    Color corsbColor = new Color(0, 0, 0);
+    [Range(0, 49)]
+    public int corsbBorderPercent = 20;
 
     [Header("In Water Collisions")]
     public bool showWaterRays;
@@ -63,7 +72,8 @@ public class Controller3D : MonoBehaviour
         climbing,
         descending,
         sliping,
-        crossingPeak
+        crossingPeak,
+        climbStep
     }
 
     public enum SlideState // for sliding against WALLS
@@ -87,21 +97,25 @@ public class Controller3D : MonoBehaviour
         collisions.ResetHorizontal();
         collisions.ResetClimbingSlope();
         collisions.startVel = vel;
-        //print("Start Vel = " + vel.ToString("F4"));
-        //Debug.DrawRay(raycastOrigins.Center, vel.normalized * 2, Color.blue, 3);
+        print("Start Vel = " + vel.ToString("F4"));
+        Debug.DrawRay(raycastOrigins.Center, vel.normalized * 2, Color.blue);
         if (vel.x != 0 || vel.z != 0)
         {
             NewHorizontalCollisions2(ref vel);
         }
-
+        //Debug.Log("Middle Vel = " + vel.ToString("F4") + "; MovingState = " + collisions.moveSt + "; below = " + collisions.below);
         if (vel.y != 0 || vel.x != 0 || vel.z != 0)
         {
             NewVerticalCollisions2(ref vel);
         }
-        //Debug.Log("below = "+collisions.below+ "; MovingState = "+ collisions.moveSt);
+        Debug.Log("End Vel = " + vel.ToString("F4")+ "; MovingState = "+ collisions.moveSt + "; below = " +collisions.below);
         if (collisions.lastMoveSt == MovingState.crossingPeak && collisions.moveSt != MovingState.crossingPeak)
         {
             Debug.LogError("We stopped crossing peak");
+        }
+        if (collisions.lastMoveSt == MovingState.none && collisions.moveSt == MovingState.climbing)
+        {
+            Debug.LogError("We started climbing");
         }
         VerticalCollisionsDistanceCheck(ref vel);
 
@@ -142,6 +156,7 @@ public class Controller3D : MonoBehaviour
 
     void ClimbSlope(ref Vector3 vel, Raycast rayCast)
     {
+        //Debug.Log("Start ClimbSlope = " + vel.ToString("F4") + "; MovingState = " + collisions.moveSt + "; below = " + collisions.below);
         Vector3 horVel = new Vector3(rayCast.vel.x, 0, rayCast.vel.z);
         float moveDistance = Mathf.Abs(horVel.magnitude);
         //Plane slopePlane = new Plane(rayCast.ray.normal.normalized,rayCast.ray.point);
@@ -164,6 +179,7 @@ public class Controller3D : MonoBehaviour
             if (!disableAllRays) Debug.DrawRay(raycastOrigins.Center, vel.normalized * 2, Color.green, 3);
 
         }
+        //Debug.Log("Finish ClimbSlope = " + vel.ToString("F4") + "; MovingState = " + collisions.moveSt + "; below = " + collisions.below);
     }
 
     void DescendSlope(ref Vector3 vel, Raycast rayCast)
@@ -227,36 +243,47 @@ public class Controller3D : MonoBehaviour
         float moveDistance = Mathf.Abs(horVel.magnitude);
         Vector3 movementNormal = new Vector3(-horVel.z, 0, horVel.x).normalized;
         Vector3 climbVel = Vector3.Cross(hit.normal, movementNormal).normalized;
-        //print("movementNormal= " + movementNormal.ToString("F5")+"; ClimbVel= "+climbVel.ToString("F5"));
         climbVel *= moveDistance;
-        //print("CHECK SLOPE TYPE: climbVel=" + climbVel.ToString("F4") + ";horVel= " + horVel.ToString("F4"));
-        if (climbVel.y > 0 && ray.slopeAngle <= maxClimbAngle && ray.slopeAngle > minClimbAngle)
+
+        // --- AXIS X & Z ---
+        if(ray.axis == Axis.X || ray.axis == Axis.Z)
         {
-            return MovingState.climbing;
+            if (climbVel.y > 0 && ray.slopeAngle <= maxClimbAngle && ray.slopeAngle > minClimbAngle)
+            {
+                return MovingState.climbing;
+            }
+            else if (climbVel.y < 0 && ray.slopeAngle <= maxDescendAngle && ray.slopeAngle > minDescendAngle)
+            {
+                return MovingState.descending;
+            }
+            else
+            {
+                return MovingState.wall;
+            }
         }
-        else if (climbVel.y < 0 && ray.slopeAngle <= maxDescendAngle && ray.slopeAngle > minDescendAngle)
+        else // --- AXIS Y ---
         {
-            return MovingState.descending;
+            if (climbVel.y > 0 && ray.slopeAngle <= maxClimbAngle && ray.slopeAngle > minClimbAngle)
+            {
+                return MovingState.climbing;
+            }
+            else if (climbVel.y < 0 && ray.slopeAngle <= maxDescendAngle && ray.slopeAngle > minDescendAngle)
+            {
+                return MovingState.descending;
+            }
+            else if (ray.axis == Axis.Y && ((vel.y <= 0 && ray.slopeAngle > maxDescendAngle) || (vel.y > 0 && ray.slopeAngle != 0)))
+            {
+                return MovingState.sliping;
+            }
+            else
+            {
+                return MovingState.none;//FLOOR
+            }
         }
-        else if (ray.axis == Raycast.Axis.Y && ((vel.y <= 0 && ray.slopeAngle > maxDescendAngle) || (vel.y > 0 && ray.slopeAngle != 0)))
-        {
-            return MovingState.sliping;
-        }
-        else if ((ray.axis == Raycast.Axis.X || ray.axis == Raycast.Axis.Z))
-        {
-            return MovingState.wall;
-        }
-        else if (ray.axis == Raycast.Axis.Y)
-        {
-            return MovingState.none;//FLOOR
-        }
-        else
-        {
-            return MovingState.none;
-        }
+
     }
 
-    #region --- Collision checking / raycast functions --- 
+    #region --- COLLISIONS CHECKING (RAYCASTS FUNCTIONS) --- 
 
     public void AroundCollisions()
     {
@@ -391,7 +418,7 @@ public class Controller3D : MonoBehaviour
                         float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
                         if (hit.distance < collisions.closestHorRaycastSlide.distance && hit.transform.gameObject != collisions.horWall)
                         {
-                            collisions.closestHorRaycastSlide = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Raycast.Axis.X, i, 0);
+                            collisions.closestHorRaycastSlide = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Axis.X, i, 0);
                         }
                     }
                 }
@@ -429,14 +456,14 @@ public class Controller3D : MonoBehaviour
                         float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
                         if (hit.distance < collisions.closestHorRaycastSlide.distance && hit.transform.gameObject != collisions.horWall)
                         {
-                            collisions.closestHorRaycastSlide = new Raycast(hit, hit.distance, vel, rayOriginZ, slopeAngle, wallAngle, Raycast.Axis.Z, i, 0);
+                            collisions.closestHorRaycastSlide = new Raycast(hit, hit.distance, vel, rayOriginZ, slopeAngle, wallAngle, Axis.Z, i, 0);
                         }
                     }
                 }
             }
         }
 
-        if (collisions.closestHorRaycastSlide.axis != Raycast.Axis.none)//si ha habido una collision horizontal
+        if (collisions.closestHorRaycastSlide.axis != Axis.none)//si ha habido una collision horizontal
         {
             MovingState value = collisions.closestHorRaycastSlide.row == 0 ? CheckSlopeType(ref vel, collisions.closestHorRaycastSlide) : MovingState.wall;
             //print("---------- SECOND COLLISION HOR: " + value + "; slopeAngle=" + collisions.closestHorRaycastSlide.slopeAngle);
@@ -483,11 +510,11 @@ public class Controller3D : MonoBehaviour
                                 collisions.horWall = collisions.closestHorRaycast.ray.transform.gameObject;
                                 switch (collisions.closestHorRaycast.axis)
                                 {
-                                    case Raycast.Axis.X:
+                                    case Axis.X:
                                         collisions.left = directionX == -1;
                                         collisions.right = directionX == 1;
                                         break;
-                                    case Raycast.Axis.Z:
+                                    case Axis.Z:
                                         collisions.behind = directionZ == -1;
                                         collisions.foward = directionZ == 1;
                                         break;
@@ -543,7 +570,7 @@ public class Controller3D : MonoBehaviour
                         }
                     }
                     break;
-                #endregion
+                    #endregion
             }
         }
     }
@@ -556,13 +583,20 @@ public class Controller3D : MonoBehaviour
         Vector3 horVel = new Vector3(vel.x, 0, vel.z);
         float rayLength = horVel.magnitude + skinWidth;
         horVel = horVel.normalized;
-        float directionX = 0, directionZ = 0; ;
+        float directionX = 0, directionZ = 0;
+
+        //VARIABLES FOR "Cutting Out Raycast's Skinwidth in Borders"
+        float corsbAngle = 0;
 
         #region Raycasts X
         if (vel.x != 0)
         {
             directionX = Mathf.Sign(vel.x);
             Vector3 rowsOriginX = directionX == 1 ? raycastOrigins.BottomRFCornerReal : raycastOrigins.BottomLFCornerReal;
+            corsbAngle = Vector3.Angle(Vector3.forward, horVel);
+
+            //print("CONTROLLER 3D: " + directionX + "*X corsbAngle = " + corsbAngle + "; corsbBorderHorRaysPerRow = " + corsbBorderHorRaysPerRow +
+            //    "; (horizontalRaysPerRow - corsbBorderHorRaysPerRow) = " + (horizontalRaysPerRow - corsbBorderHorRaysPerRow));
             for (int i = 0; i < horizontalRows; i++)//ROWS
             {
                 Vector3 rowOriginX = rowsOriginX;
@@ -579,28 +613,66 @@ public class Controller3D : MonoBehaviour
                 for (int j = 0; j < horizontalRaysPerRow; j++)//COLUMNS
                 {
                     Vector3 rayOriginX = rowOriginX + Vector3.back * (j * horizontalRaySpacing);
+
+                    #region --- CORSB SYSTEM ---
+                    // --- CORSB SYSTEM ---    
+                    //VARIABLES FOR CORSB
+                    float corsbDistanceToBorder = 0;
+                    float corsbSkinWidth = skinWidth;
+                    float corsbRayLength = rayLength;
+
+                        if (((j < corsbBorderHorRaysPerRow && corsbAngle > 90) || (j >= (horizontalRaysPerRow - corsbBorderHorRaysPerRow) && corsbAngle < 90)) && corsbOn)
+                        {
+                            float auxCorsbSkinWidth = float.MaxValue;
+                            float auxAngle;
+                            if (j < corsbBorderHorRaysPerRow && corsbAngle > 90)//primer 20% de rayos
+                            {
+                                auxAngle = 180 - corsbAngle;
+                                corsbDistanceToBorder = (float)j * (float)horizontalRaySpacing;
+                                //print("CONTROLLER 3D: CORSB system checking started (Part1)-> j = " + j + "; corsbDistanceToBorder = " + corsbDistanceToBorder);
+                            }
+                            else //último 20%
+                            {
+                                auxAngle = corsbAngle;
+                                corsbDistanceToBorder = (float)(horizontalRaysPerRow - (j + 1)) * (float)horizontalRaySpacing;
+                                //print("CONTROLLER 3D: CORSB system checking started (Part2)-> j = " + j + "; corsbDistanceToBorder = " + corsbDistanceToBorder);
+                            }
+                            auxCorsbSkinWidth = corsbDistanceToBorder / Mathf.Cos(auxAngle * Mathf.Deg2Rad);
+                            //print("CONTROLLER 3D: CORSB system checking: i = " + i + "; j = " + j + "; corsbAngle = " + corsbAngle +
+                            //    "; skinWidth = " + skinWidth + "; auxCorsbSkinWidth = " + auxCorsbSkinWidth + "; corsbDistanceToBorder = " +
+                            //    corsbDistanceToBorder + "; Mathf.Cos(auxAngle * Mathf.Deg2Rad) = " + Mathf.Cos(auxAngle * Mathf.Deg2Rad));
+                            if (auxCorsbSkinWidth < skinWidth)
+                            {
+                                corsbSkinWidth = auxCorsbSkinWidth;
+                                corsbRayLength = rayLength - (skinWidth - auxCorsbSkinWidth);
+                                //print("CONTROLLER 3D: CORSB system activated!");
+                            }
+                        }
+                    // --- CORSB SYSTEM END ---
+                    #endregion
+
                     if (showHorizontalLimits && !disableAllRays)
                     {
                         Debug.DrawLine(lastOriginX, rayOriginX, Color.blue);
                     }
                     lastOriginX = rayOriginX;
-                    rayOriginX += (-horVel * skinWidth);
+                    rayOriginX += (-horVel * corsbSkinWidth);
                     RaycastHit hit;
                     if (showHorizontalRays && !disableAllRays)
                     {
-                        Debug.DrawRay(rayOriginX, horVel * rayLength, Color.red);
+                        Debug.DrawRay(rayOriginX, horVel * corsbRayLength, (corsbSkinWidth < skinWidth ? corsbColor : Color.red));
                     }
 
-                    if (Physics.Raycast(rayOriginX, horVel, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
+                    if (Physics.Raycast(rayOriginX, horVel, out hit, corsbRayLength, collisionMask, QueryTriggerInteraction.Ignore))
                     {
                         float slopeAngle = GetSlopeAngle(hit);
                         float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
                         if (hit.distance < collisions.closestHorRaycast.distance)
                         {
-                            collisions.closestHorRaycast = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Raycast.Axis.X, i, horizontalRows);
+                            collisions.closestHorRaycast = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Axis.X, i, horizontalRows, corsbSkinWidth);
                         }
                         //WE STORE ALL THE RAYCASTS INFO
-                        collisions.horRaycastsX[i,j] = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Raycast.Axis.X, i, horizontalRows);
+                        collisions.horRaycastsX[i, j] = new Raycast(hit, hit.distance, vel, rayOriginX, slopeAngle, wallAngle, Axis.X, i, horizontalRows,corsbSkinWidth);
                     }
                 }
             }
@@ -611,6 +683,9 @@ public class Controller3D : MonoBehaviour
         {
             directionZ = Mathf.Sign(vel.z);
             Vector3 rowsOriginZ = directionZ == 1 ? raycastOrigins.BottomLFCornerReal : raycastOrigins.BottomLBCornerReal;
+            corsbAngle = Vector3.Angle(Vector3.left, horVel);
+            //print("CONTROLLER 3D: " + directionZ + "*Z corsbAngle = " + corsbAngle + "; corsbBorderHorRaysPerRow = " + corsbBorderHorRaysPerRow +
+            //    "; (horizontalRaysPerRow - corsbBorderHorRaysPerRow) = " + (horizontalRaysPerRow - corsbBorderHorRaysPerRow)+ "; horizontalRaySpacing = " + horizontalRaySpacing);
             for (int i = 0; i < horizontalRows; i++)
             {
                 Vector3 rowOriginZ = rowsOriginZ;
@@ -627,29 +702,66 @@ public class Controller3D : MonoBehaviour
                 for (int j = 0; j < horizontalRaysPerRow; j++)
                 {
                     Vector3 rayOriginZ = rowOriginZ + Vector3.right * (j * horizontalRaySpacing);
+
+                    #region --- CORSB SYSTEM ---
+                    // --- CORSB SYSTEM ---    
+                    //VARIABLES FOR CORSB
+                    float corsbDistanceToBorder = 0;
+                    float corsbSkinWidth = skinWidth;
+                    float corsbRayLength = rayLength;
+
+                    if (((j < corsbBorderHorRaysPerRow && corsbAngle > 90) || (j >= (horizontalRaysPerRow - corsbBorderHorRaysPerRow) && corsbAngle < 90)) && corsbOn)
+                    {
+                        float auxCorsbSkinWidth = float.MaxValue;
+                        float auxAngle;
+                        if (j < corsbBorderHorRaysPerRow && corsbAngle > 90)//primer 20% de rayos
+                        {
+                            auxAngle = 180 - corsbAngle;
+                            corsbDistanceToBorder = (float)j * (float)horizontalRaySpacing;
+                            //print("CONTROLLER 3D: CORSB system checking started (Part1)-> j = " + j + "; corsbDistanceToBorder = " + corsbDistanceToBorder);
+                        }
+                        else //último 20%
+                        {
+                            auxAngle = corsbAngle;
+                            corsbDistanceToBorder = (float)(horizontalRaysPerRow - (j + 1)) * (float)horizontalRaySpacing;
+                            //print("CONTROLLER 3D: CORSB system checking started (Part2)-> j = " + j + "; corsbDistanceToBorder = " + corsbDistanceToBorder);
+                        }
+                        auxCorsbSkinWidth = corsbDistanceToBorder / Mathf.Cos(auxAngle * Mathf.Deg2Rad);
+                        //print("CONTROLLER 3D: CORSB system checking: i = " + i + "; j = " + j + "; corsbAngle = " + corsbAngle +
+                        //    "; skinWidth = " + skinWidth + "; auxCorsbSkinWidth = " + auxCorsbSkinWidth + "; corsbDistanceToBorder = " +
+                        //    corsbDistanceToBorder + "; Mathf.Cos(auxAngle * Mathf.Deg2Rad) = " + Mathf.Cos(auxAngle * Mathf.Deg2Rad));
+                        if (auxCorsbSkinWidth < skinWidth)
+                        {
+                            corsbSkinWidth = auxCorsbSkinWidth;
+                            corsbRayLength = rayLength - (skinWidth - auxCorsbSkinWidth);
+                            //print("CONTROLLER 3D: CORSB system activated!");
+                        }
+                    }
+                    // --- CORSB SYSTEM END ---
+                    #endregion
+
                     if (showHorizontalLimits && !disableAllRays)
                     {
                         Debug.DrawLine(lastOriginZ, rayOriginZ, Color.blue);
                     }
                     lastOriginZ = rayOriginZ;
-                    rayOriginZ += (-horVel * skinWidth);
-
+                    rayOriginZ += (-horVel * corsbSkinWidth);
                     RaycastHit hit;
                     if (showHorizontalRays && !disableAllRays)
                     {
-                        Debug.DrawRay(rayOriginZ, horVel * rayLength, Color.red);
+                        Debug.DrawRay(rayOriginZ, horVel * corsbRayLength, (corsbSkinWidth < skinWidth ? corsbColor : Color.red));
                     }
 
-                    if (Physics.Raycast(rayOriginZ, horVel, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
+                    if (Physics.Raycast(rayOriginZ, horVel, out hit, corsbRayLength, collisionMask, QueryTriggerInteraction.Ignore))
                     {
                         float slopeAngle = GetSlopeAngle(hit);
                         float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
                         if (hit.distance < collisions.closestHorRaycast.distance)
                         {
-                            collisions.closestHorRaycast = new Raycast(hit, hit.distance, vel, rayOriginZ, slopeAngle, wallAngle, Raycast.Axis.Z, i, horizontalRows);
+                            collisions.closestHorRaycast = new Raycast(hit, hit.distance, vel, rayOriginZ, slopeAngle, wallAngle, Axis.Z, i, horizontalRows, corsbSkinWidth);
                         }
                         //WE STORE ALL THE RAYCASTS INFO
-                        collisions.horRaycastsZ[i, j] = new Raycast(hit, hit.distance, vel, rayOriginZ, slopeAngle, wallAngle, Raycast.Axis.Z, i, horizontalRows);
+                        collisions.horRaycastsZ[i, j] = new Raycast(hit, hit.distance, vel, rayOriginZ, slopeAngle, wallAngle, Axis.Z, i, horizontalRows, corsbSkinWidth);
                     }
                 }
             }
@@ -657,9 +769,38 @@ public class Controller3D : MonoBehaviour
         #endregion
         #endregion
 
-        if (collisions.closestHorRaycast.axis != Raycast.Axis.none)//si ha habido una collision horizontal
+        if (collisions.closestHorRaycast.axis != Axis.none)//si ha habido una collision horizontal
         {
             MovingState value = collisions.closestHorRaycast.row == 0 ? CheckSlopeType(ref vel, collisions.closestHorRaycast) : MovingState.wall;
+            #region --- CHECK FOR CLIMBSTEP ---
+            if (value == MovingState.wall)//check for climbStep
+            {
+                float rayHeight = collisions.closestHorRaycast.row * horizontalRowSpacing;
+                if (rayHeight <= maxHeightToClimbStep)
+                {
+                    //CHECK IF THE WALL IS SHORT
+                    bool success = true;
+                    Vector3 horVelAux = new Vector3(vel.x, 0, vel.z);
+                    rayLength = (horVelAux.magnitude + collisions.closestHorRaycast.skinWidth);
+                    Vector3 rayOrigin = collisions.closestHorRaycast.origin + Vector3.up * vel.y;
+                    RaycastHit hit;
+                    if (!disableAllRays) Debug.DrawRay(rayOrigin, horVelAux * rayLength, Color.yellow, 4);
+
+                    if (Physics.Raycast(rayOrigin, horVelAux, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore))
+                    {
+
+                        //for(int i = collisions.closestHorRaycast.row+1; i< collisions.horRaycastsX.GetLength(0); i++)
+                        //{
+                        //    //check if there was a hit 
+                        //}
+                        if (success)
+                        {
+                            value = MovingState.climbStep;
+                        }
+                    }
+                }
+            }
+            #endregion
             //print("COLLISION HOR: " + value + "; slopeAngle=" + collisions.closestHorRaycast.slopeAngle);
             switch (value)//con que tipo de objeto collisionamos? pared/cuesta arriba/cuesta abajo
             {
@@ -711,11 +852,11 @@ public class Controller3D : MonoBehaviour
                         collisions.horWall = collisions.closestHorRaycast.ray.transform.gameObject;
                         switch (collisions.closestHorRaycast.axis)
                         {
-                            case Raycast.Axis.X:
+                            case Axis.X:
                                 collisions.left = directionX == -1;
                                 collisions.right = directionX == 1;
                                 break;
-                            case Raycast.Axis.Z:
+                            case Axis.Z:
                                 collisions.behind = directionZ == -1;
                                 collisions.foward = directionZ == 1;
                                 break;
@@ -731,24 +872,28 @@ public class Controller3D : MonoBehaviour
                 #endregion
                 #region Climbing
                 case MovingState.climbing:
+                    //Debug.Log("Start climbing = " + vel.ToString("F4") + "; MovingState = " + collisions.moveSt + "; below = " + collisions.below);
                     //print("AUXILIAR RAYS FOR DISTANCE CALCULATION");
                     if (!disableAllRays) Debug.DrawRay(collisions.closestHorRaycast.origin, horVel * rayLength, Color.cyan, 4);
 
                     float distanceToSlopeStart = 0;
                     if (collisions.slopeAngleOld != collisions.closestHorRaycast.slopeAngle)
                     {
-                        distanceToSlopeStart = collisions.closestHorRaycast.distance - skinWidth;
+                        distanceToSlopeStart = collisions.closestHorRaycast.distance - collisions.closestHorRaycast.skinWidth;
                         horVel = new Vector3(vel.x, 0, vel.z);
                         horVel = horVel.normalized * (horVel.magnitude - distanceToSlopeStart);
                         vel = new Vector3(horVel.x, vel.y, horVel.z);
                     }
+                    Debug.Log("Start ClimbSlope = " + vel.ToString("F4") + "; MovingState = " + collisions.moveSt + "; below = " + collisions.below);
                     ClimbSlope(ref vel, collisions.closestHorRaycast);
+                    Debug.Log("Finish ClimbSlope = " + vel.ToString("F4") + "; MovingState = " + collisions.moveSt + "; below = " + collisions.below);
                     horVel = new Vector3(vel.x, 0, vel.z);
                     horVel = horVel.normalized * (horVel.magnitude + distanceToSlopeStart);
                     vel = new Vector3(horVel.x, vel.y, horVel.z);
+                    Debug.Log("After ClimbSlope = " + vel.ToString("F4") + "; MovingState = " + collisions.moveSt + "; below = " + collisions.below);
                     //--------------------- CHECK FOR NEXT SLOPE/WALL -------------------------------------
                     Vector3 horVelAux = new Vector3(vel.x, 0, vel.z);
-                    rayLength = (horVelAux.magnitude + skinWidth + 0.1f);
+                    rayLength = (horVelAux.magnitude + collisions.closestHorRaycast.skinWidth);
                     Vector3 rayOrigin = collisions.closestHorRaycast.origin + Vector3.up * vel.y;
                     RaycastHit hit;
                     if (!disableAllRays) Debug.DrawRay(rayOrigin, horVelAux * rayLength, Color.yellow, 4);
@@ -761,11 +906,12 @@ public class Controller3D : MonoBehaviour
 
                         if (slopeAngle != collisions.slopeAngle)
                         {
-                            horVelAux = horVelAux.normalized * (hit.distance - skinWidth + precisClimbSlopeInsideWall);
+                            horVelAux = horVelAux.normalized * (hit.distance - collisions.closestHorRaycast.skinWidth);
                             //tan(realAngle)=y/xz;
                             float y = vel.y;
                             if (slopeAngle > maxClimbAngle)//IF IT'S A WALL
                             {
+                                Debug.Log("Found a wall while climbing. realSlopeAngle = " + collisions.realSlopeAngle + "; distance to wall = " + horVelAux.magnitude);
                                 y = Mathf.Tan(collisions.realSlopeAngle * Mathf.Deg2Rad) * horVelAux.magnitude;
                             }
                             vel = new Vector3(horVelAux.x, y, horVelAux.z);
@@ -779,6 +925,12 @@ public class Controller3D : MonoBehaviour
                         //Debug.LogWarning("Climbing slope finished!");
                         collisions.finishedClimbing = true;
                     }
+                    //Debug.Log("END climbing = " + vel.ToString("F4") + "; MovingState = " + collisions.moveSt + "; below = " + collisions.below);
+                    break;
+                #endregion
+                #region ClimbStep
+                case MovingState.climbStep:
+                    Debug.LogWarning("CLIMB STEP STARTED");
                     break;
                     #endregion
             }
@@ -788,7 +940,7 @@ public class Controller3D : MonoBehaviour
     void NewVerticalCollisions2(ref Vector3 vel)
     {
         #region Raycasts
-        collisions.verRaycastsY = new Raycast[verticalRows,verticalRaysPerRow];
+        collisions.verRaycastsY = new Raycast[verticalRows, verticalRaysPerRow];
         // ---------------------- 3D "Ortoedro" -------------------
         float directionY = Mathf.Sign(vel.y);
         float rayLength = Mathf.Abs(vel.y) + skinWidth;
@@ -841,30 +993,30 @@ public class Controller3D : MonoBehaviour
                             slopeAngle = slopeAngle == 180 ? slopeAngle = 0 : slopeAngle - 90;
                         }
                         float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
-                        collisions.closestVerRaycast = new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, wallAngle, Raycast.Axis.Y, i, 0);
+                        collisions.closestVerRaycast = new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, wallAngle, Axis.Y, i, 0);
                     }
-                    MovingState slopeType = CheckSlopeType(ref vel, new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, 0, Raycast.Axis.Y, i, 0));
-                    //Debug.Log("Vertical collisions slopeType = " + slopeType);
+                    MovingState slopeType = CheckSlopeType(ref vel, new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, 0, Axis.Y, i, 0));
+                    //if(collisions.lastMoveSt == MovingState.crossingPeak)Debug.Log("Checking for peak : Vertical collisions slopeType = " + slopeType);
                     if ((slopeType == MovingState.climbing || slopeType == MovingState.descending) && !peak)
                     {
                         if (lastSlopeType == MovingState.none)
                         {
-                            lastSlopeType = slopeType;
+                            lastSlopeType = slopeType;//solo puede ser climbing o descending
                         }
-                        else if (lastSlopeType != slopeType)
+                        else if (lastSlopeType != slopeType)//solo puede ser que uno sea climbing y otro descending, lo cual interpretamos como estar en un peak
                         {
                             peak = true;
                             Debug.LogWarning("I'm on a peak");
                         }
                     }
                     //STORE ALL THE RAYCASTS
-                    collisions.verRaycastsY[i, j] = new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, 0, Raycast.Axis.Y, i, 0);
+                    collisions.verRaycastsY[i, j] = new Raycast(hit, hit.distance, vel, rayOrigin, slopeAngle, 0, Axis.Y, i, 0);
                 }
             }
         }
         #endregion
 
-        if (collisions.closestVerRaycast.axis != Raycast.Axis.none)//si ha habido una collision vertical
+        if (collisions.closestVerRaycast.axis != Axis.none)//si ha habido una collision vertical
         {
             MovingState value;
             //print("COLLISION VER: " + value + "; slopeAngle=" + collisions.closestVerRaycast.slopeAngle);
@@ -872,6 +1024,11 @@ public class Controller3D : MonoBehaviour
             {
                 value = CheckSlopeType(ref vel, collisions.closestVerRaycast);
                 value = value == MovingState.climbing ? MovingState.none : value;
+                print("Vertical Raycasts: value = "+value+ "; collisions.lastMoveSt = " + collisions.lastMoveSt + "; vel.y = " + vel.y);
+                if (value == MovingState.none && collisions.lastMoveSt == MovingState.crossingPeak && vel.y <= 0)
+                {
+                    value = MovingState.crossingPeak;
+                }
             }
             else
             {
@@ -1067,21 +1224,10 @@ public class Controller3D : MonoBehaviour
         raycastOrigins.TopLBCornerReal = new Vector3(bounds.min.x, bounds.max.y, bounds.min.z);
         raycastOrigins.TopRBCornerReal = new Vector3(bounds.max.x, bounds.max.y, bounds.min.z);
 
-        raycastOrigins.planeXn = new Plane();
         //--------------------------------- BOUNDS REDUCED BY SKINWIDTH ---------------------------------
         bounds.Expand(skinWidth * -2);
 
-        //raycastOrigins.TopCenter = new Vector3(bounds.center.x, bounds.max.y, bounds.center.z);
-        //raycastOrigins.TopEnd = new Vector3(bounds.center.x, bounds.max.y, bounds.max.z);
-        //raycastOrigins.TopLFCorner = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z);
-        //raycastOrigins.BottomCenter = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
         raycastOrigins.BottomEnd = new Vector3(bounds.center.x, bounds.min.y, bounds.max.z);
-
-        //raycastOrigins.BottomCenterH = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
-        //raycastOrigins.BottomLeft = new Vector3(bounds.min.x, bounds.min.y, bounds.center.z);
-        //raycastOrigins.BottomLFCorner = new Vector3(bounds.min.x, bounds.min.y, bounds.max.z);
-        //raycastOrigins.BottomRFCorner = new Vector3(bounds.max.x, bounds.min.y, bounds.max.z);
-        //raycastOrigins.BottomLBCorner = new Vector3(bounds.min.x, bounds.min.y, bounds.min.z);
 
         raycastOrigins.Center = bounds.center;
         raycastOrigins.AroundRadius = bounds.size.z / 2;
@@ -1094,6 +1240,7 @@ public class Controller3D : MonoBehaviour
 
         horizontalRows = Mathf.Clamp(horizontalRows, 2, int.MaxValue);
         horizontalRaysPerRow = Mathf.Clamp(horizontalRaysPerRow, 2, int.MaxValue);
+        corsbBorderHorRaysPerRow = (horizontalRaysPerRow * corsbBorderPercent) / 100;
 
         horizontalRowSpacing = bounds.size.y / (horizontalRows - 1);
         horizontalRaySpacing = bounds.size.x / (horizontalRaysPerRow - 1);
@@ -1103,6 +1250,7 @@ public class Controller3D : MonoBehaviour
 
         verticalRowSpacing = (bounds.size.z) / (verticalRows - 1);
         verticalRaySpacing = bounds.size.x / (verticalRaysPerRow - 1);
+
 
         bounds.Expand(skinWidth * -2);
         //-------------------
@@ -1116,22 +1264,13 @@ public class Controller3D : MonoBehaviour
 
     struct RaycastOrigins
     {
-        //public Vector3 TopCenter, TopEnd;//TopEnd= center x, max y, max z
-        //public Vector3 TopLFCorner;
         public Vector3 BottomCenter, BottomEnd;//TopEnd= center x, min y, max z
-        //public Vector3 BottomCenterH;
-        //public Vector3 BottomLeft;//min x, miny, center z 
-        //public Vector3 BottomLFCorner, BottomRFCorner;
-        //public Vector3 BottomLBCorner;
 
         public Vector3 BottomLFCornerReal, BottomRFCornerReal, BottomLBCornerReal, BottomRBCornerReal;
         public Vector3 TopLFCornerReal, TopRFCornerReal, TopLBCornerReal, TopRBCornerReal;
 
         public Vector3 Center;
         public float AroundRadius;
-
-        public Plane planeXp, planeXn, planeZp, planeZn;
-
     }
 
     public struct CollisionInfo
@@ -1176,7 +1315,7 @@ public class Controller3D : MonoBehaviour
             above = below = false;
             closestVerRaycast = new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
             distanceToFloor = float.MaxValue;
-            verRaycastsY = new Raycast[0,0];
+            verRaycastsY = new Raycast[0, 0];
             verWall = null;
         }
 
@@ -1218,7 +1357,8 @@ public class Controller3D : MonoBehaviour
 
         public void StartSafeBelow()
         {
-            if (!safeBelowStarted){
+            if (!safeBelowStarted)
+            {
                 safeBelowStarted = true;
                 safeBelowMaxTime = 0.14f;
                 safeBelowTime = 0;
@@ -1227,7 +1367,7 @@ public class Controller3D : MonoBehaviour
 
         public void ProcessSafeBelow()
         {
-            if(!lastBelow && below)
+            if (!lastBelow && below)
             {
                 safeBelow = true;
                 if (safeBelowStarted)
@@ -1266,8 +1406,10 @@ public struct Raycast
     public Axis axis;
     public int row;//row in which the ray was thrown from
     public float rayHeightPercentage;//from 0 (feet) to 100(head)
+    public float skinWidth;
 
-    public Raycast(RaycastHit _ray, float _dist, Vector3 _vel, Vector3 _origin, float _slopeAngle = 0, float _wallAngle = 0, Axis _axis = Axis.none, int _row = 0, int horizontalRows = 0)
+    public Raycast(RaycastHit _ray, float _dist, Vector3 _vel, Vector3 _origin, float _slopeAngle = 0, float _wallAngle = 0, 
+        Axis _axis = Axis.none, int _row = 0, int horizontalRows = 0, float _skinWidth = 0.1f)
     {
         ray = _ray;
         distance = _dist;
@@ -1285,12 +1427,13 @@ public struct Raycast
         {
             rayHeightPercentage = Mathf.Clamp((row / horizontalRows), 0, 100);
         }
+        skinWidth = Mathf.Clamp(_skinWidth, 0, 0.1f);
     }
-    public enum Axis
-    {
-        none,
-        X,
-        Y,
-        Z
-    }
+}
+public enum Axis
+{
+    none,
+    X,
+    Y,
+    Z
 }
