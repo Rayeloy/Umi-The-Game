@@ -372,19 +372,19 @@ public class PlayerMovement : MonoBehaviour
         UpdateFlagLightBeam();
         ProcessInputsBuffer();
 
-        print("CurrentVel 1= " + currentVel.ToString("F6"));
+        //print("CurrentVel 1= " + currentVel.ToString("F6"));
         HorizontalMovement();
         //print("CurrentVel 2= " + currentVel.ToString("F6"));
         //print("vel = " + currentVel.ToString("F4"));
         UpdateFacingDir();
         VerticalMovement();
-        print("vel = " + currentVel.ToString("F4"));
+        //print("vel = " + currentVel.ToString("F4"));
 
         ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
 
         //Debug.Log("currentVel = " + currentVel + "; Time.deltaTime = " + Time.deltaTime + "; currentVel * Time.deltaTime = " + (currentVel * Time.deltaTime) + "; Time.fixedDeltaTime = " + Time.fixedDeltaTime);
 
-        print("CurrentVel 3= " + currentVel.ToString("F6"));
+        //print("CurrentVel 3= " + currentVel.ToString("F6"));
         controller.Move(currentVel * Time.deltaTime);
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();

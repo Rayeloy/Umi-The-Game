@@ -1,55 +1,143 @@
 fileFormatVersion: 2
 guid: 8fb40be1c7dbb2f41881db92c40dfa15
 ScriptedImporter:
-  fileIDToRecycleName:
-    100022: DummyInflating/DummyInflating
-    100024: DummyInflating/DummyInflating/pCylinder8
-    100026: DummyInflating/DummyInflating/pCylinder8/pCylinder8Shape
-    100028: DummyInflating/DummyInflating/pCylinder9
-    100030: DummyInflating/DummyInflating/pCylinder9/pCylinder9Shape
-    100032: DummyInflating/DummyInflating/pCylinder10
-    100034: DummyInflating/DummyInflating/pCylinder10/pCylinder10Shape
-    100036: DummyInflating/DummyInflating/polySurface29
-    100038: DummyInflating/DummyInflating/polySurface29/polySurface29Shape
-    100040: DummyInflating/DummyInflating/qTip
-    100042: DummyInflating/DummyInflating/qTip/qTipShape
-    400022: DummyInflating/DummyInflating/Transform
-    400024: DummyInflating/DummyInflating/pCylinder8/Transform
-    400026: DummyInflating/DummyInflating/pCylinder8/pCylinder8Shape/Transform
-    400028: DummyInflating/DummyInflating/pCylinder9/Transform
-    400030: DummyInflating/DummyInflating/pCylinder9/pCylinder9Shape/Transform
-    400032: DummyInflating/DummyInflating/pCylinder10/Transform
-    400034: DummyInflating/DummyInflating/pCylinder10/pCylinder10Shape/Transform
-    400036: DummyInflating/DummyInflating/polySurface29/Transform
-    400038: DummyInflating/DummyInflating/polySurface29/polySurface29Shape/Transform
-    400040: DummyInflating/DummyInflating/qTip/Transform
-    400042: DummyInflating/DummyInflating/qTip/qTipShape/Transform
-    2100000: Default Material
-    2300010: DummyInflating/DummyInflating/pCylinder8/pCylinder8Shape/MeshRenderer
-    2300012: DummyInflating/DummyInflating/pCylinder9/pCylinder9Shape/MeshRenderer
-    2300014: DummyInflating/DummyInflating/pCylinder10/pCylinder10Shape/MeshRenderer
-    2300016: DummyInflating/DummyInflating/polySurface29/polySurface29Shape/MeshRenderer
-    2300018: DummyInflating/DummyInflating/qTip/qTipShape/MeshRenderer
-    3300010: DummyInflating/DummyInflating/pCylinder8/pCylinder8Shape/MeshFilter
-    3300012: DummyInflating/DummyInflating/pCylinder9/pCylinder9Shape/MeshFilter
-    3300014: DummyInflating/DummyInflating/pCylinder10/pCylinder10Shape/MeshFilter
-    3300016: DummyInflating/DummyInflating/polySurface29/polySurface29Shape/MeshFilter
-    3300018: DummyInflating/DummyInflating/qTip/qTipShape/MeshFilter
-    4300000: /pCylinder10/pCylinder10Shape
-    4300002: /pCylinder8/pCylinder8Shape
-    4300004: /pCylinder9/pCylinder9Shape
-    4300006: /qTip/qTipShape
-    4300008: /polySurface29/polySurface29Shape
-    7400000: Default Animation
-    7400004: DummyInflating_Frames
-    11400004: DummyInflating/DummyInflating/MonoBehaviour-UnityEngine.Formats.Alembic.Importer.AlembicStreamPlayer
-    11400006: DummyInflating_ABCDesc
-    100100002: DummyInflating
+  internalIDToNameTable:
+  - first:
+      1: 100022
+    second: DummyInflating/DummyInflating
+  - first:
+      1: 100024
+    second: DummyInflating/DummyInflating/pCylinder8
+  - first:
+      1: 100026
+    second: DummyInflating/DummyInflating/pCylinder8/pCylinder8Shape
+  - first:
+      1: 100028
+    second: DummyInflating/DummyInflating/pCylinder9
+  - first:
+      1: 100030
+    second: DummyInflating/DummyInflating/pCylinder9/pCylinder9Shape
+  - first:
+      1: 100032
+    second: DummyInflating/DummyInflating/pCylinder10
+  - first:
+      1: 100034
+    second: DummyInflating/DummyInflating/pCylinder10/pCylinder10Shape
+  - first:
+      1: 100036
+    second: DummyInflating/DummyInflating/polySurface29
+  - first:
+      1: 100038
+    second: DummyInflating/DummyInflating/polySurface29/polySurface29Shape
+  - first:
+      1: 100040
+    second: DummyInflating/DummyInflating/qTip
+  - first:
+      1: 100042
+    second: DummyInflating/DummyInflating/qTip/qTipShape
+  - first:
+      4: 400022
+    second: DummyInflating/DummyInflating/Transform
+  - first:
+      4: 400024
+    second: DummyInflating/DummyInflating/pCylinder8/Transform
+  - first:
+      4: 400026
+    second: DummyInflating/DummyInflating/pCylinder8/pCylinder8Shape/Transform
+  - first:
+      4: 400028
+    second: DummyInflating/DummyInflating/pCylinder9/Transform
+  - first:
+      4: 400030
+    second: DummyInflating/DummyInflating/pCylinder9/pCylinder9Shape/Transform
+  - first:
+      4: 400032
+    second: DummyInflating/DummyInflating/pCylinder10/Transform
+  - first:
+      4: 400034
+    second: DummyInflating/DummyInflating/pCylinder10/pCylinder10Shape/Transform
+  - first:
+      4: 400036
+    second: DummyInflating/DummyInflating/polySurface29/Transform
+  - first:
+      4: 400038
+    second: DummyInflating/DummyInflating/polySurface29/polySurface29Shape/Transform
+  - first:
+      4: 400040
+    second: DummyInflating/DummyInflating/qTip/Transform
+  - first:
+      4: 400042
+    second: DummyInflating/DummyInflating/qTip/qTipShape/Transform
+  - first:
+      21: 2100000
+    second: Default Material
+  - first:
+      23: 2300010
+    second: DummyInflating/DummyInflating/pCylinder8/pCylinder8Shape/MeshRenderer
+  - first:
+      23: 2300012
+    second: DummyInflating/DummyInflating/pCylinder9/pCylinder9Shape/MeshRenderer
+  - first:
+      23: 2300014
+    second: DummyInflating/DummyInflating/pCylinder10/pCylinder10Shape/MeshRenderer
+  - first:
+      23: 2300016
+    second: DummyInflating/DummyInflating/polySurface29/polySurface29Shape/MeshRenderer
+  - first:
+      23: 2300018
+    second: DummyInflating/DummyInflating/qTip/qTipShape/MeshRenderer
+  - first:
+      33: 3300010
+    second: DummyInflating/DummyInflating/pCylinder8/pCylinder8Shape/MeshFilter
+  - first:
+      33: 3300012
+    second: DummyInflating/DummyInflating/pCylinder9/pCylinder9Shape/MeshFilter
+  - first:
+      33: 3300014
+    second: DummyInflating/DummyInflating/pCylinder10/pCylinder10Shape/MeshFilter
+  - first:
+      33: 3300016
+    second: DummyInflating/DummyInflating/polySurface29/polySurface29Shape/MeshFilter
+  - first:
+      33: 3300018
+    second: DummyInflating/DummyInflating/qTip/qTipShape/MeshFilter
+  - first:
+      43: 4300000
+    second: /pCylinder10/pCylinder10Shape
+  - first:
+      43: 4300002
+    second: /pCylinder8/pCylinder8Shape
+  - first:
+      43: 4300004
+    second: /pCylinder9/pCylinder9Shape
+  - first:
+      43: 4300006
+    second: /qTip/qTipShape
+  - first:
+      43: 4300008
+    second: /polySurface29/polySurface29Shape
+  - first:
+      74: 7400000
+    second: Default Animation
+  - first:
+      74: 7400004
+    second: DummyInflating_Frames
+  - first:
+      114: 11400004
+    second: DummyInflating/DummyInflating/MonoBehaviour-UnityEngine.Formats.Alembic.Importer.AlembicStreamPlayer
+  - first:
+      114: 11400006
+    second: DummyInflating_ABCDesc
+  - first:
+      1001: 100100002
+    second: DummyInflating
   externalObjects: {}
+  serializedVersion: 2
   userData: 
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: f53f5fc499d31e44b9deee84d28a9ee8, type: 3}
+  rootGameObjectId: DummyInflating
   streamSettings:
     normals: 1
     tangents: 1
@@ -58,7 +146,6 @@ ScriptedImporter:
     scaleFactor: 0.01
     swapHandedness: 1
     flipFaces: 0
-    turnQuadEdges: 0
     interpolateSamples: 1
     importPointPolygon: 1
     importLinePolygon: 1

@@ -44,6 +44,7 @@ public class Controller3D : MonoBehaviour
     public bool showHorizontalLimits;
     public bool showWallRays;
     public bool showWallLimits;
+    public bool showWallEdgeRays;
     public int horizontalRows;
     public int horizontalRaysPerRow;
     float horizontalRowSpacing;
@@ -157,6 +158,13 @@ public class Controller3D : MonoBehaviour
         }
     }
 
+    #region --- SLOPES CALCULATIONS ---
+    float GetSlopeAngle(Vector3 floorNormal)
+    {
+        float slopeAngle = Vector3.Angle(floorNormal, Vector3.up);
+        return slopeAngle;
+    }
+
     float GetSlopeAngle(RaycastHit hit)
     {
         float slopeAngle = Vector3.Angle(hit.normal, Vector3.up);
@@ -233,19 +241,7 @@ public class Controller3D : MonoBehaviour
         if (!disableAllRays) Debug.DrawRay(raycastOrigins.Center, vel.normalized * 2, Color.green, 3);
     }
 
-    //public void StartWallJump(GameObject wall)
-    //{
-    //    wallJumping = true;
-    //    wallJumpWall = wall;
-    //}
-
-    //public void StopWallJump()
-    //{
-    //    wallJumping = false;
-    //    wallJumpWall = null;
-    //}
-
-    MovingState CheckSlopeType(ref Vector3 vel, Raycast ray)
+    MovingState CheckSlopeType(Vector3 vel, Raycast ray)
     {
         RaycastHit hit = ray.ray;
         Vector3 horVel = new Vector3(vel.x, 0, vel.z);
@@ -255,15 +251,18 @@ public class Controller3D : MonoBehaviour
         climbVel *= moveDistance;
 
         // --- AXIS X & Z ---
-        if(ray.axis == Axis.X || ray.axis == Axis.Z)
+        if (ray.axis == Axis.X || ray.axis == Axis.Z)
         {
-            if (climbVel.y > 0 && ray.slopeAngle <= maxClimbAngle && ray.slopeAngle > minClimbAngle)
+            if (ray.row == 0)
             {
-                return MovingState.climbing;
-            }
-            else if (climbVel.y < 0 && ray.slopeAngle <= maxDescendAngle && ray.slopeAngle > minDescendAngle)
-            {
-                return MovingState.descending;
+                if (climbVel.y > 0 && ray.slopeAngle <= maxClimbAngle && ray.slopeAngle > minClimbAngle)
+                {
+                    return MovingState.climbing;
+                }
+                else
+                {
+                    return MovingState.wall;
+                }
             }
             else
             {
@@ -291,6 +290,8 @@ public class Controller3D : MonoBehaviour
         }
 
     }
+
+    #endregion
 
     #region --- COLLISIONS CHECKING (RAYCASTS FUNCTIONS) --- 
 
@@ -327,6 +328,7 @@ public class Controller3D : MonoBehaviour
         }
     }
 
+    #region -- HORIZONTAL COLLISIONS --
     void WallSlide(ref Vector3 vel, Raycast rayCast)
     {
         Vector3 horVel = new Vector3(rayCast.vel.x, 0, rayCast.vel.z);
@@ -474,7 +476,7 @@ public class Controller3D : MonoBehaviour
 
         if (collisions.closestHorRaycastSlide.axis != Axis.none)//si ha habido una collision horizontal
         {
-            MovingState value = collisions.closestHorRaycastSlide.row == 0 ? CheckSlopeType(ref vel, collisions.closestHorRaycastSlide) : MovingState.wall;
+            MovingState value = collisions.closestHorRaycastSlide.row == 0 ? CheckSlopeType(vel, collisions.closestHorRaycastSlide) : MovingState.wall;
             //print("---------- SECOND COLLISION HOR: " + value + "; slopeAngle=" + collisions.closestHorRaycastSlide.slopeAngle);
             switch (value)//con que tipo de objeto collisionamos? pared/cuesta arriba/cuesta abajo
             {
@@ -791,7 +793,7 @@ public class Controller3D : MonoBehaviour
 
         if (collisions.closestHorRaycast.axis != Axis.none)//si ha habido una collision horizontal
         {
-            MovingState value = collisions.closestHorRaycast.row ==0? CheckSlopeType(ref vel, collisions.closestHorRaycast) : MovingState.wall;
+            MovingState value =  CheckSlopeType(vel, collisions.closestHorRaycast);
             //MovingState value = CheckSlopeType(ref vel, collisions.closestHorRaycast);
 
             if (value == MovingState.wall)
@@ -850,6 +852,10 @@ public class Controller3D : MonoBehaviour
                 case MovingState.wall:
                     Debug.Log("WALL START");
                     if (!disableAllRays) Debug.DrawRay(collisions.closestHorRaycast.origin, horVel * 0.5f, Color.white,4);
+                    #region - Wall Edges -
+                    WallEdges(vel);
+                    #endregion
+
                     #region --- VALID WALL ---
                     //check if the "wall" is not just the floor/really small ridge
                     bool validWall = false;
@@ -903,6 +909,7 @@ public class Controller3D : MonoBehaviour
                         }
                         else
                         {
+                            Debug.LogError("WALL SLIDE START");
                             WallSlide(ref vel, collisions.closestHorRaycast);
                         }
                         collisions.horCollisionsPoint = collisions.closestHorRaycast.ray.point;
@@ -1046,6 +1053,201 @@ public class Controller3D : MonoBehaviour
         }
     }
 
+    bool WallEdges(Vector3 vel)
+    {
+        //ONLY ENTER IF closesthorRatCast = wall;
+        bool success = false;
+        Raycast differentWallRay = new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
+
+        for (int i = 0; i < collisions.horRaycastsX.GetLength(0); i++)
+        {
+            for (int j = 0; j < collisions.horRaycastsX.GetLength(1); j++)
+            {
+                if (collisions.horRaycastsX[i, j].axis != Axis.none)
+                {
+                    MovingState slopeType = CheckSlopeType(vel, collisions.horRaycastsX[i, j]);
+                    if (slopeType == MovingState.wall && collisions.horRaycastsX[i, j].wallAngle != collisions.closestHorRaycast.wallAngle &&
+                        collisions.horRaycastsX[i, j].distance < differentWallRay.distance)
+                    {
+                        differentWallRay.distance = collisions.horRaycastsX[i, j].distance;
+                        differentWallRay = collisions.horRaycastsX[i, j];
+                    }
+                }
+                if (collisions.horRaycastsZ[i, j].axis != Axis.none)
+                {
+                    MovingState slopeType = CheckSlopeType(vel, collisions.horRaycastsZ[i, j]);
+                    if (slopeType == MovingState.wall && collisions.horRaycastsZ[i, j].wallAngle != collisions.closestHorRaycast.wallAngle &&
+                        collisions.horRaycastsZ[i, j].distance < differentWallRay.distance)
+                    {
+                        differentWallRay.distance = collisions.horRaycastsZ[i, j].distance;
+                        differentWallRay = collisions.horRaycastsZ[i, j];
+                    }
+                }
+            }
+        }
+        if (differentWallRay.axis!=Axis.none)//DOS TIPOS DE MURO ENCONTRADOS
+        {
+            // --- Comprobar que forman un ángulo convexo ---
+            // -- Para ello primero comprobamos cual de los dos puntos es el del muro de nuestra izda y cual el de la dcha -- 
+            // the vector that we want to measure an angle from
+            Vector3 referenceForward = collisions.closestHorRaycast.ray.point - collisions.closestHorRaycast.origin;/* some vector that is not Vector3.up */
+            referenceForward.y = 0;referenceForward = referenceForward.normalized;
+            // the vector of interest 
+            //Vector3 vector1 = collisions.closestHorRaycast.ray.point - coll.bounds.center;/* some vector that we're interested in */
+            Vector3 vector2 = differentWallRay.ray.point - collisions.closestHorRaycast.origin;/* some vector that we're interested in */
+            //vector1.y = vector2.y = 0;vector1 = vector1.normalized; vector2 = vector2.normalized;
+            vector2.y = 0; vector2 = vector2.normalized;
+            if (!disableAllRays && showWallEdgeRays)
+            {
+                Debug.DrawRay(collisions.closestHorRaycast.origin, referenceForward * 1f, Color.yellow);
+                Debug.DrawRay(collisions.closestHorRaycast.origin, vector2 * 1f, Color.black);
+            }
+
+            //float angle1 = SignedRelativeAngle(referenceForward, vector1);
+            float angle2 = SignedRelativeAngle(referenceForward, vector2);
+            bool angle1IsRight = (angle2<0);
+            Vector3 wallVectorDcha;
+            Vector3 wallVectorIzda;
+            if (angle1IsRight)
+            {
+                wallVectorDcha = new Vector3(-collisions.closestHorRaycast.ray.normal.z, 0, collisions.closestHorRaycast.ray.normal.x).normalized;
+                wallVectorIzda = new Vector3(differentWallRay.ray.normal.z, 0, -differentWallRay.ray.normal.x).normalized;
+            }
+            else
+            {
+                wallVectorIzda = new Vector3(collisions.closestHorRaycast.ray.normal.z, 0, -collisions.closestHorRaycast.ray.normal.x).normalized;
+                wallVectorDcha = new Vector3(-differentWallRay.ray.normal.z, 0, differentWallRay.ray.normal.x).normalized;
+            }
+            if(!disableAllRays && showWallEdgeRays)
+            {
+                Debug.DrawRay(differentWallRay.ray.point, wallVectorIzda * 2, angle1IsRight?Color.magenta:Color.black, 3);
+                Debug.DrawRay(collisions.closestHorRaycast.ray.point, wallVectorDcha * 2, angle1IsRight ? Color.black : Color.magenta, 3);
+            }
+            //Debug.LogWarning("WALL EDGE: collPoint1 = " + collisions.closestHorRaycast.ray.point.ToString("F4") + "; collPoint2 = " + differentWallRay.ray.point.ToString("F4") +
+            //    "; vector2 = " + vector2 + "; angle2 = " + angle2 + "; angle1IsRight = " + angle1IsRight);
+
+            float cornerAngle = SignedRelativeAngle(wallVectorIzda, wallVectorDcha);
+            if (cornerAngle >= 0)// -- ES UNA ESQUINA CONVEXA -- 
+            {
+                Debug.LogWarning("WALL EDGE: Estamos en una esquina convexa!");
+                // --- CREAR EL PLANO --- 
+                //crear un plano teniendo en cuenta que ángulo A + B + A = 180º
+                //como en este dibujo:           \  B /   
+                //                        Muro 1->\  /<-Muro 2
+                //                              A (\/) A    <- Pico de un muro
+                //                        --------------------- Plano
+
+                //float sideAngle = (180 - cornerAngle) / 2;
+                Vector3 planeNormal = -(wallVectorIzda + wallVectorDcha);
+                Plane imaginaryWall = new Plane(planeNormal, collisions.closestHorRaycast.ray.point);
+                DrawPlane(collisions.closestHorRaycast.ray.point, planeNormal);
+
+                // --- RAYCAST COLISIONANDO CON ESE PLANO --- 
+                float enter = 0.0f;
+                Vector3 horVel = new Vector3(vel.x, 0, vel.z);
+                float auxSkinWidth = collisions.closestHorRaycast.skinWidth;
+                float raylength = horVel.magnitude + auxSkinWidth;
+                Vector3 origin = collisions.closestHorRaycast.origin;
+                Ray ray = new Ray(origin, horVel.normalized * raylength);
+                if (imaginaryWall.Raycast(ray, out enter))
+                {
+                    float slopeAngle = GetSlopeAngle(planeNormal);
+                    float wallAngle = Vector3.Angle(planeNormal, Vector3.forward);
+                    float distance = (ray.GetPoint(enter) - origin).magnitude - auxSkinWidth;
+                    collisions.closestHorRaycast.ray.normal = planeNormal;
+                    collisions.closestHorRaycast.ray.point = ray.GetPoint(enter);
+                    Debug.LogError("WALL EDGE: We hit the imaginary wall: enter = " + enter + "; ray dir = " + horVel + "; raylength = " + raylength
+    + "; origin = " + origin + "; slopeAngle = " + slopeAngle + "; oldSlopeAngle = " + collisions.closestHorRaycast.slopeAngle
+    + "; wallAngle = " + wallAngle + "; oldWallAngle = " + collisions.closestHorRaycast.wallAngle + "; distance = " + distance
+    + "; oldDistance = " + collisions.closestHorRaycast.distance);
+                    collisions.closestHorRaycast = new Raycast(collisions.closestHorRaycast.ray, distance, vel,origin, slopeAngle, wallAngle,
+                        collisions.closestHorRaycast.axis, collisions.closestHorRaycast.row, horizontalRows, auxSkinWidth);
+                    success = true;
+                }
+                else
+                {
+                    Debug.LogError("Error: Wall edge is trying to collide with the plane we just calculated, but there was no collision.");
+                }
+            }
+            //Debug.LogError("WALL EDGE: collPoint1 = " + collisions.closestHorRaycast.ray.point.ToString("F4") + "; collPoint2 = " + differentWallRay.ray.point.ToString("F4") +
+            //    "; vector1 = " + vector1 + "; vector2 = " + vector2 + "; angle1 = " + angle1 + "; angle1 = " + angle2 + "; angle1IsRight = " + angle1IsRight);
+            //float edgeAngle = Vector3.SignedAngle(differentWallRay.ray.normal, collisions.closestHorRaycast.ray.normal,Vector3.up);
+            //edgeAngle = Mathf.Sign(edgeAngle)*((360 - (Mathf.Abs(edgeAngle) * 2) )/ 2);
+            //float angle1 = differentWallRay.wallAngle;
+            //angle1 = Vector3.Angle(Vector3.right, differentWallRay.ray.normal)>=90? angle1 : -angle1;
+            //float angle2 = collisions.closestHorRaycast.wallAngle;
+            //angle2 = Vector3.Angle(Vector3.right, collisions.closestHorRaycast.ray.normal) >= 90 ? angle2 : -angle2;
+            //edgeAngle = SignedAngleBetween(differentWallRay.ray.normal, collisions.closestHorRaycast.ray.normal, Vector3.up);
+
+            //Vector3 wallVector1 = new Vector3(-differentWallRay.ray.normal.z, 0, differentWallRay.ray.normal.x).normalized;
+            //Vector3 wallVector2 = new Vector3(-collisions.closestHorRaycast.ray.normal.z, 0, collisions.closestHorRaycast.ray.normal.x).normalized;
+            //Debug.DrawRay(differentWallRay.origin,wallVector1*2,Color.black,3);
+            //Debug.DrawRay(collisions.closestHorRaycast.origin, wallVector2*2, Color.black, 3);
+            //Debug.LogWarning("WALL EDGE: collided with walls with angles: "+ angle1 + " and "+ angle2 + "; wallAngles = "+ wallVector1 +" and "+ wallVector2 +
+            //    "; angle between them = " + edgeAngle);
+            //if (edgeAngle < 0)
+            //{
+            //}
+        }
+        return success;
+    }
+
+    bool IsAngle1Right(float angle1, float angle2)
+    {
+        bool angle1IsRight = false;
+        if (angle1 >= 0 && angle2 <= 0)
+        {
+            angle1IsRight = true;
+        }
+        else if (angle1 <= 0 && angle2 >= 0)
+        {
+            angle1IsRight = false;
+        }
+        else
+        {
+                if (angle1 >= angle2)
+                {
+                    angle1IsRight = true;
+                }
+                else
+                {
+                    angle1IsRight = false;
+                }
+        }
+        return angle1IsRight;
+    }
+
+    float SignedRelativeAngle(Vector3 referenceForward, Vector3 newDirection)
+    {
+        // the vector perpendicular to referenceForward (90 degrees clockwise)
+        // (used to determine if angle is positive or negative)
+        Vector3 referenceRight = Vector3.Cross(Vector3.up, referenceForward);
+        // Get the angle in degrees between 0 and 180
+        float angle = Vector3.Angle(newDirection, referenceForward);
+        // Determine if the degree value should be negative.  Here, a positive value
+        // from the dot product means that our vector is on the right of the reference vector   
+        // whereas a negative value means we're on the left.
+        float sign = Mathf.Sign(Vector3.Dot(newDirection, referenceRight));
+        return (sign * angle);//final angle
+    }
+
+    float SignedAngleBetween(Vector3 a, Vector3 b, Vector3 n)
+    {
+        // angle in [0,180]
+        float angle = Vector3.Angle(a, b);
+        float sign = Mathf.Sign(Vector3.Dot(n, Vector3.Cross(a, b)));
+
+        // angle in [-179,180]
+        //float signed_angle = angle * sign;
+
+        // angle in [0,360] (not used but included here for completeness)
+        float angle360 =  (angle + 180) % 360;
+
+        return angle360;
+    }
+    #endregion
+
+    #region -- VERTICAL COLLISIONS --
     void NewVerticalCollisions2(ref Vector3 vel)
     {
         #region Raycasts
@@ -1105,7 +1307,7 @@ public class Controller3D : MonoBehaviour
                     {
                         collisions.closestVerRaycast = auxRay;
                     }
-                    MovingState slopeType = CheckSlopeType(ref vel, auxRay);
+                    MovingState slopeType = CheckSlopeType(vel, auxRay);
                     //if(collisions.lastMoveSt == MovingState.crossingPeak)Debug.Log("Checking for peak : Vertical collisions slopeType = " + slopeType);
                     if ((slopeType == MovingState.climbing || slopeType == MovingState.descending) && !peak)
                     {
@@ -1132,7 +1334,7 @@ public class Controller3D : MonoBehaviour
             //print("COLLISION VER: " + value + "; slopeAngle=" + collisions.closestVerRaycast.slopeAngle);
             if (!peak)
             {
-                value = CheckSlopeType(ref vel, collisions.closestVerRaycast);
+                value = CheckSlopeType(vel, collisions.closestVerRaycast);
                 value = value == MovingState.climbing ? MovingState.none : value;
                 //print("Vertical Raycasts: value = "+value+ "; collisions.lastMoveSt = " + collisions.lastMoveSt + "; vel.y = " + vel.y);
                 if (value == MovingState.none && collisions.lastMoveSt == MovingState.crossingPeak && vel.y <= 0)
@@ -1248,19 +1450,6 @@ public class Controller3D : MonoBehaviour
         }
     }
 
-    //void ProcessAllCollisions(ref Vector3 vel)
-    //{
-    //    if (vel.x != 0 || vel.z != 0)
-    //    {
-    //        NewHorizontalCollisions2(ref vel);
-    //    }
-
-    //    if (vel.y != 0 || vel.x != 0 || vel.z != 0)
-    //    {
-    //        NewVerticalCollisions2(ref vel);
-    //    }
-    //}
-
     void VerticalCollisionsDistanceCheck(ref Vector3 vel)
     {
         if (vel.y != 0)
@@ -1307,18 +1496,35 @@ public class Controller3D : MonoBehaviour
             collisions.distanceToFloor -= skinWidth;
         }
     }
-
-    //bool wallJumping = false;
-    //GameObject wallJumpWall;
-    //void WallJumping()
-    //{
-    //    if (wallJumping)
-    //    {
-
-    //    }
-    //}
+    #endregion
 
     #endregion
+
+    void DrawPlane(Vector3 position, Vector3 normal)
+    {
+
+        Vector3 v3;
+
+        if (normal.normalized != Vector3.forward)
+            v3 = Vector3.Cross(normal, Vector3.forward).normalized * normal.magnitude;
+        else
+            v3 = Vector3.Cross(normal, Vector3.up).normalized * normal.magnitude; ;
+
+        Vector3 corner0 = position + v3;
+        Vector3 corner2 = position - v3;
+        Quaternion q = Quaternion.AngleAxis(90.0f, normal);
+        v3 = q * v3;
+        Vector3 corner1 = position + v3;
+        Vector3 corner3 = position - v3;
+
+        Debug.DrawLine(corner0, corner2, Color.green,2);
+        Debug.DrawLine(corner1, corner3, Color.green,2);
+        Debug.DrawLine(corner0, corner1, Color.green,2);
+        Debug.DrawLine(corner1, corner2, Color.green,2);
+        Debug.DrawLine(corner2, corner3, Color.green,2);
+        Debug.DrawLine(corner3, corner0, Color.green,2);
+        Debug.DrawRay(position, normal, Color.red,2);
+    }
 
     void UpdateSafeBelow()
     {

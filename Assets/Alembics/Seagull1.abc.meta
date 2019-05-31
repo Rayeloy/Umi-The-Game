@@ -1,27 +1,59 @@
 fileFormatVersion: 2
 guid: 5b4795faac88c0c438ff9e239b393697
 ScriptedImporter:
-  fileIDToRecycleName:
-    100000: Seagull1/Seagull1
-    100002: Seagull1/Seagull1/SeagullAlone:pCube1
-    100004: Seagull1/Seagull1/SeagullAlone:pCube1/SeagullAlone:pCubeShape1
-    400000: Seagull1/Seagull1/Transform
-    400002: Seagull1/Seagull1/SeagullAlone:pCube1/Transform
-    400004: Seagull1/Seagull1/SeagullAlone:pCube1/SeagullAlone:pCubeShape1/Transform
-    2100000: Default Material
-    2300000: Seagull1/Seagull1/SeagullAlone:pCube1/SeagullAlone:pCubeShape1/MeshRenderer
-    3300000: Seagull1/Seagull1/SeagullAlone:pCube1/SeagullAlone:pCubeShape1/MeshFilter
-    4300000: /SeagullAlone:pCube1/SeagullAlone:pCubeShape1
-    7400000: Default Animation
-    7400002: Seagull1_Frames
-    11400000: Seagull1/Seagull1/MonoBehaviour-UnityEngine.Formats.Alembic.Importer.AlembicStreamPlayer
-    11400002: Seagull1_ABCDesc
-    100100000: Seagull1
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Seagull1/Seagull1
+  - first:
+      1: 100002
+    second: Seagull1/Seagull1/SeagullAlone:pCube1
+  - first:
+      1: 100004
+    second: Seagull1/Seagull1/SeagullAlone:pCube1/SeagullAlone:pCubeShape1
+  - first:
+      4: 400000
+    second: Seagull1/Seagull1/Transform
+  - first:
+      4: 400002
+    second: Seagull1/Seagull1/SeagullAlone:pCube1/Transform
+  - first:
+      4: 400004
+    second: Seagull1/Seagull1/SeagullAlone:pCube1/SeagullAlone:pCubeShape1/Transform
+  - first:
+      21: 2100000
+    second: Default Material
+  - first:
+      23: 2300000
+    second: Seagull1/Seagull1/SeagullAlone:pCube1/SeagullAlone:pCubeShape1/MeshRenderer
+  - first:
+      33: 3300000
+    second: Seagull1/Seagull1/SeagullAlone:pCube1/SeagullAlone:pCubeShape1/MeshFilter
+  - first:
+      43: 4300000
+    second: /SeagullAlone:pCube1/SeagullAlone:pCubeShape1
+  - first:
+      74: 7400000
+    second: Default Animation
+  - first:
+      74: 7400002
+    second: Seagull1_Frames
+  - first:
+      114: 11400000
+    second: Seagull1/Seagull1/MonoBehaviour-UnityEngine.Formats.Alembic.Importer.AlembicStreamPlayer
+  - first:
+      114: 11400002
+    second: Seagull1_ABCDesc
+  - first:
+      1001: 100100000
+    second: Seagull1
   externalObjects: {}
+  serializedVersion: 2
   userData: 
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: f53f5fc499d31e44b9deee84d28a9ee8, type: 3}
+  rootGameObjectId: Seagull1
   streamSettings:
     normals: 1
     tangents: 1
@@ -30,7 +62,6 @@ ScriptedImporter:
     scaleFactor: 0.01
     swapHandedness: 1
     flipFaces: 0
-    turnQuadEdges: 0
     interpolateSamples: 1
     importPointPolygon: 1
     importLinePolygon: 1

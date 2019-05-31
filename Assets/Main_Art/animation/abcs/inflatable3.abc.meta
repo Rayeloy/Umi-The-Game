@@ -1,34 +1,80 @@
 fileFormatVersion: 2
 guid: a90044fa2521f5a4893bc81e75157f35
 ScriptedImporter:
-  fileIDToRecycleName:
-    100000: inflatable3/inflatable3
-    100002: inflatable3/inflatable3/dummy1_pCube8
-    100004: inflatable3/inflatable3/dummy1_pCube8/outputCloth1
-    100006: inflatable3/inflatable3/qTip
-    100008: inflatable3/inflatable3/qTip/qTipShape
-    400000: inflatable3/inflatable3/Transform
-    400002: inflatable3/inflatable3/dummy1_pCube8/Transform
-    400004: inflatable3/inflatable3/dummy1_pCube8/outputCloth1/Transform
-    400006: inflatable3/inflatable3/qTip/Transform
-    400008: inflatable3/inflatable3/qTip/qTipShape/Transform
-    2100000: Default Material
-    2300000: inflatable3/inflatable3/dummy1_pCube8/outputCloth1/MeshRenderer
-    2300002: inflatable3/inflatable3/qTip/qTipShape/MeshRenderer
-    3300000: inflatable3/inflatable3/dummy1_pCube8/outputCloth1/MeshFilter
-    3300002: inflatable3/inflatable3/qTip/qTipShape/MeshFilter
-    4300000: /dummy1_pCube8/outputCloth1
-    4300002: /qTip/qTipShape
-    7400000: Default Animation
-    7400002: inflatable3_Frames
-    11400000: inflatable3/inflatable3/MonoBehaviour-UnityEngine.Formats.Alembic.Importer.AlembicStreamPlayer
-    11400002: inflatable3_ABCDesc
-    100100000: inflatable3
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: inflatable3/inflatable3
+  - first:
+      1: 100002
+    second: inflatable3/inflatable3/dummy1_pCube8
+  - first:
+      1: 100004
+    second: inflatable3/inflatable3/dummy1_pCube8/outputCloth1
+  - first:
+      1: 100006
+    second: inflatable3/inflatable3/qTip
+  - first:
+      1: 100008
+    second: inflatable3/inflatable3/qTip/qTipShape
+  - first:
+      4: 400000
+    second: inflatable3/inflatable3/Transform
+  - first:
+      4: 400002
+    second: inflatable3/inflatable3/dummy1_pCube8/Transform
+  - first:
+      4: 400004
+    second: inflatable3/inflatable3/dummy1_pCube8/outputCloth1/Transform
+  - first:
+      4: 400006
+    second: inflatable3/inflatable3/qTip/Transform
+  - first:
+      4: 400008
+    second: inflatable3/inflatable3/qTip/qTipShape/Transform
+  - first:
+      21: 2100000
+    second: Default Material
+  - first:
+      23: 2300000
+    second: inflatable3/inflatable3/dummy1_pCube8/outputCloth1/MeshRenderer
+  - first:
+      23: 2300002
+    second: inflatable3/inflatable3/qTip/qTipShape/MeshRenderer
+  - first:
+      33: 3300000
+    second: inflatable3/inflatable3/dummy1_pCube8/outputCloth1/MeshFilter
+  - first:
+      33: 3300002
+    second: inflatable3/inflatable3/qTip/qTipShape/MeshFilter
+  - first:
+      43: 4300000
+    second: /dummy1_pCube8/outputCloth1
+  - first:
+      43: 4300002
+    second: /qTip/qTipShape
+  - first:
+      74: 7400000
+    second: Default Animation
+  - first:
+      74: 7400002
+    second: inflatable3_Frames
+  - first:
+      114: 11400000
+    second: inflatable3/inflatable3/MonoBehaviour-UnityEngine.Formats.Alembic.Importer.AlembicStreamPlayer
+  - first:
+      114: 11400002
+    second: inflatable3_ABCDesc
+  - first:
+      1001: 100100000
+    second: inflatable3
   externalObjects: {}
+  serializedVersion: 2
   userData: 
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: f53f5fc499d31e44b9deee84d28a9ee8, type: 3}
+  rootGameObjectId: inflatable3
   streamSettings:
     normals: 1
     tangents: 1
@@ -37,7 +83,6 @@ ScriptedImporter:
     scaleFactor: 0.01
     swapHandedness: 1
     flipFaces: 0
-    turnQuadEdges: 0
     interpolateSamples: 1
     importPointPolygon: 1
     importLinePolygon: 1

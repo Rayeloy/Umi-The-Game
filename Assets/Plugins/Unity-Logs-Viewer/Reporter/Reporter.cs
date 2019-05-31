@@ -353,7 +353,6 @@ public class Reporter : MonoBehaviour
 			return;
 		}
 
-
 		//initialize gui and styles for gui purpose
 
 		clearContent = new GUIContent("", images.clearImage, "Clear logs");

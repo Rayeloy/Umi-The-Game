@@ -1,50 +1,128 @@
 fileFormatVersion: 2
 guid: 6a853cde8f4714445ba308eeee017105
 ScriptedImporter:
-  fileIDToRecycleName:
-    100020: DummyDeflating/DummyDeflating
-    100022: DummyDeflating/DummyDeflating/DummyLose_animation
-    100024: DummyDeflating/DummyDeflating/DummyLose_animation/BaseDetail
-    100026: DummyDeflating/DummyDeflating/DummyLose_animation/BaseDetail/BaseDetailShape
-    100028: DummyDeflating/DummyDeflating/DummyLose_animation/dummyBase
-    100030: DummyDeflating/DummyDeflating/DummyLose_animation/dummyBase/dummyBaseShape
-    100032: DummyDeflating/DummyDeflating/DummyLose_animation/dummyMain
-    100034: DummyDeflating/DummyDeflating/DummyLose_animation/dummyMain/dummyMainShape
-    100036: DummyDeflating/DummyDeflating/DummyLose_animation/qTip
-    100038: DummyDeflating/DummyDeflating/DummyLose_animation/qTip/qTipShape
-    400020: DummyDeflating/DummyDeflating/Transform
-    400022: DummyDeflating/DummyDeflating/DummyLose_animation/Transform
-    400024: DummyDeflating/DummyDeflating/DummyLose_animation/BaseDetail/Transform
-    400026: DummyDeflating/DummyDeflating/DummyLose_animation/BaseDetail/BaseDetailShape/Transform
-    400028: DummyDeflating/DummyDeflating/DummyLose_animation/dummyBase/Transform
-    400030: DummyDeflating/DummyDeflating/DummyLose_animation/dummyBase/dummyBaseShape/Transform
-    400032: DummyDeflating/DummyDeflating/DummyLose_animation/dummyMain/Transform
-    400034: DummyDeflating/DummyDeflating/DummyLose_animation/dummyMain/dummyMainShape/Transform
-    400036: DummyDeflating/DummyDeflating/DummyLose_animation/qTip/Transform
-    400038: DummyDeflating/DummyDeflating/DummyLose_animation/qTip/qTipShape/Transform
-    2100000: Default Material
-    2300008: DummyDeflating/DummyDeflating/DummyLose_animation/BaseDetail/BaseDetailShape/MeshRenderer
-    2300010: DummyDeflating/DummyDeflating/DummyLose_animation/dummyBase/dummyBaseShape/MeshRenderer
-    2300012: DummyDeflating/DummyDeflating/DummyLose_animation/dummyMain/dummyMainShape/MeshRenderer
-    2300014: DummyDeflating/DummyDeflating/DummyLose_animation/qTip/qTipShape/MeshRenderer
-    3300008: DummyDeflating/DummyDeflating/DummyLose_animation/BaseDetail/BaseDetailShape/MeshFilter
-    3300010: DummyDeflating/DummyDeflating/DummyLose_animation/dummyBase/dummyBaseShape/MeshFilter
-    3300012: DummyDeflating/DummyDeflating/DummyLose_animation/dummyMain/dummyMainShape/MeshFilter
-    3300014: DummyDeflating/DummyDeflating/DummyLose_animation/qTip/qTipShape/MeshFilter
-    4300000: /DummyLose_animation/qTip/qTipShape
-    4300002: /DummyLose_animation/dummyMain/dummyMainShape
-    4300004: /DummyLose_animation/BaseDetail/BaseDetailShape
-    4300006: /DummyLose_animation/dummyBase/dummyBaseShape
-    7400000: Default Animation
-    7400004: DummyDeflating_Frames
-    11400004: DummyDeflating/DummyDeflating/MonoBehaviour-UnityEngine.Formats.Alembic.Importer.AlembicStreamPlayer
-    11400006: DummyDeflating_ABCDesc
-    100100002: DummyDeflating
+  internalIDToNameTable:
+  - first:
+      1: 100020
+    second: DummyDeflating/DummyDeflating
+  - first:
+      1: 100022
+    second: DummyDeflating/DummyDeflating/DummyLose_animation
+  - first:
+      1: 100024
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/BaseDetail
+  - first:
+      1: 100026
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/BaseDetail/BaseDetailShape
+  - first:
+      1: 100028
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/dummyBase
+  - first:
+      1: 100030
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/dummyBase/dummyBaseShape
+  - first:
+      1: 100032
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/dummyMain
+  - first:
+      1: 100034
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/dummyMain/dummyMainShape
+  - first:
+      1: 100036
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/qTip
+  - first:
+      1: 100038
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/qTip/qTipShape
+  - first:
+      4: 400020
+    second: DummyDeflating/DummyDeflating/Transform
+  - first:
+      4: 400022
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/Transform
+  - first:
+      4: 400024
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/BaseDetail/Transform
+  - first:
+      4: 400026
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/BaseDetail/BaseDetailShape/Transform
+  - first:
+      4: 400028
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/dummyBase/Transform
+  - first:
+      4: 400030
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/dummyBase/dummyBaseShape/Transform
+  - first:
+      4: 400032
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/dummyMain/Transform
+  - first:
+      4: 400034
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/dummyMain/dummyMainShape/Transform
+  - first:
+      4: 400036
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/qTip/Transform
+  - first:
+      4: 400038
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/qTip/qTipShape/Transform
+  - first:
+      21: 2100000
+    second: Default Material
+  - first:
+      23: 2300008
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/BaseDetail/BaseDetailShape/MeshRenderer
+  - first:
+      23: 2300010
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/dummyBase/dummyBaseShape/MeshRenderer
+  - first:
+      23: 2300012
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/dummyMain/dummyMainShape/MeshRenderer
+  - first:
+      23: 2300014
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/qTip/qTipShape/MeshRenderer
+  - first:
+      33: 3300008
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/BaseDetail/BaseDetailShape/MeshFilter
+  - first:
+      33: 3300010
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/dummyBase/dummyBaseShape/MeshFilter
+  - first:
+      33: 3300012
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/dummyMain/dummyMainShape/MeshFilter
+  - first:
+      33: 3300014
+    second: DummyDeflating/DummyDeflating/DummyLose_animation/qTip/qTipShape/MeshFilter
+  - first:
+      43: 4300000
+    second: /DummyLose_animation/qTip/qTipShape
+  - first:
+      43: 4300002
+    second: /DummyLose_animation/dummyMain/dummyMainShape
+  - first:
+      43: 4300004
+    second: /DummyLose_animation/BaseDetail/BaseDetailShape
+  - first:
+      43: 4300006
+    second: /DummyLose_animation/dummyBase/dummyBaseShape
+  - first:
+      74: 7400000
+    second: Default Animation
+  - first:
+      74: 7400004
+    second: DummyDeflating_Frames
+  - first:
+      114: 11400004
+    second: DummyDeflating/DummyDeflating/MonoBehaviour-UnityEngine.Formats.Alembic.Importer.AlembicStreamPlayer
+  - first:
+      114: 11400006
+    second: DummyDeflating_ABCDesc
+  - first:
+      1001: 100100002
+    second: DummyDeflating
   externalObjects: {}
+  serializedVersion: 2
   userData: 
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: f53f5fc499d31e44b9deee84d28a9ee8, type: 3}
+  rootGameObjectId: DummyDeflating
   streamSettings:
     normals: 1
     tangents: 1
@@ -53,7 +131,6 @@ ScriptedImporter:
     scaleFactor: 0.01
     swapHandedness: 1
     flipFaces: 0
-    turnQuadEdges: 0
     interpolateSamples: 1
     importPointPolygon: 1
     importLinePolygon: 1
