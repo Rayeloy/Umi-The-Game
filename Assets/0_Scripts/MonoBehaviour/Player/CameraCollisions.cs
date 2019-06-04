@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraCollisions : MonoBehaviour {
-
+    public bool drawRays = true;
     CameraController myCamController;
     public float minDistance = 1.0f;
     [Tooltip("CameraController changes this value. ")]
@@ -34,9 +34,9 @@ public class CameraCollisions : MonoBehaviour {
     {
         Vector3 desiredCameraPos = transform.parent.TransformPoint(dollyDir * maxDistance);
         RaycastHit hit;
-        if (!myCamController.myPlayerMov.controller.disableAllRays)
+        if (!myCamController.myPlayerMov.controller.disableAllRays && drawRays)
         {
-            Debug.DrawLine(transform.parent.position, desiredCameraPos, Color.yellow, 0.01f);
+            Debug.DrawLine(transform.parent.position, desiredCameraPos, Color.yellow);
         }
 
         if (Physics.Linecast(transform.parent.position, desiredCameraPos, out hit, collisionMask, QueryTriggerInteraction.Ignore))

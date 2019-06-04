@@ -627,7 +627,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   FloorMaxDistanceCheck: 15
-  corsbOn: 1
   maxClimbAngle: 60
   minClimbAngle: 0
   maxDescendAngle: 60
@@ -649,9 +648,11 @@ MonoBehaviour:
   showHorizontalLimits: 1
   showWallRays: 0
   showWallLimits: 0
+  showWallEdgeRays: 1
   horizontalRows: 20
   horizontalRaysPerRow: 20
   maxHeightToClimbStep: 0.3
+  corsbOn: 1
   corsbBorderPercent: 20
   showWaterRays: 0
   aroundRaysPerCircle: 10

@@ -1060,3 +1060,24 @@ void VerticalCollisions(ref Vector3 vel)
              haveFlag = false;
          }
      }*/
+
+	 //WALL EDGE:
+	        //Debug.LogError("WALL EDGE: collPoint1 = " + collisions.closestHorRaycast.ray.point.ToString("F4") + "; collPoint2 = " + differentWallRay.ray.point.ToString("F4") +
+            //    "; vector1 = " + vector1 + "; vector2 = " + vector2 + "; angle1 = " + angle1 + "; angle1 = " + angle2 + "; angle1IsRight = " + angle1IsRight);
+            //float edgeAngle = Vector3.SignedAngle(differentWallRay.ray.normal, collisions.closestHorRaycast.ray.normal,Vector3.up);
+            //edgeAngle = Mathf.Sign(edgeAngle)*((360 - (Mathf.Abs(edgeAngle) * 2) )/ 2);
+            //float angle1 = differentWallRay.wallAngle;
+            //angle1 = Vector3.Angle(Vector3.right, differentWallRay.ray.normal)>=90? angle1 : -angle1;
+            //float angle2 = collisions.closestHorRaycast.wallAngle;
+            //angle2 = Vector3.Angle(Vector3.right, collisions.closestHorRaycast.ray.normal) >= 90 ? angle2 : -angle2;
+            //edgeAngle = SignedAngleBetween(differentWallRay.ray.normal, collisions.closestHorRaycast.ray.normal, Vector3.up);
+
+            //Vector3 wallVector1 = new Vector3(-differentWallRay.ray.normal.z, 0, differentWallRay.ray.normal.x).normalized;
+            //Vector3 wallVector2 = new Vector3(-collisions.closestHorRaycast.ray.normal.z, 0, collisions.closestHorRaycast.ray.normal.x).normalized;
+            //Debug.DrawRay(differentWallRay.origin,wallVector1*2,Color.black,3);
+            //Debug.DrawRay(collisions.closestHorRaycast.origin, wallVector2*2, Color.black, 3);
+            //Debug.LogWarning("WALL EDGE: collided with walls with angles: "+ angle1 + " and "+ angle2 + "; wallAngles = "+ wallVector1 +" and "+ wallVector2 +
+            //    "; angle between them = " + edgeAngle);
+            //if (edgeAngle < 0)
+            //{
+            //}
