@@ -181,7 +181,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2852817923875328255}
-  m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -190,7 +190,7 @@ Transform:
   - {fileID: 4636526452034152236}
   m_Father: {fileID: 2847353080688889697}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5569795413985208475
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -526,9 +526,11 @@ MonoBehaviour:
   myCamera: {fileID: 0}
   cameraFollow: {fileID: 2847219716704171441}
   rotateObj: {fileID: 2847339013141467789}
-  maxMoveSpeed: 10
+  hasCharacterRotation: 1
   rotationSpeed: 950
-  instantRotationMaxAngle: 130
+  instantRotationMinAngle: 120
+  maxFallSpeed: 40
+  maxMoveSpeed: 10
   maxKnockbackSpeed: 300
   maxAimingSpeed: 5
   maxHookingSpeed: 3.5
@@ -543,10 +545,12 @@ MonoBehaviour:
   boostCDMaxTime: 0.2
   boostFuelLostOnStart: 0.1
   boostMinFuelNeeded: 0.2
-  initialAcc: 30
+  initialAcc: 60
   breakAcc: -30
+  airBreakAcc: -5
+  hardSteerAcc: 100
   movingAcc: 5
-  airMovingAcc: 0.3
+  airMovingAcc: 1
   hardBreakAcc: -90
   knockbackBreakAcc: -30
   gravity: 0
@@ -557,7 +561,7 @@ MonoBehaviour:
   maxTimeJumpInsurance: 0.3
   wallJumpVelocity: 15
   wallJumpSlidingAcc: -2
-  wallJumpMinHeightPercent: 55
+  wallJumpMinHeightPercent: 0.6
   stopWallMaxTime: 2
   wallJumpAngle: 25.5
   wallJumpMinHorizAngle: 30
@@ -653,7 +657,7 @@ MonoBehaviour:
   horizontalRaysPerRow: 20
   maxHeightToClimbStep: 0.3
   corsbOn: 1
-  corsbBorderPercent: 20
+  corsbBorderPercent: 25
   showWaterRays: 0
   aroundRaysPerCircle: 10
   aroundCircles: 10
@@ -911,10 +915,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4636526452034152236}
     m_Modifications:
-    - target: {fileID: 1000014169208584, guid: d08900952c6a5d941b43064552bc2aac, type: 3}
-      propertyPath: m_Name
-      value: WaterSplashBig
-      objectReference: {fileID: 0}
     - target: {fileID: 4000012010499936, guid: d08900952c6a5d941b43064552bc2aac, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -971,6 +971,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1000014169208584, guid: d08900952c6a5d941b43064552bc2aac, type: 3}
+      propertyPath: m_Name
+      value: WaterSplashBig
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d08900952c6a5d941b43064552bc2aac, type: 3}
 --- !u!1 &1436022202995650816 stripped
@@ -992,10 +996,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4636526452034152236}
     m_Modifications:
-    - target: {fileID: 1000011901097298, guid: 3f7958af7c1cb6543815e6a8d97712dd, type: 3}
-      propertyPath: m_Name
-      value: SwimEffect
-      objectReference: {fileID: 0}
     - target: {fileID: 4000012858824988, guid: 3f7958af7c1cb6543815e6a8d97712dd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1040,6 +1040,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1000011901097298, guid: 3f7958af7c1cb6543815e6a8d97712dd, type: 3}
+      propertyPath: m_Name
+      value: SwimEffect
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3f7958af7c1cb6543815e6a8d97712dd, type: 3}
 --- !u!1 &3064733825022725364 stripped
@@ -1061,11 +1065,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2847374190979902391}
     m_Modifications:
-    - target: {fileID: 2171998722439508168, guid: 7fe8d16465f14ca4cb1a013784d61b03,
-        type: 3}
-      propertyPath: m_Name
-      value: ModeloCorrecto_umiboy
-      objectReference: {fileID: 0}
     - target: {fileID: 2175703407794122806, guid: 7fe8d16465f14ca4cb1a013784d61b03,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1120,6 +1119,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2171998722439508168, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: m_Name
+      value: ModeloCorrecto_umiboy
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7fe8d16465f14ca4cb1a013784d61b03, type: 3}
