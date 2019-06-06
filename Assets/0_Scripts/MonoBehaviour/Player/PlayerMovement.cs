@@ -122,9 +122,11 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("ACCELERATIONS")]
     public float initialAcc = 30;
+    public float airInitialAcc = 30;
     public float breakAcc = -30;
     public float airBreakAcc = -5;
-    public float hardSteerAcc = 60;
+    public float hardSteerAcc = 60; 
+    public float airHardSteerAcc = 60;
     public float movingAcc = 2.0f;
     public float airMovingAcc = 0.5f;
     [Tooltip("Acceleration used when breaking from a boost.")]
@@ -299,6 +301,8 @@ public class PlayerMovement : MonoBehaviour
         lastWallAngle = 0;
         SetupInputsBuffer();
         myPlayerHook.myCameraBase = myCamera;
+        hardSteerAcc = Mathf.Clamp(hardSteerAcc,breakAcc,hardSteerAcc);
+        airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airBreakAcc, airHardSteerAcc);
 
         //PLAYER MODEL
         myPlayerModel.SwitchTeam(team);
@@ -596,6 +600,7 @@ public class PlayerMovement : MonoBehaviour
             //------------------------------- Joystick Direction -------------------------------
             CalculateMoveDir();//Movement direction
             float angleDiff = Vector3.Angle(horizontalVel, currentMovDir);//hard Steer si > 90
+            Debug.Log("angleDiff = " + angleDiff);
             //ProcessHardSteer();
             if (!myPlayerCombat.aiming && Actions.R2.WasPressed)//Input.GetButtonDown(contName + "RB"))
             {
@@ -616,18 +621,20 @@ public class PlayerMovement : MonoBehaviour
             //------------------------------- Acceleration -------------------------------
             float finalAcc;
             float finalBreakAcc = controller.collisions.below ? breakAcc : airBreakAcc;
+            float finalHardSteerAcc = controller.collisions.below ? hardSteerAcc : airHardSteerAcc;
+            float finalInitialAcc = controller.collisions.below ? initialAcc : airInitialAcc;
             finalMovingAcc = controller.collisions.below ? movingAcc : airMovingAcc; //Turning accleration
             //finalBreakAcc = currentSpeed < 0 ? -finalBreakAcc : finalBreakAcc;
             switch (moveSt)
             {
                 case MoveState.Moving:
-                    if (angleDiff > 90)//hard Steer
+                    if (angleDiff > instantRotationMinAngle)//hard Steer
                     {
-                        finalAcc = controller.collisions.below? hardSteerAcc:-finalBreakAcc + finalMovingAcc;
+                        finalAcc = finalHardSteerAcc;
                     }
                     else //Debug.LogWarning("Moving: angleDiff <= 90");
                     {
-                        finalAcc = lastJoystickSens > joystickSens ? finalBreakAcc : initialAcc;
+                        finalAcc = lastJoystickSens > joystickSens ? finalBreakAcc : finalInitialAcc;
                     }
                     //}
                     break;
@@ -649,9 +656,9 @@ public class PlayerMovement : MonoBehaviour
             switch (moveSt)
             {
                 case MoveState.Moving:
-                    if (angleDiff > 90)//hard Steer
+                    if (angleDiff > instantRotationMinAngle)//hard Steer
                     {
-                        Debug.LogWarning("Moving: angleDiff > 90 -> Calculate velNeg"+ "; currentMovDir = " + currentMovDir.ToString("F6"));
+                        Debug.LogWarning("Moving: angleDiff > instantRotationMinAngle -> Calculate velNeg" + "; currentMovDir = " + currentMovDir.ToString("F6"));
                         float angle = 180 - angleDiff;
                         float velNeg = Mathf.Cos(angle * Mathf.Deg2Rad) * horizontalVel.magnitude;//cos(angle) = velNeg /horizontalVel.magnitude;
                         currentSpeed = -velNeg;
@@ -688,15 +695,15 @@ public class PlayerMovement : MonoBehaviour
             {
                 case MoveState.Moving: //MOVING WITH JOYSTICK
                     float angleDiff = Vector3.Angle(horizontalVel, currentMovDir);
-                    if (angleDiff > 90)//hard Steer
+                    if (angleDiff > instantRotationMinAngle)//hard Steer
                     {
-                        Debug.LogWarning("Moving: angleDiff > 90");
+                        Debug.LogWarning("Moving: angleDiff > instantRotationMinAngle");
                         horizontalVel = currentMovDir * currentSpeed;
                     }
                     else
                     {
-                        Debug.LogWarning("Moving: angleDiff <= 90");
-                        Vector3 newDir = horizontalVel + currentMovDir * finalMovingAcc;
+                        Debug.LogWarning("Moving: angleDiff <= instantRotationMinAngle");
+                        Vector3 newDir = horizontalVel + currentMovDir * finalMovingAcc*Time.deltaTime;
                         horizontalVel = newDir.normalized * currentSpeed;
                     }
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
@@ -998,11 +1005,13 @@ public class PlayerMovement : MonoBehaviour
             if (Actions.A.WasReleased || !Actions.A.IsPressed)
             {
                 EndWallJump();
+                return;
             }
 
             if (stopWallTime >= stopWallMaxTime)
             {
                 StopWallJump();
+                return;
             }
 
             #region --- WALL JUMP CHECK RAYS ---
@@ -1070,8 +1079,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 finalDir = (circumfPoint - anchorPoint).normalized;
         Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
 
-        currentVel = finalDir * wallJumpVelocity;
-        currentSpeed = currentVel.magnitude;
+        SetVelocity(finalDir * wallJumpVelocity);
         currentMovDir = new Vector3(finalDir.x, 0, finalDir.z);
         RotateCharacter(currentMovDir);
 
@@ -1293,7 +1301,9 @@ public class PlayerMovement : MonoBehaviour
                         {
                             if (!myPlayerCombat.isRotationRestricted && rotationDiff > instantRotationMinAngle)//Instant rotation
                             {
-                                RotateCharacter(currentInputDir);
+                                Debug.LogError("INSTANT BODY ROTATION, angle = "+targetRotation);
+                                RotateCharacterInstantly(targetRotation);
+                                Debug.LogError("INSANT BODYY ROTATION after, angle = " + rotateObj.localRotation.eulerAngles.y);
                             }
                             else
                             {//rotate with speed
@@ -1325,7 +1335,7 @@ public class PlayerMovement : MonoBehaviour
                     }
                     else
                     {
-                        RotateCharacter(currentInputDir);
+                        RotateCharacterInstantly(targetRotation);
                     }
                 }
                 break;
@@ -1337,6 +1347,12 @@ public class PlayerMovement : MonoBehaviour
     {
         float angle = Mathf.Acos(dir.z / dir.magnitude) * Mathf.Rad2Deg;
         angle = dir.x < 0 ? 360 - angle : angle;
+        rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
+        currentRotation = targetRotation = angle;
+    }
+
+    void RotateCharacterInstantly(float angle)
+    {
         rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
         currentRotation = targetRotation = angle;
     }

@@ -117,7 +117,7 @@ public class Controller3D : MonoBehaviour
         {
             Debug.DrawRay(raycastOrigins.Center, vel * 5, Color.blue);
             Vector3 horVel = new Vector3(vel.x, 0, vel.z);
-            Debug.DrawRay(raycastOrigins.Center, horVel * 5, Color.yellow);
+            Debug.DrawRay(raycastOrigins.Center, horVel.normalized * 2, Color.yellow);
         }
         if (vel.x != 0 || vel.z != 0)
         {
@@ -1195,7 +1195,7 @@ public class Controller3D : MonoBehaviour
         #region --- Segunda comprobacion / HIGH PRECISION (lanzando nuevos raycasts) ---
         if (!differentWallRay.hit)
         {
-            Debug.LogWarning("WALL EDGE: SEGUNDA COMPROBACION START");
+            //Debug.LogWarning("WALL EDGE: SEGUNDA COMPROBACION START");
             bool seikai = false;
             int column = collisions.closestHorRaycast.column;
             int row = collisions.closestHorRaycast.row;
@@ -1234,7 +1234,7 @@ public class Controller3D : MonoBehaviour
                             CollisionState slopeType = CheckSlopeTypeWallEdges(vel, auxRay);
                             if (slopeType == CollisionState.wall && AreAnglesDifferent(auxRay.wallAngle, collisions.closestHorRaycast.wallAngle))
                             {
-                                Debug.LogWarning("WALL EDGE: SEGUNDA COMPROBACION -> found!");
+                                //Debug.LogWarning("WALL EDGE: SEGUNDA COMPROBACION -> found!");
                                 differentWallRay = auxRay;
                                 if (differentWallRay.distance < auxClosestRay.distance) auxClosestRay = differentWallRay;
                                 seikai = true;

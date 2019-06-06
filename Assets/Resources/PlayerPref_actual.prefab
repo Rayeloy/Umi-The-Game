@@ -528,7 +528,7 @@ MonoBehaviour:
   rotateObj: {fileID: 2847339013141467789}
   hasCharacterRotation: 1
   rotationSpeed: 800
-  instantRotationMinAngle: 90
+  instantRotationMinAngle: 110
   maxFallSpeed: 40
   maxMoveSpeed: 10
   maxKnockbackSpeed: 300
@@ -546,11 +546,13 @@ MonoBehaviour:
   boostFuelLostOnStart: 0.1
   boostMinFuelNeeded: 0.2
   initialAcc: 60
+  airInitialAcc: 30
   breakAcc: -30
   airBreakAcc: -5
   hardSteerAcc: 100
-  movingAcc: 5
-  airMovingAcc: 1
+  airHardSteerAcc: 10
+  movingAcc: 85
+  airMovingAcc: 10
   hardBreakAcc: -90
   knockbackBreakAcc: -30
   gravity: 0
