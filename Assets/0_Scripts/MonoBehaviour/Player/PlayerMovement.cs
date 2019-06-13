@@ -375,10 +375,10 @@ public class PlayerMovement : MonoBehaviour
     #region UPDATE
     public void KonoUpdate()
     {
-        if (controller.collisions.below && !controller.collisions.lastBelow)
-        {
-            Debug.LogError("LANDING");
-        }
+        //if (controller.collisions.below && !controller.collisions.lastBelow)
+        //{
+        //    Debug.LogError("LANDING");
+        //}
         //Debug.Log("Mis acciones son " + Actions);
         if (Actions.Start.WasPressed) gC.PauseGame(Actions);
 
@@ -656,9 +656,9 @@ public class PlayerMovement : MonoBehaviour
             switch (moveSt)
             {
                 case MoveState.Moving:
-                    if (angleDiff > instantRotationMinAngle)//hard Steer
+                    if (angleDiff > instantRotationMinAngle && Mathf.Sign(currentSpeed)==1)//hard Steer
                     {
-                        Debug.LogWarning("Moving: angleDiff > instantRotationMinAngle -> Calculate velNeg" + "; currentMovDir = " + currentMovDir.ToString("F6"));
+                        Debug.LogError("Current speed: Moving: angleDiff > instantRotationMinAngle -> Calculate velNeg" + "; currentMovDir = " + currentMovDir.ToString("F6"));
                         float angle = 180 - angleDiff;
                         float velNeg = Mathf.Cos(angle * Mathf.Deg2Rad) * horizontalVel.magnitude;//cos(angle) = velNeg /horizontalVel.magnitude;
                         currentSpeed = -velNeg;
@@ -695,17 +695,17 @@ public class PlayerMovement : MonoBehaviour
             {
                 case MoveState.Moving: //MOVING WITH JOYSTICK
                     float angleDiff = Vector3.Angle(horizontalVel, currentMovDir);
-                    if (angleDiff > instantRotationMinAngle)//hard Steer
+                    Vector3 newDir = horizontalVel + currentMovDir * finalMovingAcc * Time.deltaTime;
+                    if (Mathf.Sign(currentSpeed) == 1)//hard Steer
                     {
-                        Debug.LogWarning("Moving: angleDiff > instantRotationMinAngle");
-                        horizontalVel = currentMovDir * currentSpeed;
+                        //Debug.LogWarning("Moving: angleDiff > instantRotationMinAngle");
+                        newDir = -newDir;
                     }
                     else
                     {
-                        Debug.LogWarning("Moving: angleDiff <= instantRotationMinAngle");
-                        Vector3 newDir = horizontalVel + currentMovDir * finalMovingAcc*Time.deltaTime;
-                        horizontalVel = newDir.normalized * currentSpeed;
+                        //Debug.LogWarning("Moving: angleDiff <= instantRotationMinAngle");
                     }
+                    horizontalVel = newDir.normalized * currentSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
                     break;
                 case MoveState.NotMoving: //NOT MOVING JOYSTICK
@@ -1301,9 +1301,9 @@ public class PlayerMovement : MonoBehaviour
                         {
                             if (!myPlayerCombat.isRotationRestricted && rotationDiff > instantRotationMinAngle)//Instant rotation
                             {
-                                Debug.LogError("INSTANT BODY ROTATION, angle = "+targetRotation);
+                                //Debug.LogError("INSTANT BODY ROTATION, angle = "+targetRotation);
                                 RotateCharacterInstantly(targetRotation);
-                                Debug.LogError("INSANT BODYY ROTATION after, angle = " + rotateObj.localRotation.eulerAngles.y);
+                                //Debug.LogError("INSANT BODYY ROTATION after, angle = " + rotateObj.localRotation.eulerAngles.y);
                             }
                             else
                             {//rotate with speed
