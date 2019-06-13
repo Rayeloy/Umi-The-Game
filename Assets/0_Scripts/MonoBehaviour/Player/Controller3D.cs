@@ -112,7 +112,7 @@ public class Controller3D : MonoBehaviour
         collisions.ResetHorizontal();
         collisions.ResetClimbingSlope();
         collisions.startVel = vel;
-        //print("Start Vel = " + vel.ToString("F4"));
+        print("Start Vel = " + vel.ToString("F4"));
         if (!disableAllRays)
         {
             Debug.DrawRay(raycastOrigins.Center, vel * 5, Color.blue);
@@ -128,7 +128,7 @@ public class Controller3D : MonoBehaviour
         {
             NewVerticalCollisions2(ref vel);
         }
-        //Debug.Log("End Vel = " + vel.ToString("F4") + "; CollisionState = " + collisions.collSt + "; below = " + collisions.below);
+        Debug.Log("End Vel = " + vel.ToString("F4") + "; CollisionState = " + collisions.collSt + "; below = " + collisions.below);
         //if (collisions.lastcollSt == CollisionState.crossingPeak && collisions.collSt != CollisionState.crossingPeak)
         //{
         //    Debug.LogError("We stopped crossing peak");
@@ -1391,78 +1391,81 @@ public class Controller3D : MonoBehaviour
     void NewVerticalCollisions2(ref Vector3 vel)
     {
         #region Raycasts
-        collisions.verRaycastsY = new Raycast[verticalRows, verticalRaysPerRow];
-        // ---------------------- 3D "Ortoedro" -------------------
-        float directionY = Mathf.Sign(vel.y);
-        float rayLength = Mathf.Abs(vel.y) + skinWidth;
-        if (collisions.lastFinishedClimbing || collisions.lastCollSt == CollisionState.crossingPeak)
-        {
-            rayLength += rayExtraLengthPeak;
-        }
-        Vector3 rowsOrigin = directionY == -1 ? raycastOrigins.BottomLFCornerReal : raycastOrigins.TopLFCornerReal;
-        Vector3 rowOrigin = rowsOrigin;
-        Vector3 wallNormal = new Vector3(collisions.wallNormal.x, 0, collisions.wallNormal.z).normalized;
-        //SEPARATION FROM WALL IN CASE WE ARE STANDING ON FLOOR AND COLLIDING WITH WALL
-        if (collisions.floorAngle >= 0 && collisions.floorAngle < 0.2f)
-        {
-            rowOrigin += wallNormal * 0.01f;
-        }
-        //Check for peak under
-        bool peak = false;
-        CollisionState lastSlopeType = CollisionState.none;
+            collisions.verRaycastsY = new Raycast[verticalRows, verticalRaysPerRow];
+            // ---------------------- 3D "Ortoedro" -------------------
+            float directionY = Mathf.Sign(vel.y);
+            float rayLength = Mathf.Abs(vel.y) + skinWidth;
+            if (collisions.lastFinishedClimbing || collisions.lastCollSt == CollisionState.crossingPeak)
+            {
+                rayLength += rayExtraLengthPeak;
+            }
+            Vector3 rowsOrigin = directionY == -1 ? raycastOrigins.BottomLFCornerReal : raycastOrigins.TopLFCornerReal;
+            Vector3 rowOrigin = rowsOrigin;
+            Vector3 wallNormal = new Vector3(collisions.wallNormal.x, 0, collisions.wallNormal.z).normalized;
+            //SEPARATION FROM WALL IN CASE WE ARE STANDING ON FLOOR AND COLLIDING WITH WALL
+            if (collisions.floorAngle >= 0 && collisions.floorAngle < 0.2f)
+            {
+                rowOrigin += wallNormal * 0.01f;
+            }
+            //Check for peak under
+            bool peak = false;
+            CollisionState lastSlopeType = CollisionState.none;
 
         //print("----------NEW SET OF RAYS------------");
-        for (int i = 0; i < verticalRows; i++)
+        if (vel.y != 0)
         {
-            rowOrigin.z = rowsOrigin.z - (verticalRowSpacing * i);
-            Vector3 lastOrigin = rowOrigin;
-            for (int j = 0; j < verticalRaysPerRow; j++)
+            for (int i = 0; i < verticalRows; i++)
             {
-                Vector3 rayOrigin = new Vector3(rowOrigin.x + (verticalRaySpacing * j), rowOrigin.y, rowOrigin.z);
-                if (showVerticalLimits && !disableAllRays)
+                rowOrigin.z = rowsOrigin.z - (verticalRowSpacing * i);
+                Vector3 lastOrigin = rowOrigin;
+                for (int j = 0; j < verticalRaysPerRow; j++)
                 {
-                    Debug.DrawLine(lastOrigin, rayOrigin, Color.blue);
-                }
-                lastOrigin = rayOrigin;
-                rayOrigin += (Vector3.up * -directionY) * skinWidth;
-
-                RaycastHit hit;
-                if (showVerticalRays && !disableAllRays)
-                {
-                    Debug.DrawRay(rayOrigin, Vector3.up * directionY * rayLength, Color.red);
-                }
-
-                if (Physics.Raycast(rayOrigin, Vector3.up * directionY, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore)) // throw raycast here
-                {
-                    float slopeAngle = GetSlopeAngle(hit);
-                    //print("Vertical Hit");
-                    if (directionY == 1)
+                    Vector3 rayOrigin = new Vector3(rowOrigin.x + (verticalRaySpacing * j), rowOrigin.y, rowOrigin.z);
+                    if (showVerticalLimits && !disableAllRays)
                     {
-                        slopeAngle = slopeAngle == 180 ? slopeAngle = 0 : slopeAngle - 90;
+                        Debug.DrawLine(lastOrigin, rayOrigin, Color.blue);
                     }
-                    float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
-                    Raycast auxRay = new Raycast(hit, (hit.distance - skinWidth), vel, rayOrigin, true, slopeAngle, 0, Axis.Y, i, j, 0);
-                    collisions.verRaycastsY[i, j] = auxRay;
-                    if (auxRay.distance < collisions.closestVerRaycast.distance)
+                    lastOrigin = rayOrigin;
+                    rayOrigin += (Vector3.up * -directionY) * skinWidth;
+
+                    RaycastHit hit;
+                    if (showVerticalRays && !disableAllRays)
                     {
-                        collisions.closestVerRaycast = auxRay;
+                        Debug.DrawRay(rayOrigin, Vector3.up * directionY * rayLength, Color.red);
                     }
-                    CollisionState slopeType = CheckSlopeType(vel, auxRay);
-                    //if(collisions.lastCollSt == CollisionState.crossingPeak)Debug.Log("Checking for peak : Vertical collisions slopeType = " + slopeType);
-                    if ((slopeType == CollisionState.climbing || slopeType == CollisionState.descending) && !peak)
+
+                    if (Physics.Raycast(rayOrigin, Vector3.up * directionY, out hit, rayLength, collisionMask, QueryTriggerInteraction.Ignore)) // throw raycast here
                     {
-                        if (lastSlopeType == CollisionState.none)
+                        float slopeAngle = GetSlopeAngle(hit);
+                        //print("Vertical Hit");
+                        if (directionY == 1)
                         {
-                            lastSlopeType = slopeType;//solo puede ser climbing o descending
+                            slopeAngle = slopeAngle == 180 ? slopeAngle = 0 : slopeAngle - 90;
                         }
-                        else if (lastSlopeType != slopeType)//solo puede ser que uno sea climbing y otro descending, lo cual interpretamos como estar en un peak
+                        float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
+                        Raycast auxRay = new Raycast(hit, (hit.distance - skinWidth), vel, rayOrigin, true, slopeAngle, 0, Axis.Y, i, j, 0);
+                        collisions.verRaycastsY[i, j] = auxRay;
+                        if (auxRay.distance < collisions.closestVerRaycast.distance)
                         {
-                            peak = true;
-                            Debug.LogWarning("I'm on a peak");
+                            collisions.closestVerRaycast = auxRay;
                         }
-                    }
-                    //STORE ALL THE RAYCASTS
+                        CollisionState slopeType = CheckSlopeType(vel, auxRay);
+                        //if(collisions.lastCollSt == CollisionState.crossingPeak)Debug.Log("Checking for peak : Vertical collisions slopeType = " + slopeType);
+                        if ((slopeType == CollisionState.climbing || slopeType == CollisionState.descending) && !peak)
+                        {
+                            if (lastSlopeType == CollisionState.none)
+                            {
+                                lastSlopeType = slopeType;//solo puede ser climbing o descending
+                            }
+                            else if (lastSlopeType != slopeType)//solo puede ser que uno sea climbing y otro descending, lo cual interpretamos como estar en un peak
+                            {
+                                peak = true;
+                                Debug.LogWarning("I'm on a peak");
+                            }
+                        }
+                        //STORE ALL THE RAYCASTS
 
+                    }
                 }
             }
         }

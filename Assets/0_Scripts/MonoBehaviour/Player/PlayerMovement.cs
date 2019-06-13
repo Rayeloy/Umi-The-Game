@@ -125,8 +125,8 @@ public class PlayerMovement : MonoBehaviour
     public float airInitialAcc = 30;
     public float breakAcc = -30;
     public float airBreakAcc = -5;
-    public float hardSteerAcc = 60; 
-    public float airHardSteerAcc = 60;
+    public float hardSteerAcc = -60; 
+    public float airHardSteerAcc = -10;
     public float movingAcc = 2.0f;
     public float airMovingAcc = 0.5f;
     [Tooltip("Acceleration used when breaking from a boost.")]
@@ -301,8 +301,8 @@ public class PlayerMovement : MonoBehaviour
         lastWallAngle = 0;
         SetupInputsBuffer();
         myPlayerHook.myCameraBase = myCamera;
-        hardSteerAcc = Mathf.Clamp(hardSteerAcc,breakAcc,hardSteerAcc);
-        airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airBreakAcc, airHardSteerAcc);
+        hardSteerAcc = Mathf.Clamp(hardSteerAcc, hardSteerAcc, breakAcc);
+        airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airHardSteerAcc, airBreakAcc);
 
         //PLAYER MODEL
         myPlayerModel.SwitchTeam(team);
@@ -380,6 +380,7 @@ public class PlayerMovement : MonoBehaviour
         //    Debug.LogError("LANDING");
         //}
         //Debug.Log("Mis acciones son " + Actions);
+        Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6"));
         if (Actions.Start.WasPressed) gC.PauseGame(Actions);
 
         if ((controller.collisions.above || controller.collisions.below) && !hooked)
@@ -403,7 +404,7 @@ public class PlayerMovement : MonoBehaviour
 
         //Debug.Log("currentVel = " + currentVel + "; Time.deltaTime = " + Time.deltaTime + "; currentVel * Time.deltaTime = " + (currentVel * Time.deltaTime) + "; Time.fixedDeltaTime = " + Time.fixedDeltaTime);
 
-        //print("CurrentVel 3= " + currentVel.ToString("F6"));
+        print("CurrentVel 3= " + currentVel.ToString("F6"));
         controller.Move(currentVel * Time.deltaTime);
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();
@@ -412,7 +413,7 @@ public class PlayerMovement : MonoBehaviour
         myPlayerAnimation_01.KonoUpdate();
         myPlayerWeap.KonoUpdate();
         myPlayerHook.KonoUpdate();
-        //Debug.Log("CurrentSpeed End = " + currentSpeed);
+        Debug.Log("CurrentVel End = " + currentVel.ToString("F6") + "; Player position = " + transform.position.ToString("F6"));
     }
 
     public void KonoFixedUpdate()
@@ -572,8 +573,10 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    bool hardSteerStarted = false;
     void HorizontalMovement()
     {
+        float angleDiff = 0;
         float finalMovingAcc = 0;
         Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
         #region//------------------------------------------------ DECIDO TIPO DE MOVIMIENTO --------------------------------------------
@@ -599,8 +602,7 @@ public class PlayerMovement : MonoBehaviour
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
             CalculateMoveDir();//Movement direction
-            float angleDiff = Vector3.Angle(horizontalVel, currentMovDir);//hard Steer si > 90
-            Debug.Log("angleDiff = " + angleDiff);
+            angleDiff = Vector3.Angle(horizontalVel, currentMovDir);//hard Steer si > 90
             //ProcessHardSteer();
             if (!myPlayerCombat.aiming && Actions.R2.WasPressed)//Input.GetButtonDown(contName + "RB"))
             {
@@ -656,16 +658,19 @@ public class PlayerMovement : MonoBehaviour
             switch (moveSt)
             {
                 case MoveState.Moving:
-                    if (angleDiff > instantRotationMinAngle && Mathf.Sign(currentSpeed)==1)//hard Steer
+                    if (angleDiff > instantRotationMinAngle && Mathf.Sign(currentSpeed) == 1)//hard Steer
                     {
-                        Debug.LogError("Current speed: Moving: angleDiff > instantRotationMinAngle -> Calculate velNeg" + "; currentMovDir = " + currentMovDir.ToString("F6"));
-                        float angle = 180 - angleDiff;
-                        float velNeg = Mathf.Cos(angle * Mathf.Deg2Rad) * horizontalVel.magnitude;//cos(angle) = velNeg /horizontalVel.magnitude;
-                        currentSpeed = -velNeg;
+                        if (!hardSteerStarted)
+                        {
+                            hardSteerStarted = true;
+                            Debug.LogError("Current speed: Moving: angleDiff > instantRotationMinAngle -> Calculate velNeg" + "; currentMovDir = " + currentMovDir.ToString("F6"));
+                            float angle = 180 - angleDiff;
+                            float hardSteerInitialSpeed = Mathf.Cos(angle * Mathf.Deg2Rad) * horizontalVel.magnitude;//cos(angle) = velNeg /horizontalVel.magnitude;
+                            currentSpeed = hardSteerInitialSpeed;
+                        }
                     }
                     break;
                 case MoveState.NotMoving:
-                    if (currentSpeed < 0) currentSpeed = -currentSpeed;
                     break;
             }
             Debug.Log("CurrentSpeed 1.1 = " + currentSpeed);
@@ -675,10 +680,20 @@ public class PlayerMovement : MonoBehaviour
             {
                 currentSpeed = 0;
             }
+            if(moveSt==MoveState.Moving && Mathf.Sign(currentSpeed) < 0 && angleDiff > instantRotationMinAngle)
+            {
+                currentSpeed = -currentSpeed;
+                horizontalVel = currentMovDir * currentSpeed;
+                currentVel = new Vector3(horizontalVel.x,currentVel.y, horizontalVel.z);
+            }
             Debug.Log("CurrentSpeed 1.2 = " + currentSpeed);
             float maxSpeedClamp = stunned || noInput ? maxKnockbackSpeed : finalMaxMoveSpeed;
-            float minSpeedClamp = (lastJoystickSens > joystickSens && moveSt == MoveState.Moving) ? (joystickSens / 1) * currentMaxMoveSpeed : -maxSpeedClamp;
+            float minSpeedClamp = (lastJoystickSens > joystickSens && moveSt == MoveState.Moving) ? (joystickSens / 1) * currentMaxMoveSpeed : 0;
             currentSpeed = Mathf.Clamp(currentSpeed, minSpeedClamp, maxSpeedClamp);
+            if(hardSteerStarted && angleDiff<= instantRotationMinAngle)
+            {
+                hardSteerStarted = false;
+            }
         }
         #endregion
         #endregion
@@ -694,16 +709,17 @@ public class PlayerMovement : MonoBehaviour
             switch (moveSt)
             {
                 case MoveState.Moving: //MOVING WITH JOYSTICK
-                    float angleDiff = Vector3.Angle(horizontalVel, currentMovDir);
-                    Vector3 newDir = horizontalVel + currentMovDir * finalMovingAcc * Time.deltaTime;
-                    if (Mathf.Sign(currentSpeed) == 1)//hard Steer
+                    //angleDiff = Vector3.Angle(horizontalVel, currentMovDir);
+                    Vector3 newDir;
+                    if (angleDiff>instantRotationMinAngle)//hard Steer
                     {
-                        //Debug.LogWarning("Moving: angleDiff > instantRotationMinAngle");
-                        newDir = -newDir;
+                        Debug.LogWarning("Moving: angleDiff > instantRotationMinAngle");
+                        newDir = horizontalVel;
                     }
                     else
                     {
-                        //Debug.LogWarning("Moving: angleDiff <= instantRotationMinAngle");
+                        Debug.LogWarning("Moving: angleDiff <= instantRotationMinAngle");
+                        newDir = horizontalVel + currentMovDir * finalMovingAcc * Time.deltaTime;
                     }
                     horizontalVel = newDir.normalized * currentSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
@@ -764,8 +780,8 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         horVel = new Vector3(currentVel.x, 0, currentVel.z);
-        print("CurrentVel after processing= " + currentVel.ToString("F6") + "; horVel.magnitude = " + horVel.magnitude + "; currentMovDir = " + currentMovDir.ToString("F6"));
-        Debug.Log("CurrentSpeed 1.4 = " + currentSpeed);
+        print("CurrentVel after processing= " + currentVel.ToString("F6") + "; CurrentSpeed 1.4 = " + currentSpeed + "; horVel.magnitude = " 
+            + horVel.magnitude + "; currentMovDir = " + currentMovDir.ToString("F6"));
         #endregion
     }
 
@@ -1099,19 +1115,6 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region  DASH ---------------------------------------------
-    void WallBoost()
-    {
-        //CALCULATE JUMP DIR
-        Vector3 circleCenter = transform.position;
-        Vector3 circumfPoint = CalculateReflectPoint(1, controller.collisions.wallNormal, circleCenter);
-        Vector3 finalDir = (circumfPoint - circleCenter).normalized;
-        //Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
-
-        currentVel = finalDir * currentVel.magnitude;
-        currentSpeed = currentVel.magnitude;
-        boostDir = new Vector3(finalDir.x, 0, finalDir.z);
-        RotateCharacter(boostDir);
-    }
 
     void StartBoost()
     {
@@ -1223,6 +1226,20 @@ public class PlayerMovement : MonoBehaviour
         {
             boostCDStarted = false;
         }
+    }
+
+    void WallBoost()
+    {
+        //CALCULATE JUMP DIR
+        Vector3 circleCenter = transform.position;
+        Vector3 circumfPoint = CalculateReflectPoint(1, controller.collisions.wallNormal, circleCenter);
+        Vector3 finalDir = (circumfPoint - circleCenter).normalized;
+        Debug.LogWarning("WALL BOOST: FINAL DIR = " + finalDir.ToString("F4"));
+
+        currentVel = finalDir * currentVel.magnitude;
+        currentSpeed = currentVel.magnitude;
+        boostDir = new Vector3(finalDir.x, 0, finalDir.z);
+        RotateCharacter(boostDir);
     }
 
     #endregion
