@@ -1161,41 +1161,42 @@ public class Controller3D : MonoBehaviour
         Raycast auxClosestRay = collisions.closestHorRaycast;
         bool success = false;
         Raycast differentWallRay = new Raycast(new RaycastHit(), float.MaxValue, Vector3.zero, Vector3.zero);
+        Debug.LogWarning("WALL EDGES: START");
 
         #region --- Primera comprobacion (raycasts actuales) ---
-        for (int i = 0; i < collisions.horRaycastsX.GetLength(0); i++)
-        {
-            for (int j = 0; j < collisions.horRaycastsX.GetLength(1); j++)
-            {
-                //if(i==0 && j ==0) Debug.LogWarning("WALL EDGE: PRIMERA COMPROBACION START");
-                if (collisions.horRaycastsX[i, j].hit)
-                {
-                    CollisionState slopeType = CheckSlopeTypeWallEdges(vel, collisions.horRaycastsX[i, j]);
-                    if (slopeType == CollisionState.wall && AreAnglesDifferent(collisions.horRaycastsX[i, j].wallAngle, collisions.closestHorRaycast.wallAngle) &&
-                        collisions.horRaycastsX[i, j].distance < differentWallRay.distance)
-                    {
-                        differentWallRay.distance = collisions.horRaycastsX[i, j].distance;
-                        differentWallRay = collisions.horRaycastsX[i, j];
-                    }
-                }
-                if (collisions.horRaycastsZ[i, j].hit)
-                {
-                    CollisionState slopeType = CheckSlopeTypeWallEdges(vel, collisions.horRaycastsZ[i, j]);
-                    if (slopeType == CollisionState.wall && AreAnglesDifferent(collisions.horRaycastsZ[i, j].wallAngle, collisions.closestHorRaycast.wallAngle) &&
-                        collisions.horRaycastsZ[i, j].distance < differentWallRay.distance)
-                    {
-                        differentWallRay.distance = collisions.horRaycastsZ[i, j].distance;
-                        differentWallRay = collisions.horRaycastsZ[i, j];
-                    }
-                }
-            }
-        }
+        //for (int i = 0; i < collisions.horRaycastsX.GetLength(0); i++)
+        //{
+        //    for (int j = 0; j < collisions.horRaycastsX.GetLength(1); j++)
+        //    {
+        //        if(i==0 && j ==0) Debug.LogWarning("WALL EDGE: PRIMERA COMPROBACION START");
+        //        if (collisions.horRaycastsX[i, j].hit)
+        //        {
+        //            CollisionState slopeType = CheckSlopeTypeWallEdges(vel, collisions.horRaycastsX[i, j]);
+        //            if (slopeType == CollisionState.wall && AreAnglesDifferent(collisions.horRaycastsX[i, j].wallAngle, collisions.closestHorRaycast.wallAngle) &&
+        //                collisions.horRaycastsX[i, j].distance < differentWallRay.distance)
+        //            {
+        //                differentWallRay.distance = collisions.horRaycastsX[i, j].distance;
+        //                differentWallRay = collisions.horRaycastsX[i, j];
+        //            }
+        //        }
+        //        if (collisions.horRaycastsZ[i, j].hit)
+        //        {
+        //            CollisionState slopeType = CheckSlopeTypeWallEdges(vel, collisions.horRaycastsZ[i, j]);
+        //            if (slopeType == CollisionState.wall && AreAnglesDifferent(collisions.horRaycastsZ[i, j].wallAngle, collisions.closestHorRaycast.wallAngle) &&
+        //                collisions.horRaycastsZ[i, j].distance < differentWallRay.distance)
+        //            {
+        //                differentWallRay.distance = collisions.horRaycastsZ[i, j].distance;
+        //                differentWallRay = collisions.horRaycastsZ[i, j];
+        //            }
+        //        }
+        //    }
+        //}
         #endregion
 
         #region --- Segunda comprobacion / HIGH PRECISION (lanzando nuevos raycasts) ---
         if (!differentWallRay.hit)
         {
-            //Debug.LogWarning("WALL EDGE: SEGUNDA COMPROBACION START");
+            Debug.LogWarning("WALL EDGE: SEGUNDA COMPROBACION START");
             bool seikai = false;
             int column = collisions.closestHorRaycast.column;
             int row = collisions.closestHorRaycast.row;
@@ -1228,7 +1229,7 @@ public class Controller3D : MonoBehaviour
                         if (Physics.Raycast(localRayOrigin, horVel, out hit, raylength, collisionMask, QueryTriggerInteraction.Ignore))
                         {
                             float slopeAngle = GetSlopeAngle(hit);
-                            float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
+                            float wallAngle = SignedRelativeAngle(Vector3.forward, hit.normal); //Vector3.Angle(hit.normal, Vector3.forward);
                             Raycast auxRay = new Raycast(hit, (hit.distance - auxSkinWidth), vel, localRayOrigin, true, slopeAngle, wallAngle,
                                 auxAxis, row, column, horizontalRows, auxSkinWidth);
                             CollisionState slopeType = CheckSlopeTypeWallEdges(vel, auxRay);
@@ -1250,12 +1251,14 @@ public class Controller3D : MonoBehaviour
         if (differentWallRay.hit)//DOS TIPOS DE MURO ENCONTRADOS
         {
             #region --- Comprobar si convexo o cóncavo ---
-            //Debug.LogWarning("WALL EDGE: COMPROBACION CONCAVO/CONVEXO START");
+            Debug.LogWarning("WALL EDGE: COMPROBACION CONCAVO/CONVEXO START");
+            Debug.Log("WALL EDGE: Rayo 1 -> ("+collisions.closestHorRaycast.row+","+ collisions.closestHorRaycast.column + "), wallAngle = "+collisions.closestHorRaycast.wallAngle+
+                "; Rayo 2 -> ("+differentWallRay.row+","+differentWallRay.column+"), wallAngle = " +differentWallRay.wallAngle);
             // --- Comprobar que forman un ángulo convexo ---
             // -- Para ello primero comprobamos cual de los dos puntos es el del muro de nuestra izda y cual el de la dcha -- 
             // the vector that we want to measure an angle from
             Vector3 referenceForward = collisions.closestHorRaycast.ray.point - collisions.closestHorRaycast.origin;/* some vector that is not Vector3.up */
-            referenceForward.y = 0; referenceForward = referenceForward.normalized;
+            referenceForward.y = 0; referenceForward.Normalize();
             // the vector of interest 
             //Vector3 vector1 = collisions.closestHorRaycast.ray.point - coll.bounds.center;/* some vector that we're interested in */
             Vector3 vector2 = differentWallRay.ray.point - collisions.closestHorRaycast.origin;/* some vector that we're interested in */
@@ -1325,7 +1328,7 @@ public class Controller3D : MonoBehaviour
                 if (imaginaryWall.Raycast(ray, out enter))
                 {
                     float slopeAngle = GetSlopeAngle(planeNormal);
-                    float wallAngle = Vector3.Angle(planeNormal, Vector3.forward);
+                    float wallAngle = SignedRelativeAngle(Vector3.forward, planeNormal); ; Vector3.Angle(planeNormal, Vector3.forward);
                     float distance = (ray.GetPoint(enter) - origin).magnitude - auxSkinWidth;
                     auxClosestRay.ray.normal = planeNormal;
                     auxClosestRay.ray.point = ray.GetPoint(enter);
@@ -1672,7 +1675,7 @@ public class Controller3D : MonoBehaviour
         Debug.DrawLine(corner1, corner2, planeColor, 0.3f);
         Debug.DrawLine(corner2, corner3, planeColor, 0.3f);
         Debug.DrawLine(corner3, corner0, planeColor, 0.3f);
-        Debug.DrawRay(position, normal, Color.red, 0.3f);
+        Debug.DrawRay(position, normal, Color.blue, 0.3f);
     }
 
     void UpdateSafeBelow()
