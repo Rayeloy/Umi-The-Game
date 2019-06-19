@@ -318,14 +318,14 @@ public class Controller3D : MonoBehaviour
         // --- AXIS X & Z ---
         if (ray.axis == Axis.X || ray.axis == Axis.Z)
         {
-                if (climbVel.y > 0 && ray.slopeAngle <= maxClimbAngle && ray.slopeAngle > minClimbAngle)
-                {
-                    return CollisionState.climbing;
-                }
-                else
-                {
-                    return CollisionState.wall;
-                }
+            if (climbVel.y > 0 && ray.slopeAngle <= maxClimbAngle && ray.slopeAngle > minClimbAngle)
+            {
+                return CollisionState.climbing;
+            }
+            else
+            {
+                return CollisionState.wall;
+            }
         }
         else // --- AXIS Y ---
         {
@@ -476,7 +476,7 @@ public class Controller3D : MonoBehaviour
                         float wallAngle = Vector3.Angle(hit.normal, Vector3.forward);
                         if (hit.distance < collisions.closestHorRaycastSlide.distance && hit.transform.gameObject != collisions.horWall)
                         {
-                            collisions.closestHorRaycastSlide = new Raycast(hit, hit.distance, vel, rayOriginX, true,slopeAngle, wallAngle, Axis.X, i, j, 0);
+                            collisions.closestHorRaycastSlide = new Raycast(hit, hit.distance, vel, rayOriginX, true, slopeAngle, wallAngle, Axis.X, i, j, 0);
                         }
                     }
                 }
@@ -725,7 +725,7 @@ public class Controller3D : MonoBehaviour
                     if (Physics.Raycast(rayOriginX, horVel, out hit, corsbRayLength, collisionMask, QueryTriggerInteraction.Ignore))
                     {
                         float slopeAngle = GetSlopeAngle(hit);
-                        float wallAngle = SignedRelativeAngle(Vector3.forward,hit.normal);// Vector3.Angle(hit.normal, Vector3.forward);
+                        float wallAngle = SignedRelativeAngle(Vector3.forward, hit.normal);// Vector3.Angle(hit.normal, Vector3.forward);
                         Raycast auxRay = new Raycast(hit, (hit.distance - corsbSkinWidth), vel, rayOriginX, true, slopeAngle, wallAngle, Axis.X,
                             i, j, horizontalRows, corsbSkinWidth);
                         //WE STORE ALL THE RAYCASTS INFO
@@ -827,7 +827,7 @@ public class Controller3D : MonoBehaviour
                     {
                         float slopeAngle = GetSlopeAngle(hit);
                         float wallAngle = SignedRelativeAngle(Vector3.forward, hit.normal);// Vector3.Angle(hit.normal, Vector3.forward);
-                        Raycast auxRay = new Raycast(hit, (hit.distance - corsbSkinWidth), vel, rayOriginZ, true, slopeAngle, wallAngle, Axis.Z, 
+                        Raycast auxRay = new Raycast(hit, (hit.distance - corsbSkinWidth), vel, rayOriginZ, true, slopeAngle, wallAngle, Axis.Z,
                             i, j, horizontalRows, corsbSkinWidth);
                         //WE STORE ALL THE RAYCASTS INFO
                         collisions.horRaycastsZ[i, j] = auxRay;
@@ -949,20 +949,20 @@ public class Controller3D : MonoBehaviour
                     #endregion
                     if (validWall)
                     {
-                        float angleBetweenWalls = SignedRelativeAngle(collisions.oldWallNormal,collisions.closestHorRaycast.ray.normal);
+                        float angleBetweenWalls = SignedRelativeAngle(collisions.oldWallNormal, collisions.closestHorRaycast.ray.normal);
                         int clockWise = 0;
                         if (angleBetweenWalls > 0)
                         {
                             clockWise = 1;
                         }
-                        else if(angleBetweenWalls<0)
+                        else if (angleBetweenWalls < 0)
                         {
                             clockWise = -1;
                         }
-    //                    Debug.LogWarning("WALL: old wall angle = " + collisions.wallAngleOld + "; new wall angle = " + collisions.closestHorRaycast.wallAngle +
-    //"; oldSlideSt = " + collisions.oldSlideSt+ "; clockWise = " + clockWise);
+                        //                    Debug.LogWarning("WALL: old wall angle = " + collisions.wallAngleOld + "; new wall angle = " + collisions.closestHorRaycast.wallAngle +
+                        //"; oldSlideSt = " + collisions.oldSlideSt+ "; clockWise = " + clockWise);
                         if (collisions.wallAngleOld == -500 || (AreAnglesDifferent(collisions.wallAngleOld, collisions.closestHorRaycast.wallAngle) &&
-                            ((collisions.oldSlideSt==SlideState.right && clockWise==1)||(collisions.oldSlideSt == SlideState.left && clockWise == -1))))//NEW WALL
+                            ((collisions.oldSlideSt == SlideState.right && clockWise == 1) || (collisions.oldSlideSt == SlideState.left && clockWise == -1))))//NEW WALL
                         {
                             Debug.LogError("WALL: APPROACHING NEW WALL: " + "distance = " + collisions.closestHorRaycast.distance);
                             if (collisions.closestHorRaycastClimb.hit)//CLIMBING AND FOUND A WALL
@@ -989,8 +989,9 @@ public class Controller3D : MonoBehaviour
                                 Vector3 moveOutVel = horVel.normalized * collisions.closestHorRaycast.distance;
                                 transform.Translate(moveOutVel, Space.World);
                             }
-                                //Debug.LogWarning("WALL SLIDE: START");
-                                WallSlide(ref vel, collisions.closestHorRaycast);
+                            //Debug.LogWarning("WALL SLIDE: START");
+                            WallSlide(ref vel, collisions.closestHorRaycast);
+                            //GUARDAMOS PARÁMETROS DE COLLISIONS
                             collisions.horCollisionsPoint = collisions.closestHorRaycast.ray.point;
                             collisions.wallNormal = collisions.closestHorRaycast.ray.normal;
                             collisions.horWall = collisions.closestHorRaycast.ray.transform.gameObject;
@@ -1005,7 +1006,7 @@ public class Controller3D : MonoBehaviour
                                     collisions.foward = directionZ == 1;
                                     break;
                             }
-                            //TO TEST: Esto debería ser en un rayo en altura de los pies(done)
+                            //TO TEST: Esto debería ser en un rayo a la altura de los pies(done)
                             RaycastHit hitAux;
                             Vector3 origin = collisions.closestHorRaycast.origin;
                             origin.y = collisions.horRaycastsX[0, 0].origin.y;
@@ -1213,7 +1214,7 @@ public class Controller3D : MonoBehaviour
                     Vector3 rayOrigin = collisions.closestHorRaycast.origin + (horVel * collisions.closestHorRaycast.skinWidth);
                     float raysInBetween = 20f;
                     float raySpacing = horizontalRaySpacing / (raysInBetween - 1);
-                    for (int j = 1; j < raysInBetween-1 && !seikai; j++)
+                    for (int j = 1; j < raysInBetween - 1 && !seikai; j++)
                     {
                         Vector3 localRayOrigin = rayOrigin;
                         localRayOrigin += auxAxis == Axis.X ? Vector3.back * sentido * raySpacing * j : Vector3.right * sentido * raySpacing * j;
@@ -1252,8 +1253,8 @@ public class Controller3D : MonoBehaviour
         {
             #region --- Comprobar si convexo o cóncavo ---
             Debug.LogWarning("WALL EDGE: COMPROBACION CONCAVO/CONVEXO START");
-            Debug.Log("WALL EDGE: Rayo 1 -> ("+collisions.closestHorRaycast.row+","+ collisions.closestHorRaycast.column + "), wallAngle = "+collisions.closestHorRaycast.wallAngle+
-                "; Rayo 2 -> ("+differentWallRay.row+","+differentWallRay.column+"), wallAngle = " +differentWallRay.wallAngle);
+            Debug.Log("WALL EDGE: Rayo 1 -> (" + collisions.closestHorRaycast.row + "," + collisions.closestHorRaycast.column + "), wallAngle = " + collisions.closestHorRaycast.wallAngle +
+                "; Rayo 2 -> (" + differentWallRay.row + "," + differentWallRay.column + "), wallAngle = " + differentWallRay.wallAngle);
             // --- Comprobar que forman un ángulo convexo ---
             // -- Para ello primero comprobamos cual de los dos puntos es el del muro de nuestra izda y cual el de la dcha -- 
             // the vector that we want to measure an angle from
@@ -1297,7 +1298,7 @@ public class Controller3D : MonoBehaviour
             //Debug.LogWarning("WALL EDGE: COMPROBACION CONCAVO/CONVEXO -> cornerAngle = "+ cornerAngle);
             #endregion
 
-            if (cornerAngle >= 0 && Mathf.Abs(cornerAngle)!=180)// -- ES UNA ESQUINA CONVEXA -- 
+            if (cornerAngle >= 0 && Mathf.Abs(cornerAngle) != 180)// -- ES UNA ESQUINA CONVEXA -- 
             {
                 #region --- Crear el plano ---
                 Debug.LogWarning("WALL EDGE: Estamos en una esquina convexa!");
@@ -1394,25 +1395,25 @@ public class Controller3D : MonoBehaviour
     void NewVerticalCollisions2(ref Vector3 vel)
     {
         #region Raycasts
-            collisions.verRaycastsY = new Raycast[verticalRows, verticalRaysPerRow];
-            // ---------------------- 3D "Ortoedro" -------------------
-            float directionY = Mathf.Sign(vel.y);
-            float rayLength = Mathf.Abs(vel.y) + skinWidth;
-            if (collisions.lastFinishedClimbing || collisions.lastCollSt == CollisionState.crossingPeak)
-            {
-                rayLength += rayExtraLengthPeak;
-            }
-            Vector3 rowsOrigin = directionY == -1 ? raycastOrigins.BottomLFCornerReal : raycastOrigins.TopLFCornerReal;
-            Vector3 rowOrigin = rowsOrigin;
-            Vector3 wallNormal = new Vector3(collisions.wallNormal.x, 0, collisions.wallNormal.z).normalized;
-            //SEPARATION FROM WALL IN CASE WE ARE STANDING ON FLOOR AND COLLIDING WITH WALL
-            if (collisions.floorAngle >= 0 && collisions.floorAngle < 0.2f)
-            {
-                rowOrigin += wallNormal * 0.01f;
-            }
-            //Check for peak under
-            bool peak = false;
-            CollisionState lastSlopeType = CollisionState.none;
+        collisions.verRaycastsY = new Raycast[verticalRows, verticalRaysPerRow];
+        // ---------------------- 3D "Ortoedro" -------------------
+        float directionY = Mathf.Sign(vel.y);
+        float rayLength = Mathf.Abs(vel.y) + skinWidth;
+        if (collisions.lastFinishedClimbing || collisions.lastCollSt == CollisionState.crossingPeak)
+        {
+            rayLength += rayExtraLengthPeak;
+        }
+        Vector3 rowsOrigin = directionY == -1 ? raycastOrigins.BottomLFCornerReal : raycastOrigins.TopLFCornerReal;
+        Vector3 rowOrigin = rowsOrigin;
+        Vector3 wallNormal = new Vector3(collisions.wallNormal.x, 0, collisions.wallNormal.z).normalized;
+        //SEPARATION FROM WALL IN CASE WE ARE STANDING ON FLOOR AND COLLIDING WITH WALL
+        if (collisions.floorAngle >= 0 && collisions.floorAngle < 0.2f)
+        {
+            rowOrigin += wallNormal * 0.01f;
+        }
+        //Check for peak under
+        bool peak = false;
+        CollisionState lastSlopeType = CollisionState.none;
 
         //print("----------NEW SET OF RAYS------------");
         if (vel.y != 0)
@@ -1668,7 +1669,7 @@ public class Controller3D : MonoBehaviour
         v3 = q * v3;
         Vector3 corner1 = position + v3;
         Vector3 corner3 = position - v3;
-                                                      
+
         Debug.DrawLine(corner0, corner2, planeColor, 0.3f);
         Debug.DrawLine(corner1, corner3, planeColor, 0.3f);
         Debug.DrawLine(corner0, corner1, planeColor, 0.3f);
