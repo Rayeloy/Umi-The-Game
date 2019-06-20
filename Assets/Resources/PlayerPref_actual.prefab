@@ -527,7 +527,7 @@ MonoBehaviour:
   cameraFollow: {fileID: 2847219716704171441}
   rotateObj: {fileID: 2847339013141467789}
   hasCharacterRotation: 1
-  rotationSpeed: 800
+  rotationSpeed: 550
   instantRotationMinAngle: 110
   maxFallSpeed: 40
   maxMoveSpeed: 10
@@ -652,12 +652,14 @@ MonoBehaviour:
   verticalRaysPerRow: 20
   showHorizontalRays: 1
   showHorizontalLimits: 1
-  showWallRays: 0
+  showWallRays: 1
   showWallLimits: 0
   showWallEdgeRays: 1
-  horizontalRows: 20
-  horizontalRaysPerRow: 20
+  horizontalRows: 15
+  horizontalRaysPerRow: 15
   maxHeightToClimbStep: 0.3
+  wallSlideRows: 8
+  wallSlideRaysPerRow: 5
   corsbOn: 1
   corsbBorderPercent: 25
   showWaterRays: 0

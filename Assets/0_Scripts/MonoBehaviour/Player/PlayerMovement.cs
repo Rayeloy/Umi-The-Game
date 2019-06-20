@@ -380,7 +380,7 @@ public class PlayerMovement : MonoBehaviour
         //    Debug.LogError("LANDING");
         //}
         //Debug.Log("Mis acciones son " + Actions);
-        Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6"));
+        //Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6"));
         if (Actions.Start.WasPressed) gC.PauseGame(Actions);
 
         if ((controller.collisions.above || controller.collisions.below) && !hooked)
@@ -404,7 +404,7 @@ public class PlayerMovement : MonoBehaviour
 
         //Debug.Log("currentVel = " + currentVel + "; Time.deltaTime = " + Time.deltaTime + "; currentVel * Time.deltaTime = " + (currentVel * Time.deltaTime) + "; Time.fixedDeltaTime = " + Time.fixedDeltaTime);
 
-        print("CurrentVel 3= " + currentVel.ToString("F6"));
+        //print("CurrentVel 3= " + currentVel.ToString("F6"));
         controller.Move(currentVel * Time.deltaTime);
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();
@@ -413,7 +413,7 @@ public class PlayerMovement : MonoBehaviour
         myPlayerAnimation_01.KonoUpdate();
         myPlayerWeap.KonoUpdate();
         myPlayerHook.KonoUpdate();
-        Debug.Log("CurrentVel End = " + currentVel.ToString("F6") + "; Player position = " + transform.position.ToString("F6"));
+        //Debug.Log("CurrentVel End = " + currentVel.ToString("F6") + "; Player position = " + transform.position.ToString("F6"));
     }
 
     public void KonoFixedUpdate()
@@ -673,7 +673,7 @@ public class PlayerMovement : MonoBehaviour
                 case MoveState.NotMoving:
                     break;
             }
-            Debug.Log("CurrentSpeed 1.1 = " + currentSpeed);
+            //Debug.Log("CurrentSpeed 1.1 = " + currentSpeed);
             float currentSpeedB4 = currentSpeed;
             currentSpeed = currentSpeed + finalAcc * Time.deltaTime;
             if (moveSt == MoveState.NotMoving && Mathf.Sign(currentSpeedB4) != Mathf.Sign(currentSpeed))
@@ -686,7 +686,7 @@ public class PlayerMovement : MonoBehaviour
                 horizontalVel = currentMovDir * currentSpeed;
                 currentVel = new Vector3(horizontalVel.x,currentVel.y, horizontalVel.z);
             }
-            Debug.Log("CurrentSpeed 1.2 = " + currentSpeed);
+            //Debug.Log("CurrentSpeed 1.2 = " + currentSpeed);
             float maxSpeedClamp = stunned || noInput ? maxKnockbackSpeed : finalMaxMoveSpeed;
             float minSpeedClamp = (lastJoystickSens > joystickSens && moveSt == MoveState.Moving) ? (joystickSens / 1) * currentMaxMoveSpeed : 0;
             currentSpeed = Mathf.Clamp(currentSpeed, minSpeedClamp, maxSpeedClamp);
@@ -699,9 +699,9 @@ public class PlayerMovement : MonoBehaviour
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
         Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
-        print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed 1.3 = " +
-            currentSpeed + "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + controller.collisions.below
-            + "; horVel.magnitude = " + horVel.magnitude);
+        //print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed 1.3 = " +
+        //    currentSpeed + "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + controller.collisions.below
+        //    + "; horVel.magnitude = " + horVel.magnitude);
         //print("CurrentVel 1.3= " + currentVel.ToString("F6")+ "MoveState = " + moveSt);
         if (jumpSt != JumpState.wallJumping)
         {
@@ -713,12 +713,12 @@ public class PlayerMovement : MonoBehaviour
                     Vector3 newDir;
                     if (angleDiff>instantRotationMinAngle)//hard Steer
                     {
-                        Debug.LogWarning("Moving: angleDiff > instantRotationMinAngle");
+                        //Debug.LogWarning("Moving: angleDiff > instantRotationMinAngle");
                         newDir = horizontalVel;
                     }
                     else
                     {
-                        Debug.LogWarning("Moving: angleDiff <= instantRotationMinAngle");
+                        //Debug.LogWarning("Moving: angleDiff <= instantRotationMinAngle");
                         newDir = horizontalVel + currentMovDir * finalMovingAcc * Time.deltaTime;
                     }
                     horizontalVel = newDir.normalized * currentSpeed;
@@ -780,8 +780,8 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         horVel = new Vector3(currentVel.x, 0, currentVel.z);
-        print("CurrentVel after processing= " + currentVel.ToString("F6") + "; CurrentSpeed 1.4 = " + currentSpeed + "; horVel.magnitude = " 
-            + horVel.magnitude + "; currentMovDir = " + currentMovDir.ToString("F6"));
+        //print("CurrentVel after processing= " + currentVel.ToString("F6") + "; CurrentSpeed 1.4 = " + currentSpeed + "; horVel.magnitude = " 
+        //    + horVel.magnitude + "; currentMovDir = " + currentMovDir.ToString("F6"));
         #endregion
     }
 
