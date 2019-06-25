@@ -13,8 +13,8 @@ public class Demo_MainMenu : MonoBehaviour
     public float deadzone;
 
     //Temporizador
-    float timeToStart = 2;
-    float maxTimeLeft = 3;
+    float timeToStart = 1.7f;
+    float maxTimeLeft = 2.5f;
     float timeLeft;
     
     bool timer1 = false;
@@ -31,6 +31,16 @@ public class Demo_MainMenu : MonoBehaviour
     bool arrow = false;
     public GameObject leftArrow;
     public GameObject rightArrow;
+
+    public GameObject leftarrow1;
+    public GameObject leftarrow2;
+    public GameObject leftarrow3;
+    public GameObject leftarrow4;
+
+    public GameObject rightarrow1;
+    public GameObject rightarrow2;
+    public GameObject rightarrow3;
+    public GameObject rightarrow4;
 
     bool exit1 = false;
     public GameObject askToGo;
@@ -281,9 +291,59 @@ public class Demo_MainMenu : MonoBehaviour
 
     void Flechas() //Falta la animacion de aparecer
     {
+        if (scene == 1)
+        {
+            leftarrow1.SetActive(true);
+            leftarrow2.SetActive(false);
+            leftarrow3.SetActive(false);
+            leftarrow4.SetActive(false);
+
+            rightarrow1.SetActive(true);
+            rightarrow2.SetActive(false);
+            rightarrow3.SetActive(false);
+            rightarrow4.SetActive(false);
+        }
+        else if (scene == 2)
+        {
+            leftarrow1.SetActive(false);
+            leftarrow2.SetActive(true);
+            leftarrow3.SetActive(false);
+            leftarrow4.SetActive(false);
+
+            rightarrow1.SetActive(false);
+            rightarrow2.SetActive(true);
+            rightarrow3.SetActive(false);
+            rightarrow4.SetActive(false);
+        }
+        else if (scene == 3)
+        {
+            leftarrow1.SetActive(false);
+            leftarrow2.SetActive(false);
+            leftarrow3.SetActive(true);
+            leftarrow4.SetActive(false);
+
+            rightarrow1.SetActive(false);
+            rightarrow2.SetActive(false);
+            rightarrow3.SetActive(true);
+            rightarrow4.SetActive(false);
+        }
+        else if (scene == 4)
+        {
+            leftarrow1.SetActive(false);
+            leftarrow2.SetActive(false);
+            leftarrow3.SetActive(false);
+            leftarrow4.SetActive(true);
+
+            rightarrow1.SetActive(false);
+            rightarrow2.SetActive(false);
+            rightarrow3.SetActive(false);
+            rightarrow4.SetActive(true);
+        }
+
         leftArrow.SetActive(true);
         rightArrow.SetActive(true);
-        Debug.LogWarning("flechas a true");
+
+
         arrow = true;
     }
 
