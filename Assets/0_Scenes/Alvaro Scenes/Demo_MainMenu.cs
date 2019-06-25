@@ -13,8 +13,9 @@ public class Demo_MainMenu : MonoBehaviour
     public float deadzone;
 
     //Temporizador
-    float timeToStart = 3;
-    float timeLeft = 1;
+    float timeToStart = 2;
+    float maxTimeLeft = 3;
+    float timeLeft;
     
     bool timer1 = false;
     bool timer2 = false;
@@ -43,34 +44,44 @@ public class Demo_MainMenu : MonoBehaviour
     private void Awake()
     {
         SelectScene();
+        timeLeft = maxTimeLeft;
     }
 
     private void Update()
     {
-        if (timer1)
+
+        Debug.Log(arrow);
+
+
+        if (timer1) //Tiempos para los logos de inicio.
         {
-                timer1 = false;
-                timeToStart -= Time.deltaTime;
+            
+            timeToStart -= Time.deltaTime;
                 if (timeToStart < 0)
                 {
-                    Intro();
-                }
+                timer1 = false;
+
+                Intro();
+                
+            }
         }
 
-        if ((Input.GetKeyDown(KeyCode.Escape) || GameInfo.instance.myControls.B.WasPressed) && scene != 4)
+        if ((Input.GetKeyDown(KeyCode.Escape) || GameInfo.instance.myControls.B.WasPressed) && scene != 3)
         {            
-            scene = 4;
+            scene = 3;
             SelectScene();
-        }
+        } //Ventana de salir.
 
-        
         if ((Input.GetKeyDown(KeyCode.Space) || (Input.GetKeyDown(KeyCode.Return)) || GameInfo.instance.myControls.A.WasPressed) && exit1 == false)
         {
             BanishArrow();
 
+            //Añadir tiempos de transición entre la selección de escena y la pantalla de carga.
+
             if (scene == 0)
             {
                 timer1 = true;
+                //scene++;
             }
             else if (scene == 1)
             {
@@ -78,13 +89,13 @@ public class Demo_MainMenu : MonoBehaviour
             }
             else if (scene == 2)
             {
-                SceneManager.LoadScene("Capture The Whale");
+                SceneManager.LoadScene("TeamSetup");
             }
-            else if (scene == 3)
+            else if (scene == 4)
             {
                 SceneManager.LoadScene("Tutorial_v2");
             }
-            else if (scene == 4)
+            else if (scene == 3)
             {
                 exit1 = true;
                 {
@@ -112,14 +123,14 @@ public class Demo_MainMenu : MonoBehaviour
                     Application.Quit();
                 }
             }
-        }
+        } //Seleccionar Escena
 
         if (arrow)
         {
-            if (Input.GetKeyDown(KeyCode.RightArrow) || GameInfo.instance.myControls.LeftJoystick.X > deadzone)
+            if (Input.GetKeyDown(KeyCode.LeftArrow) || GameInfo.instance.myControls.LeftJoystick.X < -deadzone)
             {
                 //Animar Flecha Derecha
-                BanishArrow();
+                //BanishArrow();
                 if (scene >= 0 && scene < 4)
                 {
                     scene ++;
@@ -131,11 +142,14 @@ public class Demo_MainMenu : MonoBehaviour
                     SelectScene();
                 }
             }
-            if (Input.GetKeyDown(KeyCode.LeftArrow) || GameInfo.instance.myControls.LeftJoystick.X < deadzone)
+            if (Input.GetKeyDown(KeyCode.RightArrow) || GameInfo.instance.myControls.LeftJoystick.X > deadzone)
             {
                 //Animar Flecha Izquierda
-                BanishArrow();
-                if (scene >= 1 && scene <= 4)
+                //Debug.LogWarning("flechas a false");
+                //arrow = false;
+                //BanishArrow();
+
+                if (scene > 1 && scene <= 4)
                 {
                     scene --;
                     SelectScene();
@@ -150,9 +164,12 @@ public class Demo_MainMenu : MonoBehaviour
 
         if (timer2){
             timeLeft -= Time.deltaTime;
-            if (timeLeft < 0)
+            if (timeLeft <= 0)
             {
-                Flechas();
+                if (arrow == false)
+                {
+                    Flechas();
+                }
                 timer2 = false;
             }
         }
@@ -162,13 +179,15 @@ public class Demo_MainMenu : MonoBehaviour
     {
         if (umilogo == false)
         {
+
             umiLogo.SetActive(true);
             play.SetActive(true);
             umilogo = true;
         }
         else if (umilogo == true)
-        {  
+        {
             //Fade Out
+
             umiLogo.SetActive(false);
             play.SetActive(false);
             scene = 1;
@@ -182,7 +201,22 @@ public class Demo_MainMenu : MonoBehaviour
 
         switch (scene)
         {
+
             case 4:
+                /*Tutorial*/
+                //Camera Setting
+                c_Exit.SetActive(false);
+                c_Tuto.SetActive(true);
+                c_Map.SetActive(false);
+                c_Hub.SetActive(false);
+                c_Home.SetActive(false);
+
+                //Interface Setup
+                //timer2 = true;
+                BanishArrow();
+                break;
+
+            case 3:
                 /*Exit*/
 
                 //Camera Setting
@@ -193,20 +227,8 @@ public class Demo_MainMenu : MonoBehaviour
                 c_Home.SetActive(false);
 
                 //Interface Setup
-                timer2 = true;
-                break;
-
-            case 3:
-                /*Tutorial*/
-                //Camera Setting
-                c_Exit.SetActive(false);
-                c_Tuto.SetActive(true);
-                c_Map.SetActive(false);
-                c_Hub.SetActive(false);
-                c_Home.SetActive(false);
-
-                //Interface Setup
-                timer2 = true;
+                //timer2 = true;
+                BanishArrow();
                 break;
 
             case 2:
@@ -219,7 +241,8 @@ public class Demo_MainMenu : MonoBehaviour
                 c_Home.SetActive(false);
 
                 //Interface Setup
-                timer2 = true;
+                //timer2 = true;
+                BanishArrow();
                 break;
 
             case 1:
@@ -233,18 +256,20 @@ public class Demo_MainMenu : MonoBehaviour
                 c_Home.SetActive(false);
 
                 //Interface Setup
-                timer2 = true;
+                //timer2 = true;
+                BanishArrow();
                 break;
 
             default:
                 /*Menu*/
 
                 //Camera Setting
+                c_Home.SetActive(true);
                 c_Exit.SetActive(false);
                 c_Tuto.SetActive(false);
                 c_Map.SetActive(false);
                 c_Hub.SetActive(false);
-                c_Home.SetActive(true);
+                
 
                 //Interface Setup
                 timer1 = true;
@@ -258,23 +283,23 @@ public class Demo_MainMenu : MonoBehaviour
     {
         leftArrow.SetActive(true);
         rightArrow.SetActive(true);
-
+        Debug.LogWarning("flechas a true");
         arrow = true;
     }
 
     void BanishArrow()
     {
+        arrow = false;
         //Timer
         //animación de desaparecer
-        arrow = false;
+        leftArrow.SetActive(false);
+        rightArrow.SetActive(false);
+        Debug.LogWarning("banisheado");
+        timeLeft = maxTimeLeft;
+        timer2 = true;
     }
 
-
-
-
     /*
-
-     * 0.3 Cambio de cámara, asciende lentamente mientras se ven las olas. Termina con un plano principal del Hub, que se encuentra en la parte derecha.
      * 
      * 1.0 La flecha de la dirección señalada hace una animación de hacerse más grande (Efecto click) mientras que la otra desaparece.
      * 
