@@ -406,6 +406,7 @@ public class PlayerMovement : MonoBehaviour
 
         //print("CurrentVel 3= " + currentVel.ToString("F6"));
         controller.Move(currentVel * Time.deltaTime);
+        //GetComponent<Rigidbody>().velocity = currentVel;
         myPlayerCombat.KonoUpdate();
         controller.collisions.ResetAround();
 
@@ -663,7 +664,7 @@ public class PlayerMovement : MonoBehaviour
                         if (!hardSteerStarted)
                         {
                             hardSteerStarted = true;
-                            Debug.LogError("Current speed: Moving: angleDiff > instantRotationMinAngle -> Calculate velNeg" + "; currentMovDir = " + currentMovDir.ToString("F6"));
+                            //Debug.Log("Current speed: Moving: angleDiff > instantRotationMinAngle -> Calculate velNeg" + "; currentMovDir = " + currentMovDir.ToString("F6"));
                             float angle = 180 - angleDiff;
                             float hardSteerInitialSpeed = Mathf.Cos(angle * Mathf.Deg2Rad) * horizontalVel.magnitude;//cos(angle) = velNeg /horizontalVel.magnitude;
                             currentSpeed = hardSteerInitialSpeed;
@@ -784,53 +785,6 @@ public class PlayerMovement : MonoBehaviour
         //    + horVel.magnitude + "; currentMovDir = " + currentMovDir.ToString("F6"));
         #endregion
     }
-
-    //void StartHardSteer()
-    //{
-    //    if (!hardSteer && controller.collisions.below)
-    //    {
-    //        Debug.LogError("START HARD STEER");
-    //        hardSteer = true;
-    //        currentSpeed = -currentSpeed;
-    //    }
-    //}
-
-    //void ProcessHardSteer()
-    //{
-    //    if (hardSteer)
-    //    {
-    //        if (currentSpeed >= 0 || moveSt != MoveState.Moving || noInput)
-    //        {
-    //            StopHardSteer();
-    //        }
-    //    }
-    //    else
-    //    {
-    //        Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
-    //        float rotationDiffAfterLanding = Vector3.Angle(horVel, currentMovDir);
-    //        if (moveSt == MoveState.Moving && controller.collisions.below && !controller.collisions.lastBelow && rotationDiffAfterLanding > instantRotationMinAngle)
-    //        {
-    //            Debug.LogWarning("Character Rotation 4.1.0");
-    //            StartHardSteer();
-    //        }
-    //    }
-    //}
-
-    //void StopHardSteer()
-    //{
-    //    if (hardSteer)
-    //    {
-    //        Debug.LogError("STOP HARD STEER");
-    //        hardSteer = false;
-    //        if (currentSpeed < 0)
-    //        {
-    //            currentSpeed = -currentSpeed;
-    //            //Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
-    //            //horVel = -horVel;
-    //            //currentVel = new Vector3(horVel.x, currentVel.y, horVel.z);
-    //        }
-    //    }
-    //}
 
     void VerticalMovement()
     {
@@ -976,16 +930,18 @@ public class PlayerMovement : MonoBehaviour
     /// <returns></returns>
     bool StartWallJump()
     {
-        Debug.LogWarning("Check Wall jump");
+        Debug.LogWarning("Check Wall jump: wall real normal = "+ controller.collisions.closestHorRaycast.slopeAngle);
         bool result = false;
-        if (!controller.collisions.below && !inWater && jumpedOutOfWater && controller.collisions.collisionHorizontal &&
+        float slopeAngle = controller.collisions.closestHorRaycast.slopeAngle;
+        bool goodWallAngle = !(slopeAngle >= 100 && slopeAngle <=180);
+        if (!controller.collisions.below && !inWater && jumpedOutOfWater && controller.collisions.collisionHorizontal  && goodWallAngle &&
             (!firstWallJumpDone || lastWallAngle != controller.collisions.wallAngle || (lastWallAngle == controller.collisions.wallAngle &&
             lastWall != controller.collisions.horWall)))
         {
             wallJumpCurrentWall = controller.collisions.horWall;
             if (wallJumpCurrentWall.GetComponent<StageScript>() == null || wallJumpCurrentWall.GetComponent<StageScript>().wallJumpable)
             {
-                Debug.LogWarning("Wall jumping start");
+                Debug.Log("Wall jumping start");
                 //PARA ORTU: PlayerAnimation_01.startJump = true;
                 jumpSt = JumpState.wallJumping;
                 result = true;
@@ -998,13 +954,13 @@ public class PlayerMovement : MonoBehaviour
                 wallNormal.y = 0;
                 wallJumpCurrentWallAngle = controller.collisions.wallAngle;
                 wallJumpRaycastAxis = controller.collisions.closestHorRaycast.axis;
-                Debug.Log("WALL JUMP RAY HEIGHT PERCENTAGE : " + controller.collisions.closestHorRaycast.rayHeightPercentage + "%; wall = " + wallJumpCurrentWall.name);
+                //Debug.Log("WALL JUMP RAY HEIGHT PERCENTAGE : " + controller.collisions.closestHorRaycast.rayHeightPercentage + "%; wall = " + wallJumpCurrentWall.name);
             }
 
         }
         else
         {
-            Debug.LogWarning("Couldn't wall jump because:  !controller.collisions.below (" + !controller.collisions.below + ") && !inWater(" + !inWater + ") &&" +
+            Debug.Log("Couldn't wall jump because:  !controller.collisions.below (" + !controller.collisions.below + ") && !inWater(" + !inWater + ") &&" +
                 " jumpedOutOfWater(" + jumpedOutOfWater + ") && controller.collisions.collisionHorizontal(" + controller.collisions.collisionHorizontal + ") && " +
                 "(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != controller.collisions.wallAngle (" + (lastWallAngle != controller.collisions.wallAngle) + ") || " +
                 "(lastWallAngle == controller.collisions.wallAngle (" + (lastWallAngle == controller.collisions.wallAngle) + ")&& " +
@@ -1048,8 +1004,8 @@ public class PlayerMovement : MonoBehaviour
                 for (int j = 0; j < wallJumpCheckRaysColumns && !success; j++)
                 {
                     Vector3 rayOrigin = rowOrigin + paralelToWall * wallJumpCheckRaysColumnsSpacing * j;
-                    Debug.Log("WallJump: Ray[" + i + "," + j + "] with origin = " + rayOrigin.ToString("F4") + "; rayLength =" + rayLength);
-                    Debug.DrawRay(rayOrigin, dir * rayLength, Color.blue, 3);
+                    //Debug.Log("WallJump: Ray[" + i + "," + j + "] with origin = " + rayOrigin.ToString("F4") + "; rayLength =" + rayLength);
+                    //Debug.DrawRay(rayOrigin, dir * rayLength, Color.blue, 3);
 
                     if (Physics.Raycast(rayOrigin, dir, out hit, rayLength, auxLM, QueryTriggerInteraction.Ignore))
                     {
