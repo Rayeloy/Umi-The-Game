@@ -2056,3 +2056,77 @@ void VerticalCollisions(ref Vector3 vel)
     //    }
     //    return success;
     //}
+
+
+	#region wallVectors method (deprecated)
+            //Debug.Log("WALL EDGE ALL: closestHorRaycast -> (" + closestHorRaycast.row + "," + closestHorRaycast.column + "), wallAngle = " + closestHorRaycast.wallAngle +
+            //    "; differentWallRay -> (" + differentWallRay.row + "," + differentWallRay.column + "), wallAngle = " + differentWallRay.wallAngle);
+
+            // --- Comprobar que forman un ángulo convexo ---
+            // -- Para ello primero comprobamos cual de los dos puntos es el del muro de nuestra izda y cual el de la dcha -- 
+            // the vector that we want to measure an angle from
+            //Vector3 referenceForward = (closestHorRaycast.ray.point - closestHorRaycast.origin).normalized;/* some vector that is not Vector3.up */
+            ////referenceForward.y = 0;//TO TEST: I don't know if this is needed
+            //// the vector of interest 
+            //Vector3 vector2 = (differentWallRay.ray.point - closestHorRaycast.origin).normalized;/* some vector that we're interested in */
+            //                                                                                     //vector1.y = vector2.y = 0;vector1 = vector1.normalized; vector2 = vector2.normalized;
+            //                                                                                     //vector2.y = 0;
+            //if (!disableAllRays && showWallEdgeRays)
+            //{
+            //    Debug.DrawRay(closestHorRaycast.origin, referenceForward * 1f, Color.yellow);
+            //    Debug.DrawRay(closestHorRaycast.origin, vector2 * 1f, Color.black);
+            //}
+            //Debug.Log("FOUND = " + found);
+
+            //Vector3 wallVectorDcha;
+            //Vector3 wallVectorIzda;
+            //if (closestRayIsRight)
+            //{
+            //    wallVectorDcha = new Vector3(-closestHorRaycast.ray.normal.z, 0, closestHorRaycast.ray.normal.x).normalized;
+            //    wallVectorIzda = new Vector3(differentWallRay.ray.normal.z, 0, -differentWallRay.ray.normal.x).normalized;
+            //}
+            //else
+            //{
+            //    wallVectorIzda = new Vector3(closestHorRaycast.ray.normal.z, 0, -closestHorRaycast.ray.normal.x).normalized;
+            //    wallVectorDcha = new Vector3(-differentWallRay.ray.normal.z, 0, differentWallRay.ray.normal.x).normalized;
+            //}
+            //if (!disableAllRays && showWallEdgeRays)
+            //{
+            //    Debug.DrawRay(differentWallRay.ray.point, wallVectorIzda * 2, closestRayIsRight ? Color.magenta : Color.black);
+            //    Debug.DrawRay(closestHorRaycast.ray.point, wallVectorDcha * 2, closestRayIsRight ? Color.black : Color.magenta);
+            //}
+            ////Debug.LogWarning("WALL EDGE: collPoint1 = " + closestHorRaycast.ray.point.ToString("F4") + "; collPoint2 = " + differentWallRay.ray.point.ToString("F4") +
+            ////    "; vector2 = " + vector2 + "; angle2 = " + angle2 + "; angle1IsRight = " + angle1IsRight);
+
+            //float cornerAngle = SignedRelativeAngle(wallVectorIzda, wallVectorDcha, Vector3.up);
+            #endregion
+
+
+			//PERFECT EDGE COLLISION
+
+			                    //float backDistance = 0;//distance we must go back in the auxClosestRay to stop hitting the wall edge.
+                    //bool hasHit = true;
+                    //Vector3 rayOrigin = auxClosestRay.ray.point;
+                    //Vector3 auxHorVel = new Vector3(vel.x, 0, vel.z);
+                    //Vector3 rayEnd = auxOtherRay.ray.point;
+
+                    ////Debug.LogWarning("WALL EDGE ALL: CHECK FOR PERFECT EDGE COLLISION POINT  -> rayOrigin = " + rayOrigin.ToString("F4") + "; rayEnd = " + rayEnd.ToString("F4"));
+                    //for (int k = 1; k < 50 && hasHit; k++)
+                    //{
+                    //    Vector3 localRayOrigin = rayOrigin - auxHorVel * (k * wallEdgeHighCheckForPerfectEdgeRaySpacing);
+                    //    Vector3 localRayEnd = rayEnd - auxHorVel * (k * wallEdgeHighCheckForPerfectEdgeRaySpacing);
+                    //    if (showWallEdgeRays && !disableAllRays) Debug.DrawLine(localRayOrigin, localRayEnd, Color.red);
+
+                    //    if (!Physics.Linecast(localRayOrigin, localRayEnd, collisionMask, QueryTriggerInteraction.Ignore))
+                    //    {
+                    //        //Debug.LogWarning("WALL EDGE ALL: CHECK FOR PERFECT EDGE COLLISION POINT  ->  NO HIT -> distance found!");
+                    //        backDistance = k * wallEdgeHighCheckForPerfectEdgeRaySpacing;
+                    //        hasHit = false;
+                    //    }
+                    //}
+                    //float diffBetweenBackDistAndDist = Mathf.Abs(auxClosestRay.distance - backDistance);
+                    ////if (!disableAllDebugs) Debug.Log("WALL EDGE ALL: diffBetweenBackDistAndDist = " + diffBetweenBackDistAndDist + "; auxClosestRay.distance = " + auxClosestRay.distance + "; backDistance = " + backDistance);
+                    //Vector3 imaginaryWallPoint = auxClosestRay.ray.point - (auxHorVel *
+                    //    (diffBetweenBackDistAndDist < wallEdgeHighCheckForPerfectEdgeRaySpacing ? auxClosestRay.distance : backDistance));
+                    ////Debug.Log("WALL EDGE ALL: CHECK IF WE ARE INSIDE WALL : backDistance = "+ backDistance + "; imaginaryWallPoint = "+ imaginaryWallPoint.ToString("F4") 
+                    //    + "; auxClosestRay.ray.point = " + auxClosestRay.ray.point.ToString("F4"));

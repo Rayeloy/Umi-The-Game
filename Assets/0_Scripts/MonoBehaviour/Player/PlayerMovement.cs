@@ -933,7 +933,7 @@ public class PlayerMovement : MonoBehaviour
         Debug.LogWarning("Check Wall jump: wall real normal = "+ controller.collisions.closestHorRaycast.slopeAngle);
         bool result = false;
         float slopeAngle = controller.collisions.closestHorRaycast.slopeAngle;
-        bool goodWallAngle = !(slopeAngle >= 100 && slopeAngle <=180);
+        bool goodWallAngle = !(slopeAngle >= 95 && slopeAngle <=180);
         if (!controller.collisions.below && !inWater && jumpedOutOfWater && controller.collisions.collisionHorizontal  && goodWallAngle &&
             (!firstWallJumpDone || lastWallAngle != controller.collisions.wallAngle || (lastWallAngle == controller.collisions.wallAngle &&
             lastWall != controller.collisions.horWall)))
