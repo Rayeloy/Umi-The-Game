@@ -2132,16 +2132,23 @@ public class Controller3D : MonoBehaviour
                             Vector3 newRoofRayOrigin = collisions.closestVerRaycast.origin + Vector3.up * skinWidth;
                             newRoofRayOrigin -= vel.normalized * skinWidth;
                             Vector3 newRoofRayDir = vel.normalized;
-                            float newRoofRayLength = 0.5f;
+                            float newRoofRayLength = 2f;
                             if (!disableAllRays && showRoofRays) Debug.DrawRay(newRoofRayOrigin, newRoofRayDir * newRoofRayLength, purple);
                             RaycastHit newRoofHit;
                             if (Physics.Raycast(newRoofRayOrigin, newRoofRayDir, out newRoofHit, newRoofRayLength, collisionMask, QueryTriggerInteraction.Ignore))
                             {
-                                vel = vel.normalized * (newRoofHit.distance - skinWidth);
+                                if(newRoofHit.normal.normalized == collisions.closestVerRaycast.normal.normalized)
+                                {
+                                    vel = vel.normalized * (newRoofHit.distance - skinWidth);
+                                }
+                                else
+                                {
+                                    if(!disableAllDebugs)Debug.LogError("Climbing and roof, hit something but it is not the same roof that we are colliding with.");
+                                }
                             }
-                            else if (!disableAllDebugs)
+                            else 
                             {
-                                Debug.LogError("Climbing and roof but could not hit roof with the raycast check");
+                                if (!disableAllDebugs) Debug.LogError("Climbing and roof but could not hit roof with the raycast check");
                                 vel = Vector3.zero;
                             }
 
