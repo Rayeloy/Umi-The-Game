@@ -29,6 +29,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     [Header(" --- Variables generales ---")]
     public GameMode gameMode;
     int slowmo = 0;
+    public bool recordMode = false;
 
     //PREFABS
     [Header(" --- Player components prefabs ---")]
@@ -198,7 +199,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             SetUpCanvases();
             AllAwakes();
         }
-        else //Eloy: para Juan: aqui inicia al host! playerNum deberia estar a 0 y luego ponerse a 1 cuando se crea el jugador
+        else //ONLINE //Eloy: para Juan: aqui inicia al host! playerNum deberia estar a 0 y luego ponerse a 1 cuando se crea el jugador
         {
             //Calculate spawns
             SetSpawnPositions();
@@ -220,7 +221,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
             allCanvas[0].GetComponent<PlayerHUD>().AdaptCanvasHeightScale();
             myGameInterface.KonoAwake(this);
-            allPlayers[0].KonoAwake();
+            allPlayers[0].KonoAwake(true);
             allCameraBases[0].KonoAwake();
 
             gameOverStarted = false;
@@ -413,36 +414,75 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 }
             }
             //SETUP CAMERAS
-            switch (playerNum)
+
+            if (recordMode)
             {
-                case 1:
-                    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-                    allUICameras[0].rect = new Rect(0, 0, 1f, 1);
-                    break;
-                case 2:
-                    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1, 0.5f);
-                    allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
-                    allUICameras[0].rect = new Rect(0, 0.5f, 1, 0.5f);
-                    allUICameras[1].rect = new Rect(0, 0, 1, 0.5f);
-                    break;
-                case 3:
-                    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
-                    allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
-                    allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
-                    allUICameras[0].rect = new Rect(0, 0.5f, 0.5f, 0.5f);
-                    allUICameras[1].rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
-                    allUICameras[2].rect = new Rect(0, 0, 1, 0.5f);
-                    break;
-                case 4:
-                    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
-                    allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
-                    allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 0.5f);
-                    allCameraBases[3].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 0.5f);
-                    allUICameras[0].rect = new Rect(0, 0.5f, 0.5f, 0.5f);
-                    allUICameras[1].rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
-                    allUICameras[2].rect = new Rect(0, 0, 0.5f, 0.5f);
-                    allUICameras[3].rect = new Rect(0.5f, 0, 0.5f, 0.5f);
-                    break;
+                switch (playerNum)
+                {
+                    case 1:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1f, 1f);
+                        allUICameras[0].rect = new Rect(0, 0, 0, 0);
+                        break;
+                    case 2:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1, 0.5f);
+                        allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
+                        allUICameras[0].rect = new Rect(0, 0, 0, 0);
+                        allUICameras[1].rect = new Rect(0, 0, 0, 0);
+                        break;
+                    case 3:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                        allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                        allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
+                        allUICameras[0].rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                        allUICameras[1].rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                        allUICameras[2].rect = new Rect(0, 0, 1, 0.5f);
+                        break;
+                    case 4:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0f, 0f, 0.8f, 0.8f);
+                        allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.8f, 0, 0.2f, 0.2f);
+                        allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0.8f, 0.2f, 0.2f, 0.2f);
+                        allCameraBases[3].myCamera.GetComponent<Camera>().rect = new Rect(0.8f, 0.4f, 0.2f, 0.2f);
+                        allCameraBases[0].myCamera.GetComponent<Camera>().depth = 1;
+                        allUICameras[0].rect = new Rect(0, 0, 0, 0);
+                        allUICameras[1].rect = new Rect(0, 0, 0, 0);
+                        allUICameras[2].rect = new Rect(0, 0, 0, 0);
+                        allUICameras[3].rect = new Rect(0, 0, 0, 0);
+                        break;
+                }
+            }
+            else
+            {
+                switch (playerNum)
+                {
+                    case 1:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+                        allUICameras[0].rect = new Rect(0, 0, 1f, 1);
+                        break;
+                    case 2:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1, 0.5f);
+                        allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
+                        allUICameras[0].rect = new Rect(0, 0.5f, 1, 0.5f);
+                        allUICameras[1].rect = new Rect(0, 0, 1, 0.5f);
+                        break;
+                    case 3:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                        allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                        allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
+                        allUICameras[0].rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                        allUICameras[1].rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                        allUICameras[2].rect = new Rect(0, 0, 1, 0.5f);
+                        break;
+                    case 4:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                        allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                        allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 0.5f);
+                        allCameraBases[3].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 0.5f);
+                        allUICameras[0].rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                        allUICameras[1].rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                        allUICameras[2].rect = new Rect(0, 0, 0.5f, 0.5f);
+                        allUICameras[3].rect = new Rect(0.5f, 0, 0.5f, 0.5f);
+                        break;
+                }
             }
             SetSpawnPositions();
         }
@@ -503,7 +543,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                     ////{
                     ////    respawn = teamBSpawns[0].position;
                     ////}
-                    PlayerSpawnInfo auxSpawnInfo= GetSpawnPosition(playerNumber);
+                    PlayerSpawnInfo auxSpawnInfo = GetSpawnPosition(playerNumber);
                     newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, auxSpawnInfo.position, Quaternion.identity, 0).GetComponent<PlayerMovement>();
                     newPlayer.team = newPlayerTeam;
                     newPlayer.mySpawnInfo = auxSpawnInfo;
@@ -522,6 +562,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                     newPlayer.playerNumber = PhotonNetwork.CurrentRoom.PlayerCount;
 
                     InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
+                    allPlayers[playerNumber].KonoAwake();
                 }
                 else
                 {
@@ -529,7 +570,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 }
             }
         }
-        else
+        else//offline
         {
             newPlayer = Instantiate(playerPrefab, playersParent).GetComponent<PlayerMovement>();
             newPlayer.mySpawnInfo = new PlayerSpawnInfo();
@@ -617,8 +658,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     PlayerSpawnInfo GetSpawnPosition(int playerNumber)
     {
-            print("Setting spawn pos for Player number " + playerNumber);
-            return playerSpawnInfoList[playerNumber];
+        print("Setting spawn pos for Player number " + playerNumber);
+        return playerSpawnInfoList[playerNumber];
     }
 
     /// <summary>
@@ -635,7 +676,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             if (teamASpawns.Length == 0) Debug.LogError("Error: there must be at least one spawn for team A in online mode");
             if (teamBSpawns.Length == 0) Debug.LogError("Error: there must be at least one spawn for team B in online mode");
             playerSpawnInfoList = new PlayerSpawnInfo[maxPlayers];
-            for(int i=0; i < playerSpawnInfoList.Length; i++)
+            for (int i = 0; i < playerSpawnInfoList.Length; i++)
             {
                 playerSpawnInfoList[i] = new PlayerSpawnInfo();
             }
@@ -683,14 +724,14 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 if (online)
                 {
                     int auxTeamASpawnNumPlayers = teamASpawnsNumPlayers[i];
-                    for (int j = 0; j < playerSpawnInfoList.Length && auxTeamASpawnNumPlayers>0; j++)
+                    for (int j = 0; j < playerSpawnInfoList.Length && auxTeamASpawnNumPlayers > 0; j++)
                     {
                         if (j % 2 == 0)//Team A
                         {
                             auxTeamASpawnNumPlayers--;
                             playerSpawnInfoList[j].rotation = Quaternion.Euler(0, teamASpawns[i].rotation.eulerAngles.y, 0);
                         }
-                    } 
+                    }
                 }
                 else
                 {
@@ -759,7 +800,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         if (spawnPosTeamB.Count != playerNumTeamB) Debug.LogError("Error: Spawn positions (" + spawnPosTeamB.Count + ") for red team are not equal to number of red team players(" + playerNumTeamB + ").");
         if (online)
         {
-            for(int i = 0; i < playerSpawnInfoList.Length; i++)
+            for (int i = 0; i < playerSpawnInfoList.Length; i++)
             {
                 Vector3 pos;
                 if (i % 2 == 0)

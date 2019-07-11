@@ -511,6 +511,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66bcdf6e0f085a446a4787f2032a0aa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disableAllDebugs: 0
   myPlayerCombat: {fileID: 2739787249420687251}
   myPlayerWeap: {fileID: 2740053844141714977}
   myPlayerPickups: {fileID: 2739443829118614599}
@@ -527,7 +528,7 @@ MonoBehaviour:
   cameraFollow: {fileID: 2847219716704171441}
   rotateObj: {fileID: 2847339013141467789}
   hasCharacterRotation: 1
-  rotationSpeed: 800
+  rotationSpeed: 550
   instantRotationMinAngle: 110
   maxFallSpeed: 40
   maxMoveSpeed: 10
@@ -625,6 +626,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c515b7e1049281419f36a8f533abb98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disableAllDebugs: 0
   disableAllRays: 0
   collisionMask:
     serializedVersion: 2
@@ -645,21 +647,27 @@ MonoBehaviour:
   coll: {fileID: 2769956456207346307}
   bigCollRadius: 0.35
   smallCollRadius: 0.35
-  showVerticalRays: 0
+  showVerticalRays: 1
   showVerticalLimits: 1
   showDistanceCheckRays: 0
-  verticalRows: 20
-  verticalRaysPerRow: 20
+  showRoofRays: 1
+  verticalRows: 10
+  verticalRaysPerRow: 10
   showHorizontalRays: 1
   showHorizontalLimits: 1
-  showWallRays: 0
+  showWallRays: 1
   showWallLimits: 0
-  showWallEdgeRays: 1
-  horizontalRows: 20
-  horizontalRaysPerRow: 20
+  showWallEdgeRays: 0
+  horizontalRows: 15
+  horizontalRaysPerRow: 15
   maxHeightToClimbStep: 0.3
+  wallSlideRows: 8
+  wallSlideRaysPerRow: 5
+  wallEdgeHighPrecissionRays: 20
+  wallEdgeHighCheckForPerfectEdgeRaySpacing: 0.002
   corsbOn: 1
   corsbBorderPercent: 25
+  corsbMinSkinWidth: 0.0001
   showWaterRays: 0
   aroundRaysPerCircle: 10
   aroundCircles: 10

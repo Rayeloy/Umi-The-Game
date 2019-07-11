@@ -47,7 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myGameInterface: {fileID: 0}
   gameMode: 0
-  playerPrefab: {fileID: 2852978573330665781, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+  recordMode: 0
+  playerPrefab: {fileID: 420036319345714365, guid: 39e91400e8285584e9faf354b57cc978,
     type: 3}
   playerCanvasPrefab: {fileID: 8126600660023991336, guid: 245c642f06b554a4aab32003bd688751,
     type: 3}
@@ -61,10 +62,8 @@ MonoBehaviour:
   playersUICamerasParent: {fileID: 0}
   allBufferedInputs:
   - {fileID: 11400000, guid: 5be981359aa5af64f9ab89d0f694fc30, type: 2}
-  blueTeamSpawns:
-  - {fileID: 0}
-  redTeamSpawns:
-  - {fileID: 0}
+  teamASpawns: []
+  teamBSpawns: []
   scaleDos: 1.25
   scaleCuatro: 1.25
   startingWeaponBlue: {fileID: 0}
@@ -78,8 +77,8 @@ MonoBehaviour:
   flagPrefab: {fileID: 1751600940884742, guid: b65fe97042153d54abc8f26b7532c126, type: 3}
   flagsParent: {fileID: 0}
   flags: []
-  blueTeamFlagHome: {fileID: 0}
-  redTeamFlagHome: {fileID: 0}
+  FlagHome_TeamA: {fileID: 0}
+  FlagHome_TeamB: {fileID: 0}
   centerCameraParent: {fileID: 0}
   minDistToSeeBeam: 10
 --- !u!114 &114010027320582548
