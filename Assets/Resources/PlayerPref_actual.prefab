@@ -511,6 +511,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66bcdf6e0f085a446a4787f2032a0aa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disableAllDebugs: 0
   myPlayerCombat: {fileID: 2739787249420687251}
   myPlayerWeap: {fileID: 2740053844141714977}
   myPlayerPickups: {fileID: 2739443829118614599}
@@ -646,16 +647,17 @@ MonoBehaviour:
   coll: {fileID: 2769956456207346307}
   bigCollRadius: 0.35
   smallCollRadius: 0.35
-  showVerticalRays: 0
+  showVerticalRays: 1
   showVerticalLimits: 1
   showDistanceCheckRays: 0
-  verticalRows: 15
-  verticalRaysPerRow: 15
+  showRoofRays: 1
+  verticalRows: 10
+  verticalRaysPerRow: 10
   showHorizontalRays: 1
   showHorizontalLimits: 1
   showWallRays: 1
   showWallLimits: 0
-  showWallEdgeRays: 1
+  showWallEdgeRays: 0
   horizontalRows: 15
   horizontalRaysPerRow: 15
   maxHeightToClimbStep: 0.3

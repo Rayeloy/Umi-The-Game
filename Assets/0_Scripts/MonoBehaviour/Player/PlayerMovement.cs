@@ -44,6 +44,7 @@ public class PlayerMovement : MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     [Header("Referencias")]
+    public bool disableAllDebugs;
     public PlayerCombat myPlayerCombat;
     public PlayerWeapons myPlayerWeap;
     public PlayerPickups myPlayerPickups;
@@ -291,43 +292,52 @@ public class PlayerMovement : MonoBehaviour
         online = PhotonNetwork.IsConnected;
     }
 
-    public void KonoAwake()
+    public void KonoAwake(bool isMyCharacter=false)
     {
-        maxMoveSpeed = 10;
-        currentSpeed = 0;
-        currentRotationSpeed = rotationSpeed;
-        boostCurrentFuel = boostCapacity;
-        noInput = false;
-        lastWallAngle = 0;
-        SetupInputsBuffer();
-        myPlayerHook.myCameraBase = myCamera;
-        hardSteerAcc = Mathf.Clamp(hardSteerAcc, hardSteerAcc, breakAcc);
-        airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airHardSteerAcc, airBreakAcc);
+        if (!online || (online && isMyCharacter))
+        {
+            maxMoveSpeed = 10;
+            currentSpeed = 0;
+            currentRotationSpeed = rotationSpeed;
+            boostCurrentFuel = boostCapacity;
+            noInput = false;
+            lastWallAngle = 0;
+            SetupInputsBuffer();
+            myPlayerHook.myCameraBase = myCamera;
+            hardSteerAcc = Mathf.Clamp(hardSteerAcc, hardSteerAcc, breakAcc);
+            airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airHardSteerAcc, airBreakAcc);
 
-        //PLAYER MODEL
-        myPlayerModel.SwitchTeam(team);
+            //PLAYER MODEL
+            myPlayerModel.SwitchTeam(team);
 
-        //WALLJUMP
-        wallJumpCheckRaysRows = 5;
-        wallJumpCheckRaysColumns = 5;
-        wallJumpCheckRaysRowsSpacing = (controller.coll.bounds.size.y * wallJumpMinHeightPercent) / (wallJumpCheckRaysRows - 1);
-        wallJumpCheckRaysColumnsSpacing = controller.coll.bounds.size.x / (wallJumpCheckRaysColumns - 1);
-        auxLM = LayerMask.GetMask("Stage");
+            //WALLJUMP
+            wallJumpCheckRaysRows = 5;
+            wallJumpCheckRaysColumns = 5;
+            wallJumpCheckRaysRowsSpacing = (controller.coll.bounds.size.y * wallJumpMinHeightPercent) / (wallJumpCheckRaysRows - 1);
+            wallJumpCheckRaysColumnsSpacing = controller.coll.bounds.size.x / (wallJumpCheckRaysColumns - 1);
+            auxLM = LayerMask.GetMask("Stage");
 
-        PlayerAwakes();
+            PlayerAwakes();
 
-        // #Important
-        // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
-        //if (online)
-        //{
-        //    if (photonV)
-        //    {
-        //        PlayerMovement.LocalPlayerInstance = this.gameObject;
-        //    }
-        //}
-        // #Critical
-        // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
-        //DontDestroyOnLoad(this.gameObject);
+            // #Important
+            // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
+            //if (online)
+            //{
+            //    if (photonV)
+            //    {
+            //        PlayerMovement.LocalPlayerInstance = this.gameObject;
+            //    }
+            //}
+            // #Critical
+            // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+            //DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            //PLAYER MODEL
+            myPlayerModel.SwitchTeam(team);
+        }
+
 
     }
 
@@ -862,7 +872,7 @@ public class PlayerMovement : MonoBehaviour
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) ||
                 (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
-                Debug.LogWarning("JUMP!");
+                if (!disableAllDebugs) Debug.LogWarning("JUMP!");
                 //PlayerAnimation_01.startJump = true;
                 myPlayerAnimation_01.SetJump(true);
                 result = true;
@@ -930,7 +940,7 @@ public class PlayerMovement : MonoBehaviour
     /// <returns></returns>
     bool StartWallJump()
     {
-        Debug.LogWarning("Check Wall jump: wall real normal = "+ controller.collisions.closestHorRaycast.slopeAngle);
+        if(!disableAllDebugs) Debug.LogWarning("Check Wall jump: wall real normal = "+ controller.collisions.closestHorRaycast.slopeAngle);
         bool result = false;
         float slopeAngle = controller.collisions.closestHorRaycast.slopeAngle;
         bool goodWallAngle = !(slopeAngle >= 95 && slopeAngle <=180);
@@ -941,7 +951,7 @@ public class PlayerMovement : MonoBehaviour
             wallJumpCurrentWall = controller.collisions.horWall;
             if (wallJumpCurrentWall.GetComponent<StageScript>() == null || wallJumpCurrentWall.GetComponent<StageScript>().wallJumpable)
             {
-                Debug.Log("Wall jumping start");
+                if (!disableAllDebugs) Debug.Log("Wall jumping start");
                 //PARA ORTU: PlayerAnimation_01.startJump = true;
                 jumpSt = JumpState.wallJumping;
                 result = true;
@@ -960,7 +970,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            Debug.Log("Couldn't wall jump because:  !controller.collisions.below (" + !controller.collisions.below + ") && !inWater(" + !inWater + ") &&" +
+            if (!disableAllDebugs) Debug.Log("Couldn't wall jump because:  !controller.collisions.below (" + !controller.collisions.below + ") && !inWater(" + !inWater + ") &&" +
                 " jumpedOutOfWater(" + jumpedOutOfWater + ") && controller.collisions.collisionHorizontal(" + controller.collisions.collisionHorizontal + ") && " +
                 "(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != controller.collisions.wallAngle (" + (lastWallAngle != controller.collisions.wallAngle) + ") || " +
                 "(lastWallAngle == controller.collisions.wallAngle (" + (lastWallAngle == controller.collisions.wallAngle) + ")&& " +
@@ -1035,7 +1045,7 @@ public class PlayerMovement : MonoBehaviour
 
     void EndWallJump()
     {
-        Debug.LogError("End Wall jump");
+        if (!disableAllDebugs) Debug.LogError("End Wall jump");
         if (!firstWallJumpDone) firstWallJumpDone = true;
         lastWallAngle = wallJumpCurrentWallAngle;
         lastWall = wallJumpCurrentWall;
@@ -1049,7 +1059,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 circleCenter = anchorPoint + Vector3.up * walJumpConeHeight;
         Vector3 circumfPoint = CalculateReflectPoint(wallJumpRadius, wallNormal, circleCenter);
         Vector3 finalDir = (circumfPoint - anchorPoint).normalized;
-        Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
+        if (!disableAllDebugs) Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
 
         SetVelocity(finalDir * wallJumpVelocity);
         currentMovDir = new Vector3(finalDir.x, 0, finalDir.z);
