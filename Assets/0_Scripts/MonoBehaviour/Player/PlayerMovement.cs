@@ -269,8 +269,9 @@ public class PlayerMovement : MonoBehaviour
 
     //HOOK
     [HideInInspector]
-    public bool hooked;
-    bool hooking;
+    public bool hooked = false;
+    bool hooking = false;
+    bool hookingAndTouchedGroundOnce = false;
 
     //GRAPPLE
     bool grappling = false;
@@ -1479,6 +1480,7 @@ public class PlayerMovement : MonoBehaviour
         if (!hooking)
         {
             hooking = true;
+            if (controller.collisions.below) hookingAndTouchedGroundOnce = true;
         }
     }
 
@@ -1486,9 +1488,16 @@ public class PlayerMovement : MonoBehaviour
     {
         if (hooking)
         {
-            if (currentMaxMoveSpeed > maxHookingSpeed)
+            if (!hookingAndTouchedGroundOnce)
             {
-                currentMaxMoveSpeed = maxHookingSpeed;
+                if (controller.collisions.below) hookingAndTouchedGroundOnce = true;
+            }
+            else
+            {
+                if (currentMaxMoveSpeed > maxHookingSpeed)
+                {
+                    currentMaxMoveSpeed = maxHookingSpeed;
+                }
             }
         }
     }

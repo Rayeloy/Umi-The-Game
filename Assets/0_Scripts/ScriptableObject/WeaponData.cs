@@ -14,10 +14,14 @@ public class WeaponData : ScriptableObject
 
     [Tooltip("Player maximum speed when carrying this weapon. Normal value is 10.")]
     public float playerMaxSpeed = 10;
-    public AttackData basicAttack;
-    public AttackData strongAttack;
-    public AttackData specialAttack;
-    //public SpecialAttack
+    public float playerWeight = 1;
+    public Autocombo autocombo;
+    public AttackData parry;
+    //Skill 1
+    //Skill 2
+
+    
+
 
     [Header("Weapon in the right hand")]
     [Tooltip("Local position for attaching to the hand.")]
@@ -34,13 +38,30 @@ public class WeaponData : ScriptableObject
     public Vector3 backRotation;
     [Tooltip("Local scale for attaching to the hand.")]
     public Vector3 backScale;
+
+    public void ErrorCheck()
+    {
+        bool found = false;
+        for(int i=0; i< parry.activePhase.attackHitboxes.Length; i++)
+        {
+            for(int j=0; j< parry.activePhase.attackHitboxes[i].effects.Length; j++)
+            {
+                if (parry.activePhase.attackHitboxes[i].effects[j].effectType == EffectType.parry) found = true;
+            }
+        }
+        if(!found) Debug.LogError("WeaponData -> Error: There is no parry for the weapon "+ weaponType + "!");
+        if (weaponSkins.Length == 0) Debug.LogError("WeaponData -> Error: There is no weapon skins for the weapon "+ weaponType + "!");
+        if(playerWeight<=0) Debug.LogError("WeaponData -> Error: Weight cannot be less or equal than 0 for the weapon " + weaponType + "!");
+        autocombo.ErrorCheck();
+        parry.ErrorCheck();
+    }
 }
 
 public enum WeaponType
 {
     Q_Tip,
     Hammer,
-    Sword,
     Boxing_gloves,
+    Sword,
     Donut
 }
