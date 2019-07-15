@@ -46,6 +46,7 @@ public class Weapon : MonoBehaviour
         currentWeaponPrefab = weaponData.weaponSkins[index];
         if (currentWeaponPrefab == null) Debug.LogError("Error: WeaponData: Weapon with index " + index + " not found");
     }
+
     public void SetSkin(string skinName)
     {
         bool exito = false;

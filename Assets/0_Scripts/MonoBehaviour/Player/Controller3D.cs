@@ -2141,7 +2141,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
         if (collisions.closestVerRaycast.hit)//si ha habido una collision vertical
         {
             if (!disableAllRays && showVerticalRays) Debug.DrawRay(collisions.closestVerRaycast.origin,
-                Vector3.up * directionY * (collisions.closestVerRaycast.distance + skinWidth), Color.white);
+                Vector3.up * directionY * (Mathf.Abs(vel.y) + skinWidth), Color.white);
             CollisionState value = CheckSlopeType(vel, collisions.closestVerRaycast);
             if (!disableAllDebugs) print("Vertical collisions value pre= " + value);
             //print("COLLISION VER: " + value + "; slopeAngle=" + collisions.closestVerRaycast.slopeAngle);
@@ -2288,7 +2288,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                 case CollisionState.sliping:
                     if (vel.y > 0)
                     {
-                        vel.y = 0;
+                        vel.y = collisions.closestVerRaycast.distance * directionY;
                         //TO DO: roofSlide
                     }
                     else
@@ -2457,7 +2457,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                             float slopeAngle = GetSlopeAngle(hit);
                             Raycast auxRay = new Raycast(hit, hit.normal, hit.distance, vel, localRayOrigin, true, slopeAngle, 0, Axis.Y, row, column, 0);
                             CollisionState value = CheckSlopeType(GetLastHorVel(vel), auxRay);
-                            if (!disableAllDebugs) Debug.Log("Floor Edge Horizontal: slopeAngle = " + slopeAngle);
+                            if (!disableAllDebugs) Debug.Log("Floor Edge Horizontal: slopeAngle = " + slopeAngle+ "; value = "+ value);
                             if (closestRayVal != value)
                             {
                                 found = 1;
@@ -2488,7 +2488,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                                 float slopeAngle = GetSlopeAngle(hit);
                                 Raycast auxRay = new Raycast(hit, hit.normal, hit.distance, vel, localRayOrigin, true, slopeAngle, 0, Axis.Y, row, column, 0);
                                 CollisionState value = CheckSlopeType(GetLastHorVel(vel), auxRay);
-                                if (!disableAllDebugs) Debug.Log("Floor Edge Vertical: slopeAngle = " + slopeAngle);
+                                if (!disableAllDebugs) Debug.Log("Floor Edge Vertical: slopeAngle = " + slopeAngle + "; value = " + value);
                                 if (closestRayVal != value)
                                 {
                                     found = 2;

@@ -3,12 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public enum KnockbackType
-{
-    outwards=0,
-    inwards=1,
-    customDir=2
-}
+
 [CreateAssetMenu(fileName = "New attack", menuName = "Attack")]
 public class AttackData : ScriptableObject
 {
@@ -67,17 +62,17 @@ public class AttackData : ScriptableObject
         //}
     }
 
-    public AttackPhase GetAttackPhase(AttackStage attackStage)
+    public AttackPhase GetAttackPhase(AttackPhaseType attackStage)
     {
         switch (attackStage)
         {
-            case AttackStage.charging:
+            case AttackPhaseType.charging:
                 return chargingPhase;
-            case AttackStage.startup:
+            case AttackPhaseType.startup:
                 return startupPhase;
-            case AttackStage.active:
+            case AttackPhaseType.active:
                 return activePhase;
-            case AttackStage.recovery:
+            case AttackPhaseType.recovery:
                 return recoveryPhase;
         }
         return null;

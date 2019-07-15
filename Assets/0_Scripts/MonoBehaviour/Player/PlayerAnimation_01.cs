@@ -371,7 +371,7 @@ public class PlayerAnimation_01 : MonoBehaviour
         //    animator.SetBool(spAtHash, spAt);
         //}
 
-            if (myPlayerCombat.attackStg != AttackStage.ready && !noControl)//ESTAMOS ATACANDO
+            if (myPlayerCombat.attackStg != AttackPhaseType.ready && !noControl)//ESTAMOS ATACANDO
         {
 
             switch (myPlayerCombat.attackIndex)
@@ -422,12 +422,12 @@ public class PlayerAnimation_01 : MonoBehaviour
         }
 
 
-        if (attack && myPlayerCombat.attackStg == AttackStage.ready)
+        if (attack && myPlayerCombat.attackStg == AttackPhaseType.ready)
         {
             attack = false;
             animator.SetBool(attackHash, attack);
         }
-        else if (!attack && myPlayerCombat.attackStg == AttackStage.startup && !noControl)
+        else if (!attack && myPlayerCombat.attackStg == AttackPhaseType.startup && !noControl)
         {
             attack = true;
             animator.SetBool(attackHash, attack);

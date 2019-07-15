@@ -6,7 +6,7 @@ using UnityEditor;
 public enum PlayerInput
 {
     Jump,//A
-
+    Autocombo//X
 }
 [CreateAssetMenu(fileName = "New buffered input", menuName = "BufferedInput")]
 public class BufferedInputData : ScriptableObject

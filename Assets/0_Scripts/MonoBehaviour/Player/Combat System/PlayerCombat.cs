@@ -5,17 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-#region ----[ PUBLIC ENUMS ]----
-public enum AttackStage
-{
-    ready = 0,
-    charging = 1,
-    startup = 2,
-    active = 3,
-    recovery = 4
-}
-#endregion
-
 [RequireComponent(typeof(PlayerMovement))]
 [RequireComponent(typeof(PlayerHook))]
 public class PlayerCombat : MonoBehaviour
@@ -53,7 +42,7 @@ public class PlayerCombat : MonoBehaviour
     public List<string> targetsHit;
 
     [HideInInspector]
-    public AttackStage attackStg = AttackStage.ready;
+    public AttackPhaseType attackStg = AttackPhaseType.ready;
     [HideInInspector]
     public List<AttackInfo> myAttacks;//index: 0 = X ->Basic Attack; 1 = Y -> Strong Attack; 2 = B -> Special Attack
 
@@ -67,7 +56,7 @@ public class PlayerCombat : MonoBehaviour
     {
         get{
             bool result = false;
-            if (attackStg != AttackStage.ready && myAttacks[attackIndex].attack.GetAttackPhase(attackStg).restrictRotation)
+            if (attackStg != AttackPhaseType.ready && myAttacks[attackIndex].attack.GetAttackPhase(attackStg).restrictRotation)
                 result = true;
             return result;
         }
@@ -86,7 +75,7 @@ public class PlayerCombat : MonoBehaviour
         myPlayerWeap = myPlayerMovement.myPlayerWeap;
         myHook = myPlayerMovement.myPlayerHook;
         myPlayerHUD = myPlayerMovement.myPlayerHUD;
-        attackStg = AttackStage.ready;
+        attackStg = AttackPhaseType.ready;
         targetsHit = new List<string>();
         myAttacks = new List<AttackInfo>();
     }
@@ -107,12 +96,12 @@ public class PlayerCombat : MonoBehaviour
     public void KonoUpdate()
     {
         //print("Trigger = " + Input.GetAxis(myPlayerMovement.contName + "LT"));
-        if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && (attackStg == AttackStage.ready || attackStg == AttackStage.recovery)
+        if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && (attackStg == AttackPhaseType.ready || attackStg == AttackPhaseType.recovery)
             && !conHinchador && myPlayerWeap.hasWeapon)
         {
             //BASIC ATTACK INPUT CHECK
             int index = 0;
-            if (myPlayerMovement.Actions.X.WasPressed && (attackStg == AttackStage.ready || CanComboWithDifferentAttack(index)) && !myPlayerWeap.canPickupWeapon)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
+            if (myPlayerMovement.Actions.X.WasPressed && (attackStg == AttackPhaseType.ready || CanComboWithDifferentAttack(index)) && !myPlayerWeap.canPickupWeapon)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
             {
                 if (CanComboWithDifferentAttack(index))
                 {
@@ -124,7 +113,7 @@ public class PlayerCombat : MonoBehaviour
 
             //STRONG ATTACK INPUT CHECK
             index = 1;
-            if (myPlayerMovement.Actions.Y.WasPressed && (attackStg == AttackStage.ready || CanComboWithDifferentAttack(index)))//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
+            if (myPlayerMovement.Actions.Y.WasPressed && (attackStg == AttackPhaseType.ready || CanComboWithDifferentAttack(index)))//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
             {
                 if (CanComboWithDifferentAttack(index))
                 {
@@ -137,7 +126,7 @@ public class PlayerCombat : MonoBehaviour
 
             //SPECIAL ATTACK INPUT CHECK
             index = 2;
-            if (myPlayerMovement.Actions.B.WasPressed && (attackStg == AttackStage.ready || CanComboWithDifferentAttack(index)))//Input.GetButtonDown(myPlayerMovement.contName + "B"))
+            if (myPlayerMovement.Actions.B.WasPressed && (attackStg == AttackPhaseType.ready || CanComboWithDifferentAttack(index)))//Input.GetButtonDown(myPlayerMovement.contName + "B"))
             {
                 if (CanComboWithDifferentAttack(index))
                 {
@@ -190,10 +179,10 @@ public class PlayerCombat : MonoBehaviour
         recoveryTime = attack.recoveryPhase.duration;
         knockBackSpeed = attack.knockbackSpeed;
 
-        ChangeAttackPhase(AttackStage.ready);//puede ser algo inutil cuando ya se está en ready
+        ChangeAttackPhase(AttackPhaseType.ready);//puede ser algo inutil cuando ya se está en ready
     }
 
-    void ChangeAttackPhase(AttackStage attackStage)
+    void ChangeAttackPhase(AttackPhaseType attackStage)
     {
         print("Change attack phase to " + attackStage);
         attackStg = attackStage;
@@ -204,28 +193,28 @@ public class PlayerCombat : MonoBehaviour
 
         switch (attackStg)
         {
-            case AttackStage.ready:
+            case AttackPhaseType.ready:
                 myPlayerMovement.ResetPlayerRotationSpeed();
                 break;
-            case AttackStage.charging:
+            case AttackPhaseType.charging:
                 if (myAttacks[attackIndex].attack.chargingPhase.restrictRotation)
                 {
                     myPlayerMovement.SetPlayerRotationSpeed(myAttacks[attackIndex].attack.chargingPhase.rotationSpeed);
                 }
                 break;
-            case AttackStage.startup:
+            case AttackPhaseType.startup:
                 if (myAttacks[attackIndex].attack.startupPhase.restrictRotation)
                 {
                     myPlayerMovement.SetPlayerRotationSpeed(myAttacks[attackIndex].attack.startupPhase.rotationSpeed);
                 }
                 break;
-            case AttackStage.active:
+            case AttackPhaseType.active:
                 if (myAttacks[attackIndex].attack.activePhase.restrictRotation)
                 {
                     myPlayerMovement.SetPlayerRotationSpeed(myAttacks[attackIndex].attack.activePhase.rotationSpeed);
                 }
                 break;
-            case AttackStage.recovery:
+            case AttackPhaseType.recovery:
                 if (myAttacks[attackIndex].attack.recoveryPhase.restrictRotation)
                 {
                     myPlayerMovement.SetPlayerRotationSpeed(myAttacks[attackIndex].attack.recoveryPhase.rotationSpeed);
@@ -234,14 +223,14 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    void ChangeHitBoxPrefab(AttackStage att)//hacer después de cambiar de attack stage, no antes!
+    void ChangeHitBoxPrefab(AttackPhaseType att)//hacer después de cambiar de attack stage, no antes!
     {
         HideAttackHitBox();
         GameObject newHB = null;
 
         switch (attackStg)
         {
-            case AttackStage.charging:
+            case AttackPhaseType.charging:
                 if (myAttacks[attackIndex].attack.chargingPhase.hasHitbox)
                 {
                     newHB = myAttacks[attackIndex].attack.chargingPhase.hitboxPrefab;
@@ -257,7 +246,7 @@ public class PlayerCombat : MonoBehaviour
                     }
                 }
                 break;
-            case AttackStage.startup:
+            case AttackPhaseType.startup:
                 if (myAttacks[attackIndex].attack.startupPhase.hasHitbox)
                 {
                     newHB = myAttacks[attackIndex].attack.startupPhase.hitboxPrefab;
@@ -273,7 +262,7 @@ public class PlayerCombat : MonoBehaviour
                     }
                 }
                 break;
-            case AttackStage.active:
+            case AttackPhaseType.active:
                 if (myAttacks[attackIndex].attack.activePhase.hasHitbox)
                 {
                     newHB = myAttacks[attackIndex].attack.activePhase.hitboxPrefab;
@@ -289,7 +278,7 @@ public class PlayerCombat : MonoBehaviour
                     }
                 }
                 break;
-            case AttackStage.recovery:
+            case AttackPhaseType.recovery:
                 if (myAttacks[attackIndex].attack.recoveryPhase.hasHitbox)
                 {
                     newHB = myAttacks[attackIndex].attack.recoveryPhase.hitboxPrefab;
@@ -308,21 +297,21 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    //GameObject GetHitBoxPrefab(AttackStage att)
+    //GameObject GetHitBoxPrefab(AttackPhaseType att)
     //{
     //    GameObject hb = null;
     //    switch (att)
     //    {
-    //        case AttackStage.charging:
+    //        case AttackPhaseType.charging:
     //            hb = myAttacks[attackIndex].attack.chargingPhase.hitboxPrefab;
     //            break;
-    //        case AttackStage.startup:
+    //        case AttackPhaseType.startup:
     //            hb = myAttacks[attackIndex].attack.startupPhase.hitboxPrefab;
     //            break;
-    //        case AttackStage.active:
+    //        case AttackPhaseType.active:
     //            hb = myAttacks[attackIndex].attack.activePhase.hitboxPrefab;
     //            break;
-    //        case AttackStage.recovery:
+    //        case AttackPhaseType.recovery:
     //            hb = myAttacks[attackIndex].attack.recoveryPhase.hitboxPrefab;
     //            break;
     //    }
@@ -372,46 +361,46 @@ public class PlayerCombat : MonoBehaviour
 
     void StartAttack()
     {
-        if (attackStg == AttackStage.ready && !myPlayerMovement.noInput)
+        if (attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput)
         {
             targetsHit.Clear();
             attackTime = 0;
-            attackStg = chargingTime > 0 ? AttackStage.charging : AttackStage.startup;
+            attackStg = chargingTime > 0 ? AttackPhaseType.charging : AttackPhaseType.startup;
             ChangeAttackPhase(attackStg);
         }
     }
 
     void ProcessAttack()
     {
-        if (attackStg != AttackStage.ready)
+        if (attackStg != AttackPhaseType.ready)
         {
             attackTime += Time.deltaTime;
             switch (attackStg)
             {
-                case AttackStage.charging:
+                case AttackPhaseType.charging:
                     if(attackTime>= chargingTime)
                     {
                         float charge = Mathf.Clamp01(attackTime / chargingTime);
                         attackTime = 0;
-                        ChangeAttackPhase(AttackStage.startup);
+                        ChangeAttackPhase(AttackPhaseType.startup);
                     }
                     break;
-                case AttackStage.startup:
+                case AttackPhaseType.startup:
                     //animacion startup
                     if (attackTime >= startupTime)
                     {
                         attackTime = 0;
-                        ChangeAttackPhase(AttackStage.active);
+                        ChangeAttackPhase(AttackPhaseType.active);
                     }
                     break;
-                case AttackStage.active:
+                case AttackPhaseType.active:
                     if (attackTime >= activeTime)
                     {
                         attackTime = 0;
-                        ChangeAttackPhase(AttackStage.recovery);
+                        ChangeAttackPhase(AttackPhaseType.recovery);
                     }
                     break;
-                case AttackStage.recovery:
+                case AttackPhaseType.recovery:
                     if (attackTime >= recoveryTime)
                     {
                         EndAttack();
@@ -424,7 +413,7 @@ public class PlayerCombat : MonoBehaviour
     void EndAttack()
     {
         attackTime = 0;
-        ChangeAttackPhase(AttackStage.ready);
+        ChangeAttackPhase(AttackPhaseType.ready);
 
         //myAttacks[attackIndex].StartCD();
     }
@@ -434,7 +423,7 @@ public class PlayerCombat : MonoBehaviour
         bool result = false;
         if (attackButton != attackIndex)
         {
-            if (attackStg == AttackStage.recovery)
+            if (attackStg == AttackPhaseType.recovery)
             {
                 float timeLimit = recoveryTime - ((recoveryTime * myAttacks[attackIndex].attack.comboDifferentAttackPercent) / 100);
                 if (attackTime >= timeLimit)
