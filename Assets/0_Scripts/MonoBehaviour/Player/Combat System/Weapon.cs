@@ -9,6 +9,10 @@ public class Weapon : MonoBehaviour
     Respawn myRespawn;
     [HideInInspector]
     public GameObject currentWeaponPrefab;
+
+    public Transform weaponEdge;
+    public Transform weaponHandle;
+
     private void Awake()
     {
         myRespawn = transform.parent.parent.GetComponentInChildren<Respawn>();
@@ -31,7 +35,6 @@ public class Weapon : MonoBehaviour
                 //Debug.Log("DEFAULT PICKUP");
                 SetSkin(0);
                 break;
-
         }
         Vector3 pos = weaponPrefab.transform.position;
         Quaternion rot = weaponPrefab.transform.rotation;

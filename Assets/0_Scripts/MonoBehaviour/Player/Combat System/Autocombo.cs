@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "New autocombo", menuName = "Autocombo")]
 public class Autocombo : ScriptableObject
 {
     public string autocomboName;

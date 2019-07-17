@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-
+[ExecuteInEditMode]
 [CreateAssetMenu(fileName = "New attack", menuName = "Attack")]
 public class AttackData : ScriptableObject
 {
@@ -25,10 +25,11 @@ public class AttackData : ScriptableObject
 
     //[Tooltip("Waiting time untill you can use this attack again, starts counting when you finish all the attack phases.")]
     //public float cdTime;
-    [Tooltip("Time the attacks leaves the target stunned.")]
-    public float stunTime;
+    //[Tooltip("Time the attacks leaves the target stunned.")]
+    //public float stunTime;
+    [HideInInspector]
     public Vector3 impulseDir;
-    public Vector3 impulseMagnitude;
+    public float impulseMagnitude;
 
     //NOT IN USE
     [Header("DEPRECATED")]
@@ -37,8 +38,20 @@ public class AttackData : ScriptableObject
     [Range(0, 100)]
     public float comboDifferentAttackPercent = 50;
 
+    private void OnDisable()
+    {
+        if (chargingPhase.attackPhaseType != AttackPhaseType.charging) chargingPhase.attackPhaseType = AttackPhaseType.charging;
+        if (startupPhase.attackPhaseType != AttackPhaseType.startup) startupPhase.attackPhaseType = AttackPhaseType.startup;
+        if (activePhase.attackPhaseType != AttackPhaseType.active) activePhase.attackPhaseType = AttackPhaseType.active;
+        if (recoveryPhase.attackPhaseType != AttackPhaseType.recovery) recoveryPhase.attackPhaseType = AttackPhaseType.recovery;
+    }
     private void OnEnable()
     {
+        if (chargingPhase.attackPhaseType != AttackPhaseType.charging) chargingPhase.attackPhaseType = AttackPhaseType.charging;
+        if (startupPhase.attackPhaseType != AttackPhaseType.startup) startupPhase.attackPhaseType = AttackPhaseType.startup;
+        if (activePhase.attackPhaseType != AttackPhaseType.active) activePhase.attackPhaseType = AttackPhaseType.active;
+        if (recoveryPhase.attackPhaseType != AttackPhaseType.recovery) recoveryPhase.attackPhaseType = AttackPhaseType.recovery;
+
         //Debug.Log("AttackData OnEnable() and I'm "+name);
         //if (chargingPhase == null)
         //{

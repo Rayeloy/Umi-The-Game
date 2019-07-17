@@ -7,7 +7,8 @@ public class PlayerAnimation_01 : MonoBehaviour
     [Header("Referencias")]
     public Animator animator;
     PlayerMovement myPlayerMovement;
-    PlayerCombat myPlayerCombat;
+    //PlayerCombat myPlayerCombat;
+    PlayerCombatNew myPlayerCombatNew;
 
     [Header("Animator Variables")]
     AnimatorStateInfo stateInfo;
@@ -139,7 +140,7 @@ public class PlayerAnimation_01 : MonoBehaviour
 
     public void KonoAwake()
     {
-        myPlayerCombat = GetComponent<PlayerCombat>();
+        myPlayerCombatNew = GetComponent<PlayerCombatNew>();
         myPlayerMovement = GetComponent<PlayerMovement>();
     }
 
@@ -371,45 +372,45 @@ public class PlayerAnimation_01 : MonoBehaviour
         //    animator.SetBool(spAtHash, spAt);
         //}
 
-            if (myPlayerCombat.attackStg != AttackPhaseType.ready && !noControl)//ESTAMOS ATACANDO
+            if (myPlayerCombatNew.attackStg != AttackPhaseType.ready && !noControl)//ESTAMOS ATACANDO
         {
 
-            switch (myPlayerCombat.attackIndex)
-            {
-                case 0://ataque debil
-                    if (!softhit)
-                    {
-                        softhit = true;
-                        animator.SetBool(softHitHash, softhit);
-                    }
-                    hardhit = false;
-                    animator.SetBool(hardHitHash, hardhit);
-                    spAt = false;
-                    animator.SetBool(spAtHash, spAt);
-                    break;
-                case 1://ataque fuerte
-                    if (!hardhit)
-                    {
-                        hardhit = true;
-                        animator.SetBool(hardHitHash, hardhit);
-                    }
-                    softhit = false;
-                    animator.SetBool(softHitHash, softhit);
-                    spAt = false;
-                    animator.SetBool(spAtHash, spAt);
-                    break;
-                case 2://ataque especial
-                    if (!spAt)
-                    {
-                        spAt = true;
-                        animator.SetBool(spAtHash, spAt);
-                    }
-                    hardhit = false;
-                    animator.SetBool(hardHitHash, hardhit);
-                    softhit = false;
-                    animator.SetBool(softHitHash, softhit);
-                    break;
-            }
+            //switch (myPlayerCombat.attackIndex)
+            //{
+            //    case 0://ataque debil
+            //        if (!softhit)
+            //        {
+            //            softhit = true;
+            //            animator.SetBool(softHitHash, softhit);
+            //        }
+            //        hardhit = false;
+            //        animator.SetBool(hardHitHash, hardhit);
+            //        spAt = false;
+            //        animator.SetBool(spAtHash, spAt);
+            //        break;
+            //    case 1://ataque fuerte
+            //        if (!hardhit)
+            //        {
+            //            hardhit = true;
+            //            animator.SetBool(hardHitHash, hardhit);
+            //        }
+            //        softhit = false;
+            //        animator.SetBool(softHitHash, softhit);
+            //        spAt = false;
+            //        animator.SetBool(spAtHash, spAt);
+            //        break;
+            //    case 2://ataque especial
+            //        if (!spAt)
+            //        {
+            //            spAt = true;
+            //            animator.SetBool(spAtHash, spAt);
+            //        }
+            //        hardhit = false;
+            //        animator.SetBool(hardHitHash, hardhit);
+            //        softhit = false;
+            //        animator.SetBool(softHitHash, softhit);
+            //        break;
+            //}
         }
         else
         {
@@ -422,12 +423,12 @@ public class PlayerAnimation_01 : MonoBehaviour
         }
 
 
-        if (attack && myPlayerCombat.attackStg == AttackPhaseType.ready)
+        if (attack && myPlayerCombatNew.attackStg == AttackPhaseType.ready)
         {
             attack = false;
             animator.SetBool(attackHash, attack);
         }
-        else if (!attack && myPlayerCombat.attackStg == AttackPhaseType.startup && !noControl)
+        else if (!attack && myPlayerCombatNew.attackStg == AttackPhaseType.startup && !noControl)
         {
             attack = true;
             animator.SetBool(attackHash, attack);

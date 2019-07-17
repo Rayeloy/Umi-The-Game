@@ -17,23 +17,25 @@ public class AttackPhase
 {
     [HideInInspector]
     public bool isFoldedInEditor;
-
+    [HideInInspector]
     public AttackPhaseType attackPhaseType;
     public AttackHitbox[] attackHitboxes;
 
     public float duration;
 
     public bool restrictRotation;
-    public float rotationSpeed;
+    [Range(0,1)]
+    public float rotationSpeedPercentage;
 
     public bool restrictMovement;
+    [Tooltip("0 means 0% movement, 1 -> 100% movement")]
     [Range(0, 1)]
     public float movementSpeed;
 
-    [Tooltip("Do you want this phase to have a hitbox?")]
-    public bool hasHitbox;
-    [Tooltip("Leave empty if no hitbox needed.")]
-    public GameObject hitboxPrefab;
+    //[Tooltip("Do you want this phase to have a hitbox?")]
+    //public bool hasHitbox;
+    //[Tooltip("Leave empty if no hitbox needed.")]
+    //public GameObject hitboxPrefab;
     [Tooltip("Player is invulnerable to attacks during this phase.")]
     public bool invulnerability;
 
@@ -44,11 +46,11 @@ public class AttackPhase
 
     public void ErrorCheck()
     {
-        if(attackPhaseType== AttackPhaseType.active && !hasHitbox)
+        if(attackPhaseType== AttackPhaseType.active)
         {
             Debug.LogError("AttackPhase-> Error: this is an active phase attackPhase but there is no hitbox!");
         }
-        else if (attackPhaseType != AttackPhaseType.active && hasHitbox)
+        else if (attackPhaseType != AttackPhaseType.active)
         {
             Debug.LogError("AttackPhase-> Error: only active phases are supposed to have a hitbox!");
         }

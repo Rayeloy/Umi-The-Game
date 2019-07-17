@@ -449,10 +449,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2847353080688889697}
   - component: {fileID: 2833859408238283959}
-  - component: {fileID: 2740017724817165817}
-  - component: {fileID: 2739787249420687251}
   - component: {fileID: 2739408064946032661}
-  - component: {fileID: 2740049171833000137}
+  - component: {fileID: 2740017724817165817}
+  - component: {fileID: 6457576688623177950}
   - component: {fileID: 2740053844141714977}
   - component: {fileID: 2739443829118614599}
   - component: {fileID: 2739915846295203843}
@@ -499,121 +498,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &2740017724817165817
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2852978573330665781}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66bcdf6e0f085a446a4787f2032a0aa7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  disableAllDebugs: 1
-  myPlayerCombat: {fileID: 2739787249420687251}
-  myPlayerWeap: {fileID: 2740053844141714977}
-  myPlayerPickups: {fileID: 2739443829118614599}
-  myPlayerAnimation: {fileID: 2740049171833000137}
-  myPlayerAnimation_01: {fileID: 7710956411820504780}
-  myPlayerHook: {fileID: 2739915846295203843}
-  controller: {fileID: 2739408064946032661}
-  myPlayerBody: {fileID: 2741506816888055387}
-  myPlayerObjectDetection: {fileID: 1593201641832413956}
-  myPlayerModel: {fileID: 604705034532906637}
-  myPlayerVFX: {fileID: 2159948544499626671}
-  gC: {fileID: 0}
-  myCamera: {fileID: 0}
-  cameraFollow: {fileID: 2847219716704171441}
-  rotateObj: {fileID: 2847339013141467789}
-  hasCharacterRotation: 1
-  rotationSpeed: 550
-  instantRotationMinAngle: 110
-  maxFallSpeed: 40
-  maxMoveSpeed: 10
-  maxKnockbackSpeed: 300
-  maxAimingSpeed: 5
-  maxHookingSpeed: 3.5
-  maxGrapplingSpeed: 3.5
-  maxSpeedInWater: 5
-  maxVerticalSpeedInWater: 3
-  boostSpeed: 25
-  boostCapacity: 1
-  boostDepletingSpeed: 1
-  boostRechargingSpeed: 0.15
-  boostCurrentFuel: 1
-  boostCDMaxTime: 0.2
-  boostFuelLostOnStart: 0.1
-  boostMinFuelNeeded: 0.2
-  initialAcc: 60
-  airInitialAcc: 30
-  breakAcc: -30
-  airBreakAcc: -5
-  hardSteerAcc: -60
-  airHardSteerAcc: -10
-  movingAcc: 85
-  airMovingAcc: 15
-  hardBreakAcc: -90
-  knockbackBreakAcc: -30
-  gravity: 0
-  jumpHeight: 2.5
-  jumpApexTime: 0.4
-  breakJumpForce: 1.5
-  pressingJumpActiveProportion: 0.7
-  maxTimeJumpInsurance: 0.3
-  wallJumpVelocity: 15
-  wallJumpSlidingAcc: -2
-  wallJumpMinHeightPercent: 0.6
-  stopWallMaxTime: 2
-  wallJumpAngle: 25.5
-  wallJumpMinHorizAngle: 30
-  playerNumber: 0
-  myUICamera: {fileID: 0}
-  myPlayerHUD: {fileID: 0}
-  noInput: 0
-  team: 1
-  moveSt: 1
-  jumpSt: 2
-  currentVel: {x: 0, y: -0.51774114, z: 0}
-  currentSpeed: 0
-  currentMovDir: {x: 0, y: 0, z: 0}
-  wallJumpAnim: 0
-  currentFacingDir: {x: -0.030918287, y: 0, z: -0.9995219}
-  facingAngle: 181.77177
-  currentCamFacingDir: {x: -0.2605316, y: -0.49291176, z: -0.8301574}
-  maxTimeStun: 1
-  haveFlag: 0
-  flag: {fileID: 0}
-  inWater: 0
-  online: 0
-  hooked: 0
-  jumpedOutOfWater: 1
---- !u!114 &2739787249420687251
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2852978573330665781}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14ae6d69e3764304f8c7b1a52d60636e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hitboxMats:
-  - {fileID: 2100000, guid: 2700333b147dd394c8452531278051f7, type: 2}
-  - {fileID: 2100000, guid: 8ef3e573ffcdc814aa37206d968bffe3, type: 2}
-  - {fileID: 2100000, guid: 3413d7cda6a31384ca2d10421fac8256, type: 2}
-  - {fileID: 2100000, guid: b005bf027cdb3d64d88cd0db2ead83d9, type: 2}
-  hitboxes: {fileID: 2854368171562172343}
-  attackIndex: -1
-  knockBackSpeed: 20
-  attackNameText: {fileID: 0}
-  conHinchador: 0
-  targetsHit: []
-  attackStg: 0
-  aiming: 0
 --- !u!114 &2739408064946032661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -659,12 +543,12 @@ MonoBehaviour:
   showHorizontalLimits: 1
   showWallRays: 1
   showWallLimits: 0
-  showWallEdgeRays: 1
   horizontalRows: 15
   horizontalRaysPerRow: 15
   maxHeightToClimbStep: 0.3
   wallSlideRows: 8
   wallSlideRaysPerRow: 5
+  showWallEdgeRays: 1
   wallEdgeHighPrecissionRays: 20
   corsbOn: 1
   corsbBorderPercent: 25
@@ -673,7 +557,7 @@ MonoBehaviour:
   aroundRaysPerCircle: 10
   aroundCircles: 10
   aroundRaycastsLength: 1.5
---- !u!114 &2740049171833000137
+--- !u!114 &2740017724817165817
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -682,11 +566,112 @@ MonoBehaviour:
   m_GameObject: {fileID: 2852978573330665781}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ae6fb4d5d02caa49adea417e5868b29, type: 3}
+  m_Script: {fileID: 11500000, guid: 66bcdf6e0f085a446a4787f2032a0aa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
-  maxTimeToLand: 0.3
+  disableAllDebugs: 1
+  myPlayerCombatNew: {fileID: 6457576688623177950}
+  myPlayerWeap: {fileID: 2740053844141714977}
+  myPlayerPickups: {fileID: 2739443829118614599}
+  myPlayerAnimation_01: {fileID: 7710956411820504780}
+  myPlayerHook: {fileID: 2739915846295203843}
+  controller: {fileID: 2739408064946032661}
+  myPlayerBody: {fileID: 2741506816888055387}
+  myPlayerObjectDetection: {fileID: 1593201641832413956}
+  myPlayerModel: {fileID: 604705034532906637}
+  myPlayerVFX: {fileID: 2159948544499626671}
+  gC: {fileID: 0}
+  myCamera: {fileID: 0}
+  cameraFollow: {fileID: 2847219716704171441}
+  rotateObj: {fileID: 2847339013141467789}
+  hasCharacterRotation: 1
+  rotationSpeed: 550
+  instantRotationMinAngle: 110
+  bodyMass: 0
+  maxFallSpeed: 40
+  maxMoveSpeed: 10
+  maxKnockbackSpeed: 300
+  maxAimingSpeed: 5
+  maxHookingSpeed: 3.5
+  maxGrapplingSpeed: 3.5
+  maxSpeedInWater: 5
+  maxVerticalSpeedInWater: 3
+  boostSpeed: 25
+  boostCapacity: 1
+  boostDepletingSpeed: 1
+  boostRechargingSpeed: 0.15
+  boostCurrentFuel: 1
+  boostCDMaxTime: 0.2
+  boostFuelLostOnStart: 0.1
+  boostMinFuelNeeded: 0.2
+  initialAcc: 60
+  airInitialAcc: 30
+  breakAcc: -30
+  airBreakAcc: -5
+  hardSteerAcc: -60
+  airHardSteerAcc: -10
+  movingAcc: 85
+  airMovingAcc: 15
+  hardBreakAcc: -90
+  knockbackBreakAcc: -30
+  gravity: 0
+  jumpHeight: 2.5
+  jumpApexTime: 0.4
+  breakJumpForce: 1.5
+  pressingJumpActiveProportion: 0.7
+  maxTimeJumpInsurance: 0.3
+  wallJumpVelocity: 15
+  wallJumpSlidingAcc: -2
+  wallJumpMinHeightPercent: 0.6
+  stopWallMaxTime: 2
+  wallJumpAngle: 25.5
+  wallJumpMinHorizAngle: 30
+  myUICamera: {fileID: 0}
+  myPlayerHUD: {fileID: 0}
+  online: 0
+  playerNumber: 0
+  team: 1
+  noInput: 0
+  moveSt: 1
+  currentVel: {x: 0, y: -0.51774114, z: 0}
+  currentSpeed: 0
+  currentMovDir: {x: 0, y: 0, z: 0}
+  currentInputDir: {x: 0, y: 0, z: 0}
+  currentFacingDir: {x: -0.030918287, y: 0, z: -0.9995219}
+  facingAngle: 181.77177
+  currentCamFacingDir: {x: -0.2605316, y: -0.49291176, z: -0.8301574}
+  jumpSt: 2
+  wallJumpAnim: 0
+  haveFlag: 0
+  flag: {fileID: 0}
+  inWater: 0
+  hooked: 0
+  jumpedOutOfWater: 1
+--- !u!114 &6457576688623177950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852978573330665781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d372f8544bb3b841b6a7d9814157b34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitboxMats:
+  - {fileID: 2100000, guid: 2700333b147dd394c8452531278051f7, type: 2}
+  - {fileID: 2100000, guid: 8ef3e573ffcdc814aa37206d968bffe3, type: 2}
+  - {fileID: 2100000, guid: 3413d7cda6a31384ca2d10421fac8256, type: 2}
+  - {fileID: 2100000, guid: b005bf027cdb3d64d88cd0db2ead83d9, type: 2}
+  hitboxesParent: {fileID: 2854368171562172343}
+  weaponEdge: {fileID: 0}
+  weaponHandle: {fileID: 0}
+  currentWeapon: {fileID: 0}
+  invulnerable: 0
+  attackStg: 0
+  autocomboStarted: 0
+  aiming: 0
 --- !u!114 &2740053844141714977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -699,9 +684,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61727bad74f98ad44acc6f2ced10c58c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myPlayerAnim: {fileID: 2740049171833000137}
+  myPlayerAnim: {fileID: 0}
   myPlayerMovement: {fileID: 0}
-  myPlayerCombat: {fileID: 0}
+  myPlayerCombatNew: {fileID: 0}
   myPlayerModel: {fileID: 0}
   currentWeapon: {fileID: 0}
   weaponsNearby: []
@@ -726,7 +711,7 @@ MonoBehaviour:
   collScale: {x: 1.3, y: 3, z: 1.52}
   rota: {fileID: 2847339013141467789}
   myPlayerMovement: {fileID: 2740017724817165817}
-  myPlayerCombat: {fileID: 2739787249420687251}
+  myPlayerCombatNew: {fileID: 6457576688623177950}
 --- !u!114 &2739915846295203843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1135,6 +1120,71 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: hairMats.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: skinMats.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: wetsuitMats.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: accesoriesMats.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: bootsMats.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: hair
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: skin
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: wetsuit
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: accesories
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: boots
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: senaka
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: rightHand
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: leftHand
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7fe8d16465f14ca4cb1a013784d61b03, type: 3}

@@ -13,8 +13,10 @@ public class PlayerPickups : MonoBehaviour
 		get{return _activePickup;}
 		set{
 			if (pickupList[activePickup].name == "Hichador")
-				myPlayerCombat.conHinchador = true;
-			_activePickup = value;
+            {
+                //myPlayerCombatNew.conHinchador = true;
+            }
+            _activePickup = value;
 		}
 	}
 
@@ -26,7 +28,7 @@ public class PlayerPickups : MonoBehaviour
 
 	[Header ("Referencias")]
 	public PlayerMovement myPlayerMovement;
-	public PlayerCombat myPlayerCombat;
+	public PlayerCombatNew myPlayerCombatNew;
 
 	float cooldownTime = 0;
 	const float maxCooldownTime = 100;

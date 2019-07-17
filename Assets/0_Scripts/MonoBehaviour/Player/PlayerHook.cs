@@ -24,7 +24,9 @@ public class PlayerHook : MonoBehaviour
     [Header("Referencias")]
     PlayerHUD myPlayerHUD;
     PlayerMovement myPlayerMov;
-    PlayerCombat myPlayerCombat;
+    //PlayerCombat myPlayerCombat;
+    PlayerCombatNew myPlayerCombatNew;
+
     [HideInInspector]
     public CameraController myCameraBase;
     Hook myHook;
@@ -125,7 +127,7 @@ public class PlayerHook : MonoBehaviour
     public void KonoAwake()
     {
         myPlayerMov = GetComponent<PlayerMovement>();
-        myPlayerCombat = GetComponent<PlayerCombat>();
+        myPlayerCombatNew = GetComponent<PlayerCombatNew>();
         if (myPlayerMov == null)
         {
             Debug.LogError("PlayerMovement is not on the object where the hook script is. This object is " + gameObject.name);
@@ -332,12 +334,12 @@ public class PlayerHook : MonoBehaviour
 
     public void HookPlayer(PlayerMovement player)
     {
-        if (canHookSomething && !player.hooked)
+        if (canHookSomething && enemy.StartHooked())
         {
             //print("HOOK PLAYER");
             enemyHooked = true;
             enemy = player;
-            enemy.StartHooked();
+            
             currentHook.transform.SetParent(enemy.transform);
             currentHook.transform.localPosition = Vector3.zero;
             StartReeling();
@@ -385,7 +387,7 @@ public class PlayerHook : MonoBehaviour
             //grappleOrigin = currentHook.transform.position;
             myPlayerMov.StopHooking();
             myPlayerMov.StartHooked();
-            myPlayerCombat.StopAiming();
+            myPlayerCombatNew.StopAiming();
             //currentHookPoint = hookPoint;
 
         }
@@ -435,7 +437,7 @@ public class PlayerHook : MonoBehaviour
                 StoringManager.instance.StoreObject(currentHook.transform);
                 currentHook = null;
                 cdTime = 0;
-                if (myPlayerCombat.aiming)
+                if (myPlayerCombatNew.aiming)
                 {
                     myPlayerHUD.StopThrowHook();
                 }
@@ -462,7 +464,7 @@ public class PlayerHook : MonoBehaviour
         cdTime = 0;
         if (myPlayerMov.Actions.L2.IsPressed)
         {
-            myPlayerCombat.StartAiming();
+            myPlayerCombatNew.StartAiming();
         }
 
     }
@@ -659,7 +661,7 @@ public class PlayerHook : MonoBehaviour
             grappleCDTime = 0;
             if (myPlayerMov.Actions.L2.IsPressed)
             {
-                myPlayerCombat.StartAiming();
+                myPlayerCombatNew.StartAiming();
             }
             if (myHook != null)
             {

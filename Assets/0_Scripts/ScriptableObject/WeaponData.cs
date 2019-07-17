@@ -3,9 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+
+public enum WeaponType
+{
+    Q_Tip,
+    Hammer,
+    Boxing_gloves,
+    Sword,
+    Donut
+}
+
 [CreateAssetMenu(fileName = "New weapon", menuName = "Weapon")]
+[ExecuteInEditMode]
 public class WeaponData : ScriptableObject
 {
+    public bool doErrorCheck = false;
     public WeaponType weaponType;
     [Tooltip("As you want it to show as text on the HUD for picking it up.")]
     public string weaponName;
@@ -14,6 +26,8 @@ public class WeaponData : ScriptableObject
 
     [Tooltip("Player maximum speed when carrying this weapon. Normal value is 10.")]
     public float playerMaxSpeed = 10;
+    [Tooltip("Normal weight is 1.")]
+    [Range(0,3)]
     public float playerWeight = 1;
     public Autocombo autocombo;
     public AttackData parry;
@@ -39,6 +53,15 @@ public class WeaponData : ScriptableObject
     [Tooltip("Local scale for attaching to the hand.")]
     public Vector3 backScale;
 
+    private void OnEnable()
+    {
+        if (doErrorCheck)
+        {
+            doErrorCheck = false;
+            ErrorCheck();
+        }
+    }
+
     public void ErrorCheck()
     {
         bool found = false;
@@ -55,13 +78,5 @@ public class WeaponData : ScriptableObject
         autocombo.ErrorCheck();
         parry.ErrorCheck();
     }
-}
-
-public enum WeaponType
-{
-    Q_Tip,
-    Hammer,
-    Boxing_gloves,
-    Sword,
-    Donut
+    
 }

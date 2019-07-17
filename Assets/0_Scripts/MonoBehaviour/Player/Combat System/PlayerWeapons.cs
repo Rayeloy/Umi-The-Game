@@ -10,9 +10,10 @@ public class PlayerWeapons : MonoBehaviour {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     //Referencias
     [Header("Referencias")]
-    public PlayerAnimation myPlayerAnim;
+    public PlayerAnimation_01 myPlayerAnim;
     public PlayerMovement myPlayerMovement;
-    public PlayerCombat myPlayerCombat;
+    //public PlayerCombat myPlayerCombat;
+    public PlayerCombatNew myPlayerCombatNew;
     PlayerHUD myPlayerHUD;
     [HideInInspector]
     public PlayerModel myPlayerModel;
@@ -71,8 +72,8 @@ public class PlayerWeapons : MonoBehaviour {
     public void KonoAwake()
     {
         myPlayerMovement = GetComponent<PlayerMovement>();
-        myPlayerAnim = myPlayerMovement.myPlayerAnimation;
-        myPlayerCombat = myPlayerMovement.myPlayerCombat;
+        myPlayerAnim = myPlayerMovement.myPlayerAnimation_01;
+        myPlayerCombatNew = myPlayerMovement.myPlayerCombatNew;
         myPlayerHUD = myPlayerMovement.myPlayerHUD;
         myPlayerModel = myPlayerMovement.myPlayerModel;
         weaponsNearby = new List<Weapon>();
@@ -156,15 +157,17 @@ public class PlayerWeapons : MonoBehaviour {
         }
         DropWeapon();
         myPlayerMovement.maxMoveSpeed = weapon.weaponData.playerMaxSpeed;
+        myPlayerMovement.bodyMass = weapon.weaponData.playerWeight;
         AttatchWeapon(weapon);
-        myPlayerCombat.FillMyAttacks(currentWeapon.weaponData);
+        //myPlayerCombat.FillMyAttacks(currentWeapon.weaponData);
+        myPlayerCombatNew.InitializeCombatSystem(weapon);
     }
 
     public void DropWeapon()
     {
         if (hasWeapon)
         {
-            myPlayerCombat.EmptyMyAttacks();
+            myPlayerCombatNew.DropWeapon();
             Destroy(currentWeapObject.gameObject);
             currentWeapObject = null;
             currentWeapon = null;

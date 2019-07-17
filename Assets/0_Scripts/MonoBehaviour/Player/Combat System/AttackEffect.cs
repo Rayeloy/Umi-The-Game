@@ -29,19 +29,22 @@ public class AttackEffect
 
     [Header("--- Knockback ---")]
     public KnockbackType knockbackType;
-    public float knockbackMagnitude = 0;
+    [Tooltip("If using the knockbackType Autocenter, the magnitude indicates how far away in front of the player will the hit send the enemy (in Unity units).")]
+    public float knockbackMagnitude = 1;
     [Header("- Custom Dir -")]
     public Vector3 knockbackDir = Vector3.zero;
     [Header("- Redirect -")]
     [Tooltip("The maximum horizontal angle in which we can redirect the enemy with the joystick")]
     [Range(-90,90)]
     public float redirectMaxAngle = 0;
+    [Header("- Inwards/Outwards/Redirect -")]
     [Range(-90,90)]
-    public float redirectKnockbackYAngle = 0;
+    public float knockbackYAngle = 0;
     [Header("--- Stun & softStun ---")]
     public float stunTime = 0;
-    [Header("--- Knockdown ---")]
-    public float knockdownTime = 0;
+    //[Header("--- Knockdown ---")]
+    [HideInInspector]
+    public const float knockdownTime = 3;
     [Header("--- Parry ---")]
     public float parryStunTime = 0;
 
@@ -63,8 +66,6 @@ public class AttackEffect
                     Debug.LogError("AttackEffect-> Error: the effect is of type knockback and the knockbackType is set to customDir but the customDir is set to Vector3.zero!");
                 if (knockbackType == KnockbackType.redirect && redirectMaxAngle==0)
                     Debug.LogError("AttackEffect-> Error: the effect is of type knockback and the knockbackType is set to redirect but the redirectMaxAngle is set to 0!");
-                if (knockbackType == KnockbackType.redirect && redirectKnockbackYAngle == 0)
-                    Debug.LogError("AttackEffect-> Error: the effect is of type knockback and the knockbackType is set to redirect but the redirectKnockbackYAngle is set to 0!");
                 break;
             case EffectType.softStun:
                 if(stunTime==0) Debug.LogError("AttackEffect-> Error: the effect is of type softStun but the stunTime is set to 0!");

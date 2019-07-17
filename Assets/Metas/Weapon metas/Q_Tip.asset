@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a294f4648c143c34e9705c42220ff514, type: 3}
   m_Name: Q_Tip
   m_EditorClassIdentifier: 
+  doErrorCheck: 0
   weaponType: 0
   weaponName: Q-Tip
   weaponSkins:
   - {fileID: 3429925903679813966, guid: 3c1d55306a1ef7d4c8c952e942128c34, type: 3}
   - {fileID: 5000564471710872291, guid: 45931b2dcadbe1048a86393f6b21dbbb, type: 3}
   playerMaxSpeed: 10
-  basicAttack: {fileID: 11400000, guid: 18703f508ef408d438f24df7fbf3cab9, type: 2}
-  strongAttack: {fileID: 11400000, guid: 2b75ec5fa4b3fc443aabff7216c34399, type: 2}
-  specialAttack: {fileID: 11400000, guid: 8d372fb1a03cb664e839e0c82acfe896, type: 2}
+  playerWeight: 1
+  autocombo: {fileID: 11400000, guid: b225fbbfb698a484a909a73a86a8335d, type: 2}
+  parry: {fileID: 11400000, guid: fb7b4a97c2d42de46a55ccf006959777, type: 2}
   handPosition: {x: -0.0086, y: 0.0097, z: 0.0068}
   handRotation: {x: 45.854, y: -163.913, z: -5.477}
   handScale: {x: 1.599267, y: 1.599267, z: 1.599267}

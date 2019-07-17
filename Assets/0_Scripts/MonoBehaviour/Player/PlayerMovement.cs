@@ -35,8 +35,8 @@ public enum JumpState
 
 #region ----[ REQUIRECOMPONENT ]----
 [RequireComponent(typeof(Controller3D))]
-[RequireComponent(typeof(PlayerCombat))]
-[RequireComponent(typeof(PlayerAnimation))]
+[RequireComponent(typeof(PlayerCombatNew))]
+[RequireComponent(typeof(PlayerAnimation_01))]
 [RequireComponent(typeof(PlayerWeapons))]
 [RequireComponent(typeof(PlayerHook))]
 #endregion
@@ -45,10 +45,11 @@ public class PlayerMovement : MonoBehaviour
     #region ----[ VARIABLES FOR DESIGNERS ]----
     [Header("Referencias")]
     public bool disableAllDebugs;
-    public PlayerCombat myPlayerCombat;
+    //public PlayerCombat myPlayerCombat;
+    public PlayerCombatNew myPlayerCombatNew;
     public PlayerWeapons myPlayerWeap;
     public PlayerPickups myPlayerPickups;
-    public PlayerAnimation myPlayerAnimation;
+    //public PlayerAnimation myPlayerAnimation;
     public PlayerAnimation_01 myPlayerAnimation_01;
     public PlayerHook myPlayerHook;
     public Controller3D controller;
@@ -82,9 +83,14 @@ public class PlayerMovement : MonoBehaviour
     float targetRotation = 0;
     float currentRotation;
 
+    [Header("Body Mass")]
+    [Tooltip("Body Mass Index. 1 is for normal body mass.")]
+    public float bodyMass;
+
     [Header("SPEED")]
     public float maxFallSpeed = 100;
     public float maxMoveSpeed = 10;
+    float maxAttackingMoveSpeed = 10;
     [Tooltip("Maximum speed that you can travel at horizontally when hit by someone")]
     public float maxKnockbackSpeed = 300f;
     public float maxAimingSpeed = 5f;
@@ -176,26 +182,33 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region ----[ PROPERTIES ]----
-    //Eloy: FOR ONLINE
-    [HideInInspector]
-    public int playerNumber; //from 0 to maxPlayers
-
     //Referencias que no se asignan en el inspector
     [HideInInspector]
     public Camera myUICamera;
     [HideInInspector]
     public PlayerHUD myPlayerHUD;
+
+    //ONLINE
+    [HideInInspector]
+    public bool online = false;
+
+    //Eloy: FOR ONLINE
+    [HideInInspector]
+    public int playerNumber; //from 0 to maxPlayers
+
+    //INFO GENERAL
+    [HideInInspector]
+    public Team team = Team.A;
+    [HideInInspector]
+    public PlayerSpawnInfo mySpawnInfo;
+
     //BOOL PARA PERMITIR O BLOQUEAR INPUTS
     [HideInInspector]
     public bool noInput = false;
-    //EQUIPO
-    [HideInInspector]
-    public Team team = Team.A;
-    //ESTADO DE MOVIMIENTO Y SALTO
+
+    //MOVIMIENTO
     [HideInInspector]
     public MoveState moveSt = MoveState.NotMoving;
-    [HideInInspector]
-    public JumpState jumpSt = JumpState.none;
     [HideInInspector]
     public Vector3 currentVel;
     [HideInInspector]
@@ -203,27 +216,30 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector]
     public Vector3 currentMovDir;
     [HideInInspector]
-    Vector3 currentInputDir;
-    [HideInInspector]
-    public bool wallJumpAnim = false;
+    public Vector3 currentInputDir;
     [HideInInspector]
     public Vector3 currentFacingDir = Vector3.forward;
     [HideInInspector]
     public float facingAngle = 0;
     [HideInInspector]
     public Vector3 currentCamFacingDir = Vector3.zero;
+
+    //SALTO
     [HideInInspector]
-    public float maxTimeStun = 0.6f;
+    public JumpState jumpSt = JumpState.none;
+    [HideInInspector]
+    public bool wallJumpAnim = false;
+
+    //FLAG
     [HideInInspector]
     public bool haveFlag = false;
     [HideInInspector]
     public Flag flag = null;
+
+    //WATER
     [HideInInspector]
     public bool inWater = false;
-    [HideInInspector]
-    public bool online = false;
-    [HideInInspector]
-    public PlayerSpawnInfo mySpawnInfo;
+
     #endregion
 
     #region ----[ VARIABLES ]----  
@@ -255,11 +271,19 @@ public class PlayerMovement : MonoBehaviour
     float wallJumpCheckRaysColumnsSpacing;
     LayerMask auxLM;//LM = Layer Mask
 
-    //KNOCKBACK AND STUN
-    float timeStun = 0;
-    bool stunned;
-    bool knockBackDone;
+    //Attack effect suffering
+    EffectType sufferingEffect;
+    float effectTime = 0;
+    float effectMaxTime = 0;
+    bool knockbackDone;
     Vector3 knockback;
+    bool sufferingStunLikeEffect
+    {
+        get
+        {
+            return (sufferingEffect == EffectType.softStun || sufferingEffect == EffectType.stun || sufferingEffect == EffectType.knockdown);
+        }
+    }
 
     //FIXED JUMPS (Como el trampolín)
     bool fixedJumping;
@@ -346,7 +370,7 @@ public class PlayerMovement : MonoBehaviour
     void PlayerAwakes()
     {
         myPlayerHUD.KonoAwake();
-        myPlayerCombat.KonoAwake();
+        myPlayerCombatNew.KonoAwake();
         //myPlayerAnimation.KonoAwake();
         myPlayerAnimation_01.KonoAwake();
         myPlayerHook.KonoAwake();
@@ -377,7 +401,7 @@ public class PlayerMovement : MonoBehaviour
     }
     private void PlayerStarts()
     {
-        myPlayerCombat.KonoStart();
+        myPlayerCombatNew.KonoStart();
         myPlayerHUD.KonoStart();
     }
 
@@ -418,7 +442,7 @@ public class PlayerMovement : MonoBehaviour
         //print("CurrentVel 3= " + currentVel.ToString("F6"));
         controller.Move(currentVel * Time.deltaTime);
         //GetComponent<Rigidbody>().velocity = currentVel;
-        myPlayerCombat.KonoUpdate();
+        myPlayerCombatNew.KonoUpdate();
         controller.collisions.ResetAround();
 
         //myPlayerAnimation.KonoUpdate();
@@ -436,46 +460,6 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region ----[ CLASS FUNCTIONS ]----
-
-    public void ResetPlayer()
-    {
-        ExitWater();
-        jumpSt = JumpState.none;
-        myPlayerHook.ResetHook();
-        if (haveFlag)
-        {
-            flag.SetAway(false);
-        }
-        boostCurrentFuel = boostCapacity;
-        //myPlayerWeap.DropWeapon();
-        //controller.collisionMask = LayerMask.GetMask("Stage", "WaterFloor", "SpawnWall");
-    }
-
-    void EquipWeaponAtStart()
-    {
-        //print("EQUIP WEAPON AT START");
-        switch (team)
-        {
-            case Team.A:
-                //print("EQUIP BLUE WEAPON");
-                myPlayerWeap.PickupWeapon(gC.startingWeaponBlue);
-                break;
-            case Team.B:
-                //print("EQUIP RED WEAPON");
-                myPlayerWeap.PickupWeapon(gC.startingWeaponRed);
-                break;
-        }
-    }
-
-    public void TeleportPlayer(Vector3 worldPos)
-    {
-        ExitWater();
-        StopBoost();
-        StopHooked();
-        StopHooking();
-        StopWallJump();
-        transform.position = worldPos;
-    }
 
     #region INPUTS BUFFERING
 
@@ -502,13 +486,19 @@ public class PlayerMovement : MonoBehaviour
                             inputsBuffer[i].StopBuffering();
                         }
                         break;
+                    case PlayerInput.Autocombo:
+                        if (myPlayerCombatNew.StartOrContinueAutocombo(true))
+                        {
+                            inputsBuffer[i].StopBuffering();
+                        }
+                        break;
                 }
                 inputsBuffer[i].ProcessTime();
             }
         }
     }
 
-    void BufferInput(PlayerInput _inputType)
+    public void BufferInput(PlayerInput _inputType)
     {
         bool found = false;
         for (int i = 0; i < inputsBuffer.Length && !found; i++)
@@ -593,9 +583,9 @@ public class PlayerMovement : MonoBehaviour
         Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
         #region//------------------------------------------------ DECIDO TIPO DE MOVIMIENTO --------------------------------------------
         #region//----------------------------------------------------- Efecto externo --------------------------------------------
-        if (stunned)
+        if (sufferingStunLikeEffect)
         {
-            ProcessStun();
+            ProcessSufferingEffect();
         }
         else if (hooked)
         {
@@ -609,64 +599,73 @@ public class PlayerMovement : MonoBehaviour
         ProcessBoost();
         #endregion
         #region //----------------------------------------------------- Efecto interno --------------------------------------------
-        if (!hooked && !fixedJumping && moveSt != MoveState.Boost)
+        if (!hooked && !fixedJumping && moveSt != MoveState.Boost && moveSt!=MoveState.Knockback)
         {
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
             CalculateMoveDir();//Movement direction
             angleDiff = Vector3.Angle(horizontalVel, currentMovDir);//hard Steer si > 90
             //ProcessHardSteer();
-            if (!myPlayerCombat.aiming && Actions.R2.WasPressed)//Input.GetButtonDown(contName + "RB"))
+            if (!myPlayerCombatNew.aiming && Actions.R2.WasPressed)//Input.GetButtonDown(contName + "RB"))
             {
                 StartBoost();
             }
-            //------------------------------- Max Move Speed -------------------------------
-            currentMaxMoveSpeed = maxMoveSpeed;
-            ProcessWater();
-            ProcessAiming();
-            ProcessHooking();
-            if (currentSpeed > (currentMaxMoveSpeed + 0.1f) && (moveSt == MoveState.Moving || moveSt == MoveState.NotMoving))
-            {
-                //Debug.LogWarning("Warning: moveSt set to MovingBreaking!: currentSpeed = "+currentSpeed+ "; maxMoveSpeed2 = " + maxMoveSpeed2 + "; currentVel.magnitude = "+currentVel.magnitude);
-                moveSt = MoveState.MovingBreaking;
-            }
 
-            finalMaxMoveSpeed = lastJoystickSens > joystickSens && moveSt == MoveState.Moving ? (lastJoystickSens / 1) * currentMaxMoveSpeed : (joystickSens / 1) * currentMaxMoveSpeed;
-            //------------------------------- Acceleration -------------------------------
+            #region ------------------------------ Max Move Speed ------------------------------
+                currentMaxMoveSpeed = myPlayerCombatNew.attackStg == AttackPhaseType.ready ? maxMoveSpeed : maxAttackingMoveSpeed;//maxAttackingMoveSpeed == maxMoveSpeed if not attacking
+                ProcessWater();//only apply if the new max move speed is lower
+                ProcessAiming();//only apply if the new max move speed is lower
+                ProcessHooking();//only apply if the new max move speed is lower
+                if (currentSpeed > (currentMaxMoveSpeed + 0.1f) && (moveSt == MoveState.Moving || moveSt == MoveState.NotMoving))
+                {
+                    //Debug.LogWarning("Warning: moveSt set to MovingBreaking!: currentSpeed = "+currentSpeed+ "; maxMoveSpeed2 = " + maxMoveSpeed2 + "; currentVel.magnitude = "+currentVel.magnitude);
+                    moveSt = MoveState.MovingBreaking;
+                }
+
+                finalMaxMoveSpeed = lastJoystickSens > joystickSens && moveSt == MoveState.Moving ? (lastJoystickSens / 1) * currentMaxMoveSpeed : (joystickSens / 1) * currentMaxMoveSpeed;
+
+            #endregion
+
+            #region ------------------------------- Acceleration -------------------------------
             float finalAcc;
             float finalBreakAcc = controller.collisions.below ? breakAcc : airBreakAcc;
             float finalHardSteerAcc = controller.collisions.below ? hardSteerAcc : airHardSteerAcc;
             float finalInitialAcc = controller.collisions.below ? initialAcc : airInitialAcc;
             finalMovingAcc = controller.collisions.below ? movingAcc : airMovingAcc; //Turning accleration
             //finalBreakAcc = currentSpeed < 0 ? -finalBreakAcc : finalBreakAcc;
-            switch (moveSt)
+            if (!knockbackDone)
             {
-                case MoveState.Moving:
-                    if (angleDiff > instantRotationMinAngle)//hard Steer
-                    {
-                        finalAcc = finalHardSteerAcc;
-                    }
-                    else //Debug.LogWarning("Moving: angleDiff <= 90");
-                    {
-                        finalAcc = lastJoystickSens > joystickSens ? finalBreakAcc : finalInitialAcc;
-                    }
-                    //}
-                    break;
-                case MoveState.MovingBreaking:
-                    finalAcc = hardBreakAcc;//breakAcc * 3;
-                    break;
-                case MoveState.Knockback:
-                    finalAcc = knockbackBreakAcc;
-                    break;
-                case MoveState.NotMoving:
-                    finalAcc = (currentSpeed == 0) ? 0 : finalBreakAcc;
-                    break;
-                default:
-                    finalAcc = finalBreakAcc;
-                    break;
+                switch (moveSt)
+                {
+                    case MoveState.Moving:
+                        if (angleDiff > instantRotationMinAngle)//hard Steer
+                        {
+                            finalAcc = finalHardSteerAcc;
+                        }
+                        else //Debug.LogWarning("Moving: angleDiff <= 90");
+                        {
+                            finalAcc = lastJoystickSens > joystickSens ? finalBreakAcc : finalInitialAcc;
+                        }
+                        //}
+                        break;
+                    case MoveState.MovingBreaking:
+                        finalAcc = hardBreakAcc;//breakAcc * 3;
+                        break;
+                    case MoveState.NotMoving:
+                        finalAcc = (currentSpeed == 0) ? 0 : finalBreakAcc;
+                        break;
+                    default:
+                        finalAcc = finalBreakAcc;
+                        break;
+                }
             }
+            else
+            {
+                finalAcc = knockbackBreakAcc;
+            }
+            #endregion
 
-            //------------------------------- Speed ------------------------------- 
+            #region ----------------------------------- Speed ---------------------------------- 
             switch (moveSt)
             {
                 case MoveState.Moving:
@@ -699,14 +698,16 @@ public class PlayerMovement : MonoBehaviour
                 currentVel = new Vector3(horizontalVel.x,currentVel.y, horizontalVel.z);
             }
             //Debug.Log("CurrentSpeed 1.2 = " + currentSpeed);
-            float maxSpeedClamp = stunned || noInput ? maxKnockbackSpeed : finalMaxMoveSpeed;
+            float maxSpeedClamp = knockbackDone ? maxKnockbackSpeed : finalMaxMoveSpeed;
             float minSpeedClamp = (lastJoystickSens > joystickSens && moveSt == MoveState.Moving) ? (joystickSens / 1) * currentMaxMoveSpeed : 0;
             currentSpeed = Mathf.Clamp(currentSpeed, minSpeedClamp, maxSpeedClamp);
             if(hardSteerStarted && angleDiff<= instantRotationMinAngle)
             {
                 hardSteerStarted = false;
             }
+            if (knockbackDone && currentSpeed <= maxMoveSpeed) knockbackDone = false;
         }
+        #endregion
         #endregion
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
@@ -754,19 +755,15 @@ public class PlayerMovement : MonoBehaviour
                     }
                     break;
                 case MoveState.Knockback:
-                    if (!knockBackDone)
+                    if (!knockbackDone)
                     {
                         print("KNOCKBACK");
                         currentVel = currentVel + knockback;
                         horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
                         currentSpeed = horizontalVel.magnitude;
                         currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
-                        knockBackDone = true;
-                    }
-                    else
-                    {
-                        horizontalVel = horizontalVel.normalized * currentSpeed;
-                        currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
+                        knockbackDone = true;
+                        knockback = Vector3.zero;
                     }
                     //print("vel.y = " + currentVel.y);
                     break;
@@ -795,6 +792,22 @@ public class PlayerMovement : MonoBehaviour
         //print("CurrentVel after processing= " + currentVel.ToString("F6") + "; CurrentSpeed 1.4 = " + currentSpeed + "; horVel.magnitude = " 
         //    + horVel.magnitude + "; currentMovDir = " + currentMovDir.ToString("F6"));
         #endregion
+    }
+
+    public void SetPlayerAttackMovementSpeed(float movementPercent)
+    {
+        maxAttackingMoveSpeed = movementPercent * maxMoveSpeed;
+    }
+
+    //not in use?
+    public void ResetPlayerAttackMovementSpeed()
+    {
+        maxAttackingMoveSpeed = maxMoveSpeed;
+    }
+
+    public void DoImpulse(Vector3 impulse)
+    {
+        currentVel = impulse;
     }
 
     void VerticalMovement()
@@ -1104,6 +1117,7 @@ public class PlayerMovement : MonoBehaviour
                 RotateCharacter(currentMovDir);
             }
             myPlayerHUD.StartCamVFX(CameraVFXType.Dash);
+            myPlayerCombatNew.StopDoingCombat();
         }
         else
         {
@@ -1213,9 +1227,9 @@ public class PlayerMovement : MonoBehaviour
 
     #region  FACING DIR AND ANGLE & BODY ROTATION---------------------------------------------
 
-    public void SetPlayerRotationSpeed(float rotSpeed)
+    public void SetPlayerRotationSpeed(float rotSpeedPercentage)
     {
-        currentRotationSpeed = rotSpeed;
+        currentRotationSpeed = currentRotationSpeed * rotSpeedPercentage;
     }
 
     public void ResetPlayerRotationSpeed()
@@ -1283,7 +1297,7 @@ public class PlayerMovement : MonoBehaviour
                         #region --- Character Rotation with rotation speed ---
                         if (currentRotation != targetRotation)
                         {
-                            if (!myPlayerCombat.isRotationRestricted && rotationDiff > instantRotationMinAngle)//Instant rotation
+                            if (!myPlayerCombatNew.isRotationRestricted && rotationDiff > instantRotationMinAngle)//Instant rotation
                             {
                                 //Debug.LogError("INSTANT BODY ROTATION, angle = "+targetRotation);
                                 RotateCharacterInstantly(targetRotation);
@@ -1343,48 +1357,108 @@ public class PlayerMovement : MonoBehaviour
 
     #endregion
 
-    #region RECIEVE HIT AND STUN ---------------------------------------------
+    #region RECIEVE HIT AND EFFECTS ---------------------------------------------
 
-    public void StartRecieveHit(Vector3 _knockback, PlayerMovement attacker, float _maxTimeStun)
+    public bool StartRecieveHit(PlayerMovement attacker, Vector3 _knockback, EffectType efecto, float _maxTime=0)
     {
-        print("Recieve hit");
-        myPlayerHook.FinishAutoGrapple();
-        myPlayerHook.StopHook();
-
-        maxTimeStun = _maxTimeStun;
-        timeStun = 0;
-        noInput = true;
-        stunned = true;
-        knockBackDone = false;
-        knockback = _knockback;
-
-        //Give FLAG
-        if (haveFlag)
+        if (sufferingEffect != EffectType.knockdown && !myPlayerCombatNew.invulnerable)
         {
-            flag.DropFlag();
-        }
+            print("Recieve hit");
+            myPlayerHook.FinishAutoGrapple();
+            myPlayerHook.StopHook();
+            if (sufferingEffect == EffectType.stun)
+            {
+                efecto = EffectType.knockdown;
+                _maxTime = AttackEffect.knockdownTime;
+            }
+            sufferingEffect = efecto;
+            switch (efecto)
+            {
+                case EffectType.softStun:
+                    noInput = true;
+                    break;
+                case EffectType.stun:
+                    noInput = true;
+                    break;
+                case EffectType.knockdown:
+                    noInput = true;
+                    myPlayerCombatNew.StartInvulnerabilty(_maxTime);
+                    break;
+                case EffectType.none:
+                    break;
+                default:
+                    Debug.LogError("Error: cannot have a 'sufferingEffect' of type " + sufferingEffect);
+                    break;
+            }
 
-        print("STUNNED");
+            effectMaxTime = _maxTime;
+            effectTime = 0;
+            if (_knockback != Vector3.zero)
+            {
+                knockbackDone = false;
+                _knockback = _knockback / bodyMass;
+                knockback = _knockback;
+            }
+
+            //Give FLAG
+            if (haveFlag)
+            {
+                flag.DropFlag();
+            }
+
+            print("Player " + playerNumber + " RECIEVED HIT");
+            return true;
+        }
+        else return false; 
     }
 
-    void ProcessStun()
+    void RecieveKnockback()
     {
-        if (stunned)
+        if (knockback != Vector3.zero)
         {
-            moveSt = MoveState.Knockback;//Eloy: ESTO CREO QUE ESTÁ MAL PUESTO, el knockback SOLO SE APLICA UNA VEZ, no todo el tiempo de stun...pero me da miedo cambiarlo ahora de repente
-            timeStun += Time.deltaTime;
-            if (timeStun >= maxTimeStun)
+            moveSt = MoveState.Knockback;
+        }
+    }
+
+    void ProcessSufferingEffect()
+    {
+        RecieveKnockback();
+        if (sufferingEffect==EffectType.softStun || sufferingEffect == EffectType.stun || sufferingEffect == EffectType.knockdown)
+        {
+            effectTime += Time.deltaTime;
+            if (effectTime >= effectMaxTime)
             {
-                StopStun();
+                StopSufferingEffect();
             }
         }
     }
 
-    void StopStun()
+    void StopSufferingEffect()
     {
-        noInput = false;
-        stunned = false;
-        print("STUN END");
+        switch (sufferingEffect)
+        {
+            case EffectType.softStun:
+                noInput = false;
+                sufferingEffect = EffectType.none;
+                effectTime = 0;
+                break;
+            case EffectType.stun:
+                noInput = false;
+                sufferingEffect = EffectType.none;
+                effectTime = 0;
+                break;
+            case EffectType.knockdown:
+                noInput = false;
+                sufferingEffect = EffectType.none;
+                effectTime = 0;
+                break;
+            case EffectType.none:
+                break;
+            default:
+                Debug.LogError("Error: cannot have a 'sufferingEffect' of type " + sufferingEffect);
+                break;
+        }
+        print("Suffering effect "+sufferingEffect+" END");
     }
 
     #endregion
@@ -1400,7 +1474,7 @@ public class PlayerMovement : MonoBehaviour
         noMoveTime = 0;
         knockback = vel;
         StopBoost();
-
+        myPlayerCombatNew.StopDoingCombat();
     }
 
     void ProcessFixedJump()
@@ -1437,9 +1511,9 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region HOOKING/HOOKED ---------------------------------------------
-    public void StartHooked()
+    public bool StartHooked()
     {
-        if (!hooked)
+        if (!hooked && !myPlayerCombatNew.invulnerable)
         {
             noInput = true;
             hooked = true;
@@ -1453,6 +1527,12 @@ public class PlayerMovement : MonoBehaviour
             }
             //To Do:
             //Stop attacking
+            myPlayerCombatNew.StopDoingCombat();
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
@@ -1481,6 +1561,7 @@ public class PlayerMovement : MonoBehaviour
         {
             hooking = true;
             if (controller.collisions.below) hookingAndTouchedGroundOnce = true;
+            myPlayerCombatNew.StopDoingCombat();
         }
     }
 
@@ -1512,7 +1593,7 @@ public class PlayerMovement : MonoBehaviour
 
     void ProcessAiming()
     {
-        if (myPlayerCombat.aiming && currentMaxMoveSpeed > maxAimingSpeed)
+        if (myPlayerCombatNew.aiming && currentMaxMoveSpeed > maxAimingSpeed)
         {
             currentMaxMoveSpeed = maxAimingSpeed;
         }
@@ -1574,6 +1655,7 @@ public class PlayerMovement : MonoBehaviour
             }
             myPlayerVFX.ActivateEffect(PlayerVFXType.SwimmingEffect);
             myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
+            myPlayerCombatNew.StopDoingCombat();
         }
     }
 
@@ -1700,11 +1782,52 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region  AUXILIAR FUNCTIONS ---------------------------------------------
+    public void ResetPlayer()
+    {
+        ExitWater();
+        jumpSt = JumpState.none;
+        myPlayerHook.ResetHook();
+        if (haveFlag)
+        {
+            flag.SetAway(false);
+        }
+        boostCurrentFuel = boostCapacity;
+        //myPlayerWeap.DropWeapon();
+        //controller.collisionMask = LayerMask.GetMask("Stage", "WaterFloor", "SpawnWall");
+    }
+
+    void EquipWeaponAtStart()
+    {
+        //print("EQUIP WEAPON AT START");
+        switch (team)
+        {
+            case Team.A:
+                //print("EQUIP BLUE WEAPON");
+                myPlayerWeap.PickupWeapon(gC.startingWeaponBlue);
+                break;
+            case Team.B:
+                //print("EQUIP RED WEAPON");
+                myPlayerWeap.PickupWeapon(gC.startingWeaponRed);
+                break;
+        }
+    }
+
+    public void TeleportPlayer(Vector3 worldPos)
+    {
+        ExitWater();
+        StopBoost();
+        StopHooked();
+        StopHooking();
+        StopWallJump();
+        transform.position = worldPos;
+    }
+
     Vector3 AngleToVector(float angle)
     {
         angle = angle * Mathf.Deg2Rad;
         return new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle));
     }
+
     public Vector3 RotateVector(float angle, Vector3 vector)
     {
         //rotate angle -90 degrees
@@ -1715,6 +1838,7 @@ public class PlayerMovement : MonoBehaviour
         float py = vector.x * sn + vector.z * cs;
         return new Vector3(px, 0, py).normalized;
     }
+
     public Vector3 CalculateReflectPoint(float radius, Vector3 _wallNormal, Vector3 circleCenter)//needs wallJumpRadius and wallNormal
     {
         //LEFT OR RIGHT ORIENTATION?
