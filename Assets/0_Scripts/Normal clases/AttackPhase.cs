@@ -46,17 +46,20 @@ public class AttackPhase
 
     public void ErrorCheck()
     {
-        if(attackPhaseType== AttackPhaseType.active)
+        if(attackPhaseType== AttackPhaseType.active && attackHitboxes.Length==0)
         {
             Debug.LogError("AttackPhase-> Error: this is an active phase attackPhase but there is no hitbox!");
         }
-        else if (attackPhaseType != AttackPhaseType.active)
+        else if (attackPhaseType != AttackPhaseType.active && attackHitboxes.Length>0)
         {
             Debug.LogError("AttackPhase-> Error: only active phases are supposed to have a hitbox!");
         }
-        for(int i = 0; i < attackHitboxes.Length; i++)
+        else
         {
-            attackHitboxes[i].ErrorCheck();
+            for (int i = 0; i < attackHitboxes.Length; i++)
+            {
+                attackHitboxes[i].ErrorCheck();
+            }
         }
     }
 

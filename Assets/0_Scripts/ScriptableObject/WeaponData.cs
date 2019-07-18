@@ -17,7 +17,6 @@ public enum WeaponType
 [ExecuteInEditMode]
 public class WeaponData : ScriptableObject
 {
-    public bool doErrorCheck = false;
     public WeaponType weaponType;
     [Tooltip("As you want it to show as text on the HUD for picking it up.")]
     public string weaponName;
@@ -52,15 +51,6 @@ public class WeaponData : ScriptableObject
     public Vector3 backRotation;
     [Tooltip("Local scale for attaching to the hand.")]
     public Vector3 backScale;
-
-    private void OnEnable()
-    {
-        if (doErrorCheck)
-        {
-            doErrorCheck = false;
-            ErrorCheck();
-        }
-    }
 
     public void ErrorCheck()
     {
