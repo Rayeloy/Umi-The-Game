@@ -24,7 +24,7 @@ MonoBehaviour:
     restrictRotation: 0
     rotationSpeedPercentage: 0
     restrictMovement: 0
-    movementSpeed: 0
+    movementSpeedPercentage: 0
     invulnerability: 0
   startupPhase:
     isFoldedInEditor: 0
@@ -34,7 +34,7 @@ MonoBehaviour:
     restrictRotation: 1
     rotationSpeedPercentage: 0
     restrictMovement: 1
-    movementSpeed: 0.1
+    movementSpeedPercentage: 0
     invulnerability: 0
   activePhase:
     isFoldedInEditor: 0
@@ -62,11 +62,11 @@ MonoBehaviour:
         stunTime: 0.35
         parryStunTime: 0
         parryRecoveryTime: 0
-    duration: 0.2
+    duration: 0.4
     restrictRotation: 1
     rotationSpeedPercentage: 0
     restrictMovement: 1
-    movementSpeed: 0.1
+    movementSpeedPercentage: 0
     invulnerability: 0
   recoveryPhase:
     isFoldedInEditor: 0
@@ -76,8 +76,7 @@ MonoBehaviour:
     restrictRotation: 1
     rotationSpeedPercentage: 0
     restrictMovement: 1
-    movementSpeed: 0.2
+    movementSpeedPercentage: 0
     invulnerability: 0
-  impulseDir: {x: 0, y: 0, z: 0}
-  impulseMagnitude: 0.5
+  impulseMagnitude: 15
   comboDifferentAttackPercent: 50
