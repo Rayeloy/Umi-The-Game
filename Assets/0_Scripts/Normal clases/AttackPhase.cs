@@ -30,7 +30,7 @@ public class AttackPhase
     public bool restrictMovement;
     [Tooltip("0 means 0% movement, 1 -> 100% movement")]
     [Range(0, 1)]
-    public float movementSpeed;
+    public float movementSpeedPercentage;
 
     //[Tooltip("Do you want this phase to have a hitbox?")]
     //public bool hasHitbox;

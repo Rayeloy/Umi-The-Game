@@ -20,7 +20,7 @@ public class BufferedInputData : ScriptableObject
 public class BufferedInput
 {
     public BufferedInputData input;
-    private float time;//
+    public float time;//
     public bool buffering;//está a true si está actualmente "buffereado"
 
     public BufferedInput(BufferedInputData _input)

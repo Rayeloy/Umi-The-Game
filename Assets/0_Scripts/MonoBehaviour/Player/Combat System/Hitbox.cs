@@ -56,7 +56,7 @@ public class Hitbox : MonoBehaviour
                                     {
                                         case EffectType.knockback:
                                             //calculate knockback vector
-                                            //print("KNOCKBACK TYPE= " + myPlayerCombat.myAttacks[myPlayerCombat.attackIndex].attack.knockbackType);
+                                            Debug.Log("KNOCKBACK TYPE= " + myAttackHitbox.effects[i].knockbackType);
                                             switch (myAttackHitbox.effects[i].knockbackType)
                                             {
                                                 case KnockbackType.outwards:
@@ -64,12 +64,14 @@ public class Hitbox : MonoBehaviour
                                                     Vector3 colPos = col.transform.position;
                                                     resultKnockback = new Vector3(colPos.x - myPos.x, 0, colPos.z - myPos.z).normalized;
                                                     resultKnockback = Quaternion.Euler(0, myAttackHitbox.effects[i].knockbackYAngle, 0) * resultKnockback;
+                                                    resultKnockback = resultKnockback * myAttackHitbox.effects[i].knockbackMagnitude;
                                                     break;
                                                 case KnockbackType.inwards:
                                                     myPos = myPlayerMov.transform.position;
                                                     colPos = col.transform.position;
                                                     resultKnockback = new Vector3(myPos.x - colPos.x, 0, myPos.z - colPos.z).normalized;
                                                     resultKnockback = Quaternion.Euler(0, myAttackHitbox.effects[i].knockbackYAngle, 0) * resultKnockback;
+                                                    resultKnockback = resultKnockback * myAttackHitbox.effects[i].knockbackMagnitude;
                                                     break;
                                                 case KnockbackType.customDir:
                                                     //calculate real direction based on character's facing direction
@@ -82,21 +84,38 @@ public class Hitbox : MonoBehaviour
                                                     float px = customDir.x * cs - customDir.z * sn;
                                                     float py = customDir.x * sn + customDir.z * cs;
                                                     resultKnockback = new Vector3(px, customDir.y, py).normalized;
+                                                    resultKnockback = resultKnockback * myAttackHitbox.effects[i].knockbackMagnitude;
                                                     //print("Facing Angle(localRot.y)= " + facingAngle + "; customDir = " + customDir);
                                                     break;
                                                 case KnockbackType.autoCenter:
-                                                    Vector3 meNoMaePos = myPlayerMov.rotateObj.position + myPlayerMov.rotateObj.forward * myAttackHitbox.effects[i].knockbackMagnitude;//me no mae (目の前) means in front of your eyes
-                                                    resultKnockback = meNoMaePos - otherPlayer.transform.position;
+                                                    float a = Mathf.Abs(myPlayerMov.breakAcc);
+                                                    float iT = myPlayerMov.MissingImpulseTime();
+                                                    float impulseDist = (a * Mathf.Pow(iT, 2)) / 2;
+                                                    if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("iT = "+ iT + "; impulseDist = " + impulseDist);
+
+                                                    Vector3 hitDir = myPlayerCombatNew.currentAttack.impulseMagnitude != 0 ?myPlayerCombatNew.currentImpulse.normalized: myPlayerMov.rotateObj.forward;
+                                                    float meNoMaeDist = myAttackHitbox.effects[i].knockbackMagnitude + impulseDist;
+                                                    Vector3 meNoMaePos = myPlayerMov.rotateObj.position + (hitDir * meNoMaeDist);//me no mae (目の前) means in front of your eyes
+                                                    resultKnockback = (meNoMaePos - otherPlayer.transform.position);
+                                                    Debug.DrawLine(otherPlayer.transform.position, (meNoMaePos), Color.red, 4);
+                                                    if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("hitDir = " + hitDir + "; meNoMaeDist = " + meNoMaeDist + "; meNoMaePos = " + meNoMaePos);
+
+                                                    float d = resultKnockback.magnitude;
+                                                    float vi = Mathf.Sqrt((2 * a * d));
+                                                    if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("distance = "+ d.ToString("F4") + "; Initial velocity = " + vi.ToString("F4")+
+                                                        "; myPlayerMov.breakAcc = "+ a);
+                                                    resultKnockback =resultKnockback.normalized * vi;
                                                     break;
                                                 case KnockbackType.redirect:
                                                     float inputRedirectAngle = SignedRelativeAngle(myPlayerMov.rotateObj.forward, myPlayerMov.currentInputDir, Vector3.up);
                                                     float finalRedirectAngle = Mathf.Clamp(inputRedirectAngle,-myAttackHitbox.effects[i].redirectMaxAngle, myAttackHitbox.effects[i].redirectMaxAngle);
                                                     resultKnockback = Quaternion.Euler(0, finalRedirectAngle, 0) * myPlayerMov.rotateObj.forward;
                                                     resultKnockback *= myAttackHitbox.effects[i].knockbackMagnitude;
+                                                    resultKnockback = resultKnockback * myAttackHitbox.effects[i].knockbackMagnitude;
+
                                                     break;
                                             }
-                                            //print("KNOCKBACK DIR= " + result);
-                                            resultKnockback = resultKnockback * myAttackHitbox.effects[i].knockbackMagnitude;
+                                            print("KNOCKBACK RESULT= " + resultKnockback);
                                             break;
                                         case EffectType.knockdown:
                                             stunLikeEffect = EffectType.knockdown;
@@ -161,11 +180,13 @@ public class Hitbox : MonoBehaviour
                                                 Vector3 myPos = myPlayerMov.transform.position;
                                                 Vector3 colPos = col.transform.position;
                                                 resultKnockback = new Vector3(colPos.x - myPos.x, 0, colPos.z - myPos.z).normalized;
+                                                resultKnockback = resultKnockback * myAttackHitbox.effects[i].knockbackMagnitude;
                                                 break;
                                             case KnockbackType.inwards:
                                                 myPos = myPlayerMov.transform.position;
                                                 colPos = col.transform.position;
                                                 resultKnockback = new Vector3(myPos.x - colPos.x, 0, myPos.z - colPos.z).normalized;
+                                                resultKnockback = resultKnockback * myAttackHitbox.effects[i].knockbackMagnitude;
                                                 break;
                                             case KnockbackType.customDir:
                                                 //calculate real direction based on character's facing direction
@@ -178,15 +199,20 @@ public class Hitbox : MonoBehaviour
                                                 float px = customDir.x * cs - customDir.z * sn;
                                                 float py = customDir.x * sn + customDir.z * cs;
                                                 resultKnockback = new Vector3(px, customDir.y, py).normalized;
+                                                resultKnockback = resultKnockback * myAttackHitbox.effects[i].knockbackMagnitude;
                                                 //print("Facing Angle(localRot.y)= " + facingAngle + "; customDir = " + customDir);
                                                 break;
                                             case KnockbackType.autoCenter:
+                                                //Vector3 meNoMaePos = myPlayerMov.transform.position + (myPlayerMov.rotateObj.forward*myAttackHitbox.effects[i].knockbackMagnitude);
+                                                //resultKnockback = meNoMaePos - otherPlayer.transform.position;
+                                                //float a = Mathf.Abs(myPlayerMov.breakAcc);
+                                                //float vi =;
+                                                //resultKnockback
                                                 break;
                                             case KnockbackType.redirect:
                                                 break;
                                         }
                                         //print("KNOCKBACK DIR= " + result);
-                                        resultKnockback = resultKnockback * myAttackHitbox.effects[i].knockbackMagnitude;
                                         break;
                                     case EffectType.knockdown:
                                         stunLikeEffect = EffectType.knockdown;

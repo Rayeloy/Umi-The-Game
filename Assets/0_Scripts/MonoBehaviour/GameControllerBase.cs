@@ -891,7 +891,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             bool found = false;
             for (int j = 0; j < knownInputs.Count && !found; j++)
             {
-                if (auxInput == knownInputs[i])
+                Debug.Log("j = "+j+"; knownInputs.Count = " + knownInputs.Count);
+                Debug.LogWarning("Checking if the input "+ auxInput + " is equal to the known input " + knownInputs[j]);
+                if (auxInput == knownInputs[j])
                 {
                     found = true;
                 }

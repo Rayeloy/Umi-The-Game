@@ -14,6 +14,35 @@ public class Autocombo : ScriptableObject
         if (attacks.Length < 2) Debug.LogError("Autocombo -> Error: The autocombo "+ autocomboName + " has less than 2 attacks.");
         for(int i = 0; i < attacks.Length; i++)
         {
+            if (i+1 < attacks.Length)
+            {
+                bool softStunHitboxFound = false;
+                float maxSoftStunFound = 0;
+                for(int j =0; j < attacks[i].activePhase.attackHitboxes.Length; j++)
+                {
+                    for(int k = 0; k < attacks[i].activePhase.attackHitboxes[j].effects.Length; k++)
+                    {
+                        if(attacks[i].activePhase.attackHitboxes[j].effects[k].effectType==EffectType.softStun && attacks[i].activePhase.attackHitboxes[j].effects[k].stunTime> maxSoftStunFound)
+                        {
+                            maxSoftStunFound = attacks[i].activePhase.attackHitboxes[j].effects[k].stunTime;
+                            softStunHitboxFound = true;
+                        }
+                    }
+                }
+                if (softStunHitboxFound)
+                {
+                    float maxTimeToNextAttack = attacks[i].activePhase.duration + attacks[i].recoveryPhase.duration + attacks[i + 1].startupPhase.duration + attacks[i].activePhase.duration;
+                    if (maxTimeToNextAttack > maxSoftStunFound)
+                    {
+                        Debug.LogError("Autocombo -> Error: The attack " + attacks[i].attackName + " in the autocombo " + autocomboName +
+                            " has a softStun that is too short! it has to be at least "+ maxTimeToNextAttack + " to be a confirmed autocombo!");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Autocombo -> Error: The attack " + attacks[i].attackName + " in the autocombo " + autocomboName +" does not contain a softStun effect!");
+                }
+            }
             attacks[i].ErrorCheck();
         }
     }

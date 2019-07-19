@@ -27,8 +27,6 @@ public class AttackData : ScriptableObject
     //public float cdTime;
     //[Tooltip("Time the attacks leaves the target stunned.")]
     //public float stunTime;
-    [HideInInspector]
-    public Vector3 impulseDir;
     public float impulseMagnitude;
 
     //NOT IN USE
@@ -83,6 +81,8 @@ public class AttackData : ScriptableObject
     {
         switch (attackStage)
         {
+            case AttackPhaseType.ready:
+                return null;
             case AttackPhaseType.charging:
                 return chargingPhase;
             case AttackPhaseType.startup:

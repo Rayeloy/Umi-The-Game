@@ -510,8 +510,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c515b7e1049281419f36a8f533abb98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllDebugs: 0
-  disableAllRays: 0
+  disableAllDebugs: 1
+  disableAllRays: 1
   collisionMask:
     serializedVersion: 2
     m_Bits: 279040
@@ -569,7 +569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66bcdf6e0f085a446a4787f2032a0aa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllDebugs: 1
+  disableAllDebugs: 0
   myPlayerCombatNew: {fileID: 6457576688623177950}
   myPlayerWeap: {fileID: 2740053844141714977}
   myPlayerPickups: {fileID: 2739443829118614599}
@@ -1084,12 +1084,12 @@ PrefabInstance:
     - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
         type: 3}
       propertyPath: accesoriesMats.Array.size
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
         type: 3}
       propertyPath: bootsMats.Array.size
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3591323914173192954, guid: 7fe8d16465f14ca4cb1a013784d61b03,
         type: 3}

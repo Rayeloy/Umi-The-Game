@@ -22,7 +22,8 @@ public enum MoveState
     Hooked = 5,
     Boost = 6,
     FixedJump = 7,
-    NotBreaking = 8
+    NotBreaking = 8,
+    Impulse=9
 }
 public enum JumpState
 {
@@ -223,6 +224,9 @@ public class PlayerMovement : MonoBehaviour
     public float facingAngle = 0;
     [HideInInspector]
     public Vector3 currentCamFacingDir = Vector3.zero;
+    bool hardSteerStarted = false;
+    bool impulseStarted=false;
+
 
     //SALTO
     [HideInInspector]
@@ -321,6 +325,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!online || (online && isMyCharacter))
         {
+            if (breakAcc != knockbackBreakAcc) Debug.LogError("The breakAcceleration and the KnockbackAcceleration should be the same!");
             maxMoveSpeed = 10;
             currentSpeed = 0;
             currentRotationSpeed = rotationSpeed;
@@ -415,7 +420,7 @@ public class PlayerMovement : MonoBehaviour
         //    Debug.LogError("LANDING");
         //}
         //Debug.Log("Mis acciones son " + Actions);
-        //Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6"));
+        if (currentSpeed != 0) Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4"));
         if (Actions.Start.WasPressed) gC.PauseGame(Actions);
 
         if ((controller.collisions.above || controller.collisions.below) && !hooked)
@@ -449,7 +454,7 @@ public class PlayerMovement : MonoBehaviour
         myPlayerAnimation_01.KonoUpdate();
         myPlayerWeap.KonoUpdate();
         myPlayerHook.KonoUpdate();
-        //Debug.Log("CurrentVel End = " + currentVel.ToString("F6") + "; Player position = " + transform.position.ToString("F6"));
+        if(currentSpeed !=0)Debug.LogWarning("CurrentVel End = " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") + "; Player position = " + transform.position.ToString("F6"));
     }
 
     public void KonoFixedUpdate()
@@ -487,6 +492,7 @@ public class PlayerMovement : MonoBehaviour
                         }
                         break;
                     case PlayerInput.Autocombo:
+                        Debug.Log("Trying to input autocombo from buffer... Time left = "+inputsBuffer[i].time);
                         if (myPlayerCombatNew.StartOrContinueAutocombo(true))
                         {
                             inputsBuffer[i].StopBuffering();
@@ -571,11 +577,11 @@ public class PlayerMovement : MonoBehaviour
                 joystickSens = 1;//no estoy seguro de que esté bien
                 moveSt = MoveState.NotMoving;
                 currentInputDir = Vector3.zero;
+                if (currentSpeed != 0) Debug.Log("MoveSt set to " + MoveState.NotMoving);
             }
         }
     }
 
-    bool hardSteerStarted = false;
     void HorizontalMovement()
     {
         float angleDiff = 0;
@@ -599,7 +605,7 @@ public class PlayerMovement : MonoBehaviour
         ProcessBoost();
         #endregion
         #region //----------------------------------------------------- Efecto interno --------------------------------------------
-        if (!hooked && !fixedJumping && moveSt != MoveState.Boost && moveSt!=MoveState.Knockback)
+        if (!hooked && !fixedJumping && moveSt != MoveState.Boost && moveSt!=MoveState.Knockback && moveSt!=MoveState.Impulse)
         {
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
@@ -610,13 +616,13 @@ public class PlayerMovement : MonoBehaviour
             {
                 StartBoost();
             }
-
+            ProcessImpulse();
             #region ------------------------------ Max Move Speed ------------------------------
                 currentMaxMoveSpeed = myPlayerCombatNew.attackStg == AttackPhaseType.ready ? maxMoveSpeed : maxAttackingMoveSpeed;//maxAttackingMoveSpeed == maxMoveSpeed if not attacking
                 ProcessWater();//only apply if the new max move speed is lower
                 ProcessAiming();//only apply if the new max move speed is lower
                 ProcessHooking();//only apply if the new max move speed is lower
-                if (currentSpeed > (currentMaxMoveSpeed + 0.1f) && (moveSt == MoveState.Moving || moveSt == MoveState.NotMoving))
+                if (currentSpeed > (currentMaxMoveSpeed + 0.1f) && (moveSt == MoveState.Moving || moveSt == MoveState.NotMoving) && !knockbackDone && !impulseDone)
                 {
                     //Debug.LogWarning("Warning: moveSt set to MovingBreaking!: currentSpeed = "+currentSpeed+ "; maxMoveSpeed2 = " + maxMoveSpeed2 + "; currentVel.magnitude = "+currentVel.magnitude);
                     moveSt = MoveState.MovingBreaking;
@@ -627,13 +633,25 @@ public class PlayerMovement : MonoBehaviour
             #endregion
 
             #region ------------------------------- Acceleration -------------------------------
-            float finalAcc;
+            float finalAcc = 0;
             float finalBreakAcc = controller.collisions.below ? breakAcc : airBreakAcc;
             float finalHardSteerAcc = controller.collisions.below ? hardSteerAcc : airHardSteerAcc;
             float finalInitialAcc = controller.collisions.below ? initialAcc : airInitialAcc;
             finalMovingAcc = controller.collisions.below ? movingAcc : airMovingAcc; //Turning accleration
             //finalBreakAcc = currentSpeed < 0 ? -finalBreakAcc : finalBreakAcc;
-            if (!knockbackDone)
+            if (knockbackDone && impulseDone)
+            {
+                Debug.LogError("ERROR, they should not happen at the same time!");
+            }
+            else if (knockbackDone)
+            {
+                finalAcc = knockbackBreakAcc;
+            }
+            else if (impulseDone)
+            {
+                finalAcc = knockbackBreakAcc;
+            }
+            else
             {
                 switch (moveSt)
                 {
@@ -659,10 +677,6 @@ public class PlayerMovement : MonoBehaviour
                         break;
                 }
             }
-            else
-            {
-                finalAcc = knockbackBreakAcc;
-            }
             #endregion
 
             #region ----------------------------------- Speed ---------------------------------- 
@@ -684,7 +698,7 @@ public class PlayerMovement : MonoBehaviour
                 case MoveState.NotMoving:
                     break;
             }
-            //Debug.Log("CurrentSpeed 1.1 = " + currentSpeed);
+            if (currentSpeed != 0) Debug.Log("CurrentSpeed 1.2 = " + currentSpeed.ToString("F4") +"; finalAcc = "+finalAcc+"; moveSt = "+moveSt+ "; currentSpeed =" + currentSpeed.ToString("F4"));
             float currentSpeedB4 = currentSpeed;
             currentSpeed = currentSpeed + finalAcc * Time.deltaTime;
             if (moveSt == MoveState.NotMoving && Mathf.Sign(currentSpeedB4) != Mathf.Sign(currentSpeed))
@@ -698,7 +712,7 @@ public class PlayerMovement : MonoBehaviour
                 currentVel = new Vector3(horizontalVel.x,currentVel.y, horizontalVel.z);
             }
             //Debug.Log("CurrentSpeed 1.2 = " + currentSpeed);
-            float maxSpeedClamp = knockbackDone ? maxKnockbackSpeed : finalMaxMoveSpeed;
+            float maxSpeedClamp = knockbackDone || impulseDone ? maxKnockbackSpeed : finalMaxMoveSpeed;
             float minSpeedClamp = (lastJoystickSens > joystickSens && moveSt == MoveState.Moving) ? (joystickSens / 1) * currentMaxMoveSpeed : 0;
             currentSpeed = Mathf.Clamp(currentSpeed, minSpeedClamp, maxSpeedClamp);
             if(hardSteerStarted && angleDiff<= instantRotationMinAngle)
@@ -712,26 +726,22 @@ public class PlayerMovement : MonoBehaviour
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
         Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
-        //print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed 1.3 = " +
-        //    currentSpeed + "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + controller.collisions.below
-        //    + "; horVel.magnitude = " + horVel.magnitude);
+        if (currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
+            "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + controller.collisions.below + "; horVel.magnitude = " + horVel.magnitude);
         //print("CurrentVel 1.3= " + currentVel.ToString("F6")+ "MoveState = " + moveSt);
-        if (jumpSt != JumpState.wallJumping)
+        if (jumpSt != JumpState.wallJumping ||(jumpSt==JumpState.wallJumping && moveSt==MoveState.Knockback))
         {
             horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
             switch (moveSt)
             {
                 case MoveState.Moving: //MOVING WITH JOYSTICK
-                    //angleDiff = Vector3.Angle(horizontalVel, currentMovDir);
                     Vector3 newDir;
                     if (angleDiff>instantRotationMinAngle)//hard Steer
                     {
-                        //Debug.LogWarning("Moving: angleDiff > instantRotationMinAngle");
                         newDir = horizontalVel;
                     }
                     else
                     {
-                        //Debug.LogWarning("Moving: angleDiff <= instantRotationMinAngle");
                         newDir = horizontalVel + currentMovDir * finalMovingAcc * Time.deltaTime;
                     }
                     horizontalVel = newDir.normalized * currentSpeed;
@@ -764,6 +774,11 @@ public class PlayerMovement : MonoBehaviour
                         currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
                         knockbackDone = true;
                         knockback = Vector3.zero;
+                        moveSt = MoveState.NotMoving;
+                    }
+                    else
+                    {
+                        Debug.LogError("Error: knockback was already done!");
                     }
                     //print("vel.y = " + currentVel.y);
                     break;
@@ -785,8 +800,14 @@ public class PlayerMovement : MonoBehaviour
                 case MoveState.NotBreaking:
                     currentSpeed = horizontalVel.magnitude;
                     break;
-
+                case MoveState.Impulse:
+                    impulseDone = true;
+                    Vector3 finalImpulse = new Vector3(impulse.x, currentVel.y, impulse.z);
+                    SetVelocity(finalImpulse);
+                    moveSt = MoveState.NotMoving;
+                    break;
             }
+
         }
         horVel = new Vector3(currentVel.x, 0, currentVel.z);
         //print("CurrentVel after processing= " + currentVel.ToString("F6") + "; CurrentSpeed 1.4 = " + currentSpeed + "; horVel.magnitude = " 
@@ -805,10 +826,59 @@ public class PlayerMovement : MonoBehaviour
         maxAttackingMoveSpeed = maxMoveSpeed;
     }
 
-    public void DoImpulse(Vector3 impulse)
+    #region -- IMPULSE --
+    float maxImpulseTime = 0;
+    float impulseTime = 0;
+    [HideInInspector]
+    public Vector3 impulse;
+    bool impulseDone = false;
+    public float MissingImpulseTime()
     {
-        currentVel = impulse;
+        return Mathf.Clamp(maxImpulseTime - impulseTime,0,float.MaxValue);
     }
+    public void StartImpulse(Vector3 _impulse)
+    {
+        impulse = _impulse;
+        impulseStarted = true;
+        impulseDone = false;
+        impulseTime = 0;
+        maxImpulseTime = _impulse.magnitude /Mathf.Abs(breakAcc);
+        moveSt = MoveState.Impulse;
+
+        //Character rotation
+        Vector3 impulseDir = _impulse.normalized;
+        float angle = Mathf.Acos(((0 * impulseDir.x) + (1 * impulseDir.z)) / (1 * impulseDir.magnitude)) * Mathf.Rad2Deg;
+        angle = impulseDir.x < 0 ? 360 - angle : angle;
+        RotateCharacterInstantly(angle);
+        if (!disableAllDebugs) Debug.Log("Impulse = "+ _impulse + "; maxImpulseTime = "+ maxImpulseTime + "; impulse.magnitude = " + impulse.magnitude);
+    }
+
+    void ProcessImpulse()
+    {
+        if (impulseStarted)
+        {
+            impulseTime += Time.deltaTime;
+            if (impulseTime >= maxImpulseTime)
+            {
+                StopImpulse();
+            }
+            else
+            {
+                moveSt = MoveState.NotMoving;
+            }
+        }
+    }
+
+    void StopImpulse()
+    {
+        if (impulseStarted)
+        {
+            //moveSt = MoveState.NotMoving;
+            impulseStarted = false;
+            impulseDone = false;
+        }
+    }
+    #endregion
 
     void VerticalMovement()
     {
@@ -908,7 +978,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + moveSt != MoveState.Boost + ")");
+            if(!disableAllDebugs) Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + (moveSt != MoveState.Boost) + ")");
         }
 
         if (!result && !calledFromBuffer)
@@ -1059,7 +1129,7 @@ public class PlayerMovement : MonoBehaviour
 
     void EndWallJump()
     {
-        if (!disableAllDebugs) Debug.LogError("End Wall jump");
+        if (!disableAllDebugs) Debug.Log("End Wall jump");
         if (!firstWallJumpDone) firstWallJumpDone = true;
         lastWallAngle = wallJumpCurrentWallAngle;
         lastWall = wallJumpCurrentWall;
@@ -1098,7 +1168,7 @@ public class PlayerMovement : MonoBehaviour
 
     void StartBoost()
     {
-        if (!noInput && boostReady && !inWater)
+        if (!noInput && boostReady && !inWater && myPlayerCombatNew.attackStg==AttackPhaseType.ready)
         {
             //noInput = true;
             //PARA ORTU: Variable para empezar boost
@@ -1118,6 +1188,7 @@ public class PlayerMovement : MonoBehaviour
             }
             myPlayerHUD.StartCamVFX(CameraVFXType.Dash);
             myPlayerCombatNew.StopDoingCombat();
+            StopImpulse();
         }
         else
         {
@@ -1363,9 +1434,13 @@ public class PlayerMovement : MonoBehaviour
     {
         if (sufferingEffect != EffectType.knockdown && !myPlayerCombatNew.invulnerable)
         {
-            print("Recieve hit");
+            print("Recieve hit with knockback= "+ _knockback + "; effect = "+ efecto + "; maxtime = "+ _maxTime);
             myPlayerHook.FinishAutoGrapple();
             myPlayerHook.StopHook();
+            StopWallJump();
+            StopBoost();
+            myPlayerCombatNew.StopDoingCombat();
+            StopImpulse();
             if (sufferingEffect == EffectType.stun)
             {
                 efecto = EffectType.knockdown;
@@ -1435,6 +1510,7 @@ public class PlayerMovement : MonoBehaviour
 
     void StopSufferingEffect()
     {
+        print("Suffering effect " + sufferingEffect + " END");
         switch (sufferingEffect)
         {
             case EffectType.softStun:
@@ -1458,7 +1534,6 @@ public class PlayerMovement : MonoBehaviour
                 Debug.LogError("Error: cannot have a 'sufferingEffect' of type " + sufferingEffect);
                 break;
         }
-        print("Suffering effect "+sufferingEffect+" END");
     }
 
     #endregion
@@ -1528,6 +1603,7 @@ public class PlayerMovement : MonoBehaviour
             //To Do:
             //Stop attacking
             myPlayerCombatNew.StopDoingCombat();
+            StopImpulse();
             return true;
         }
         else
@@ -1810,6 +1886,20 @@ public class PlayerMovement : MonoBehaviour
                 myPlayerWeap.PickupWeapon(gC.startingWeaponRed);
                 break;
         }
+    }
+
+    public float SignedRelativeAngle(Vector3 referenceForward, Vector3 newDirection, Vector3 referenceUp)
+    {
+        // the vector perpendicular to referenceForward (90 degrees clockwise)
+        // (used to determine if angle is positive or negative)
+        Vector3 referenceRight = Vector3.Cross(referenceUp, referenceForward);
+        // Get the angle in degrees between 0 and 180
+        float angle = Vector3.Angle(newDirection, referenceForward);
+        // Determine if the degree value should be negative.  Here, a positive value
+        // from the dot product means that our vector is on the right of the reference vector   
+        // whereas a negative value means we're on the left.
+        float sign = Mathf.Sign(Vector3.Dot(newDirection, referenceRight));
+        return (sign * angle);//final angle
     }
 
     public void TeleportPlayer(Vector3 worldPos)

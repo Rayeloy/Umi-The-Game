@@ -40,7 +40,10 @@ public class PlayerCombatNew : MonoBehaviour
     [HideInInspector]
     public AttackPhaseType attackStg = AttackPhaseType.ready;
     float attackTime = 0;
-    AttackData currentAttack;
+    [HideInInspector]
+    public AttackData currentAttack;
+    [HideInInspector]
+    public Vector3 currentImpulse;
 
     //Autocombo
     Autocombo autocombo;
@@ -101,11 +104,10 @@ public class PlayerCombatNew : MonoBehaviour
     {
         //print("Trigger = " + Input.GetAxis(myPlayerMovement.contName + "LT"));
 
-        if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && (attackStg == AttackPhaseType.ready || attackStg == AttackPhaseType.recovery)
-             && hasWeapon)
+        if (hasWeapon)
         {
             //Autocombo  INPUT CHECK
-            if (myPlayerMovement.Actions.X.WasPressed && (attackStg == AttackPhaseType.ready ) && !myPlayerWeap.canPickupWeapon)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
+            if (myPlayerMovement.Actions.X.WasPressed && !myPlayerWeap.canPickupWeapon)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
             {
                 StartOrContinueAutocombo();
             }
@@ -123,13 +125,15 @@ public class PlayerCombatNew : MonoBehaviour
             }
 
             //HOOK INPUT CHECK
-            if (aiming && myPlayerMovement.Actions.R2.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
+            if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && (attackStg == AttackPhaseType.ready) 
+                && aiming && myPlayerMovement.Actions.R2.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
             {
                 myHook.StartHook();
                 //ChangeAttackType(gC.attackHook);
                 //StartAttack();
             }
         }
+        ProcessAutocombo();
         ProcessInvulnerability();
         ProcessAttack();
         //ProcessAttacksCD();
@@ -159,41 +163,35 @@ public class PlayerCombatNew : MonoBehaviour
         //change hitbox
         //HideAttackHitBox();
         ChangeHitboxes(attackStg);
-        if (currentAttack.GetAttackPhase(attackStg).invulnerability) StartInvulnerabilty(currentAttack.GetAttackPhase(attackStg).duration);
+        if (attackStg!=AttackPhaseType.ready && currentAttack.GetAttackPhase(attackStg).invulnerability) StartInvulnerabilty(currentAttack.GetAttackPhase(attackStg).duration);
 
         switch (attackStg)
         {
             case AttackPhaseType.ready:
                 myPlayerMovement.ResetPlayerRotationSpeed();
-                HideAttackHitBox();
+                myPlayerMovement.ResetPlayerAttackMovementSpeed();
+                currentImpulse = Vector3.zero;
+                currentAttack = null;
                 break;
             case AttackPhaseType.charging:
-                if (currentAttack.chargingPhase.restrictRotation)
-                {
-                    myPlayerMovement.SetPlayerRotationSpeed(currentAttack.chargingPhase.rotationSpeedPercentage);
-                    myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.chargingPhase.movementSpeed);
-                }
+                if (currentAttack.chargingPhase.restrictRotation) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.chargingPhase.rotationSpeedPercentage);
+                if (currentAttack.chargingPhase.restrictMovement) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.chargingPhase.movementSpeedPercentage);
                 break;
             case AttackPhaseType.startup:
-                if (currentAttack.startupPhase.restrictRotation)
-                {
-                    myPlayerMovement.SetPlayerRotationSpeed(currentAttack.startupPhase.rotationSpeedPercentage);
-                    myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.startupPhase.movementSpeed);
-                }
+                if (currentAttack.startupPhase.restrictRotation) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.startupPhase.rotationSpeedPercentage);
+                if (currentAttack.startupPhase.restrictMovement) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.startupPhase.movementSpeedPercentage);
+                CalculateImpulse(currentAttack);
                 break;
             case AttackPhaseType.active:
-                if (currentAttack.activePhase.restrictRotation)
-                {
-                    myPlayerMovement.SetPlayerRotationSpeed(currentAttack.activePhase.rotationSpeedPercentage);
-                    myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.activePhase.movementSpeed);
-                }
+                if (currentAttack.activePhase.restrictRotation) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.activePhase.rotationSpeedPercentage);
+                if (currentAttack.activePhase.restrictMovement) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.activePhase.movementSpeedPercentage);
+
+                //Do impulse
+                myPlayerMovement.StartImpulse(currentImpulse);
                 break;
             case AttackPhaseType.recovery:
-                if (currentAttack.recoveryPhase.restrictRotation)
-                {
-                    myPlayerMovement.SetPlayerRotationSpeed(currentAttack.recoveryPhase.rotationSpeedPercentage);
-                    myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.recoveryPhase.movementSpeed);
-                }
+                if (currentAttack.recoveryPhase.restrictRotation) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.recoveryPhase.rotationSpeedPercentage);
+                if (currentAttack.recoveryPhase.restrictMovement) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.recoveryPhase.movementSpeedPercentage);
                 break;
         }
     }
@@ -201,9 +199,12 @@ public class PlayerCombatNew : MonoBehaviour
     void ChangeHitboxes(AttackPhaseType att)//hacer después de cambiar de attack stage, no antes!
     {
         //HideAttackHitBox();
-
+        Debug.Log("Changing Hitboxes!");
         switch (attackStg)
         {
+            case AttackPhaseType.ready:
+                HideAttackHitBox();
+                break;
             case AttackPhaseType.charging:
                 for (int i = 0; i < currentAttack.activePhase.attackHitboxes.Length; i++)
                 {
@@ -244,24 +245,27 @@ public class PlayerCombatNew : MonoBehaviour
 
     void AddHitbox(AttackHitbox attackHitbox)
     {
-        GameObject auxHitbox;
+        Debug.Log("Adding hitbox of parent type " + attackHitbox.parentType);
+        GameObject auxHitbox = null;
         switch (attackHitbox.parentType)
         {
             case HitboxParentType.player:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab,hitboxesParent);
-                currentHitboxes.Add(auxHitbox);
                 break;
             case HitboxParentType.weaponEdge:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab, weaponEdge);
-                currentHitboxes.Add(auxHitbox);
                 break;
             case HitboxParentType.weaponHandle:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab, weaponHandle);
-                currentHitboxes.Add(auxHitbox);
                 break;
             default:
                 Debug.LogError("Error: the hitboxParentType is not supported: " + attackHitbox.parentType);
                 break;
+        }
+        if(attackHitbox.parentType==HitboxParentType.player || attackHitbox.parentType == HitboxParentType.weaponEdge || attackHitbox.parentType == HitboxParentType.weaponHandle)
+        {
+            currentHitboxes.Add(auxHitbox);
+            auxHitbox.GetComponent<Hitbox>().myAttackHitbox = attackHitbox;
         }
     }
 
@@ -291,8 +295,10 @@ public class PlayerCombatNew : MonoBehaviour
         bool exito = false;
         if (!autocomboStarted && attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput && !aiming)
         {
+            Debug.Log("Autocombo Started");
             exito = true;
             autocomboStarted = true;
+            lastAutocomboAttackFinished = true;
             autocomboTime = 0;
             autocomboIndex = -1;
             StartNextAttackAutocombo();
@@ -308,13 +314,15 @@ public class PlayerCombatNew : MonoBehaviour
             exito = true;
             autocomboIndex++;
             lastAutocomboAttackFinished = false;
-            StartAttack(currentAttack);
+            StartAttack(autocombo.attacks[autocomboIndex]);
         }
         return exito;
     }
 
     public bool StartOrContinueAutocombo(bool calledFromBuffer=false)
     {
+        Debug.Log("Autocombo Start or Continue input. calledFromBuffer = "+calledFromBuffer+ "; autocomboStarted = "+ autocomboStarted);
+
         bool result = false;
         if (!autocomboStarted)
         {
@@ -324,13 +332,14 @@ public class PlayerCombatNew : MonoBehaviour
         {
             result = StartNextAttackAutocombo();
         }
-        if(!result && calledFromBuffer)
+        if(!result && !calledFromBuffer)
         {
+            if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Input was BUFFERED");
             myPlayerMovement.BufferInput(PlayerInput.Autocombo);
         }
+        Debug.Log("StartOrContinueAutocombo result = "+ result);
         return result;
     }
-
 
     void ProcessAutocombo()
     {
@@ -355,6 +364,7 @@ public class PlayerCombatNew : MonoBehaviour
     {
         if (autocomboStarted)
         {
+            if(!myPlayerMovement.disableAllDebugs) Debug.LogWarning("Autocombo Stopped");
             if (attackStg != AttackPhaseType.ready)
             {
                 EndAttack();
@@ -370,6 +380,7 @@ public class PlayerCombatNew : MonoBehaviour
     {
         if (attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput && !aiming)
         {
+            Debug.Log("Starting Attack " + newAttack.attackName);
             currentAttack = newAttack;
             //targetsHit.Clear();
             attackTime = 0;
@@ -399,7 +410,6 @@ public class PlayerCombatNew : MonoBehaviour
                     {
                         attackTime = 0;
                         ChangeAttackPhase(AttackPhaseType.active);
-
                     }
                     break;
                 case AttackPhaseType.active:
@@ -407,8 +417,6 @@ public class PlayerCombatNew : MonoBehaviour
                     {
                         attackTime = 0;
                         ChangeAttackPhase(AttackPhaseType.recovery);
-                        //Do impulse
-                        CalculateImpulse(currentAttack);
                     }
                     break;
                 case AttackPhaseType.recovery:
@@ -428,7 +436,7 @@ public class PlayerCombatNew : MonoBehaviour
         if (autocomboStarted)
         {
             lastAutocomboAttackFinished = true;
-            if (autocomboIndex >= autocombo.attacks.Length)
+            if (autocomboIndex+1 >= autocombo.attacks.Length)
             {
                 StopAutocombo();
             }
@@ -438,8 +446,18 @@ public class PlayerCombatNew : MonoBehaviour
     
     void CalculateImpulse(AttackData attack)
     {
-        Vector3 impulse = attack.impulseDir.normalized * attack.impulseMagnitude;
-        myPlayerMovement.DoImpulse(impulse);
+        Vector3 impulseDir = Vector3.zero;
+        if (myPlayerMovement.currentInputDir != Vector3.zero)
+        {
+            float angleWithJoysitck = myPlayerMovement.SignedRelativeAngle(myPlayerMovement.rotateObj.forward, myPlayerMovement.currentInputDir, Vector3.up);
+            angleWithJoysitck = Mathf.Clamp(angleWithJoysitck, -60, 60);
+            impulseDir = Quaternion.Euler(0,angleWithJoysitck,0)* myPlayerMovement.rotateObj.forward;
+        }
+        else
+        {
+            impulseDir = myPlayerMovement.rotateObj.forward;
+        }
+        currentImpulse = impulseDir.normalized * attack.impulseMagnitude;
     }
 
     #endregion
@@ -526,7 +544,7 @@ public class PlayerCombatNew : MonoBehaviour
 
     public void StartAiming()
     {
-        if (!aiming)
+        if (!aiming && attackStg!=AttackPhaseType.ready)
         {
             aiming = true;
             myPlayerMovement.myCamera.SwitchCamera(cameraMode.Shoulder);
