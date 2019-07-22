@@ -74,15 +74,10 @@ public class PlayerMovement : MonoBehaviour
     //VARIABLES DE MOVIMIENTO
 
     [Header("ROTATION")]
-    public bool hasCharacterRotation = false;
-    public float rotationSpeed = 1;
-    float currentRotationSpeed = 0;
     [Tooltip("Min angle needed in a turn to activate the instant rotation of the character (and usually the hardSteer mechanic too)")]
     [Range(0, 180)]
     public float instantRotationMinAngle = 120;
-    //public float rotationSpeedFixedCam = 250;
-    float targetRotation = 0;
-    float currentRotation;
+    float rotationRestrictedPercentage = 1;
 
     [Header("Body Mass")]
     [Tooltip("Body Mass Index. 1 is for normal body mass.")]
@@ -214,8 +209,8 @@ public class PlayerMovement : MonoBehaviour
     public Vector3 currentVel;
     [HideInInspector]
     public float currentSpeed = 0;
-    [HideInInspector]
-    public Vector3 currentMovDir;
+    //[HideInInspector]
+    //public Vector3 currentMovDir;//= a currentInputDir??? 
     [HideInInspector]
     public Vector3 currentInputDir;
     [HideInInspector]
@@ -224,6 +219,9 @@ public class PlayerMovement : MonoBehaviour
     public float facingAngle = 0;
     [HideInInspector]
     public Vector3 currentCamFacingDir = Vector3.zero;
+    Vector3 hardSteerDir = Vector3.zero;
+    float hardSteerAngleDiff = 0;
+    bool hardSteerOn = false;
     bool hardSteerStarted = false;
     bool impulseStarted=false;
 
@@ -328,7 +326,6 @@ public class PlayerMovement : MonoBehaviour
             if (breakAcc != knockbackBreakAcc) Debug.LogError("The breakAcceleration and the KnockbackAcceleration should be the same!");
             maxMoveSpeed = 10;
             currentSpeed = 0;
-            currentRotationSpeed = rotationSpeed;
             boostCurrentFuel = boostCapacity;
             noInput = false;
             lastWallAngle = 0;
@@ -415,6 +412,7 @@ public class PlayerMovement : MonoBehaviour
     #region UPDATE
     public void KonoUpdate()
     {
+        ResetMovementVariables();
         //if (controller.collisions.below && !controller.collisions.lastBelow)
         //{
         //    Debug.LogError("LANDING");
@@ -531,6 +529,13 @@ public class PlayerMovement : MonoBehaviour
         currentSpeed = horVel.magnitude;
     }
 
+    void ResetMovementVariables()
+    {
+        //hardSteerOn = false;
+        hardSteerAngleDiff = 0;
+        currentInputDir = Vector3.zero;
+    }
+
     public void CalculateMoveDir()
     {
         if (!noInput)
@@ -553,10 +558,10 @@ public class PlayerMovement : MonoBehaviour
                 switch (myCamera.camMode)
                 {
                     case cameraMode.Fixed:
-                        currentInputDir = currentMovDir = RotateVector(-facingAngle, temp);
+                        currentInputDir = RotateVector(-facingAngle, temp);
                         break;
                     case cameraMode.Shoulder:
-                        currentInputDir = currentMovDir = RotateVector(-facingAngle, temp);
+                        currentInputDir = RotateVector(-facingAngle, temp);
                         break;
                     case cameraMode.Free:
                         Vector3 camDir = (transform.position - myCamera.transform.GetChild(0).position).normalized;
@@ -566,9 +571,20 @@ public class PlayerMovement : MonoBehaviour
                         joystickAngle = (horiz > 0) ? -joystickAngle : joystickAngle;
                         //rotate camDir joystickAngle degrees
                         currentInputDir = RotateVector(joystickAngle, camDir);
-                        //print("joystickAngle= " + joystickAngle + "; camDir= " + camDir.ToString("F4") + "; currentMovDir = " + currentMovDir.ToString("F4"));
+                        //HARD STEER CHECK
+                        //if(!disableAllDebugs)Debug.LogError(" hardSteerOn = "+ hardSteerOn + "; isRotationRestricted = " + myPlayerCombatNew.isRotationRestricted);
+                        if (!(!hardSteerOn && myPlayerCombatNew.isRotationRestricted))
+                        {
+                            Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                            hardSteerAngleDiff = Vector3.Angle(horizontalVel, currentInputDir);//hard Steer si > 90
+                            hardSteerOn = hardSteerAngleDiff > instantRotationMinAngle ? true : false;
+                            if (hardSteerOn && !hardSteerStarted)
+                            {
+                                //if (hardSteerOn) Debug.LogError("HARD STEER ON: STARTED");
+                                hardSteerDir = currentInputDir;
+                            }
+                        }
                         RotateCharacter();
-                        currentMovDir = currentInputDir;
                         break;
                 }
             }
@@ -576,15 +592,13 @@ public class PlayerMovement : MonoBehaviour
             {
                 joystickSens = 1;//no estoy seguro de que esté bien
                 moveSt = MoveState.NotMoving;
-                currentInputDir = Vector3.zero;
-                if (currentSpeed != 0) Debug.Log("MoveSt set to " + MoveState.NotMoving);
             }
         }
     }
 
     void HorizontalMovement()
     {
-        float angleDiff = 0;
+
         float finalMovingAcc = 0;
         Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
         #region//------------------------------------------------ DECIDO TIPO DE MOVIMIENTO --------------------------------------------
@@ -610,7 +624,6 @@ public class PlayerMovement : MonoBehaviour
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
             CalculateMoveDir();//Movement direction
-            angleDiff = Vector3.Angle(horizontalVel, currentMovDir);//hard Steer si > 90
             //ProcessHardSteer();
             if (!myPlayerCombatNew.aiming && Actions.R2.WasPressed)//Input.GetButtonDown(contName + "RB"))
             {
@@ -618,7 +631,7 @@ public class PlayerMovement : MonoBehaviour
             }
             ProcessImpulse();
             #region ------------------------------ Max Move Speed ------------------------------
-                currentMaxMoveSpeed = myPlayerCombatNew.attackStg == AttackPhaseType.ready ? maxMoveSpeed : maxAttackingMoveSpeed;//maxAttackingMoveSpeed == maxMoveSpeed if not attacking
+                currentMaxMoveSpeed = myPlayerCombatNew.attackStg != AttackPhaseType.ready && myPlayerCombatNew.landedSinceAttackStarted? maxAttackingMoveSpeed : maxMoveSpeed;//maxAttackingMoveSpeed == maxMoveSpeed if not attacking
                 ProcessWater();//only apply if the new max move speed is lower
                 ProcessAiming();//only apply if the new max move speed is lower
                 ProcessHooking();//only apply if the new max move speed is lower
@@ -637,7 +650,7 @@ public class PlayerMovement : MonoBehaviour
             float finalBreakAcc = controller.collisions.below ? breakAcc : airBreakAcc;
             float finalHardSteerAcc = controller.collisions.below ? hardSteerAcc : airHardSteerAcc;
             float finalInitialAcc = controller.collisions.below ? initialAcc : airInitialAcc;
-            finalMovingAcc = controller.collisions.below ? movingAcc : airMovingAcc; //Turning accleration
+            finalMovingAcc = (controller.collisions.below ? movingAcc : airMovingAcc)* rotationRestrictedPercentage; //Turning accleration
             //finalBreakAcc = currentSpeed < 0 ? -finalBreakAcc : finalBreakAcc;
             if (knockbackDone && impulseDone)
             {
@@ -656,7 +669,7 @@ public class PlayerMovement : MonoBehaviour
                 switch (moveSt)
                 {
                     case MoveState.Moving:
-                        if (angleDiff > instantRotationMinAngle)//hard Steer
+                        if (hardSteerOn)//hard Steer
                         {
                             finalAcc = finalHardSteerAcc;
                         }
@@ -683,13 +696,13 @@ public class PlayerMovement : MonoBehaviour
             switch (moveSt)
             {
                 case MoveState.Moving:
-                    if (angleDiff > instantRotationMinAngle && Mathf.Sign(currentSpeed) == 1)//hard Steer
+                    if (hardSteerOn && Mathf.Sign(currentSpeed) == 1)//hard Steer
                     {
                         if (!hardSteerStarted)
                         {
                             hardSteerStarted = true;
-                            //Debug.Log("Current speed: Moving: angleDiff > instantRotationMinAngle -> Calculate velNeg" + "; currentMovDir = " + currentMovDir.ToString("F6"));
-                            float angle = 180 - angleDiff;
+                            //Debug.Log("Current speed: Moving: angleDiff > instantRotationMinAngle -> Calculate velNeg" + "; currentInputDir = " + currentInputDir.ToString("F6"));
+                            float angle = 180 - hardSteerAngleDiff;
                             float hardSteerInitialSpeed = Mathf.Cos(angle * Mathf.Deg2Rad) * horizontalVel.magnitude;//cos(angle) = velNeg /horizontalVel.magnitude;
                             currentSpeed = hardSteerInitialSpeed;
                         }
@@ -705,17 +718,17 @@ public class PlayerMovement : MonoBehaviour
             {
                 currentSpeed = 0;
             }
-            if(moveSt==MoveState.Moving && Mathf.Sign(currentSpeed) < 0 && angleDiff > instantRotationMinAngle)
+            if(moveSt==MoveState.Moving && Mathf.Sign(currentSpeed) < 0 && hardSteerOn)
             {
                 currentSpeed = -currentSpeed;
-                horizontalVel = currentMovDir * currentSpeed;
+                horizontalVel = hardSteerDir * currentSpeed;
                 currentVel = new Vector3(horizontalVel.x,currentVel.y, horizontalVel.z);
             }
             //Debug.Log("CurrentSpeed 1.2 = " + currentSpeed);
             float maxSpeedClamp = knockbackDone || impulseDone ? maxKnockbackSpeed : finalMaxMoveSpeed;
             float minSpeedClamp = (lastJoystickSens > joystickSens && moveSt == MoveState.Moving) ? (joystickSens / 1) * currentMaxMoveSpeed : 0;
             currentSpeed = Mathf.Clamp(currentSpeed, minSpeedClamp, maxSpeedClamp);
-            if(hardSteerStarted && angleDiff<= instantRotationMinAngle)
+            if(hardSteerStarted && !hardSteerOn)
             {
                 hardSteerStarted = false;
             }
@@ -736,13 +749,13 @@ public class PlayerMovement : MonoBehaviour
             {
                 case MoveState.Moving: //MOVING WITH JOYSTICK
                     Vector3 newDir;
-                    if (angleDiff>instantRotationMinAngle)//hard Steer
+                    if (hardSteerOn)//hard Steer
                     {
                         newDir = horizontalVel;
                     }
                     else
                     {
-                        newDir = horizontalVel + currentMovDir * finalMovingAcc * Time.deltaTime;
+                        newDir = horizontalVel + currentInputDir * finalMovingAcc * Time.deltaTime;
                     }
                     horizontalVel = newDir.normalized * currentSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
@@ -783,7 +796,7 @@ public class PlayerMovement : MonoBehaviour
                     //print("vel.y = " + currentVel.y);
                     break;
                 case MoveState.MovingBreaking://FRENADA FUERTE
-                    Vector3 finalDir = currentVel + currentMovDir * finalMovingAcc;
+                    Vector3 finalDir = currentVel + currentInputDir * finalMovingAcc;
                     horizontalVel = new Vector3(finalDir.x, 0, finalDir.z);
                     currentVel = horizontalVel.normalized * currentSpeed;
                     currentVel.y = finalDir.y;
@@ -811,7 +824,7 @@ public class PlayerMovement : MonoBehaviour
         }
         horVel = new Vector3(currentVel.x, 0, currentVel.z);
         //print("CurrentVel after processing= " + currentVel.ToString("F6") + "; CurrentSpeed 1.4 = " + currentSpeed + "; horVel.magnitude = " 
-        //    + horVel.magnitude + "; currentMovDir = " + currentMovDir.ToString("F6"));
+        //    + horVel.magnitude + "; currentInputDir = " + currentInputDir.ToString("F6"));
         #endregion
     }
 
@@ -1027,7 +1040,7 @@ public class PlayerMovement : MonoBehaviour
         if(!disableAllDebugs) Debug.LogWarning("Check Wall jump: wall real normal = "+ controller.collisions.closestHorRaycast.slopeAngle);
         bool result = false;
         float slopeAngle = controller.collisions.closestHorRaycast.slopeAngle;
-        bool goodWallAngle = !(slopeAngle >= 95 && slopeAngle <=180);
+        bool goodWallAngle = !(slopeAngle >= 110 && slopeAngle <=180);
         if (!controller.collisions.below && !inWater && jumpedOutOfWater && controller.collisions.collisionHorizontal  && goodWallAngle &&
             (!firstWallJumpDone || lastWallAngle != controller.collisions.wallAngle || (lastWallAngle == controller.collisions.wallAngle &&
             lastWall != controller.collisions.horWall)))
@@ -1146,8 +1159,8 @@ public class PlayerMovement : MonoBehaviour
         if (!disableAllDebugs) Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
 
         SetVelocity(finalDir * wallJumpVelocity);
-        currentMovDir = new Vector3(finalDir.x, 0, finalDir.z);
-        RotateCharacter(currentMovDir);
+        Vector3 newMoveDir = new Vector3(finalDir.x, 0, finalDir.z);
+        RotateCharacter(newMoveDir);
 
         //myPlayerAnimation.SetJump(true);
 
@@ -1179,12 +1192,13 @@ public class PlayerMovement : MonoBehaviour
             moveSt = MoveState.Boost;
             if (currentInputDir != Vector3.zero)//Usando el joystick o dirección
             {
-                boostDir = currentMovDir;
+                boostDir = currentInputDir;
+                RotateCharacter(boostDir);
             }
             else//sin tocar ninguna dirección/joystick
             {
-                currentMovDir = boostDir = new Vector3(currentCamFacingDir.x, 0, currentCamFacingDir.z);//nos movemos en la dirección en la que mire la cámara
-                RotateCharacter(currentMovDir);
+                Vector3 newMoveDir = boostDir = new Vector3(currentCamFacingDir.x, 0, currentCamFacingDir.z);//nos movemos en la dirección en la que mire la cámara
+                RotateCharacter(newMoveDir);
             }
             myPlayerHUD.StartCamVFX(CameraVFXType.Dash);
             myPlayerCombatNew.StopDoingCombat();
@@ -1300,12 +1314,12 @@ public class PlayerMovement : MonoBehaviour
 
     public void SetPlayerRotationSpeed(float rotSpeedPercentage)
     {
-        currentRotationSpeed = currentRotationSpeed * rotSpeedPercentage;
+        rotationRestrictedPercentage = rotSpeedPercentage;
     }
 
     public void ResetPlayerRotationSpeed()
     {
-        currentRotationSpeed = rotationSpeed;
+        rotationRestrictedPercentage = 1;
     }
 
     void UpdateFacingDir()//change so that only rotateObj rotates, not whole body
@@ -1317,21 +1331,22 @@ public class PlayerMovement : MonoBehaviour
                 //Calculate looking dir of camera
                 Vector3 camPos = myCamera.transform.GetChild(0).position;
                 Vector3 myPos = transform.position;
-                currentFacingDir = new Vector3(myPos.x - camPos.x, 0, myPos.z - camPos.z).normalized;
+                //currentFacingDir = new Vector3(myPos.x - camPos.x, 0, myPos.z - camPos.z).normalized;
                 currentCamFacingDir = myCamera.myCamera.transform.forward.normalized;
                 break;
             case cameraMode.Shoulder:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
-                currentFacingDir = RotateVector(-myCamera.transform.localRotation.eulerAngles.y, Vector3.forward).normalized;
+                //currentFacingDir = RotateVector(-myCamera.transform.localRotation.eulerAngles.y, Vector3.forward).normalized;
                 currentCamFacingDir = myCamera.myCamera.transform.forward.normalized;
                 //print("CurrentFacingDir = " + currentFacingDir);
                 break;
             case cameraMode.Free:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
-                currentFacingDir = RotateVector(-rotateObj.localRotation.eulerAngles.y, Vector3.forward).normalized;
+                //currentFacingDir = RotateVector(-rotateObj.localRotation.eulerAngles.y, Vector3.forward).normalized;
                 currentCamFacingDir = (cameraFollow.position - myCamera.myCamera.transform.position).normalized;
                 break;
         }
+        currentFacingDir = rotateObj.forward;
         //print("currentFacingDir = " + currentFacingDir + "; currentCamFacingDir = " + currentCamFacingDir);
 
     }
@@ -1353,63 +1368,71 @@ public class PlayerMovement : MonoBehaviour
                 rotateObj.Rotate(dir, rotSpeed * Time.deltaTime);
                 break;
             case cameraMode.Free:
-                if (currentInputDir != Vector3.zero)
+                Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
+                Vector3 lookingDir = wallJumping ? currentInputDir : hardSteerOn ? hardSteerDir : horVel; lookingDir.Normalize();
+                if (lookingDir != Vector3.zero)
                 {
-                    currentRotation = rotateObj.localRotation.eulerAngles.y;
-
-                    float angle = Mathf.Acos(((0 * currentInputDir.x) + (1 * currentInputDir.z)) / (1 * currentInputDir.magnitude)) * Mathf.Rad2Deg;
-                    angle = currentInputDir.x < 0 ? 360 - angle : angle;
-                    targetRotation = angle;
-                    Vector3 targetRotationVector = AngleToVector(targetRotation);
-                    Vector3 currentRotationVector = AngleToVector(currentRotation);
-                    float rotationDiff = Vector3.Angle(targetRotationVector, currentRotationVector);
-                    if (hasCharacterRotation)
-                    {
-                        #region --- Character Rotation with rotation speed ---
-                        if (currentRotation != targetRotation)
-                        {
-                            if (!myPlayerCombatNew.isRotationRestricted && rotationDiff > instantRotationMinAngle)//Instant rotation
-                            {
-                                //Debug.LogError("INSTANT BODY ROTATION, angle = "+targetRotation);
-                                RotateCharacterInstantly(targetRotation);
-                                //Debug.LogError("INSANT BODYY ROTATION after, angle = " + rotateObj.localRotation.eulerAngles.y);
-                            }
-                            else
-                            {//rotate with speed
-                                #region --- Decide rotation direction ---
-                                int sign = 1;
-                                bool currentRotOver180 = currentRotation > 180 ? true : false;
-                                bool targetRotOver180 = targetRotation > 180 ? true : false;
-                                if (currentRotOver180 == targetRotOver180)
-                                {
-                                    sign = currentRotation > targetRotation ? -1 : 1;
-                                }
-                                else
-                                {
-                                    float oppositeAngle = currentRotation + 180;
-                                    oppositeAngle = oppositeAngle > 360 ? oppositeAngle - 360 : oppositeAngle;
-                                    //print("oppositeAngle = " + oppositeAngle);
-                                    sign = oppositeAngle < targetRotation ? -1 : 1;
-                                }
-                                #endregion
-
-                                float newAngle = currentRotation + (sign * currentRotationSpeed * Time.deltaTime);
-                                Vector3 newAngleVector = AngleToVector(newAngle);
-                                float newAngleDiff = Vector3.Angle(currentRotationVector, newAngleVector);
-                                if (newAngleDiff > rotationDiff) newAngle = targetRotation;
-                                rotateObj.localRotation = Quaternion.Euler(0, newAngle, 0);
-                            }
-                        }
-                        #endregion
-                    }
-                    else
-                    {
-                        RotateCharacterInstantly(targetRotation);
-                    }
+                    float angle = Mathf.Acos(((0 * lookingDir.x) + (1 * lookingDir.z)) / (1 * lookingDir.magnitude)) * Mathf.Rad2Deg;
+                    angle = lookingDir.x < 0 ? 360 - angle : angle;
+                    RotateCharacterInstantly(angle);
                 }
+                //if (currentInputDir != Vector3.zero)
+                //{
+                //    currentRotation = rotateObj.localRotation.eulerAngles.y;
+
+                //    float angle = Mathf.Acos(((0 * currentInputDir.x) + (1 * currentInputDir.z)) / (1 * currentInputDir.magnitude)) * Mathf.Rad2Deg;
+                //    angle = currentInputDir.x < 0 ? 360 - angle : angle;
+                //    targetRotation = angle;
+                //    Vector3 targetRotationVector = AngleToVector(targetRotation);
+                //    Vector3 currentRotationVector = AngleToVector(currentRotation);
+                //    float rotationDiff = Vector3.Angle(targetRotationVector, currentRotationVector);
+                //    if (hasCharacterRotation)
+                //    {
+                //        #region --- Character Rotation with rotation speed ---
+                //        if (currentRotation != targetRotation)
+                //        {
+                //            if (!myPlayerCombatNew.isRotationRestricted && rotationDiff > instantRotationMinAngle)//Instant rotation
+                //            {
+                //                //Debug.LogError("INSTANT BODY ROTATION, angle = "+targetRotation);
+                //                RotateCharacterInstantly(targetRotation);
+                //                //Debug.LogError("INSANT BODYY ROTATION after, angle = " + rotateObj.localRotation.eulerAngles.y);
+                //            }
+                //            else
+                //            {//rotate with speed
+                //                #region --- Decide rotation direction ---
+                //                int sign = 1;
+                //                bool currentRotOver180 = currentRotation > 180 ? true : false;
+                //                bool targetRotOver180 = targetRotation > 180 ? true : false;
+                //                if (currentRotOver180 == targetRotOver180)
+                //                {
+                //                    sign = currentRotation > targetRotation ? -1 : 1;
+                //                }
+                //                else
+                //                {
+                //                    float oppositeAngle = currentRotation + 180;
+                //                    oppositeAngle = oppositeAngle > 360 ? oppositeAngle - 360 : oppositeAngle;
+                //                    //print("oppositeAngle = " + oppositeAngle);
+                //                    sign = oppositeAngle < targetRotation ? -1 : 1;
+                //                }
+                //                #endregion
+
+                //                float newAngle = currentRotation + (sign * currentRotationSpeed * Time.deltaTime);
+                //                Vector3 newAngleVector = AngleToVector(newAngle);
+                //                float newAngleDiff = Vector3.Angle(currentRotationVector, newAngleVector);
+                //                if (newAngleDiff > rotationDiff) newAngle = targetRotation;
+                //                rotateObj.localRotation = Quaternion.Euler(0, newAngle, 0);
+                //            }
+                //        }
+                //        #endregion
+                //    }
+                //    else
+                //    {
+                //        RotateCharacterInstantly(targetRotation);
+                //    }
+                //}
                 break;
         }
-        //print("current angle = " + rotateObj.rotation.eulerAngles.y + "; currentMovDir = "+currentMovDir);
+        //print("current angle = " + rotateObj.rotation.eulerAngles.y + "; currentInputDir = "+currentInputDir);
     }
 
     void RotateCharacter(Vector3 dir)
@@ -1417,13 +1440,11 @@ public class PlayerMovement : MonoBehaviour
         float angle = Mathf.Acos(dir.z / dir.magnitude) * Mathf.Rad2Deg;
         angle = dir.x < 0 ? 360 - angle : angle;
         rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
-        currentRotation = targetRotation = angle;
     }
 
     void RotateCharacterInstantly(float angle)
     {
         rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
-        currentRotation = targetRotation = angle;
     }
 
     #endregion
@@ -1453,9 +1474,11 @@ public class PlayerMovement : MonoBehaviour
                     noInput = true;
                     break;
                 case EffectType.stun:
+                    if(disableAllDebugs) Debug.LogError("STUN !!!!!!!!");
                     noInput = true;
                     break;
                 case EffectType.knockdown:
+                    if (disableAllDebugs) Debug.LogError("KNOCKDOWN !!!!!!!!");
                     noInput = true;
                     myPlayerCombatNew.StartInvulnerabilty(_maxTime);
                     break;
@@ -1755,6 +1778,7 @@ public class PlayerMovement : MonoBehaviour
             inWater = false;
             myPlayerWeap.AttatchWeapon();
             myPlayerVFX.DeactivateEffect(PlayerVFXType.SwimmingEffect);
+            myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
         }
     }
     #endregion

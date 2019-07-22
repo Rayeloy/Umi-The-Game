@@ -30,11 +30,11 @@ MonoBehaviour:
     isFoldedInEditor: 0
     attackPhaseType: 2
     attackHitboxes: []
-    duration: 0.2
+    duration: 0.4
     restrictRotation: 1
     rotationSpeedPercentage: 0
     restrictMovement: 1
-    movementSpeedPercentage: 0
+    movementSpeedPercentage: 0.257
     invulnerability: 0
   activePhase:
     isFoldedInEditor: 0
@@ -45,11 +45,11 @@ MonoBehaviour:
         type: 3}
       effects:
       - effectType: 1
-        knockbackType: 1
+        knockbackType: 5
         knockbackMagnitude: 35
         knockbackDir: {x: 0, y: 0, z: 0}
         redirectMaxAngle: 45.2
-        knockbackYAngle: 0
+        knockbackYAngle: 46.2
         stunTime: 0
         parryStunTime: 0
         parryRecoveryTime: 0

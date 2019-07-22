@@ -27,7 +27,7 @@ public class AttackEffect
 {
     public EffectType effectType;
 
-    [Header("--- Knockback ---")]
+    [Header("[--- KNOCKBACK ---]")]
     public KnockbackType knockbackType;
     [Tooltip("If using the knockbackType Autocenter, the magnitude indicates how far away in front of the player will the hit send the enemy (in Unity units).")]
     public float knockbackMagnitude = 1;
@@ -40,12 +40,12 @@ public class AttackEffect
     [Header("- Inwards/Outwards/Redirect -")]
     [Range(-90,90)]
     public float knockbackYAngle = 0;
-    [Header("--- Stun & softStun ---")]
+    [Header("[--- STUN & SOFTSTUN ---]")]
     public float stunTime = 0;
     //[Header("--- Knockdown ---")]
     [HideInInspector]
     public const float knockdownTime = 3;
-    [Header("--- Parry ---")]
+    [Header("[--- PARRY ---]")]
     public float parryStunTime = 0;
 
     [Tooltip("0 = 0% of the recovery time when succeeding in a parry, 1 = 100%.")]

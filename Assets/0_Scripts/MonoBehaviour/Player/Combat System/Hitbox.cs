@@ -5,7 +5,8 @@ using UnityEngine;
 public class Hitbox : MonoBehaviour
 {
     PlayerMovement myPlayerMov;
-    PlayerCombatNew myPlayerCombatNew;
+    [HideInInspector]
+    public PlayerCombatNew myPlayerCombatNew;
     public AttackHitbox myAttackHitbox;
 
     List<int> targetsHit;
@@ -97,6 +98,7 @@ public class Hitbox : MonoBehaviour
                                                     float meNoMaeDist = myAttackHitbox.effects[i].knockbackMagnitude + impulseDist;
                                                     Vector3 meNoMaePos = myPlayerMov.rotateObj.position + (hitDir * meNoMaeDist);//me no mae (目の前) means in front of your eyes
                                                     resultKnockback = (meNoMaePos - otherPlayer.transform.position);
+                                                    resultKnockback.y = 0;
                                                     Debug.DrawLine(otherPlayer.transform.position, (meNoMaePos), Color.red, 4);
                                                     if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("hitDir = " + hitDir + "; meNoMaeDist = " + meNoMaeDist + "; meNoMaePos = " + meNoMaePos);
 
@@ -110,9 +112,13 @@ public class Hitbox : MonoBehaviour
                                                     float inputRedirectAngle = SignedRelativeAngle(myPlayerMov.rotateObj.forward, myPlayerMov.currentInputDir, Vector3.up);
                                                     float finalRedirectAngle = Mathf.Clamp(inputRedirectAngle,-myAttackHitbox.effects[i].redirectMaxAngle, myAttackHitbox.effects[i].redirectMaxAngle);
                                                     resultKnockback = Quaternion.Euler(0, finalRedirectAngle, 0) * myPlayerMov.rotateObj.forward;
-                                                    resultKnockback *= myAttackHitbox.effects[i].knockbackMagnitude;
-                                                    resultKnockback = resultKnockback * myAttackHitbox.effects[i].knockbackMagnitude;
-
+                                                    //resultKnockback *= myAttackHitbox.effects[i].knockbackMagnitude;
+                                                    resultKnockback = resultKnockback.normalized * myAttackHitbox.effects[i].knockbackMagnitude;
+                                                    if (!myPlayerMov.disableAllDebugs)
+                                                    {
+                                                        //Debug.LogError("myPlayerMov.currentInputDir = " + myPlayerMov.currentInputDir+ "; resultKnockback = " + resultKnockback);
+                                                        Debug.DrawRay(myPlayerMov.transform.position, resultKnockback.normalized * 1, Color.red);
+                                                    }
                                                     break;
                                             }
                                             print("KNOCKBACK RESULT= " + resultKnockback);
@@ -238,6 +244,24 @@ public class Hitbox : MonoBehaviour
                             }
                             Dummy dummy = col.GetComponent<Dummy>();
                             dummy.StartRecieveHit(resultKnockback);
+                        }
+                        break;
+                    #endregion
+
+                    #region --- HITBOX ---
+                    case "Hitbox":
+                        Hitbox otherHitbox = col.GetComponent<Hitbox>();
+                        if (otherHitbox != null)
+                        {
+                            int priorityDiff =(int)Mathf.Sign(myPlayerCombatNew.currentAttack.attackPriority - otherHitbox.myPlayerCombatNew.currentAttack.attackPriority);
+                            switch (priorityDiff)
+                            {
+
+                                case -1:
+                                    break;
+                                case 1:
+                                    break;
+                            }
                         }
                         break;
                         #endregion

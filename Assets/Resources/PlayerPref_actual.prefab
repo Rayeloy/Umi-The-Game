@@ -511,7 +511,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   disableAllDebugs: 1
-  disableAllRays: 1
+  disableAllRays: 0
   collisionMask:
     serializedVersion: 2
     m_Bits: 279040
@@ -584,9 +584,7 @@ MonoBehaviour:
   myCamera: {fileID: 0}
   cameraFollow: {fileID: 2847219716704171441}
   rotateObj: {fileID: 2847339013141467789}
-  hasCharacterRotation: 1
-  rotationSpeed: 550
-  instantRotationMinAngle: 110
+  instantRotationMinAngle: 120
   bodyMass: 0
   maxFallSpeed: 40
   maxMoveSpeed: 10
@@ -635,7 +633,6 @@ MonoBehaviour:
   moveSt: 1
   currentVel: {x: 0, y: -0.51774114, z: 0}
   currentSpeed: 0
-  currentMovDir: {x: 0, y: 0, z: 0}
   currentInputDir: {x: 0, y: 0, z: 0}
   currentFacingDir: {x: -0.030918287, y: 0, z: -0.9995219}
   facingAngle: 181.77177
@@ -647,6 +644,7 @@ MonoBehaviour:
   inWater: 0
   hooked: 0
   jumpedOutOfWater: 1
+  impulse: {x: 0, y: 0, z: 0}
 --- !u!114 &6457576688623177950
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -670,6 +668,8 @@ MonoBehaviour:
   currentWeapon: {fileID: 0}
   invulnerable: 0
   attackStg: 0
+  currentAttack: {fileID: 0}
+  currentImpulse: {x: 0, y: 0, z: 0}
   autocomboStarted: 0
   aiming: 0
 --- !u!114 &2740053844141714977

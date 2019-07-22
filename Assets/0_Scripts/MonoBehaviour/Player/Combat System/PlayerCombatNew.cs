@@ -17,6 +17,10 @@ public class PlayerCombatNew : MonoBehaviour
     [HideInInspector]
     public Transform weaponHandle;
 
+    [Header("IMPULSE")]
+    [Range(0,180)]
+    public float maxImpulseAngle = 60;
+
 
     #endregion
 
@@ -44,6 +48,8 @@ public class PlayerCombatNew : MonoBehaviour
     public AttackData currentAttack;
     [HideInInspector]
     public Vector3 currentImpulse;
+    [HideInInspector]
+    public bool landedSinceAttackStarted = false;
 
     //Autocombo
     Autocombo autocombo;
@@ -180,13 +186,14 @@ public class PlayerCombatNew : MonoBehaviour
             case AttackPhaseType.startup:
                 if (currentAttack.startupPhase.restrictRotation) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.startupPhase.rotationSpeedPercentage);
                 if (currentAttack.startupPhase.restrictMovement) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.startupPhase.movementSpeedPercentage);
-                CalculateImpulse(currentAttack);
+                if (autocombo && autocomboIndex + 1 >= autocombo.attacks.Length) CalculateImpulse(currentAttack);
                 break;
             case AttackPhaseType.active:
                 if (currentAttack.activePhase.restrictRotation) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.activePhase.rotationSpeedPercentage);
                 if (currentAttack.activePhase.restrictMovement) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.activePhase.movementSpeedPercentage);
 
                 //Do impulse
+                if(!(autocombo && autocomboIndex+1 >= autocombo.attacks.Length)) CalculateImpulse(currentAttack);
                 myPlayerMovement.StartImpulse(currentImpulse);
                 break;
             case AttackPhaseType.recovery:
@@ -288,6 +295,25 @@ public class PlayerCombatNew : MonoBehaviour
 
     #endregion
 
+    #region --- IMPULSE ---
+    void CalculateImpulse(AttackData attack)
+    {
+        Vector3 impulseDir = Vector3.zero;
+        if (myPlayerMovement.currentInputDir != Vector3.zero)
+        {
+            float angleWithJoysitck = myPlayerMovement.SignedRelativeAngle(myPlayerMovement.rotateObj.forward, myPlayerMovement.currentInputDir, Vector3.up);
+            angleWithJoysitck = Mathf.Clamp(angleWithJoysitck, -maxImpulseAngle, maxImpulseAngle);
+            impulseDir = Quaternion.Euler(0, angleWithJoysitck, 0) * myPlayerMovement.rotateObj.forward;
+        }
+        else
+        {
+            impulseDir = myPlayerMovement.rotateObj.forward;
+        }
+        currentImpulse = impulseDir.normalized * attack.impulseMagnitude;
+    }
+
+    #endregion
+
     #region --- AUTOCOMBO ---
 
     bool StartAutocombo()
@@ -381,6 +407,7 @@ public class PlayerCombatNew : MonoBehaviour
         if (attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput && !aiming)
         {
             Debug.Log("Starting Attack " + newAttack.attackName);
+            landedSinceAttackStarted = myPlayerMovement.controller.collisions.below ? true : false;
             currentAttack = newAttack;
             //targetsHit.Clear();
             attackTime = 0;
@@ -391,8 +418,9 @@ public class PlayerCombatNew : MonoBehaviour
 
     void ProcessAttack()
     {
-        if (autocomboStarted && attackStg != AttackPhaseType.ready)
+        if (attackStg != AttackPhaseType.ready)
         {
+            if (!landedSinceAttackStarted && myPlayerMovement.controller.collisions.below) landedSinceAttackStarted = true;
             attackTime += Time.deltaTime;
             switch (attackStg)
             {
@@ -432,6 +460,7 @@ public class PlayerCombatNew : MonoBehaviour
     void EndAttack()
     {
         attackTime = 0;
+        landedSinceAttackStarted = false;
         ChangeAttackPhase(AttackPhaseType.ready);
         if (autocomboStarted)
         {
@@ -442,22 +471,6 @@ public class PlayerCombatNew : MonoBehaviour
             }
         }
         //myAttacks[attackIndex].StartCD();
-    }
-    
-    void CalculateImpulse(AttackData attack)
-    {
-        Vector3 impulseDir = Vector3.zero;
-        if (myPlayerMovement.currentInputDir != Vector3.zero)
-        {
-            float angleWithJoysitck = myPlayerMovement.SignedRelativeAngle(myPlayerMovement.rotateObj.forward, myPlayerMovement.currentInputDir, Vector3.up);
-            angleWithJoysitck = Mathf.Clamp(angleWithJoysitck, -60, 60);
-            impulseDir = Quaternion.Euler(0,angleWithJoysitck,0)* myPlayerMovement.rotateObj.forward;
-        }
-        else
-        {
-            impulseDir = myPlayerMovement.rotateObj.forward;
-        }
-        currentImpulse = impulseDir.normalized * attack.impulseMagnitude;
     }
 
     #endregion
@@ -544,7 +557,7 @@ public class PlayerCombatNew : MonoBehaviour
 
     public void StartAiming()
     {
-        if (!aiming && attackStg!=AttackPhaseType.ready)
+        if (!aiming && attackStg==AttackPhaseType.ready)
         {
             aiming = true;
             myPlayerMovement.myCamera.SwitchCamera(cameraMode.Shoulder);
