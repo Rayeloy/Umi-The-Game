@@ -19,6 +19,7 @@ public class HitboxHookBig : MonoBehaviour
         //print("Hook: Collision with " + col.name);
         if (col.gameObject != myPlayerMov.gameObject)
         {
+            Debug.Log("HOOK has hit "+ col.tag + " : checking team");
             if (myPlayerHook.canHookSomething)
             {
                 switch (col.tag)
@@ -27,11 +28,13 @@ public class HitboxHookBig : MonoBehaviour
                         myPlayerHook.HookObject(col.transform);
                         break;
                     case "Player":
+                        Debug.Log("HOOK PLAYER: checking team");
                         PlayerMovement otherPlayer = col.GetComponent<PlayerBody>().myPlayerMov;
                         if (myPlayerMov.team != otherPlayer.team)// IF ENEMY
                         {
                             if (!otherPlayer.inWater)// OUTSIDE WATER
                             {
+                                Debug.Log("HOOK PLAYER: is an enemy!");
                                 myPlayerHook.HookPlayer(otherPlayer);
                             }
                         }

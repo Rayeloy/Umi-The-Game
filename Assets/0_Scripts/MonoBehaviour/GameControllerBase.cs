@@ -891,20 +891,20 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             bool found = false;
             for (int j = 0; j < knownInputs.Count && !found; j++)
             {
-                Debug.Log("j = "+j+"; knownInputs.Count = " + knownInputs.Count);
-                Debug.LogWarning("Checking if the input "+ auxInput + " is equal to the known input " + knownInputs[j]);
+                //Debug.Log("j = "+j+"; knownInputs.Count = " + knownInputs.Count);
+                //Debug.LogWarning("Checking if the input "+ auxInput + " is equal to the known input " + knownInputs[j]);
                 if (auxInput == knownInputs[j])
                 {
                     found = true;
                 }
             }
-            if (found)
+            if(!found)
             {
-                Debug.LogError("Error: There is more than one BufferedInput of the type " + auxInput.ToString() + "in the inputsBuffer.");
+                knownInputs.Add(auxInput);
             }
             else
             {
-                knownInputs.Add(auxInput);
+                Debug.LogError("Error: There is more than one BufferedInput of the type " + auxInput.ToString() + "in the inputsBuffer.");
             }
         }
     }

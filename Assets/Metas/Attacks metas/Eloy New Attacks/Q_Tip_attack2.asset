@@ -30,11 +30,11 @@ MonoBehaviour:
     isFoldedInEditor: 0
     attackPhaseType: 2
     attackHitboxes: []
-    duration: 0.4
+    duration: 0.1
     restrictRotation: 1
     rotationSpeedPercentage: 0
     restrictMovement: 1
-    movementSpeedPercentage: 0.257
+    movementSpeedPercentage: 1
     invulnerability: 0
   activePhase:
     isFoldedInEditor: 0
@@ -62,21 +62,21 @@ MonoBehaviour:
         stunTime: 0.7
         parryStunTime: 0
         parryRecoveryTime: 0
-    duration: 0.3
+    duration: 0.15
     restrictRotation: 1
-    rotationSpeedPercentage: 0
+    rotationSpeedPercentage: 0.497
     restrictMovement: 1
-    movementSpeedPercentage: 0
+    movementSpeedPercentage: 1
     invulnerability: 0
   recoveryPhase:
     isFoldedInEditor: 0
     attackPhaseType: 4
     attackHitboxes: []
-    duration: 0.6
+    duration: 0.15
     restrictRotation: 1
-    rotationSpeedPercentage: 0
+    rotationSpeedPercentage: 1
     restrictMovement: 1
-    movementSpeedPercentage: 0
+    movementSpeedPercentage: 1
     invulnerability: 0
   impulseMagnitude: 20
   comboDifferentAttackPercent: 50

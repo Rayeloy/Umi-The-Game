@@ -207,6 +207,7 @@ public class PlayerMovement : MonoBehaviour
     public MoveState moveSt = MoveState.NotMoving;
     [HideInInspector]
     public Vector3 currentVel;
+    Vector3 oldCurrentVel;
     [HideInInspector]
     public float currentSpeed = 0;
     //[HideInInspector]
@@ -418,7 +419,7 @@ public class PlayerMovement : MonoBehaviour
         //    Debug.LogError("LANDING");
         //}
         //Debug.Log("Mis acciones son " + Actions);
-        if (currentSpeed != 0) Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4"));
+        if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4"));
         if (Actions.Start.WasPressed) gC.PauseGame(Actions);
 
         if ((controller.collisions.above || controller.collisions.below) && !hooked)
@@ -452,7 +453,8 @@ public class PlayerMovement : MonoBehaviour
         myPlayerAnimation_01.KonoUpdate();
         myPlayerWeap.KonoUpdate();
         myPlayerHook.KonoUpdate();
-        if(currentSpeed !=0)Debug.LogWarning("CurrentVel End = " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") + "; Player position = " + transform.position.ToString("F6"));
+        if(!disableAllDebugs && currentSpeed !=0)Debug.LogWarning("CurrentVel End = " + currentVel.ToString("F6") + "; currentVel.normalized = " + currentVel.normalized.ToString("F6") +
+            "; currentSpeed =" + currentSpeed.ToString("F4") + "; Player position = " + transform.position.ToString("F6"));
     }
 
     public void KonoFixedUpdate()
@@ -534,6 +536,7 @@ public class PlayerMovement : MonoBehaviour
         //hardSteerOn = false;
         hardSteerAngleDiff = 0;
         currentInputDir = Vector3.zero;
+        oldCurrentVel = new Vector3(currentVel.x, 0, currentVel.z);
     }
 
     public void CalculateMoveDir()
@@ -580,7 +583,7 @@ public class PlayerMovement : MonoBehaviour
                             hardSteerOn = hardSteerAngleDiff > instantRotationMinAngle ? true : false;
                             if (hardSteerOn && !hardSteerStarted)
                             {
-                                //if (hardSteerOn) Debug.LogError("HARD STEER ON: STARTED");
+                                if (!disableAllDebugs && hardSteerOn) Debug.LogError("HARD STEER ON: STARTED");
                                 hardSteerDir = currentInputDir;
                             }
                         }
@@ -650,7 +653,9 @@ public class PlayerMovement : MonoBehaviour
             float finalBreakAcc = controller.collisions.below ? breakAcc : airBreakAcc;
             float finalHardSteerAcc = controller.collisions.below ? hardSteerAcc : airHardSteerAcc;
             float finalInitialAcc = controller.collisions.below ? initialAcc : airInitialAcc;
-            finalMovingAcc = (controller.collisions.below ? movingAcc : airMovingAcc)* rotationRestrictedPercentage; //Turning accleration
+            finalMovingAcc = (controller.collisions.below ? movingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
+            if (!disableAllDebugs && rotationRestrictedPercentage!=1) Debug.LogWarning("finalMovingAcc = " + finalMovingAcc+ "; rotationRestrictedPercentage = " + rotationRestrictedPercentage+
+                "; attackStg = " + myPlayerCombatNew.attackStg);
             //finalBreakAcc = currentSpeed < 0 ? -finalBreakAcc : finalBreakAcc;
             if (knockbackDone && impulseDone)
             {
@@ -711,7 +716,8 @@ public class PlayerMovement : MonoBehaviour
                 case MoveState.NotMoving:
                     break;
             }
-            if (currentSpeed != 0) Debug.Log("CurrentSpeed 1.2 = " + currentSpeed.ToString("F4") +"; finalAcc = "+finalAcc+"; moveSt = "+moveSt+ "; currentSpeed =" + currentSpeed.ToString("F4"));
+            if (!disableAllDebugs && currentSpeed != 0) Debug.Log("CurrentSpeed 1.2 = " + currentSpeed.ToString("F4") +"; finalAcc = "+finalAcc+"; moveSt = "+moveSt+
+                "; currentSpeed =" + currentSpeed.ToString("F4"));
             float currentSpeedB4 = currentSpeed;
             currentSpeed = currentSpeed + finalAcc * Time.deltaTime;
             if (moveSt == MoveState.NotMoving && Mathf.Sign(currentSpeedB4) != Mathf.Sign(currentSpeed))
@@ -739,7 +745,7 @@ public class PlayerMovement : MonoBehaviour
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
         Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
-        if (currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
+        if (!disableAllDebugs && currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
             "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + controller.collisions.below + "; horVel.magnitude = " + horVel.magnitude);
         //print("CurrentVel 1.3= " + currentVel.ToString("F6")+ "MoveState = " + moveSt);
         if (jumpSt != JumpState.wallJumping ||(jumpSt==JumpState.wallJumping && moveSt==MoveState.Knockback))
@@ -755,10 +761,15 @@ public class PlayerMovement : MonoBehaviour
                     }
                     else
                     {
-                        newDir = horizontalVel + currentInputDir * finalMovingAcc * Time.deltaTime;
+                        newDir = horizontalVel.normalized + (currentInputDir * (finalMovingAcc * Time.deltaTime));
+                        float auxAngle = Vector3.Angle(oldCurrentVel, newDir);
+                        if(!disableAllDebugs) Debug.LogWarning("MOVING: finalMovingAcc2 = " + finalMovingAcc+ ";  auxAngle = "+ auxAngle + "; (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude = " 
+                            + (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude + "; (currentInputDir * finalMovingAcc * Time.deltaTime) = " 
+                            + (currentInputDir * finalMovingAcc * Time.deltaTime) + "; newDir = " + newDir);
                     }
                     horizontalVel = newDir.normalized * currentSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
+                    if (!disableAllDebugs) Debug.LogWarning("MOVING: CurrentVel.normalized = " + currentVel.normalized.ToString("F6"));
                     break;
                 case MoveState.NotMoving: //NOT MOVING JOYSTICK
                     horizontalVel = horizontalVel.normalized * currentSpeed;
@@ -781,7 +792,7 @@ public class PlayerMovement : MonoBehaviour
                     if (!knockbackDone)
                     {
                         print("KNOCKBACK");
-                        currentVel = currentVel + knockback;
+                        currentVel =  knockback;
                         horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
                         currentSpeed = horizontalVel.magnitude;
                         currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
@@ -796,10 +807,9 @@ public class PlayerMovement : MonoBehaviour
                     //print("vel.y = " + currentVel.y);
                     break;
                 case MoveState.MovingBreaking://FRENADA FUERTE
-                    Vector3 finalDir = currentVel + currentInputDir * finalMovingAcc;
-                    horizontalVel = new Vector3(finalDir.x, 0, finalDir.z);
-                    currentVel = horizontalVel.normalized * currentSpeed;
-                    currentVel.y = finalDir.y;
+                    newDir = horizontalVel.normalized + (currentInputDir * finalMovingAcc * Time.deltaTime);
+                    horizontalVel = newDir.normalized * currentSpeed;
+                    currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
                     break;
                 case MoveState.Hooked:
                     currentSpeed = horizontalVel.magnitude;
@@ -837,6 +847,16 @@ public class PlayerMovement : MonoBehaviour
     public void ResetPlayerAttackMovementSpeed()
     {
         maxAttackingMoveSpeed = maxMoveSpeed;
+    }
+
+    public void SetPlayerRotationSpeed(float rotSpeedPercentage)
+    {
+        rotationRestrictedPercentage = rotSpeedPercentage;
+    }
+
+    public void ResetPlayerRotationSpeed()
+    {
+        rotationRestrictedPercentage = 1;
     }
 
     #region -- IMPULSE --
@@ -1041,11 +1061,11 @@ public class PlayerMovement : MonoBehaviour
         bool result = false;
         float slopeAngle = controller.collisions.closestHorRaycast.slopeAngle;
         bool goodWallAngle = !(slopeAngle >= 110 && slopeAngle <=180);
+        wallJumpCurrentWall = controller.collisions.horWall;
         if (!controller.collisions.below && !inWater && jumpedOutOfWater && controller.collisions.collisionHorizontal  && goodWallAngle &&
             (!firstWallJumpDone || lastWallAngle != controller.collisions.wallAngle || (lastWallAngle == controller.collisions.wallAngle &&
-            lastWall != controller.collisions.horWall)))
+            lastWall != controller.collisions.horWall)) && wallJumpCurrentWall.tag == "Stage")
         {
-            wallJumpCurrentWall = controller.collisions.horWall;
             if (wallJumpCurrentWall.GetComponent<StageScript>() == null || wallJumpCurrentWall.GetComponent<StageScript>().wallJumpable)
             {
                 if (!disableAllDebugs) Debug.Log("Wall jumping start");
@@ -1119,12 +1139,12 @@ public class PlayerMovement : MonoBehaviour
                         if (hit.transform.gameObject == wallJumpCurrentWall)
                         {
                             success = true;
-                            Debug.Log("WallJump: Success! still walljumping!");
+                            //if(!disableAllDebugs)Debug.Log("WallJump: Success! still walljumping!");
                         }
                         else
                         {
-                            Debug.Log("WallJump: this wall (" + hit.transform.gameObject + ")is not the same wall that I started walljumping from " +
-                                "(" + wallJumpCurrentWall + ").");
+                            //if (!disableAllDebugs) Debug.Log("WallJump: this wall (" + hit.transform.gameObject + ")is not the same wall that I started walljumping from " +
+                            //    "(" + wallJumpCurrentWall + ").");
                         }
                     }
                 }
@@ -1133,7 +1153,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (!success)
             {
-                Debug.LogError("STOPPED WALLJUMPING DUE TO NOT DETECTING THE WALL ANYMORE. wallJumpCheckRaysRows = " + wallJumpCheckRaysRows);
+                //if (!disableAllDebugs) Debug.LogError("STOPPED WALLJUMPING DUE TO NOT DETECTING THE WALL ANYMORE. wallJumpCheckRaysRows = " + wallJumpCheckRaysRows);
                 StopWallJump();
             }
         }
@@ -1311,16 +1331,6 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region  FACING DIR AND ANGLE & BODY ROTATION---------------------------------------------
-
-    public void SetPlayerRotationSpeed(float rotSpeedPercentage)
-    {
-        rotationRestrictedPercentage = rotSpeedPercentage;
-    }
-
-    public void ResetPlayerRotationSpeed()
-    {
-        rotationRestrictedPercentage = 1;
-    }
 
     void UpdateFacingDir()//change so that only rotateObj rotates, not whole body
     {
@@ -1731,7 +1741,6 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region  WATER ---------------------------------------------
-
 
     public void EnterWater()
     {

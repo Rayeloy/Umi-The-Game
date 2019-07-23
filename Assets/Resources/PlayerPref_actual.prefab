@@ -510,11 +510,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c515b7e1049281419f36a8f533abb98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myPlayerMov: {fileID: 2740017724817165817}
   disableAllDebugs: 1
   disableAllRays: 0
   collisionMask:
     serializedVersion: 2
-    m_Bits: 279040
+    m_Bits: 17920
   collisionMaskAround:
     serializedVersion: 2
     m_Bits: 512
@@ -569,7 +570,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66bcdf6e0f085a446a4787f2032a0aa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllDebugs: 0
+  disableAllDebugs: 1
   myPlayerCombatNew: {fileID: 6457576688623177950}
   myPlayerWeap: {fileID: 2740053844141714977}
   myPlayerPickups: {fileID: 2739443829118614599}
@@ -608,8 +609,8 @@ MonoBehaviour:
   airBreakAcc: -5
   hardSteerAcc: -60
   airHardSteerAcc: -10
-  movingAcc: 85
-  airMovingAcc: 15
+  movingAcc: 9
+  airMovingAcc: 2.5
   hardBreakAcc: -90
   knockbackBreakAcc: -30
   gravity: 0
@@ -665,11 +666,13 @@ MonoBehaviour:
   hitboxesParent: {fileID: 2854368171562172343}
   weaponEdge: {fileID: 0}
   weaponHandle: {fileID: 0}
+  maxImpulseAngle: 60
   currentWeapon: {fileID: 0}
   invulnerable: 0
   attackStg: 0
   currentAttack: {fileID: 0}
   currentImpulse: {x: 0, y: 0, z: 0}
+  landedSinceAttackStarted: 0
   autocomboStarted: 0
   aiming: 0
 --- !u!114 &2740053844141714977
@@ -812,7 +815,7 @@ GameObject:
   - component: {fileID: 4460041324776375372}
   - component: {fileID: 5487840078817676140}
   - component: {fileID: 1593201641832413956}
-  m_Layer: 10
+  m_Layer: 30
   m_Name: ObjectDetection
   m_TagString: PlayerObjectDetection
   m_Icon: {fileID: 0}

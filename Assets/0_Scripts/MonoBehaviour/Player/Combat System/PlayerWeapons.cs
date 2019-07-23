@@ -149,12 +149,12 @@ public class PlayerWeapons : MonoBehaviour {
 
     public void PickupWeapon(Weapon weapon)
     {
-        if (!hasWeapon)
-        {
-            //print("SET PLAYER LAYER TO GO THROUGH SPAWN WALLS");
-            LayerMask newLM = LayerMask.GetMask("Stage", "WaterFloor");
-            myPlayerMovement.controller.collisionMask = newLM;
-        }
+        //if (!hasWeapon)
+        //{
+        //    //print("SET PLAYER LAYER TO GO THROUGH SPAWN WALLS");
+        //    LayerMask newLM = LayerMask.GetMask("Stage", "WaterFloor");
+        //    myPlayerMovement.controller.collisionMask = newLM;
+        //}
         DropWeapon();
         myPlayerMovement.maxMoveSpeed = weapon.weaponData.playerMaxSpeed;
         myPlayerMovement.bodyMass = weapon.weaponData.playerWeight;

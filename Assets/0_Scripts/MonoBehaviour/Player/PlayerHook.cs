@@ -334,7 +334,7 @@ public class PlayerHook : MonoBehaviour
 
     public void HookPlayer(PlayerMovement player)
     {
-        if (canHookSomething && enemy.StartHooked())
+        if (canHookSomething && player.StartHooked())
         {
             //print("HOOK PLAYER");
             enemyHooked = true;
