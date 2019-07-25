@@ -1195,7 +1195,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                             }
                         }
                     }
-                    else Debug.LogError("NEW SLOPE FOUND but could not hit it with the climbSLopeBackWall_ray");
+                    else if(!disableAllDebugs) Debug.LogError("NEW SLOPE FOUND but could not hit it with the climbSLopeBackWall_ray");
                     break;
                 case FirstCollisionWithWallType.climbingAndBackwardsWall:
                     Vector3 ClimbSlopeBackWall_rayOrigin = closestRaycast.origin + (horVel.normalized * closestRaycast.skinWidth);//hit.point;

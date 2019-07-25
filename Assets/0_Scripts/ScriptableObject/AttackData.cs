@@ -109,6 +109,18 @@ public class AttackData : ScriptableObject
         if (activePhase.attackPhaseType != AttackPhaseType.active) Debug.LogError("AttackData-> Error: Attack " + activePhase + "'s chargingPhase has a different type.");
         if (recoveryPhase.attackPhaseType != AttackPhaseType.recovery) Debug.LogError("AttackData-> Error: Attack " + recoveryPhase + "'s recoveryPhase has a different type.");
 
+        for(int i=0; i < activePhase.attackHitboxes.Length; i++)
+        {
+            for(int j = 0; j < activePhase.attackHitboxes[i].effects.Length; j++)
+            {
+                if(activePhase.attackHitboxes[i].effects[j].effectType == EffectType.knockback && activePhase.attackHitboxes[i].effects[j].knockbackType == KnockbackType.redirect)
+                {
+                    if (startupPhase.rotationSpeedPercentage != 0) Debug.LogError("AttackData -> Error: Attack " + attackName + "'s active phase has a hitbox with knockback effect of type " +
+                            KnockbackType.redirect + ", but the startupPhase of this attack doesn't have rotationSpeedPercentage = 0 !");
+                }
+            }
+        }
+
         if (hasChargingPhase) chargingPhase.ErrorCheck();
         startupPhase.ErrorCheck();
         activePhase.ErrorCheck();

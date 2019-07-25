@@ -23,11 +23,9 @@ public class AttackPhase
 
     public float duration;
 
-    public bool restrictRotation;
+    [Tooltip("0 means 0% rotation, 1 -> 100% rotation")]
     [Range(0,1)]
     public float rotationSpeedPercentage;
-
-    public bool restrictMovement;
     [Tooltip("0 means 0% movement, 1 -> 100% movement")]
     [Range(0, 1)]
     public float movementSpeedPercentage;

@@ -95,10 +95,11 @@ public class PlayerHook : MonoBehaviour
     Vector3 hookMovingVel;
     Vector3 dirToHook;
 
-
-    bool enemyHooked;
+    [HideInInspector]
+    public bool enemyHooked;
     bool objectHooked;// item 
-    PlayerMovement enemy;
+    [HideInInspector]
+    public PlayerMovement enemy;
 
     [Space]
     public LayerMask collisionMask;
@@ -404,8 +405,8 @@ public class PlayerHook : MonoBehaviour
                 {
                     enemyHooked = false;
                     enemy.StopHooked();
+                    enemy.StartRecieveHit(myPlayerMov, Vector3.zero,EffectType.softStun,0.2f);
                     enemy = null;
-
                 }
                 else if (objectHooked)
                 {

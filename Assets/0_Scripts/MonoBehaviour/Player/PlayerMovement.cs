@@ -44,7 +44,7 @@ public enum JumpState
 public class PlayerMovement : MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
-    [Header("Referencias")]
+    [Header(" --- Referencias --- ")]
     public bool disableAllDebugs;
     //public PlayerCombat myPlayerCombat;
     public PlayerCombatNew myPlayerCombatNew;
@@ -73,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
 
     //VARIABLES DE MOVIMIENTO
 
-    [Header("ROTATION")]
+    [Header(" --- ROTATION --- ")]
     [Tooltip("Min angle needed in a turn to activate the instant rotation of the character (and usually the hardSteer mechanic too)")]
     [Range(0, 180)]
     public float instantRotationMinAngle = 120;
@@ -83,7 +83,7 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Body Mass Index. 1 is for normal body mass.")]
     public float bodyMass;
 
-    [Header("SPEED")]
+    [Header("--- SPEED ---")]
     public float maxFallSpeed = 100;
     public float maxMoveSpeed = 10;
     float maxAttackingMoveSpeed = 10;
@@ -95,7 +95,11 @@ public class PlayerMovement : MonoBehaviour
     public float maxSpeedInWater = 5f;
     public float maxVerticalSpeedInWater = 3f;
 
-    [Header("BOOST")]
+    [Header(" - IMPULSE - ")]
+    [Range(0,1)]
+    public float airImpulsePercentage = 0.5f;
+
+    [Header("--- BOOST ---")]
     public float boostSpeed = 20f;
     public float boostCapacity = 1f;
     [Tooltip("1 = 1 capacity per second")]
@@ -123,7 +127,7 @@ public class PlayerMovement : MonoBehaviour
     }
     Vector3 boostDir;
 
-    [Header("ACCELERATIONS")]
+    [Header(" --- ACCELERATIONS --- ")]
     public float initialAcc = 30;
     public float airInitialAcc = 30;
     public float breakAcc = -30;
@@ -140,7 +144,7 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector]
     public float gravity;
 
-    [Header("JUMP")]
+    [Header(" --- JUMP --- ")]
     public float jumpHeight = 4f;
     public float jumpApexTime = 0.4f;
     float jumpVelocity;
@@ -155,7 +159,7 @@ public class PlayerMovement : MonoBehaviour
     bool jumpInsurance;
     bool jumpingFromWater;
 
-    [Header("WALLJUMP")]
+    [Header(" --- WALLJUMP --- ")]
     public float wallJumpVelocity = 10f;
     public float wallJumpSlidingAcc = -2.5f;
     [Range(0, 1)]
@@ -224,7 +228,15 @@ public class PlayerMovement : MonoBehaviour
     float hardSteerAngleDiff = 0;
     bool hardSteerOn = false;
     bool hardSteerStarted = false;
+
+    //IMPULSE
     bool impulseStarted=false;
+    float maxImpulseTime = 0;
+    float impulseTime = 0;
+    [HideInInspector]
+    public Vector3 impulse;
+    bool impulseDone = false;
+
 
 
     //SALTO
@@ -492,7 +504,7 @@ public class PlayerMovement : MonoBehaviour
                         }
                         break;
                     case PlayerInput.Autocombo:
-                        Debug.Log("Trying to input autocombo from buffer... Time left = "+inputsBuffer[i].time);
+                        if(!disableAllDebugs)Debug.Log("Trying to input autocombo from buffer... Time left = "+inputsBuffer[i].time);
                         if (myPlayerCombatNew.StartOrContinueAutocombo(true))
                         {
                             inputsBuffer[i].StopBuffering();
@@ -583,7 +595,7 @@ public class PlayerMovement : MonoBehaviour
                             hardSteerOn = hardSteerAngleDiff > instantRotationMinAngle ? true : false;
                             if (hardSteerOn && !hardSteerStarted)
                             {
-                                if (!disableAllDebugs && hardSteerOn) Debug.LogError("HARD STEER ON: STARTED");
+                                //if (!disableAllDebugs && hardSteerOn) Debug.LogError("HARD STEER ON: STARTED");
                                 hardSteerDir = currentInputDir;
                             }
                         }
@@ -778,7 +790,7 @@ public class PlayerMovement : MonoBehaviour
                 case MoveState.Boost:
                     if (controller.collisions.collisionHorizontal)//BOOST CONTRA PARED
                     {
-                        WallBoost();
+                        WallBoost(controller.collisions.horWall);
                     }
                     else//BOOST NORMAL
                     {
@@ -791,7 +803,7 @@ public class PlayerMovement : MonoBehaviour
                 case MoveState.Knockback:
                     if (!knockbackDone)
                     {
-                        print("KNOCKBACK");
+                        if (!disableAllDebugs) print("KNOCKBACK");
                         currentVel =  knockback;
                         horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
                         currentSpeed = horizontalVel.magnitude;
@@ -825,7 +837,12 @@ public class PlayerMovement : MonoBehaviour
                     break;
                 case MoveState.Impulse:
                     impulseDone = true;
-                    Vector3 finalImpulse = new Vector3(impulse.x, currentVel.y, impulse.z);
+                    Vector3 finalImpulse = new Vector3(impulse.x, 0, impulse.z);
+                    float maxMag = finalImpulse.magnitude;
+                    finalImpulse = horizontalVel + finalImpulse;
+                    float finalMag = Mathf.Clamp(finalImpulse.magnitude, 0, maxMag);
+                    finalImpulse = finalImpulse.normalized * finalMag;
+                    finalImpulse = new Vector3(finalImpulse.x, currentVel.y, finalImpulse.z);
                     SetVelocity(finalImpulse);
                     moveSt = MoveState.NotMoving;
                     break;
@@ -860,30 +877,28 @@ public class PlayerMovement : MonoBehaviour
     }
 
     #region -- IMPULSE --
-    float maxImpulseTime = 0;
-    float impulseTime = 0;
-    [HideInInspector]
-    public Vector3 impulse;
-    bool impulseDone = false;
-    public float MissingImpulseTime()
-    {
-        return Mathf.Clamp(maxImpulseTime - impulseTime,0,float.MaxValue);
-    }
     public void StartImpulse(Vector3 _impulse)
     {
-        impulse = _impulse;
-        impulseStarted = true;
-        impulseDone = false;
-        impulseTime = 0;
-        maxImpulseTime = _impulse.magnitude /Mathf.Abs(breakAcc);
-        moveSt = MoveState.Impulse;
+        if (_impulse.magnitude != 0 )
+        {
+            if (!controller.collisions.below)
+            {
+                _impulse *= airImpulsePercentage;
+            }
+            impulse = _impulse;
+            impulseStarted = true;
+            impulseDone = false;
+            impulseTime = 0;
+            maxImpulseTime = _impulse.magnitude / Mathf.Abs(breakAcc);
+            moveSt = MoveState.Impulse;
 
-        //Character rotation
-        Vector3 impulseDir = _impulse.normalized;
-        float angle = Mathf.Acos(((0 * impulseDir.x) + (1 * impulseDir.z)) / (1 * impulseDir.magnitude)) * Mathf.Rad2Deg;
-        angle = impulseDir.x < 0 ? 360 - angle : angle;
-        RotateCharacterInstantly(angle);
-        if (!disableAllDebugs) Debug.Log("Impulse = "+ _impulse + "; maxImpulseTime = "+ maxImpulseTime + "; impulse.magnitude = " + impulse.magnitude);
+            //Character rotation
+            Vector3 impulseDir = _impulse.normalized;
+            float angle = Mathf.Acos(((0 * impulseDir.x) + (1 * impulseDir.z)) / (1 * impulseDir.magnitude)) * Mathf.Rad2Deg;
+            angle = impulseDir.x < 0 ? 360 - angle : angle;
+            RotateCharacterInstantly(angle);
+            if (!disableAllDebugs) Debug.Log("Impulse = " + _impulse + "; maxImpulseTime = " + maxImpulseTime + "; impulse.magnitude = " + impulse.magnitude);
+        }
     }
 
     void ProcessImpulse()
@@ -891,7 +906,8 @@ public class PlayerMovement : MonoBehaviour
         if (impulseStarted)
         {
             impulseTime += Time.deltaTime;
-            if (impulseTime >= maxImpulseTime)
+            //if (!disableAllDebugs && currentSpeed <= maxMoveSpeed) Debug.LogError("CurrentSpeed = "+ currentSpeed + "; maxMoveSpeed = " + maxMoveSpeed);
+            if (impulseTime >= maxImpulseTime || currentSpeed<=maxMoveSpeed)
             {
                 StopImpulse();
             }
@@ -910,6 +926,11 @@ public class PlayerMovement : MonoBehaviour
             impulseStarted = false;
             impulseDone = false;
         }
+    }
+
+    public float MissingImpulseTime()
+    {
+        return Mathf.Clamp(maxImpulseTime - impulseTime, 0, float.MaxValue);
     }
     #endregion
 
@@ -1190,7 +1211,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void StopWallJump()
     {
-        print("STOP WALLJUMP");
+        if (!disableAllDebugs) print("STOP WALLJUMP");
         wallJumping = false;
         wallJumpAnim = true;
         jumpSt = JumpState.none;
@@ -1314,18 +1335,21 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void WallBoost()
+    void WallBoost(GameObject wall)
     {
-        //CALCULATE JUMP DIR
-        Vector3 circleCenter = transform.position;
-        Vector3 circumfPoint = CalculateReflectPoint(1, controller.collisions.wallNormal, circleCenter);
-        Vector3 finalDir = (circumfPoint - circleCenter).normalized;
-        Debug.LogWarning("WALL BOOST: FINAL DIR = " + finalDir.ToString("F4"));
+        if (wall.tag == "Stage")
+        {
+            //CALCULATE JUMP DIR
+            Vector3 circleCenter = transform.position;
+            Vector3 circumfPoint = CalculateReflectPoint(1, controller.collisions.wallNormal, circleCenter);
+            Vector3 finalDir = (circumfPoint - circleCenter).normalized;
+            Debug.LogWarning("WALL BOOST: FINAL DIR = " + finalDir.ToString("F4"));
 
-        currentVel = finalDir * currentVel.magnitude;
-        currentSpeed = currentVel.magnitude;
-        boostDir = new Vector3(finalDir.x, 0, finalDir.z);
-        RotateCharacter(boostDir);
+            currentVel = finalDir * currentVel.magnitude;
+            currentSpeed = currentVel.magnitude;
+            boostDir = new Vector3(finalDir.x, 0, finalDir.z);
+            RotateCharacter(boostDir);
+        }
     }
 
     #endregion
@@ -1465,7 +1489,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (sufferingEffect != EffectType.knockdown && !myPlayerCombatNew.invulnerable)
         {
-            print("Recieve hit with knockback= "+ _knockback + "; effect = "+ efecto + "; maxtime = "+ _maxTime);
+            if (!disableAllDebugs) print("Recieve hit with knockback= "+ _knockback + "; effect = "+ efecto + "; maxtime = "+ _maxTime);
             myPlayerHook.FinishAutoGrapple();
             myPlayerHook.StopHook();
             StopWallJump();
@@ -1514,7 +1538,7 @@ public class PlayerMovement : MonoBehaviour
                 flag.DropFlag();
             }
 
-            print("Player " + playerNumber + " RECIEVED HIT");
+            if (!disableAllDebugs) print("Player " + playerNumber + " RECIEVED HIT");
             return true;
         }
         else return false; 
@@ -1543,7 +1567,7 @@ public class PlayerMovement : MonoBehaviour
 
     void StopSufferingEffect()
     {
-        print("Suffering effect " + sufferingEffect + " END");
+        if (!disableAllDebugs) print("Suffering effect " + sufferingEffect + " END");
         switch (sufferingEffect)
         {
             case EffectType.softStun:
