@@ -21,20 +21,16 @@ MonoBehaviour:
     attackPhaseType: 1
     attackHitboxes: []
     duration: 0
-    restrictRotation: 0
     rotationSpeedPercentage: 0
-    restrictMovement: 0
-    movementSpeed: 0
+    movementSpeedPercentage: 0
     invulnerability: 0
   startupPhase:
     isFoldedInEditor: 0
     attackPhaseType: 2
     attackHitboxes: []
-    duration: 0.2
-    restrictRotation: 1
-    rotationSpeedPercentage: 0.478
-    restrictMovement: 1
-    movementSpeed: 0.763
+    duration: 0.1
+    rotationSpeedPercentage: 0.5
+    movementSpeedPercentage: 0.5
     invulnerability: 0
   activePhase:
     isFoldedInEditor: 0
@@ -51,24 +47,19 @@ MonoBehaviour:
         redirectMaxAngle: 0
         knockbackYAngle: 0
         stunTime: 0
-        parryStunTime: 1
+        parryStunTime: 1.5
         parryRecoveryTime: 0
-    duration: 0.2
-    restrictRotation: 1
-    rotationSpeedPercentage: 0.111
-    restrictMovement: 1
-    movementSpeed: 0.171
+    duration: 0.3
+    rotationSpeedPercentage: 0.5
+    movementSpeedPercentage: 0.5
     invulnerability: 0
   recoveryPhase:
     isFoldedInEditor: 0
     attackPhaseType: 4
     attackHitboxes: []
     duration: 1
-    restrictRotation: 1
-    rotationSpeedPercentage: 0.208
-    restrictMovement: 1
-    movementSpeed: 0.207
+    rotationSpeedPercentage: 0.5
+    movementSpeedPercentage: 0.5
     invulnerability: 0
-  impulseDir: {x: 0, y: 0, z: 0}
   impulseMagnitude: 0
   comboDifferentAttackPercent: 50

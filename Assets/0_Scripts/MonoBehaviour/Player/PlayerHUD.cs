@@ -520,7 +520,7 @@ public class PlayerHUD : MonoBehaviour
 
     public void StartDashHUDCantDoAnimation()
     {
-        print("Start DashHUD Cant Use Animation");
+        if (!myPlayerMov.disableAllDebugs) if (!myPlayerMov.disableAllDebugs) if (!myPlayerMov.disableAllDebugs) print("Start DashHUD Cant Use Animation");
         dashHUDCantDoAnimStarted = true;
         dashHUDCantDoAnimTime = 0;
         dashHUDEdges.color = dashHUDEdgesColor[1];

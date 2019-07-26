@@ -51,6 +51,23 @@ public class PlayerBody : MonoBehaviour {
             case "WeaponPickup":
                 myPlayerWeapons.AddWeaponNearby(col.GetComponent<Weapon>());
                 break;
+            case "Player":
+                Debug.LogWarning("Hitting player! checking team");
+                PlayerMovement otherPlayer = col.transform.GetComponentInParent<PlayerMovement>();
+                if(otherPlayer!=null && myPlayerMov.team!= otherPlayer.team)
+                {
+                    if (myPlayerMov.myPlayerHook.enemyHooked && myPlayerMov.myPlayerHook.enemy == otherPlayer)
+                    {
+                        Debug.LogError("Player hooked stopped due to colliding with the player hooking him.");
+                        myPlayerMov.myPlayerHook.FinishHook();
+                    }
+                    else
+                    {
+                        Debug.LogError("Nope.");
+                    }
+
+                }
+                break;
         }
     }
 

@@ -77,7 +77,7 @@ public class PlayerActions : PlayerActionSet
         actions.L2.AddDefaultBinding(Mouse.RightButton);
 
         actions.A.AddDefaultBinding(Key.Space);
-        actions.X.AddDefaultBinding(Key.Key1);
+        actions.X.AddDefaultBinding(Mouse.LeftButton);
         actions.Y.AddDefaultBinding(Key.Key2);
         actions.B.AddDefaultBinding(Key.Key3);
 
@@ -138,7 +138,7 @@ public class PlayerActions : PlayerActionSet
         actions.L2.AddDefaultBinding(Mouse.RightButton);
 
         actions.A.AddDefaultBinding(Key.Space);
-        actions.X.AddDefaultBinding(Key.Key1);
+        actions.X.AddDefaultBinding(Mouse.LeftButton);
         actions.Y.AddDefaultBinding(Key.Key2);
         actions.B.AddDefaultBinding(Key.Key3);
 
@@ -207,7 +207,6 @@ public class PlayerActions : PlayerActionSet
             }
         return true;
         //}
-
         }
         return false;
     }

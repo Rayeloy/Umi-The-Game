@@ -570,7 +570,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66bcdf6e0f085a446a4787f2032a0aa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllDebugs: 1
+  disableAllDebugs: 0
   myPlayerCombatNew: {fileID: 6457576688623177950}
   myPlayerWeap: {fileID: 2740053844141714977}
   myPlayerPickups: {fileID: 2739443829118614599}
@@ -595,6 +595,7 @@ MonoBehaviour:
   maxGrapplingSpeed: 3.5
   maxSpeedInWater: 5
   maxVerticalSpeedInWater: 3
+  airImpulsePercentage: 0.5
   boostSpeed: 25
   boostCapacity: 1
   boostDepletingSpeed: 1
@@ -638,6 +639,7 @@ MonoBehaviour:
   currentFacingDir: {x: -0.030918287, y: 0, z: -0.9995219}
   facingAngle: 181.77177
   currentCamFacingDir: {x: -0.2605316, y: -0.49291176, z: -0.8301574}
+  impulse: {x: 0, y: 0, z: 0}
   jumpSt: 2
   wallJumpAnim: 0
   haveFlag: 0
@@ -645,7 +647,6 @@ MonoBehaviour:
   inWater: 0
   hooked: 0
   jumpedOutOfWater: 1
-  impulse: {x: 0, y: 0, z: 0}
 --- !u!114 &6457576688623177950
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -737,6 +738,8 @@ MonoBehaviour:
   hookGrapplingSpeed: 30
   hookMinDistance: 1
   cdMaxTime: 2
+  enemyHooked: 0
+  enemy: {fileID: 0}
   collisionMask:
     serializedVersion: 2
     m_Bits: 22016

@@ -50,6 +50,7 @@ public class PlayerCombatNew : MonoBehaviour
     public Vector3 currentImpulse;
     [HideInInspector]
     public bool landedSinceAttackStarted = false;
+    bool currentAttackHasRedirect = false;
 
     //Autocombo
     Autocombo autocombo;
@@ -62,6 +63,10 @@ public class PlayerCombatNew : MonoBehaviour
 
     //Parry
     AttackData parry;
+    AttackEffect parryEffect;
+    bool parryStarted = false;
+    float parryTimePercentage = 1;
+    bool hitParryStarted = false;
 
     [HideInInspector]
     public bool aiming;
@@ -72,7 +77,7 @@ public class PlayerCombatNew : MonoBehaviour
         get
         {
             bool result = false;
-            if (attackStg != AttackPhaseType.ready && currentAttack.GetAttackPhase(attackStg).restrictRotation)
+            if (attackStg != AttackPhaseType.ready && currentAttack.GetAttackPhase(attackStg).rotationSpeedPercentage < 1)
                 result = true;
             return result;
         }
@@ -118,14 +123,20 @@ public class PlayerCombatNew : MonoBehaviour
                 StartOrContinueAutocombo();
             }
 
+            //Parry
+            if (myPlayerMovement.Actions.L1.WasPressed)
+            {
+                StartParry();
+            }
+
             //Skill 1
-            if (myPlayerMovement.Actions.Y.WasPressed && (attackStg == AttackPhaseType.ready))//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
+            if (myPlayerMovement.Actions.Y.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
             {
 
             }
 
             //Skill 2
-            if (myPlayerMovement.Actions.B.WasPressed && (attackStg == AttackPhaseType.ready))//Input.GetButtonDown(myPlayerMovement.contName + "B"))
+            if (myPlayerMovement.Actions.B.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "B"))
             {
 
             }
@@ -163,7 +174,7 @@ public class PlayerCombatNew : MonoBehaviour
 
     void ChangeAttackPhase(AttackPhaseType attackStage)
     {
-        Debug.Log("Change attack phase to " + attackStage);
+        if (!myPlayerMovement.disableAllDebugs) Debug.Log("Change attack phase to " + attackStage);
         attackStg = attackStage;
 
         //change hitbox
@@ -178,27 +189,28 @@ public class PlayerCombatNew : MonoBehaviour
                 myPlayerMovement.ResetPlayerAttackMovementSpeed();
                 currentImpulse = Vector3.zero;
                 currentAttack = null;
+                currentAttackHasRedirect = false;
                 break;
             case AttackPhaseType.charging:
-                if (currentAttack.chargingPhase.restrictRotation) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.chargingPhase.rotationSpeedPercentage);
-                if (currentAttack.chargingPhase.restrictMovement) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.chargingPhase.movementSpeedPercentage);
+                if (currentAttack.chargingPhase.rotationSpeedPercentage < 1) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.chargingPhase.rotationSpeedPercentage);
+                if (currentAttack.chargingPhase.movementSpeedPercentage < 1) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.chargingPhase.movementSpeedPercentage);
                 break;
             case AttackPhaseType.startup:
-                if (currentAttack.startupPhase.restrictRotation) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.startupPhase.rotationSpeedPercentage);
-                if (currentAttack.startupPhase.restrictMovement) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.startupPhase.movementSpeedPercentage);
-                if (autocombo && autocomboIndex + 1 >= autocombo.attacks.Length) CalculateImpulse(currentAttack);
+                if (currentAttack.startupPhase.rotationSpeedPercentage < 1) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.startupPhase.rotationSpeedPercentage);
+                if (currentAttack.startupPhase.movementSpeedPercentage < 1) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.startupPhase.movementSpeedPercentage);
+                if (currentAttackHasRedirect) CalculateImpulse(currentAttack);
                 break;
             case AttackPhaseType.active:
-                if (currentAttack.activePhase.restrictRotation) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.activePhase.rotationSpeedPercentage);
-                if (currentAttack.activePhase.restrictMovement) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.activePhase.movementSpeedPercentage);
+                if (currentAttack.activePhase.rotationSpeedPercentage < 1) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.activePhase.rotationSpeedPercentage);
+                if (currentAttack.activePhase.movementSpeedPercentage < 1) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.activePhase.movementSpeedPercentage);
 
                 //Do impulse
-                if(!(autocombo && autocomboIndex+1 >= autocombo.attacks.Length)) CalculateImpulse(currentAttack);
+                if(!currentAttackHasRedirect) CalculateImpulse(currentAttack);
                 myPlayerMovement.StartImpulse(currentImpulse);
                 break;
             case AttackPhaseType.recovery:
-                if (currentAttack.recoveryPhase.restrictRotation) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.recoveryPhase.rotationSpeedPercentage);
-                if (currentAttack.recoveryPhase.restrictMovement) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.recoveryPhase.movementSpeedPercentage);
+                if (currentAttack.recoveryPhase.rotationSpeedPercentage < 1) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.recoveryPhase.rotationSpeedPercentage);
+                if (currentAttack.recoveryPhase.movementSpeedPercentage < 1) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.recoveryPhase.movementSpeedPercentage);
                 break;
         }
     }
@@ -206,7 +218,7 @@ public class PlayerCombatNew : MonoBehaviour
     void ChangeHitboxes(AttackPhaseType att)//hacer después de cambiar de attack stage, no antes!
     {
         //HideAttackHitBox();
-        Debug.Log("Changing Hitboxes!");
+        if (!myPlayerMovement.disableAllDebugs) Debug.Log("Changing Hitboxes!");
         switch (attackStg)
         {
             case AttackPhaseType.ready:
@@ -252,7 +264,7 @@ public class PlayerCombatNew : MonoBehaviour
 
     void AddHitbox(AttackHitbox attackHitbox)
     {
-        Debug.Log("Adding hitbox of parent type " + attackHitbox.parentType);
+        if (!myPlayerMovement.disableAllDebugs) Debug.Log("Adding hitbox of parent type " + attackHitbox.parentType);
         GameObject auxHitbox = null;
         switch (attackHitbox.parentType)
         {
@@ -319,9 +331,9 @@ public class PlayerCombatNew : MonoBehaviour
     bool StartAutocombo()
     {
         bool exito = false;
-        if (!autocomboStarted && attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput && !aiming)
+        if (!autocomboStarted && attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput && !aiming && !myPlayerMovement.inWater)
         {
-            Debug.Log("Autocombo Started");
+            if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Started");
             exito = true;
             autocomboStarted = true;
             lastAutocomboAttackFinished = true;
@@ -347,7 +359,7 @@ public class PlayerCombatNew : MonoBehaviour
 
     public bool StartOrContinueAutocombo(bool calledFromBuffer=false)
     {
-        Debug.Log("Autocombo Start or Continue input. calledFromBuffer = "+calledFromBuffer+ "; autocomboStarted = "+ autocomboStarted);
+        if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Start or Continue input. calledFromBuffer = "+calledFromBuffer+ "; autocomboStarted = "+ autocomboStarted);
 
         bool result = false;
         if (!autocomboStarted)
@@ -363,7 +375,7 @@ public class PlayerCombatNew : MonoBehaviour
             if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Input was BUFFERED");
             myPlayerMovement.BufferInput(PlayerInput.Autocombo);
         }
-        Debug.Log("StartOrContinueAutocombo result = "+ result);
+        if (!myPlayerMovement.disableAllDebugs) Debug.Log("StartOrContinueAutocombo result = "+ result);
         return result;
     }
 
@@ -402,16 +414,31 @@ public class PlayerCombatNew : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region --- ATTACK ---
     void StartAttack(AttackData newAttack)
     {
-        if (attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput && !aiming)
+        if (attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput && !aiming && !myPlayerMovement.inWater)
         {
-            Debug.Log("Starting Attack " + newAttack.attackName);
+            if (!myPlayerMovement.disableAllDebugs) Debug.Log("Starting Attack " + newAttack.attackName);
             landedSinceAttackStarted = myPlayerMovement.controller.collisions.below ? true : false;
             currentAttack = newAttack;
             //targetsHit.Clear();
             attackTime = 0;
             attackStg = currentAttack.hasChargingPhase ? AttackPhaseType.charging : AttackPhaseType.startup;
+            bool found = false;
+            for(int i = 0; i < currentAttack.activePhase.attackHitboxes.Length && !found; i++)
+            {
+                for(int j=0; j < currentAttack.activePhase.attackHitboxes[i].effects.Length && !found; j++)
+                {
+                    if(currentAttack.activePhase.attackHitboxes[i].effects[j].effectType==EffectType.knockback &&
+                        currentAttack.activePhase.attackHitboxes[i].effects[j].knockbackType == KnockbackType.redirect)
+                    {
+                        currentAttackHasRedirect = true;
+                    }
+                }
+            }
             ChangeAttackPhase(attackStg);
         }
     }
@@ -448,7 +475,8 @@ public class PlayerCombatNew : MonoBehaviour
                     }
                     break;
                 case AttackPhaseType.recovery:
-                    if (attackTime >= currentAttack.recoveryPhase.duration)
+                    float recoveryTime = currentAttack.recoveryPhase.duration * parryTimePercentage;
+                    if (attackTime >= recoveryTime)
                     {
                         EndAttack();
                     }
@@ -465,26 +493,64 @@ public class PlayerCombatNew : MonoBehaviour
         if (autocomboStarted)
         {
             lastAutocomboAttackFinished = true;
-            if (autocomboIndex+1 >= autocombo.attacks.Length)
+            if (autocomboIndex + 1 >= autocombo.attacks.Length)
             {
                 StopAutocombo();
             }
         }
+        StopParry();
+        StopHitParry();
         //myAttacks[attackIndex].StartCD();
     }
-
     #endregion
 
     #region --- PARRY ---
+
     void StartParry()
     {
-
+        if (!parryStarted)
+        {
+            parryStarted = true;
+            StartAttack(parry);
+        }
     }
 
-    public void HitParryEffect()
+
+    //EN DESUSO
+    void ProcessParry()
     {
+        if (parryStarted)
+        {
 
+        }
     }
+
+    void StopParry()
+    {
+        if (parryStarted)
+        {
+            parryStarted = false;
+        }
+    }
+
+    public void HitParry()
+    {
+        if (!hitParryStarted)
+        {
+            hitParryStarted = true;
+            parryTimePercentage = parryEffect.parryRecoveryTime;
+        }
+    }
+
+    public void StopHitParry()
+    {
+        if (hitParryStarted)
+        {
+            hitParryStarted = false;
+            parryTimePercentage = 1;
+        }
+    }
+
     #endregion
 
     #region --- INVULNERABILTY ---
@@ -529,7 +595,21 @@ public class PlayerCombatNew : MonoBehaviour
 
         currentWeapon = weapon.weaponData;
         autocombo = currentWeapon.autocombo;
+
+        //Parry
         parry = currentWeapon.parry;
+        bool found = false;
+        for(int i = 0; i < parry.activePhase.attackHitboxes.Length && !found; i++)
+        {
+            for(int j=0; j< parry.activePhase.attackHitboxes[i].effects.Length && !found; j++)
+            {
+                if(parry.activePhase.attackHitboxes[i].effects[j].effectType == EffectType.parry)
+                {
+                    parryEffect = parry.activePhase.attackHitboxes[i].effects[j];
+                    found = true;
+                }
+            }
+        }
 
         //Skill 1
 
@@ -553,6 +633,7 @@ public class PlayerCombatNew : MonoBehaviour
     public void StopDoingCombat()
     {
         StopAutocombo();
+        StopParry();
     }
 
     public void StartAiming()
