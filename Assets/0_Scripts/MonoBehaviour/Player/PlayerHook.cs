@@ -204,6 +204,7 @@ public class PlayerHook : MonoBehaviour
         }
     }
 
+    #region --- Hook ---
     public void StartHook()
     {
         if (hookSt == HookState.ready && !usingAutoGrapple)
@@ -404,19 +405,20 @@ public class PlayerHook : MonoBehaviour
                 if (enemyHooked)
                 {
                     enemyHooked = false;
-                    enemy.StopHooked();
+                    enemy.StopHooked(0);
                     enemy.StartRecieveHit(myPlayerMov, Vector3.zero,EffectType.softStun,0.2f);
                     enemy = null;
                 }
                 else if (objectHooked)
                 {
+                    objectHooked = false;
+                    Debug.LogError("StopHook while reeling an object!");
                     //print("DROP OBJECT FROM HOOK");
                     if (hookedObject.tag == "Flag")
                     {
                         Flag flag = hookedObject.GetComponent<Flag>();
                         flag.DropFlag();
                     }
-                    objectHooked = false;
                     hookedObject.SetParent(StoringManager.instance.transform);
                     hookedObject = null;
 
@@ -459,7 +461,7 @@ public class PlayerHook : MonoBehaviour
         currentGrapplingHookPoint = null;
         currentHookPointPos = null;
         hookSt = HookState.cd;
-        myPlayerMov.StopHooked();
+        myPlayerMov.StopHooked(0.5f);
         StoringManager.instance.StoreObject(currentHook.transform);
         currentHook = null;
         cdTime = 0;
@@ -497,7 +499,9 @@ public class PlayerHook : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    #region --- Automatic Grapple ---
     //AUTOMATIC GRAPPLE
     public void CheckStartAutoGrapple()
     {
@@ -655,7 +659,7 @@ public class PlayerHook : MonoBehaviour
             currentGrapplingHookPoint = null;
             currentHookPointPos = null;
             grappleSt = GrappleState.cd;
-            myPlayerMov.StopHooked();
+            myPlayerMov.StopHooked(0.5f);
             myPlayerMov.StopHooking();
             StoringManager.instance.StoreObject(currentHook.transform);
             currentHook = null;
@@ -740,5 +744,5 @@ public class PlayerHook : MonoBehaviour
             currentHookPointInSight = null;
         }
     }
-
+    #endregion
 }

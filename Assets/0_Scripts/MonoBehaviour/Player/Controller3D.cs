@@ -8,6 +8,8 @@ public class Controller3D : MonoBehaviour
     public PlayerMovement myPlayerMov;
     public bool disableAllDebugs;
     public bool disableAllRays;
+    public bool collideWithOtherPlayers;
+    QueryTriggerInteraction qTI;
     public LayerMask collisionMask;
     public LayerMask collisionMaskAround;
     public float FloorMaxDistanceCheck = 5;
@@ -130,6 +132,7 @@ public class Controller3D : MonoBehaviour
              "are you sure you want this? It will generate extrange behaviours.");
         if (maxClimbAngle != maxDescendAngle) Debug.LogError("Warning: maxClimbAngle and maxDescendAngle values are different, " +
             "are you sure you want this? It will generate extrange behaviours.");
+        qTI = collideWithOtherPlayers ? QueryTriggerInteraction.Collide : QueryTriggerInteraction.Ignore;
     }
 
     private void Start()
@@ -442,7 +445,7 @@ public class Controller3D : MonoBehaviour
                 {
                     Debug.DrawRay(center, finalDir * rayLength, Color.red);
                 }
-                if (Physics.Raycast(center, finalDir, out hit, rayLength, collisionMaskAround))
+                if (Physics.Raycast(center, finalDir, out hit, rayLength, collisionMaskAround, qTI))
                 {
                     if (CanCollide(hit))
                     {
@@ -560,7 +563,7 @@ public class Controller3D : MonoBehaviour
                     RaycastHit hit;
                     Raycast auxRay = new Raycast(new RaycastHit(), Vector3.zero, float.MaxValue, Vector3.zero, Vector3.zero);
 
-                    if (Physics.Raycast(rayOriginX, horVel, out hit, corsbRayLength, collisionMask))
+                    if (Physics.Raycast(rayOriginX, horVel, out hit, corsbRayLength, collisionMask, qTI))
                     {
                         if (CanCollide(hit))
                         {
@@ -670,7 +673,7 @@ public class Controller3D : MonoBehaviour
                         rayOriginZ += (-horVel * corsbSkinWidth);
                         RaycastHit hit;
                         Raycast auxRay = new Raycast(new RaycastHit(), Vector3.zero, float.MaxValue, Vector3.zero, Vector3.zero);
-                        if (Physics.Raycast(rayOriginZ, horVel, out hit, corsbRayLength, collisionMask))
+                        if (Physics.Raycast(rayOriginZ, horVel, out hit, corsbRayLength, collisionMask, qTI))
                         {
                             if (CanCollide(hit))
                             {
@@ -775,7 +778,7 @@ public class Controller3D : MonoBehaviour
                 //    RaycastHit hit;
                 //    if (!disableAllRays) Debug.DrawRay(rayOrigin, horVelAux * rayLength, Color.yellow, 4);
 
-                //    if (Physics.Raycast(rayOrigin, horVelAux, out hit, rayLength, collisionMask))
+                //    if (Physics.Raycast(rayOrigin, horVelAux, out hit, rayLength, collisionMask, qTI))
                 //    {
 
                 //        //for(int i = closestRaycast.row+1; i< collisions.horRaycastsX.GetLength(0); i++)
@@ -820,7 +823,7 @@ public class Controller3D : MonoBehaviour
                         {
                             Vector3 rayOriginAux = closestRaycast.origin + Vector3.up * heightToPrecisionHeight;
                             RaycastHit hitAux;
-                            if (Physics.Raycast(rayOriginAux, horVel, out hitAux, rayLength, collisionMask))
+                            if (Physics.Raycast(rayOriginAux, horVel, out hitAux, rayLength, collisionMask, qTI))
                             {
                                 if (CanCollide(hitAux))
                                 {
@@ -952,7 +955,7 @@ public class Controller3D : MonoBehaviour
                             RaycastHit hitAux;
                             Vector3 origin = closestRaycast.origin;
                             origin.y = collisions.horRaycastsX[0, 0].origin.y;
-                            if (Physics.Raycast(origin, Vector3.down, out hitAux, rayLength, collisionMask))
+                            if (Physics.Raycast(origin, Vector3.down, out hitAux, rayLength, collisionMask, qTI))
                             {
                                 if (CanCollide(hitAux))
                                 {
@@ -1044,7 +1047,7 @@ public class Controller3D : MonoBehaviour
                         RaycastHit hit;
                         if (!disableAllRays) Debug.DrawRay(rayOrigin, rayDir * rayLength, Color.yellow);
 
-                        if (Physics.Raycast(rayOrigin, rayDir, out hit, rayLength, collisionMask))
+                        if (Physics.Raycast(rayOrigin, rayDir, out hit, rayLength, collisionMask, qTI))
                         {
                             if (CanCollide(hit))
                             {
@@ -1084,7 +1087,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                             if (!disableAllRays && showHorizontalRays) Debug.DrawRay(ClimbSlopeBackWall_rayOrigin, ClimbSlopeBackWall_rayDir * ClimbSlopeBackWall_rayLength, purple);
                             RaycastHit ClimbSlopeBackWall_hit;
 
-                            if (Physics.Raycast(ClimbSlopeBackWall_rayOrigin, ClimbSlopeBackWall_rayDir, out ClimbSlopeBackWall_hit, ClimbSlopeBackWall_rayLength, collisionMask))
+                            if (Physics.Raycast(ClimbSlopeBackWall_rayOrigin, ClimbSlopeBackWall_rayDir, out ClimbSlopeBackWall_hit, ClimbSlopeBackWall_rayLength, collisionMask, qTI))
                             {
                                 if (CanCollide(ClimbSlopeBackWall_hit))
                                 {
@@ -1184,7 +1187,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                     if (!disableAllRays && showHorizontalRays) Debug.DrawRay(ClimbSlopeStraightWall_rayOrigin, ClimbSlopeStraightWall_rayDir * ClimbSlopeStraightWall_rayLength, purple);
                     RaycastHit ClimbSlopeStraightWall_hit;
 
-                    if (Physics.Raycast(ClimbSlopeStraightWall_rayOrigin, ClimbSlopeStraightWall_rayDir, out ClimbSlopeStraightWall_hit, ClimbSlopeStraightWall_rayLength, collisionMask))
+                    if (Physics.Raycast(ClimbSlopeStraightWall_rayOrigin, ClimbSlopeStraightWall_rayDir, out ClimbSlopeStraightWall_hit, ClimbSlopeStraightWall_rayLength, collisionMask, qTI))
                     {
                         if (CanCollide(ClimbSlopeStraightWall_hit))
                         {
@@ -1204,7 +1207,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                     if (!disableAllRays && showHorizontalRays) Debug.DrawRay(ClimbSlopeBackWall_rayOrigin, ClimbSlopeBackWall_rayDir * ClimbSlopeBackWall_rayLength, purple);
                     RaycastHit ClimbSlopeBackWall_hit;
 
-                    if (Physics.Raycast(ClimbSlopeBackWall_rayOrigin, ClimbSlopeBackWall_rayDir, out ClimbSlopeBackWall_hit, ClimbSlopeBackWall_rayLength, collisionMask))
+                    if (Physics.Raycast(ClimbSlopeBackWall_rayOrigin, ClimbSlopeBackWall_rayDir, out ClimbSlopeBackWall_hit, ClimbSlopeBackWall_rayLength, collisionMask, qTI))
                     {
                         if (CanCollide(ClimbSlopeBackWall_hit))
                         {
@@ -1225,7 +1228,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                     if (!disableAllRays && showHorizontalRays) Debug.DrawRay(ClimbingAndFowardWall_rayOrigin, ClimbingAndFowardWall_rayDir * ClimbingAndFowardWall_rayLength, purple);
 
                     RaycastHit ClimbingAndFowardWall_hit;
-                    if (Physics.Raycast(ClimbingAndFowardWall_rayOrigin, ClimbingAndFowardWall_rayDir, out ClimbingAndFowardWall_hit, ClimbingAndFowardWall_rayLength, collisionMask))
+                    if (Physics.Raycast(ClimbingAndFowardWall_rayOrigin, ClimbingAndFowardWall_rayDir, out ClimbingAndFowardWall_hit, ClimbingAndFowardWall_rayLength, collisionMask, qTI))
                     {
                         if (CanCollide(ClimbingAndFowardWall_hit))
                         {
@@ -1474,7 +1477,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                     {
                         Debug.DrawRay(localRayOrigin, horVel.normalized * raylength, purple);
                     }
-                    if (Physics.Raycast(localRayOrigin, horVel.normalized, out hit, raylength, collisionMask))
+                    if (Physics.Raycast(localRayOrigin, horVel.normalized, out hit, raylength, collisionMask, qTI))
                     {
                         if (CanCollide(hit))
                         {
@@ -1579,7 +1582,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                                 Debug.DrawRay(hardCornerLocalRayOrigin, hardCornerRayDir * hardCornerRayLength, brown);
                             }
                             RaycastHit hardCornerHit;
-                            if (Physics.Raycast(hardCornerLocalRayOrigin, hardCornerRayDir, out hardCornerHit, hardCornerRayLength, collisionMask))
+                            if (Physics.Raycast(hardCornerLocalRayOrigin, hardCornerRayDir, out hardCornerHit, hardCornerRayLength, collisionMask, qTI))
                             {
                                 float slopeAngle = GetSlopeAngle(hardCornerHit);
                                 float wallAngle = SignedRelativeAngle(Vector3.forward, hardCornerHit.normal, Vector3.up); //Vector3.Angle(hit.normal, Vector3.forward);
@@ -1635,7 +1638,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                             {
                                 Debug.DrawRay(localRayOrigin, horVel * raylength, purple);
                             }
-                            if (Physics.Raycast(localRayOrigin, horVel, out hit, raylength, collisionMask))
+                            if (Physics.Raycast(localRayOrigin, horVel, out hit, raylength, collisionMask, qTI))
                             {
                                 if (CanCollide(hit))
                                 {
@@ -2132,7 +2135,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                     rayOrigin += (Vector3.up * -directionY) * skinWidth;
                     RaycastHit hit;
                     Raycast auxRay = new Raycast(new RaycastHit(), Vector3.zero, float.MaxValue, Vector3.zero, Vector3.zero);
-                    if (Physics.Raycast(rayOrigin, Vector3.up * directionY, out hit, rayLength, collisionMask)) // throw raycast here
+                    if (Physics.Raycast(rayOrigin, Vector3.up * directionY, out hit, rayLength, collisionMask, qTI)) // throw raycast here
                     {
                         if (CanCollide(hit))
                         {
@@ -2205,7 +2208,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
 
                     RaycastHit slipingSecondCheck_Hit;
                     if (Physics.Raycast(slipingSecondCheck_rayOrigin, slipingSecondCheck_rayDir, out slipingSecondCheck_Hit,
-                        slipingSecondCheck_rayLength, collisionMask))
+                        slipingSecondCheck_rayLength, collisionMask, qTI))
                     {
                         if (CanCollide(slipingSecondCheck_Hit))
                         {
@@ -2252,7 +2255,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                                 float newRoofRayLength = 2f;
                                 if (!disableAllRays && showRoofRays) Debug.DrawRay(newRoofRayOrigin, newRoofRayDir * newRoofRayLength, purple);
                                 RaycastHit newRoofHit;
-                                if (Physics.Raycast(newRoofRayOrigin, newRoofRayDir, out newRoofHit, newRoofRayLength, collisionMask))
+                                if (Physics.Raycast(newRoofRayOrigin, newRoofRayDir, out newRoofHit, newRoofRayLength, collisionMask, qTI))
                                 {
                                     if (CanCollide(newRoofHit))
                                     {
@@ -2348,7 +2351,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                         RaycastHit hit;
                         if (!disableAllRays) Debug.DrawRay(rayOrigin, Vector3.down * rayLength, Color.yellow);
 
-                        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayLength, collisionMask))
+                        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayLength, collisionMask, qTI))
                         {
                             if (CanCollide(hit))
                             {
@@ -2392,7 +2395,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                     Vector3 descendRayOrigin = collisions.closestVerRaycast.origin + horVel;
                     if (!disableAllRays) Debug.DrawRay(descendRayOrigin, Vector3.down * rayLength, Color.yellow);
                     RaycastHit descendHit;
-                    if (Physics.Raycast(descendRayOrigin, Vector3.down, out descendHit, rayLength, collisionMask))
+                    if (Physics.Raycast(descendRayOrigin, Vector3.down, out descendHit, rayLength, collisionMask, qTI))
                     {
                         if (CanCollide(descendHit))
                         {
@@ -2457,7 +2460,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                         }
 
 
-                        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayLength, collisionMask))
+                        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayLength, collisionMask, qTI))
                         {
                             if (CanCollide(hit))
                             {
@@ -2507,7 +2510,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                         localRayOrigin.x = rayOrigin.x + (sentido * k * floorEdgeHighPrecissionHorRaySpacing);
                         RaycastHit hit;
                         if (!disableAllRays && showFloorEdgeRays) Debug.DrawRay(localRayOrigin, rayDir * rayLength, purple);
-                        if (Physics.Raycast(localRayOrigin, rayDir, out hit, rayLength, collisionMask))
+                        if (Physics.Raycast(localRayOrigin, rayDir, out hit, rayLength, collisionMask, qTI))
                         {
                             if (CanCollide(hit))
                             {
@@ -2541,7 +2544,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
                             localRayOrigin.z = rayOrigin.z + (sentido * k * floorEdgeHighPrecissionVerRaySpacing);
                             RaycastHit hit;
                             if (!disableAllRays && showFloorEdgeRays) Debug.DrawRay(localRayOrigin, rayDir * rayLength, purple);
-                            if (Physics.Raycast(localRayOrigin, rayDir, out hit, rayLength, collisionMask))
+                            if (Physics.Raycast(localRayOrigin, rayDir, out hit, rayLength, collisionMask, qTI))
                             {
                                 if (CanCollide(hit))
                                 {

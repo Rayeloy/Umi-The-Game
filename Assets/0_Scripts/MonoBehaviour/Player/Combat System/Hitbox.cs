@@ -38,7 +38,7 @@ public class Hitbox : MonoBehaviour
                     #region --- PLAYER ---
                     case "Player":
                         PlayerMovement otherPlayer = col.GetComponent<PlayerBody>().myPlayerMov;
-                        if (myPlayerMov.team != otherPlayer.team)
+                        if (myPlayerMov.team != otherPlayer.team && !myPlayerCombatNew.parryStarted)
                         {
                             encontrado = false;
                             for (int i = 0; i < targetsHit.Count && !encontrado; i++)
@@ -300,7 +300,7 @@ public class Hitbox : MonoBehaviour
                                         case 1://TENEMOS MÁS PRIORIDAD
                                             for (int i = 0; i < myAttackHitbox.effects.Length; i++)
                                             {
-                                                if (myAttackHitbox.effects[i].effectType == EffectType.parry)
+                                                if (myAttackHitbox.effects[i].effectType == EffectType.parry && !enemy.myPlayerCombatNew.parryStarted)
                                                 {
                                                     if (!myPlayerMov.disableAllDebugs) Debug.Log("PARRY!!!");
                                                     //Reduce Recovery Time Player 1

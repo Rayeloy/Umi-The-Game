@@ -64,7 +64,8 @@ public class PlayerCombatNew : MonoBehaviour
     //Parry
     AttackData parry;
     AttackEffect parryEffect;
-    bool parryStarted = false;
+    [HideInInspector]
+    public bool parryStarted = false;
     float parryTimePercentage = 1;
     bool hitParryStarted = false;
 
@@ -508,7 +509,7 @@ public class PlayerCombatNew : MonoBehaviour
 
     void StartParry()
     {
-        if (!parryStarted)
+        if (!parryStarted && attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput && !aiming && !myPlayerMovement.inWater)
         {
             parryStarted = true;
             StartAttack(parry);

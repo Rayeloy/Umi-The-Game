@@ -52,20 +52,22 @@ public class PlayerBody : MonoBehaviour {
                 myPlayerWeapons.AddWeaponNearby(col.GetComponent<Weapon>());
                 break;
             case "Player":
-                Debug.LogWarning("Hitting player! checking team");
-                PlayerMovement otherPlayer = col.transform.GetComponentInParent<PlayerMovement>();
-                if(otherPlayer!=null && myPlayerMov.team!= otherPlayer.team)
+                if (myPlayerMov.controller.collideWithOtherPlayers)
                 {
-                    if (myPlayerMov.myPlayerHook.enemyHooked && myPlayerMov.myPlayerHook.enemy == otherPlayer)
+                    Debug.LogWarning("Hitting player! checking team");
+                    PlayerMovement otherPlayer = col.transform.GetComponentInParent<PlayerMovement>();
+                    if (otherPlayer != null && myPlayerMov.team != otherPlayer.team)
                     {
-                        Debug.LogError("Player hooked stopped due to colliding with the player hooking him.");
-                        myPlayerMov.myPlayerHook.FinishHook();
+                        if (myPlayerMov.myPlayerHook.enemyHooked && myPlayerMov.myPlayerHook.enemy == otherPlayer)
+                        {
+                            Debug.LogError("Player hooked stopped due to colliding with the player hooking him.");
+                            myPlayerMov.myPlayerHook.FinishHook();
+                        }
+                        else
+                        {
+                            Debug.LogError("Player bodies collided but they were not in the middle of a hook between them.");
+                        }
                     }
-                    else
-                    {
-                        Debug.LogError("Nope.");
-                    }
-
                 }
                 break;
         }

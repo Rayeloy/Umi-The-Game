@@ -330,9 +330,9 @@ public class Flag : MonoBehaviour
         print("DropFlag");
         if (beingHooked)
         {
-            playerHooking.GetComponent<PlayerHook>().StopHook();
-            playerHooking = null;
-            beingHooked = false;
+            beingHooked = false;//DO NOT CHANGE ORDER
+            playerHooking.GetComponent<PlayerHook>().StopHook();//DO NOT CHANGE ORDER
+            playerHooking = null;//DO NOT CHANGE ORDER
             if (currentOwner != null)
             {
                 Debug.LogError("Error: Flag can't be hooked and owned at the same time.");

@@ -666,8 +666,8 @@ public class PlayerMovement : MonoBehaviour
             float finalHardSteerAcc = controller.collisions.below ? hardSteerAcc : airHardSteerAcc;
             float finalInitialAcc = controller.collisions.below ? initialAcc : airInitialAcc;
             finalMovingAcc = (controller.collisions.below ? movingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
-            if (!disableAllDebugs && rotationRestrictedPercentage!=1) Debug.LogWarning("finalMovingAcc = " + finalMovingAcc+ "; rotationRestrictedPercentage = " + rotationRestrictedPercentage+
-                "; attackStg = " + myPlayerCombatNew.attackStg);
+            //if (!disableAllDebugs && rotationRestrictedPercentage!=1) Debug.LogWarning("finalMovingAcc = " + finalMovingAcc+ "; rotationRestrictedPercentage = " + rotationRestrictedPercentage+
+            //    "; attackStg = " + myPlayerCombatNew.attackStg);
             //finalBreakAcc = currentSpeed < 0 ? -finalBreakAcc : finalBreakAcc;
             if (knockbackDone && impulseDone)
             {
@@ -1677,14 +1677,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void StopHooked()
+    public void StopHooked(float reducedSpeedPercentage=0)
     {
         //print("STOP HOOKED");
         if (hooked)
         {
             noInput = false;
             hooked = false;
-            SetVelocity(currentVel / 2);
+            SetVelocity(currentVel * reducedSpeedPercentage);
         }
     }
 
@@ -1788,6 +1788,7 @@ public class PlayerMovement : MonoBehaviour
             myPlayerVFX.ActivateEffect(PlayerVFXType.SwimmingEffect);
             myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
             myPlayerCombatNew.StopDoingCombat();
+            myPlayerHook.StopHook();
         }
     }
 
@@ -1915,6 +1916,7 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region  AUXILIAR FUNCTIONS ---------------------------------------------
+
     public void ResetPlayer()
     {
         ExitWater();
@@ -1963,7 +1965,7 @@ public class PlayerMovement : MonoBehaviour
     {
         ExitWater();
         StopBoost();
-        StopHooked();
+        StopHooked(0);
         StopHooking();
         StopWallJump();
         transform.position = worldPos;
@@ -2023,6 +2025,7 @@ public class PlayerMovement : MonoBehaviour
 
         return circumfPoint;
     }
+
     #endregion
 
     #endregion
