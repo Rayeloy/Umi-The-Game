@@ -53,7 +53,7 @@ public class PlayerCombatNew : MonoBehaviour
     bool currentAttackHasRedirect = false;
 
     //Autocombo
-    Autocombo autocombo;
+    AutocomboData autocombo;
     [HideInInspector]
     public bool autocomboStarted;
     int autocomboIndex = -1;
@@ -589,12 +589,12 @@ public class PlayerCombatNew : MonoBehaviour
 
     #region ----[ PUBLIC FUNCTIONS ]----
 
-    public void InitializeCombatSystem(Weapon weapon)
+    public void InitializeCombatSystem(WeaponData weaponData)
     {
         weaponEdge = myPlayerWeap.currentWeapon.weaponEdge;
         weaponHandle = myPlayerWeap.currentWeapon.weaponHandle;
 
-        currentWeapon = weapon.weaponData;
+        currentWeapon = weaponData;
         autocombo = currentWeapon.autocombo;
 
         //Parry

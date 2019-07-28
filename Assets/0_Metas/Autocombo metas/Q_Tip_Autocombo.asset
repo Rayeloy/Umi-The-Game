@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f64c5bf72d0b09840969a8b9b0d06fb1, type: 3}
+  m_Name: Q_Tip_Autocombo
+  m_EditorClassIdentifier: 
+  autocomboName: Q_Tip_Autocombo
+  attacks:
+  - {fileID: 11400000, guid: 702caad31ad629340abbb1fee183767f, type: 2}
+  - {fileID: 11400000, guid: be49fc600eaeb65469bbaf962644b6dc, type: 2}
+  maxTimeBetweenAttacks: 0.4

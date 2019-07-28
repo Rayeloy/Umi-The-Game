@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ce7d05d43dd0aa4fb7f72139bf0f199, type: 3}
+  m_Name: Hammer_attack2
+  m_EditorClassIdentifier: 
+  attackName: Hammer_attack2
+  attackID: 11
+  attackPriority: 0
+  hasChargingPhase: 0
+  chargingPhase:
+    isFoldedInEditor: 0
+    attackPhaseType: 1
+    attackHitboxes: []
+    duration: 0
+    rotationSpeedPercentage: 0
+    movementSpeedPercentage: 0
+    invulnerability: 0
+  startupPhase:
+    isFoldedInEditor: 0
+    attackPhaseType: 2
+    attackHitboxes: []
+    duration: 0.2
+    rotationSpeedPercentage: 0
+    movementSpeedPercentage: 1
+    invulnerability: 0
+  activePhase:
+    isFoldedInEditor: 0
+    attackPhaseType: 3
+    attackHitboxes:
+    - parentType: 0
+      hitboxPrefab: {fileID: 3500221792200781342, guid: 16ca4ff6c00963e4d989405476aaa79d,
+        type: 3}
+      effects:
+      - effectType: 1
+        knockbackType: 5
+        knockbackMagnitude: 45
+        knockbackDir: {x: 0, y: 0, z: 0}
+        redirectMaxAngle: 45
+        knockbackYAngle: 20
+        stunTime: 1
+        parryStunTime: 0
+        parryRecoveryTime: 0
+      - effectType: 2
+        knockbackType: 0
+        knockbackMagnitude: 0
+        knockbackDir: {x: 0, y: 0, z: 0}
+        redirectMaxAngle: 0
+        knockbackYAngle: 0
+        stunTime: 1.4
+        parryStunTime: 0
+        parryRecoveryTime: 0
+    duration: 0.4
+    rotationSpeedPercentage: 0.5
+    movementSpeedPercentage: 1
+    invulnerability: 0
+  recoveryPhase:
+    isFoldedInEditor: 0
+    attackPhaseType: 4
+    attackHitboxes: []
+    duration: 0.4
+    rotationSpeedPercentage: 0.5
+    movementSpeedPercentage: 0.5
+    invulnerability: 0
+  impulseMagnitude: 30

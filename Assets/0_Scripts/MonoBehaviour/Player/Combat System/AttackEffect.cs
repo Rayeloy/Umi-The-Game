@@ -36,7 +36,7 @@ public class AttackEffect
     [Header("- Redirect -")]
     [Tooltip("The maximum horizontal angle in which we can redirect the enemy with the joystick")]
     [Range(-90,90)]
-    public float redirectMaxAngle = 0;
+    public float redirectMaxAngle = 45;
     [Header("- Inwards/Outwards/Redirect -")]
     [Range(-90,90)]
     public float knockbackYAngle = 0;

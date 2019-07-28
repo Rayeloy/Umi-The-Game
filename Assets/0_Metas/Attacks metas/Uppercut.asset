@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ce7d05d43dd0aa4fb7f72139bf0f199, type: 3}
+  m_Name: Uppercut
+  m_EditorClassIdentifier: 
+  attackName: Uppercut
+  hitboxPrefab: {fileID: 1352043877935678, guid: 0c4bbef18e2e583438285bb554d05c9a,
+    type: 2}
+  chargingTime: 0
+  startupTime: 0.28
+  activeTime: 0.32
+  recoveryTime: 0.2
+  cdTime: 1
+  stunTime: 2.2
+  knockbackSpeed: 22
+  knockbackType: 2
+  knockbackDirection: {x: 0, y: 1, z: 0.4}

@@ -12,19 +12,17 @@ public class PlayerWeapons : MonoBehaviour {
     [Header("Referencias")]
     public PlayerAnimation_01 myPlayerAnim;
     public PlayerMovement myPlayerMovement;
-    //public PlayerCombat myPlayerCombat;
     public PlayerCombatNew myPlayerCombatNew;
     PlayerHUD myPlayerHUD;
     [HideInInspector]
     public PlayerModel myPlayerModel;
+    public WeaponData startingWeapon;
 
-    //[Header("WEAPONS ATTACH")]
-    //public Transform senaka;//ESPALDA
-    //public Transform rightHand;
-    //public Transform leftHand;
     #endregion
 
     #region ----[ PROPERTIES ]----
+    [HideInInspector]
+    public WeaponData currentWeaponData;
     [HideInInspector]
     public Weapon currentWeapon;
     private Transform currentWeapObject;
@@ -63,14 +61,14 @@ public class PlayerWeapons : MonoBehaviour {
     }
     #endregion
 
-    #region ----[ VARIABLES ]----
-    #endregion
-
     #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
 
     #region Awake
     public void KonoAwake()
     {
+        currentWeaponData = null;
+        currentWeapon = null;
+        currentWeapObject = null;
         myPlayerMovement = GetComponent<PlayerMovement>();
         myPlayerAnim = myPlayerMovement.myPlayerAnimation_01;
         myPlayerCombatNew = myPlayerMovement.myPlayerCombatNew;
@@ -81,17 +79,19 @@ public class PlayerWeapons : MonoBehaviour {
     #endregion
 
     #region Start
+    public void KonoStart()
+    {
+        PickupWeapon(startingWeapon);
+    }
     #endregion
 
     #region Update
     public void KonoUpdate()
     {
-
         if (nearestWeapon!=null && myPlayerMovement.Actions.X.WasPressed)
         {
             PickupWeapon(nearestWeapon);
         }
-
         UpdateNearestWeapon();
     }
     #endregion
@@ -146,8 +146,12 @@ public class PlayerWeapons : MonoBehaviour {
     #endregion
 
     #region ----[ PUBLIC FUNCTIONS ]----
-
     public void PickupWeapon(Weapon weapon)
+    {
+        PickupWeapon(weapon.weaponData);
+    }
+
+    public void PickupWeapon(WeaponData weaponData)
     {
         //if (!hasWeapon)
         //{
@@ -156,11 +160,11 @@ public class PlayerWeapons : MonoBehaviour {
         //    myPlayerMovement.controller.collisionMask = newLM;
         //}
         DropWeapon();
-        myPlayerMovement.maxMoveSpeed = weapon.weaponData.playerMaxSpeed;
-        myPlayerMovement.bodyMass = weapon.weaponData.playerWeight;
-        AttatchWeapon(weapon);
+        myPlayerMovement.maxMoveSpeed = weaponData.playerMaxSpeed;
+        myPlayerMovement.bodyMass = weaponData.playerWeight;
+        AttatchWeapon(weaponData);
         //myPlayerCombat.FillMyAttacks(currentWeapon.weaponData);
-        myPlayerCombatNew.InitializeCombatSystem(weapon);
+        myPlayerCombatNew.InitializeCombatSystem(weaponData);
     }
 
     public void DropWeapon()
@@ -169,38 +173,43 @@ public class PlayerWeapons : MonoBehaviour {
         {
             myPlayerCombatNew.DropWeapon();
             Destroy(currentWeapObject.gameObject);
+            currentWeaponData = null;
             currentWeapObject = null;
             currentWeapon = null;
         }
     }
 
-    /*public WeaponData SearchWeapon(WeaponType wepType)
-    {
-        List<WeaponData> allWeap = myPlayerMovement.gC.allWeapons;
-        for (int i = 0; i < allWeap.Count; i++)
-        {
-            if (wepType == allWeap[i].weaponType)
-            {
-                return allWeap[i];
-            }
-        }
-        Debug.LogError("Error: Could not find the weapon with the name " + name);
-        return null;
-    }*/
-
     public void AttatchWeapon()
     {
         currentWeapObject.SetParent(myPlayerModel.rightHand);
-        currentWeapObject.localPosition = currentWeapon.weaponData.handPosition;
-        currentWeapObject.localRotation = Quaternion.Euler(currentWeapon.weaponData.handRotation.x, currentWeapon.weaponData.handRotation.y, currentWeapon.weaponData.handRotation.z);
-        currentWeapObject.localScale = currentWeapon.weaponData.handScale;
+        currentWeapObject.localPosition = currentWeaponData.handPosition;
+        currentWeapObject.localRotation = Quaternion.Euler(currentWeaponData.handRotation.x, currentWeaponData.handRotation.y, currentWeaponData.handRotation.z);
+        currentWeapObject.localScale = currentWeaponData.handScale;
     }
 
-    public void AttatchWeapon(Weapon weapon)
+    public void AttatchWeapon(WeaponData weaponData)
     {
-        currentWeapon = weapon;
-        currentWeapObject = Instantiate(currentWeapon.currentWeaponPrefab, myPlayerModel.rightHand).transform;
-        AttatchWeapon();
+        currentWeaponData = weaponData;
+        currentWeapObject = Instantiate(weaponData.weaponPrefab).transform;
+        currentWeapon = currentWeapObject.GetComponent<Weapon>();
+        if (currentWeapon == null)
+        {
+            Debug.LogError("this weapons has no Weapon script!");
+        }
+        else
+        {
+            currentWeapon.weaponData = currentWeaponData;
+            AttatchWeapon();
+            switch (myPlayerMovement.team)
+            {
+                case Team.A:
+                    currentWeapon.SetSkin("","Green");
+                    break;
+                case Team.B:
+                    currentWeapon.SetSkin("","Pink");
+                    break;
+            }
+        }
     }
 
     public void AttachWeaponToBack()
@@ -208,9 +217,9 @@ public class PlayerWeapons : MonoBehaviour {
         //if (!PhotonNetwork.IsConnected)
         //{
             currentWeapObject.SetParent(myPlayerModel.senaka);
-            currentWeapObject.localPosition = currentWeapon.weaponData.backPosition;
-            currentWeapObject.localRotation = Quaternion.Euler(currentWeapon.weaponData.backRotation.x, currentWeapon.weaponData.backRotation.y, currentWeapon.weaponData.backRotation.z);
-            currentWeapObject.localScale = currentWeapon.weaponData.backScale;
+            currentWeapObject.localPosition = currentWeaponData.backPosition;
+            currentWeapObject.localRotation = Quaternion.Euler(currentWeaponData.backRotation.x, currentWeaponData.backRotation.y, currentWeaponData.backRotation.z);
+            currentWeapObject.localScale = currentWeaponData.backScale;
         //}
     }
 
@@ -244,6 +253,11 @@ public class PlayerWeapons : MonoBehaviour {
             }
         }
         UpdateNearestWeapon();
+    }
+
+    public void ChangeWeaponSkin(string skinName="", string recolorName="")
+    {
+        currentWeapon.SetSkin(skinName, recolorName);
     }
 
     #endregion

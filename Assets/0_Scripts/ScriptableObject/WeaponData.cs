@@ -20,15 +20,17 @@ public class WeaponData : ScriptableObject
     public WeaponType weaponType;
     [Tooltip("As you want it to show as text on the HUD for picking it up.")]
     public string weaponName;
-    [Tooltip("Weapon prefab for attaching to the hand.")]
-    public GameObject[] weaponSkins;
+    [Tooltip("Prefab with the Weapon script in it. It will be the base of our weapon.")]
+    public GameObject weaponPrefab;
+    [Tooltip("WeaponSkin metas.")]
+    public WeaponSkinData[] weaponSkins;
 
     [Tooltip("Player maximum speed when carrying this weapon. Normal value is 10.")]
     public float playerMaxSpeed = 10;
     [Tooltip("Normal weight is 1.")]
     [Range(0,3)]
     public float playerWeight = 1;
-    public Autocombo autocombo;
+    public AutocomboData autocombo;
     public AttackData parry;
     //Skill 1
     //Skill 2
@@ -52,8 +54,63 @@ public class WeaponData : ScriptableObject
     [Tooltip("Local scale for attaching to the hand.")]
     public Vector3 backScale;
 
+    public bool GetSkin(out WeaponSkinData skin, out WeaponSkinRecolor skinRecolor, string skinName = "", string recolorName = "")
+    {
+        WeaponSkinData weapSkinData = null;
+        skinRecolor = new WeaponSkinRecolor();
+        skin = new WeaponSkinData();
+        bool nameFound = false;
+        if (skinName != "")
+        {
+            for (int i = 0; i < weaponSkins.Length && !nameFound; i++)
+            {
+                if (weaponSkins[i].skinName == skinName)
+                {
+                    weapSkinData = weaponSkins[i];
+                    nameFound = true;
+                }
+            }
+            if (!nameFound)
+            {
+                Debug.LogError("The weapon skin name "+ skinName + " could not be found.");
+            }
+        }
+        else
+        {
+            weapSkinData = weaponSkins[0];
+        }
+        if (weapSkinData != null)
+        {
+            if (recolorName != "")
+            {
+                nameFound = false;
+                for (int i = 0; i < weapSkinData.skinRecolors.Length && !nameFound; i++)
+                {
+                    if (weapSkinData.skinRecolors[i].skinRecolorName == recolorName)
+                    {
+                        skinRecolor = weapSkinData.skinRecolors[i];
+                        nameFound = true;
+                    }
+                }
+                if (!nameFound)
+                {
+                    Debug.LogError("The weapon skin " + weapSkinData.skinName + "'s skin recolor Name " + recolorName + " could not be found.");
+                }
+            }
+            else
+            {
+                skinRecolor = weapSkinData.skinRecolors[0];
+            }
+        }
+        else nameFound = false;
+
+        return nameFound;      
+    }
+
     public void ErrorCheck()
     {
+        Weapon auxWeap = weaponPrefab.GetComponent<Weapon>();
+        if (auxWeap == null) Debug.LogError("Weapon Data -> Error: the weapon prefab has no Weapon script.");
         bool found = false;
         for(int i=0; i< parry.activePhase.attackHitboxes.Length; i++)
         {
@@ -67,6 +124,10 @@ public class WeaponData : ScriptableObject
         if(playerWeight<=0) Debug.LogError("WeaponData -> Error: Weight cannot be less or equal than 0 for the weapon " + weaponType + "!");
         autocombo.ErrorCheck();
         parry.ErrorCheck();
+        for(int i=0;i< weaponSkins.Length; i++)
+        {
+            weaponSkins[i].ErrorCheck();
+        }
     }
     
 }

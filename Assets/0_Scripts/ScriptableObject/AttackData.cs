@@ -29,12 +29,6 @@ public class AttackData : ScriptableObject
     //public float stunTime;
     public float impulseMagnitude;
 
-    //NOT IN USE
-    [Header("DEPRECATED")]
-    [Tooltip("Deprecated: Percentage of time of the last phase (or recovery phase) that we can skip by using an attack different from this one. 0% means we can't skip it at all," +
-    " 100% means we can fully skip it.")]
-    [Range(0, 100)]
-    public float comboDifferentAttackPercent = 50;
 
     private void OnDisable()
     {

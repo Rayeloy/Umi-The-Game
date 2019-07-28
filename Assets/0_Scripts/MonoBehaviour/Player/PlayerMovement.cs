@@ -1938,11 +1938,11 @@ public class PlayerMovement : MonoBehaviour
         {
             case Team.A:
                 //print("EQUIP BLUE WEAPON");
-                myPlayerWeap.PickupWeapon(gC.startingWeaponBlue);
+                myPlayerWeap.PickupWeapon(gC.startingWeaponA);
                 break;
             case Team.B:
                 //print("EQUIP RED WEAPON");
-                myPlayerWeap.PickupWeapon(gC.startingWeaponRed);
+                myPlayerWeap.PickupWeapon(gC.startingWeaponB);
                 break;
         }
     }

@@ -119,7 +119,7 @@ public class PlayerHook : MonoBehaviour
     HookPoint currentHookPointInSight;
     HookPoint currentGrapplingHookPoint;
     Transform currentHookPointPos;
-    float currentGrappleDistance = 0;
+    //float currentGrappleDistance = 0;
     float timeGrappling = 0;
     Camera myCamera;
     Plane[] cameraPlanes;
@@ -552,7 +552,7 @@ public class PlayerHook : MonoBehaviour
         //print("START THROWING AUTOGRAPPLE");
         //VARIABLES
         grappleSt = GrappleState.throwing;
-        currentGrappleDistance = 0;
+        //currentGrappleDistance = 0;
         lastCurrentDistance = 0;
         hookPos = originPos;
         myPlayerMov.StartHooking();
