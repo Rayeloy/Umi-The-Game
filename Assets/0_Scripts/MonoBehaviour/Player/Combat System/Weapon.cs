@@ -63,7 +63,7 @@ public class Weapon : MonoBehaviour
         {
             for (int i=0; i< weaponSkinsParent.childCount;i++)
             {
-                Destroy(weaponSkinsParent.GetChild(i));
+                Destroy(weaponSkinsParent.GetChild(i).gameObject);
             }
             currentSkinTransf = Instantiate(currentSkinRecolor.skinRecolorPrefab,transform).transform;
             exito = true;

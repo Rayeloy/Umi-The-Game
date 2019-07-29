@@ -58,13 +58,13 @@ public class WeaponData : ScriptableObject
     {
         WeaponSkinData weapSkinData = null;
         skinRecolor = new WeaponSkinRecolor();
-        skin = new WeaponSkinData();
+        skin = null;
         bool nameFound = false;
         if (skinName != "")
         {
             for (int i = 0; i < weaponSkins.Length && !nameFound; i++)
             {
-                if (weaponSkins[i].skinName == skinName)
+                if (weaponSkins[i].skinName.Contains(skinName))
                 {
                     weapSkinData = weaponSkins[i];
                     nameFound = true;
@@ -86,7 +86,7 @@ public class WeaponData : ScriptableObject
                 nameFound = false;
                 for (int i = 0; i < weapSkinData.skinRecolors.Length && !nameFound; i++)
                 {
-                    if (weapSkinData.skinRecolors[i].skinRecolorName == recolorName)
+                    if (weapSkinData.skinRecolors[i].skinRecolorName.Contains(recolorName))
                     {
                         skinRecolor = weapSkinData.skinRecolors[i];
                         nameFound = true;
@@ -94,7 +94,7 @@ public class WeaponData : ScriptableObject
                 }
                 if (!nameFound)
                 {
-                    Debug.LogError("The weapon skin " + weapSkinData.skinName + "'s skin recolor Name " + recolorName + " could not be found.");
+                    Debug.LogError("The weapon skin " + weapSkinData.skinName + "'s skin recolor name " + recolorName + " could not be found.");
                 }
             }
             else

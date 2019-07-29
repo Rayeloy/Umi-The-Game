@@ -203,10 +203,10 @@ public class PlayerWeapons : MonoBehaviour {
             switch (myPlayerMovement.team)
             {
                 case Team.A:
-                    currentWeapon.SetSkin("","Green");
+                    currentWeapon.SetSkin("Skin2","Green");
                     break;
                 case Team.B:
-                    currentWeapon.SetSkin("","Pink");
+                    currentWeapon.SetSkin("Skin2","Pink");
                     break;
             }
         }

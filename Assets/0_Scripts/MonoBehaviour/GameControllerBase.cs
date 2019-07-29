@@ -68,8 +68,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     public float scaleDos = 1.25f;//escala de las camaras para 2 jugadores
     public float scaleCuatro = 1.25f;//escala para 3 jugadores y 4 jugadores
     [Header(" --- Other Stuff --- ")]
-    public Weapon startingWeaponA;
-    public Weapon startingWeaponB;
+    //public Weapon startingWeaponA;
+    //public Weapon startingWeaponB;
     #endregion
 
     #region ----[ PROPERTIES ]----

@@ -410,7 +410,7 @@ public class PlayerMovement : MonoBehaviour
         knockbackBreakAcc = Mathf.Clamp(knockbackBreakAcc, -float.MaxValue, breakAcc);//menos de break Acc lo haría ver raro
 
         ShowFlagFlow();
-        EquipWeaponAtStart();
+        //EquipWeaponAtStart();
 
         PlayerStarts();
     }
@@ -418,6 +418,7 @@ public class PlayerMovement : MonoBehaviour
     {
         myPlayerCombatNew.KonoStart();
         myPlayerHUD.KonoStart();
+        myPlayerWeap.KonoStart();
     }
 
     #endregion
@@ -1931,21 +1932,21 @@ public class PlayerMovement : MonoBehaviour
         //controller.collisionMask = LayerMask.GetMask("Stage", "WaterFloor", "SpawnWall");
     }
 
-    void EquipWeaponAtStart()
-    {
-        //print("EQUIP WEAPON AT START");
-        switch (team)
-        {
-            case Team.A:
-                //print("EQUIP BLUE WEAPON");
-                myPlayerWeap.PickupWeapon(gC.startingWeaponA);
-                break;
-            case Team.B:
-                //print("EQUIP RED WEAPON");
-                myPlayerWeap.PickupWeapon(gC.startingWeaponB);
-                break;
-        }
-    }
+    //void EquipWeaponAtStart()
+    //{
+    //    //print("EQUIP WEAPON AT START");
+    //    switch (team)
+    //    {
+    //        case Team.A:
+    //            //print("EQUIP BLUE WEAPON");
+    //            myPlayerWeap.PickupWeapon(gC.startingWeaponA);
+    //            break;
+    //        case Team.B:
+    //            //print("EQUIP RED WEAPON");
+    //            myPlayerWeap.PickupWeapon(gC.startingWeaponB);
+    //            break;
+    //    }
+    //}
 
     public float SignedRelativeAngle(Vector3 referenceForward, Vector3 newDirection, Vector3 referenceUp)
     {
