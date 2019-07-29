@@ -27,10 +27,7 @@ public class AttackData : ScriptableObject
     //public float cdTime;
     //[Tooltip("Time the attacks leaves the target stunned.")]
     //public float stunTime;
-    [Tooltip("Total distance you want to cover with the impulse, till you reach max speed (10 when out of water, half when in water)")]
-    public float impulseDistance;
-    //[Tooltip("Initial speed of the impulse.")]
-    //public float impulseMagnitude;
+    public float impulseMagnitude;
 
 
     private void OnDisable()
