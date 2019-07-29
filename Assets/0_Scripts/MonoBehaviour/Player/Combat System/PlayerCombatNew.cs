@@ -47,7 +47,7 @@ public class PlayerCombatNew : MonoBehaviour
     [HideInInspector]
     public AttackData currentAttack;
     [HideInInspector]
-    public Vector3 currentImpulse;
+    public ImpulseInfo currentImpulse;
     [HideInInspector]
     public bool landedSinceAttackStarted = false;
     bool currentAttackHasRedirect = false;
@@ -188,7 +188,7 @@ public class PlayerCombatNew : MonoBehaviour
             case AttackPhaseType.ready:
                 myPlayerMovement.ResetPlayerRotationSpeed();
                 myPlayerMovement.ResetPlayerAttackMovementSpeed();
-                currentImpulse = Vector3.zero;
+                currentImpulse = new ImpulseInfo();
                 currentAttack = null;
                 currentAttackHasRedirect = false;
                 break;
@@ -322,7 +322,16 @@ public class PlayerCombatNew : MonoBehaviour
         {
             impulseDir = myPlayerMovement.rotateObj.forward;
         }
-        currentImpulse = impulseDir.normalized * attack.impulseMagnitude;
+        float impulseTime = currentAttack.activePhase.duration;
+        //float acceleration = myPlayerMovement.breakAcc;
+        float realFinalSpeed = myPlayerMovement.currentMaxMoveSpeed;
+        //v=(2*d)/t; InitialSpeed =0;
+        float finalSpeed = (2 * currentAttack.impulseDistance) / impulseTime;
+        // a = v/t;
+        float acceleration = -(finalSpeed / impulseTime);
+        realFinalSpeed += finalSpeed;
+        //currentImpulse = impulseDir.normalized * realFinalSpeed;
+        currentImpulse = new ImpulseInfo(impulseDir.normalized, currentAttack.impulseDistance, realFinalSpeed, impulseTime, acceleration,Vector3.zero);
     }
 
     #endregion
@@ -673,6 +682,54 @@ public class PlayerCombatNew : MonoBehaviour
     #region ----[ IPUNOBSERVABLE ]----
     #endregion
 }
-#region ----[ STRUCTS ]----
+#region ----[ STRUCTS & CLASSES ]----
+public class ImpulseInfo
+{
+    public Vector3 impulseVel;
+    public Vector3 impulseDir;
+    public Vector3 initialPlayerPos;
+    public float impulseInitialSpeed;
+    public float impulseMaxTime;
+    public float impulseAcc;
+    public float impulseDistance;
 
+    //public float missingImpulseDistance;
+
+    public ImpulseInfo()
+    {
+        impulseVel = Vector3.zero;
+        impulseDir = Vector3.zero;
+        impulseInitialSpeed = 0;
+        impulseMaxTime = 0;
+        impulseAcc = 0;
+        impulseDistance = 0;
+        //missingImpulseDistance = 0;
+    }
+
+    public ImpulseInfo(Vector3 _impulseDir, float _impulseDistance, float _impulseInitialSpeed, float _impulseMaxTime, float _impulseAcc, Vector3 _initialPlayerPos)
+    {
+        impulseDir = _impulseDir.normalized;
+        impulseDistance = _impulseDistance;
+        impulseInitialSpeed = _impulseInitialSpeed;
+        impulseMaxTime = _impulseMaxTime;
+        impulseAcc = _impulseAcc;
+        impulseVel = impulseDir * impulseInitialSpeed;
+        initialPlayerPos = _initialPlayerPos;
+    }
+
+    public float CalculateMissingDistance(Vector3 currentPos)
+    {
+        if (currentPos != Vector3.zero)
+        {
+            currentPos.y = 0;
+            initialPlayerPos.y = 0;
+            return impulseDistance - (currentPos - initialPlayerPos).magnitude;
+        }
+        else
+        {
+            Debug.LogError("currentPos should not be == Vector.zero");
+            return 0;
+        }
+    }
+}
 #endregion

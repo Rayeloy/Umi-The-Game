@@ -23,7 +23,7 @@ public enum MoveState
     Boost = 6,
     FixedJump = 7,
     NotBreaking = 8,
-    Impulse=9
+    Impulse = 9
 }
 public enum JumpState
 {
@@ -96,7 +96,7 @@ public class PlayerMovement : MonoBehaviour
     public float maxVerticalSpeedInWater = 3f;
 
     [Header(" - IMPULSE - ")]
-    [Range(0,1)]
+    [Range(0, 1)]
     public float airImpulsePercentage = 0.5f;
 
     [Header("--- BOOST ---")]
@@ -132,7 +132,7 @@ public class PlayerMovement : MonoBehaviour
     public float airInitialAcc = 30;
     public float breakAcc = -30;
     public float airBreakAcc = -5;
-    public float hardSteerAcc = -60; 
+    public float hardSteerAcc = -60;
     public float airHardSteerAcc = -10;
     public float movingAcc = 2.0f;
     public float airMovingAcc = 0.5f;
@@ -230,11 +230,10 @@ public class PlayerMovement : MonoBehaviour
     bool hardSteerStarted = false;
 
     //IMPULSE
-    bool impulseStarted=false;
-    float maxImpulseTime = 0;
-    float impulseTime = 0;
     [HideInInspector]
-    public Vector3 impulse;
+    public ImpulseInfo currentImpulse;
+    bool impulseStarted = false;
+    float impulseTime = 0;
     bool impulseDone = false;
 
 
@@ -261,7 +260,8 @@ public class PlayerMovement : MonoBehaviour
     int frameCounter = 0;
 
     //Movement
-    float currentMaxMoveSpeed; // is the max speed from which we aply the joystick sensitivity value
+    [HideInInspector]
+    public float currentMaxMoveSpeed; // is the max speed from which we aply the joystick sensitivity value
     float finalMaxMoveSpeed = 10.0f; // its the final max speed, after the joyjoystick sensitivity value
     //bool hardSteer = false;
 
@@ -332,7 +332,7 @@ public class PlayerMovement : MonoBehaviour
         online = PhotonNetwork.IsConnected;
     }
 
-    public void KonoAwake(bool isMyCharacter=false)
+    public void KonoAwake(bool isMyCharacter = false)
     {
         if (!online || (online && isMyCharacter))
         {
@@ -466,8 +466,8 @@ public class PlayerMovement : MonoBehaviour
         myPlayerAnimation_01.KonoUpdate();
         myPlayerWeap.KonoUpdate();
         myPlayerHook.KonoUpdate();
-        if(!disableAllDebugs && currentSpeed !=0)Debug.LogWarning("CurrentVel End = " + currentVel.ToString("F6") + "; currentVel.normalized = " + currentVel.normalized.ToString("F6") +
-            "; currentSpeed =" + currentSpeed.ToString("F4") + "; Player position = " + transform.position.ToString("F6"));
+        if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel End = " + currentVel.ToString("F6") + "; currentVel.normalized = " + currentVel.normalized.ToString("F6") +
+               "; currentSpeed =" + currentSpeed.ToString("F4") + "; Player position = " + transform.position.ToString("F6"));
     }
 
     public void KonoFixedUpdate()
@@ -505,7 +505,7 @@ public class PlayerMovement : MonoBehaviour
                         }
                         break;
                     case PlayerInput.Autocombo:
-                        if(!disableAllDebugs)Debug.Log("Trying to input autocombo from buffer... Time left = "+inputsBuffer[i].time);
+                        if (!disableAllDebugs) Debug.Log("Trying to input autocombo from buffer... Time left = " + inputsBuffer[i].time);
                         if (myPlayerCombatNew.StartOrContinueAutocombo(true))
                         {
                             inputsBuffer[i].StopBuffering();
@@ -635,7 +635,7 @@ public class PlayerMovement : MonoBehaviour
         ProcessBoost();
         #endregion
         #region //----------------------------------------------------- Efecto interno --------------------------------------------
-        if (!hooked && !fixedJumping && moveSt != MoveState.Boost && moveSt!=MoveState.Knockback && moveSt!=MoveState.Impulse)
+        if (!hooked && !fixedJumping && moveSt != MoveState.Boost && moveSt != MoveState.Knockback && moveSt != MoveState.Impulse)
         {
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
@@ -645,21 +645,22 @@ public class PlayerMovement : MonoBehaviour
             {
                 StartBoost();
             }
-            ProcessImpulse();
+
             #region ------------------------------ Max Move Speed ------------------------------
-                currentMaxMoveSpeed = myPlayerCombatNew.attackStg != AttackPhaseType.ready && myPlayerCombatNew.landedSinceAttackStarted? maxAttackingMoveSpeed : maxMoveSpeed;//maxAttackingMoveSpeed == maxMoveSpeed if not attacking
-                ProcessWater();//only apply if the new max move speed is lower
-                ProcessAiming();//only apply if the new max move speed is lower
-                ProcessHooking();//only apply if the new max move speed is lower
-                if (currentSpeed > (currentMaxMoveSpeed + 0.1f) && (moveSt == MoveState.Moving || moveSt == MoveState.NotMoving) && !knockbackDone && !impulseDone)
-                {
-                    //Debug.LogWarning("Warning: moveSt set to MovingBreaking!: currentSpeed = "+currentSpeed+ "; maxMoveSpeed2 = " + maxMoveSpeed2 + "; currentVel.magnitude = "+currentVel.magnitude);
-                    moveSt = MoveState.MovingBreaking;
-                }
+            currentMaxMoveSpeed = myPlayerCombatNew.attackStg != AttackPhaseType.ready && myPlayerCombatNew.landedSinceAttackStarted ? maxAttackingMoveSpeed : maxMoveSpeed;//maxAttackingMoveSpeed == maxMoveSpeed if not attacking
+            ProcessWater();//only apply if the new max move speed is lower
+            ProcessAiming();//only apply if the new max move speed is lower
+            ProcessHooking();//only apply if the new max move speed is lower
+            if (currentSpeed > (currentMaxMoveSpeed + 0.1f) && (moveSt == MoveState.Moving || moveSt == MoveState.NotMoving) && !knockbackDone && !impulseDone)
+            {
+                //Debug.LogWarning("Warning: moveSt set to MovingBreaking!: currentSpeed = "+currentSpeed+ "; maxMoveSpeed2 = " + maxMoveSpeed2 + "; currentVel.magnitude = "+currentVel.magnitude);
+                moveSt = MoveState.MovingBreaking;
+            }
 
-                finalMaxMoveSpeed = lastJoystickSens > joystickSens && moveSt == MoveState.Moving ? (lastJoystickSens / 1) * currentMaxMoveSpeed : (joystickSens / 1) * currentMaxMoveSpeed;
-
+            finalMaxMoveSpeed = lastJoystickSens > joystickSens && moveSt == MoveState.Moving ? (lastJoystickSens / 1) * currentMaxMoveSpeed : (joystickSens / 1) * currentMaxMoveSpeed;
+            ProcessImpulse(currentMaxMoveSpeed);
             #endregion
+
 
             #region ------------------------------- Acceleration -------------------------------
             float finalAcc = 0;
@@ -680,7 +681,7 @@ public class PlayerMovement : MonoBehaviour
             }
             else if (impulseDone)
             {
-                finalAcc = knockbackBreakAcc;
+                finalAcc = currentImpulse.impulseAcc;
             }
             else
             {
@@ -729,7 +730,7 @@ public class PlayerMovement : MonoBehaviour
                 case MoveState.NotMoving:
                     break;
             }
-            if (!disableAllDebugs && currentSpeed != 0) Debug.Log("CurrentSpeed 1.2 = " + currentSpeed.ToString("F4") +"; finalAcc = "+finalAcc+"; moveSt = "+moveSt+
+            if (!disableAllDebugs && currentSpeed != 0) Debug.Log("CurrentSpeed 1.2 = " + currentSpeed.ToString("F4") + "; finalAcc = " + finalAcc + "; moveSt = " + moveSt +
                 "; currentSpeed =" + currentSpeed.ToString("F4"));
             float currentSpeedB4 = currentSpeed;
             currentSpeed = currentSpeed + finalAcc * Time.deltaTime;
@@ -737,17 +738,17 @@ public class PlayerMovement : MonoBehaviour
             {
                 currentSpeed = 0;
             }
-            if(moveSt==MoveState.Moving && Mathf.Sign(currentSpeed) < 0 && hardSteerOn)
+            if (moveSt == MoveState.Moving && Mathf.Sign(currentSpeed) < 0 && hardSteerOn)
             {
                 currentSpeed = -currentSpeed;
                 horizontalVel = hardSteerDir * currentSpeed;
-                currentVel = new Vector3(horizontalVel.x,currentVel.y, horizontalVel.z);
+                currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
             }
             //Debug.Log("CurrentSpeed 1.2 = " + currentSpeed);
             float maxSpeedClamp = knockbackDone || impulseDone ? maxKnockbackSpeed : finalMaxMoveSpeed;
             float minSpeedClamp = (lastJoystickSens > joystickSens && moveSt == MoveState.Moving) ? (joystickSens / 1) * currentMaxMoveSpeed : 0;
             currentSpeed = Mathf.Clamp(currentSpeed, minSpeedClamp, maxSpeedClamp);
-            if(hardSteerStarted && !hardSteerOn)
+            if (hardSteerStarted && !hardSteerOn)
             {
                 hardSteerStarted = false;
             }
@@ -761,7 +762,7 @@ public class PlayerMovement : MonoBehaviour
         if (!disableAllDebugs && currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
             "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + controller.collisions.below + "; horVel.magnitude = " + horVel.magnitude);
         //print("CurrentVel 1.3= " + currentVel.ToString("F6")+ "MoveState = " + moveSt);
-        if (jumpSt != JumpState.wallJumping ||(jumpSt==JumpState.wallJumping && moveSt==MoveState.Knockback))
+        if (jumpSt != JumpState.wallJumping || (jumpSt == JumpState.wallJumping && moveSt == MoveState.Knockback))
         {
             horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
             switch (moveSt)
@@ -776,9 +777,9 @@ public class PlayerMovement : MonoBehaviour
                     {
                         newDir = horizontalVel.normalized + (currentInputDir * (finalMovingAcc * Time.deltaTime));
                         float auxAngle = Vector3.Angle(oldCurrentVel, newDir);
-                        if(!disableAllDebugs) Debug.LogWarning("MOVING: finalMovingAcc2 = " + finalMovingAcc+ ";  auxAngle = "+ auxAngle + "; (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude = " 
-                            + (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude + "; (currentInputDir * finalMovingAcc * Time.deltaTime) = " 
-                            + (currentInputDir * finalMovingAcc * Time.deltaTime) + "; newDir = " + newDir);
+                        if (!disableAllDebugs) Debug.LogWarning("MOVING: finalMovingAcc2 = " + finalMovingAcc + ";  auxAngle = " + auxAngle + "; (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude = "
+                             + (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude + "; (currentInputDir * finalMovingAcc * Time.deltaTime) = "
+                             + (currentInputDir * finalMovingAcc * Time.deltaTime) + "; newDir = " + newDir);
                     }
                     horizontalVel = newDir.normalized * currentSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
@@ -805,7 +806,7 @@ public class PlayerMovement : MonoBehaviour
                     if (!knockbackDone)
                     {
                         if (!disableAllDebugs) print("KNOCKBACK");
-                        currentVel =  knockback;
+                        currentVel = knockback;
                         horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
                         currentSpeed = horizontalVel.magnitude;
                         currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
@@ -838,7 +839,7 @@ public class PlayerMovement : MonoBehaviour
                     break;
                 case MoveState.Impulse:
                     impulseDone = true;
-                    Vector3 finalImpulse = new Vector3(impulse.x, 0, impulse.z);
+                    Vector3 finalImpulse = new Vector3(currentImpulse.impulseVel.x, 0, currentImpulse.impulseVel.z);
                     float maxMag = finalImpulse.magnitude;
                     finalImpulse = horizontalVel + finalImpulse;
                     float finalMag = Mathf.Clamp(finalImpulse.magnitude, 0, maxMag);
@@ -878,37 +879,39 @@ public class PlayerMovement : MonoBehaviour
     }
 
     #region -- IMPULSE --
-    public void StartImpulse(Vector3 _impulse)
+    public void StartImpulse(ImpulseInfo _impulse)
     {
-        if (_impulse.magnitude != 0 )
+        if (_impulse.impulseInitialSpeed != 0)
         {
+            currentImpulse = _impulse;
+            currentImpulse.initialPlayerPos = transform.position;
             if (!controller.collisions.below)
             {
-                _impulse *= airImpulsePercentage;
+                currentImpulse.impulseVel *= airImpulsePercentage;
+                //IMPORTANT TO DO: 
+                //RECALCULATE ALL IMPULSE PARAMETERS
             }
-            impulse = _impulse;
             impulseStarted = true;
             impulseDone = false;
             impulseTime = 0;
-            maxImpulseTime = _impulse.magnitude / Mathf.Abs(breakAcc);
             moveSt = MoveState.Impulse;
 
             //Character rotation
-            Vector3 impulseDir = _impulse.normalized;
-            float angle = Mathf.Acos(((0 * impulseDir.x) + (1 * impulseDir.z)) / (1 * impulseDir.magnitude)) * Mathf.Rad2Deg;
-            angle = impulseDir.x < 0 ? 360 - angle : angle;
+            float angle = Mathf.Acos(((0 * currentImpulse.impulseDir.x) + (1 * currentImpulse.impulseDir.z)) / (1 * currentImpulse.impulseDir.magnitude)) * Mathf.Rad2Deg;
+            angle = currentImpulse.impulseDir.x < 0 ? 360 - angle : angle;
             RotateCharacterInstantly(angle);
-            if (!disableAllDebugs) Debug.Log("Impulse = " + _impulse + "; maxImpulseTime = " + maxImpulseTime + "; impulse.magnitude = " + impulse.magnitude);
+            if (!disableAllDebugs) Debug.LogWarning("Impulse = " + currentImpulse.impulseVel + "; impulseMaxTime = " + currentImpulse.impulseMaxTime +
+                "; impulse.impulseInitialVel = " + currentImpulse.impulseInitialSpeed + "; currentImpulse.impulseDistance = " + currentImpulse.impulseDistance);
         }
     }
 
-    void ProcessImpulse()
+    void ProcessImpulse(float currentMaxMoveSpeed)
     {
         if (impulseStarted)
         {
             impulseTime += Time.deltaTime;
             //if (!disableAllDebugs && currentSpeed <= maxMoveSpeed) Debug.LogError("CurrentSpeed = "+ currentSpeed + "; maxMoveSpeed = " + maxMoveSpeed);
-            if (impulseTime >= maxImpulseTime || currentSpeed<=maxMoveSpeed)
+            if (impulseTime >= currentImpulse.impulseMaxTime || currentSpeed <= currentMaxMoveSpeed)
             {
                 StopImpulse();
             }
@@ -923,6 +926,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (impulseStarted)
         {
+            if(!disableAllDebugs)Debug.LogWarning("STOP IMPULSE: impulseTime = "+ impulseTime + "; currentImpulse.impulseMaxTime = "+ currentImpulse.impulseMaxTime +
+                ";currentSpeed  = "+ currentSpeed + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
             //moveSt = MoveState.NotMoving;
             impulseStarted = false;
             impulseDone = false;
@@ -931,7 +936,7 @@ public class PlayerMovement : MonoBehaviour
 
     public float MissingImpulseTime()
     {
-        return Mathf.Clamp(maxImpulseTime - impulseTime, 0, float.MaxValue);
+        return Mathf.Clamp(currentImpulse.impulseMaxTime - impulseTime, 0, float.MaxValue);
     }
     #endregion
 
@@ -1033,7 +1038,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            if(!disableAllDebugs) Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + (moveSt != MoveState.Boost) + ")");
+            if (!disableAllDebugs) Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + (moveSt != MoveState.Boost) + ")");
         }
 
         if (!result && !calledFromBuffer)
@@ -1079,12 +1084,12 @@ public class PlayerMovement : MonoBehaviour
     /// <returns></returns>
     bool StartWallJump()
     {
-        if(!disableAllDebugs) Debug.LogWarning("Check Wall jump: wall real normal = "+ controller.collisions.closestHorRaycast.slopeAngle);
+        if (!disableAllDebugs) Debug.LogWarning("Check Wall jump: wall real normal = " + controller.collisions.closestHorRaycast.slopeAngle);
         bool result = false;
         float slopeAngle = controller.collisions.closestHorRaycast.slopeAngle;
-        bool goodWallAngle = !(slopeAngle >= 110 && slopeAngle <=180);
+        bool goodWallAngle = !(slopeAngle >= 110 && slopeAngle <= 180);
         wallJumpCurrentWall = controller.collisions.horWall;
-        if (!controller.collisions.below && !inWater && jumpedOutOfWater && controller.collisions.collisionHorizontal  && goodWallAngle &&
+        if (!controller.collisions.below && !inWater && jumpedOutOfWater && controller.collisions.collisionHorizontal && goodWallAngle &&
             (!firstWallJumpDone || lastWallAngle != controller.collisions.wallAngle || (lastWallAngle == controller.collisions.wallAngle &&
             lastWall != controller.collisions.horWall)) && wallJumpCurrentWall.tag == "Stage")
         {
@@ -1223,7 +1228,7 @@ public class PlayerMovement : MonoBehaviour
 
     void StartBoost()
     {
-        if (!noInput && boostReady && !inWater && myPlayerCombatNew.attackStg==AttackPhaseType.ready)
+        if (!noInput && boostReady && !inWater && myPlayerCombatNew.attackStg == AttackPhaseType.ready)
         {
             //noInput = true;
             //PARA ORTU: Variable para empezar boost
@@ -1486,11 +1491,11 @@ public class PlayerMovement : MonoBehaviour
 
     #region RECIEVE HIT AND EFFECTS ---------------------------------------------
 
-    public bool StartRecieveHit(PlayerMovement attacker, Vector3 _knockback, EffectType efecto, float _maxTime=0)
+    public bool StartRecieveHit(PlayerMovement attacker, Vector3 _knockback, EffectType efecto, float _maxTime = 0)
     {
         if (sufferingEffect != EffectType.knockdown && !myPlayerCombatNew.invulnerable)
         {
-            if (!disableAllDebugs) print("Recieve hit with knockback= "+ _knockback + "; effect = "+ efecto + "; maxtime = "+ _maxTime);
+            if (!disableAllDebugs) print("Recieve hit with knockback= " + _knockback + "; effect = " + efecto + "; maxtime = " + _maxTime);
             myPlayerHook.FinishAutoGrapple();
             myPlayerHook.StopHook();
             StopWallJump();
@@ -1509,7 +1514,7 @@ public class PlayerMovement : MonoBehaviour
                     noInput = true;
                     break;
                 case EffectType.stun:
-                    if(disableAllDebugs) Debug.LogError("STUN !!!!!!!!");
+                    if (disableAllDebugs) Debug.LogError("STUN !!!!!!!!");
                     noInput = true;
                     break;
                 case EffectType.knockdown:
@@ -1542,7 +1547,7 @@ public class PlayerMovement : MonoBehaviour
             if (!disableAllDebugs) print("Player " + playerNumber + " RECIEVED HIT");
             return true;
         }
-        else return false; 
+        else return false;
     }
 
     void RecieveKnockback()
@@ -1556,7 +1561,7 @@ public class PlayerMovement : MonoBehaviour
     void ProcessSufferingEffect()
     {
         RecieveKnockback();
-        if (sufferingEffect==EffectType.softStun || sufferingEffect == EffectType.stun || sufferingEffect == EffectType.knockdown)
+        if (sufferingEffect == EffectType.softStun || sufferingEffect == EffectType.stun || sufferingEffect == EffectType.knockdown)
         {
             effectTime += Time.deltaTime;
             if (effectTime >= effectMaxTime)
@@ -1678,7 +1683,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void StopHooked(float reducedSpeedPercentage=0)
+    public void StopHooked(float reducedSpeedPercentage = 0)
     {
         //print("STOP HOOKED");
         if (hooked)

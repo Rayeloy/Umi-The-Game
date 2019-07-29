@@ -135,7 +135,7 @@ public class GameInfo : MonoBehaviour
 
     public void StartAnimation(UIAnimation uIAnimation, Camera canvasCamera)
     {
-        for(int i = 0;i<uIAnimations.Count; i++)
+        for(int i = 0; i<uIAnimations.Count; i++)
         {
             if(uIAnimations[i].rect == uIAnimation.rect)
             {

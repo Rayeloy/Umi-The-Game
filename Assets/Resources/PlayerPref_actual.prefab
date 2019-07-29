@@ -512,7 +512,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myPlayerMov: {fileID: 2740017724817165817}
   disableAllDebugs: 1
-  disableAllRays: 0
+  disableAllRays: 1
   collideWithOtherPlayers: 0
   collisionMask:
     serializedVersion: 2
@@ -571,7 +571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66bcdf6e0f085a446a4787f2032a0aa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllDebugs: 1
+  disableAllDebugs: 0
   myPlayerCombatNew: {fileID: 6457576688623177950}
   myPlayerWeap: {fileID: 2740053844141714977}
   myPlayerPickups: {fileID: 2739443829118614599}
@@ -640,12 +640,12 @@ MonoBehaviour:
   currentFacingDir: {x: -0.030918287, y: 0, z: -0.9995219}
   facingAngle: 181.77177
   currentCamFacingDir: {x: -0.2605316, y: -0.49291176, z: -0.8301574}
-  impulse: {x: 0, y: 0, z: 0}
   jumpSt: 2
   wallJumpAnim: 0
   haveFlag: 0
   flag: {fileID: 0}
   inWater: 0
+  currentMaxMoveSpeed: 0
   hooked: 0
   jumpedOutOfWater: 1
 --- !u!114 &6457576688623177950
@@ -673,7 +673,6 @@ MonoBehaviour:
   invulnerable: 0
   attackStg: 0
   currentAttack: {fileID: 0}
-  currentImpulse: {x: 0, y: 0, z: 0}
   landedSinceAttackStarted: 0
   autocomboStarted: 0
   parryStarted: 0

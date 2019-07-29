@@ -96,11 +96,12 @@ public class Hitbox : MonoBehaviour
                                                         break;
                                                     case KnockbackType.autoCenter:
                                                         float a = Mathf.Abs(myPlayerMov.breakAcc);
-                                                        float iT = myPlayerMov.MissingImpulseTime();
-                                                        float impulseDist = (a * Mathf.Pow(iT, 2)) / 2;
-                                                        if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("iT = " + iT + "; impulseDist = " + impulseDist);
+                                                        //float iT = myPlayerMov.MissingImpulseTime();
+                                                        //float impulseDist = (a * Mathf.Pow(iT, 2)) / 2;
+                                                        float impulseDist = myPlayerMov.currentImpulse.CalculateMissingDistance(myPlayerMov.transform.position);
+                                                        if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("impulseDist = " + impulseDist);
 
-                                                        Vector3 hitDir = myPlayerCombatNew.currentAttack.impulseMagnitude != 0 ? myPlayerCombatNew.currentImpulse.normalized : myPlayerMov.rotateObj.forward;
+                                                        Vector3 hitDir = myPlayerMov.currentImpulse.impulseInitialSpeed != 0 ? myPlayerMov.currentImpulse.impulseDir : myPlayerMov.rotateObj.forward;
                                                         float meNoMaeDist = myAttackHitbox.effects[i].knockbackMagnitude + impulseDist;
                                                         Vector3 meNoMaePos = myPlayerMov.rotateObj.position + (hitDir * meNoMaeDist);//me no mae (目の前) means in front of your eyes
                                                         resultKnockback = (meNoMaePos - otherPlayer.transform.position);
