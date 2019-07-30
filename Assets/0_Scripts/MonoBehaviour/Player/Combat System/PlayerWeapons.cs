@@ -92,7 +92,7 @@ public class PlayerWeapons : MonoBehaviour {
         {
             PickupWeapon(nearestWeapon);
         }
-        UpdateNearestWeapon();
+        //UpdateNearestWeapon();
     }
     #endregion
 
