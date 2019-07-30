@@ -885,6 +885,7 @@ public class PlayerMovement : MonoBehaviour
         {
             currentImpulse = _impulse;
             currentImpulse.initialPlayerPos = transform.position;
+
             if (!controller.collisions.below)
             {
                 currentImpulse.impulseVel *= airImpulsePercentage;

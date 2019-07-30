@@ -110,6 +110,7 @@ public class Hitbox : MonoBehaviour
                                                         if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("hitDir = " + hitDir + "; meNoMaeDist = " + meNoMaeDist + "; meNoMaePos = " + meNoMaePos);
 
                                                         float d = resultKnockback.magnitude;
+                                                        //vi = Mathf.Sqrt(2*a*d);
                                                         float vi = Mathf.Sqrt((2 * a * d));
                                                         if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("distance = " + d.ToString("F4") + "; Initial velocity = " + vi.ToString("F4") +
                                                             "; myPlayerMov.breakAcc = " + a);

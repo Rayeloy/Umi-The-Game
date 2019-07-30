@@ -372,14 +372,18 @@ public class PlayerCombatNew : MonoBehaviour
         if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Start or Continue input. calledFromBuffer = "+calledFromBuffer+ "; autocomboStarted = "+ autocomboStarted);
 
         bool result = false;
-        if (!autocomboStarted)
+        if (myPlayerMovement.moveSt != MoveState.Boost)
         {
-            result = StartAutocombo();
+            if (!autocomboStarted)
+            {
+                result = StartAutocombo();
+            }
+            else
+            {
+                result = StartNextAttackAutocombo();
+            }
         }
-        else
-        {
-            result = StartNextAttackAutocombo();
-        }
+
         if(!result && !calledFromBuffer)
         {
             if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Input was BUFFERED");
@@ -415,6 +419,7 @@ public class PlayerCombatNew : MonoBehaviour
             if(!myPlayerMovement.disableAllDebugs) Debug.LogWarning("Autocombo Stopped");
             if (attackStg != AttackPhaseType.ready)
             {
+                Debug.LogError("PARAMOS EL ATAQUE PORQUE NOS HAN PEGAO O ALGO");
                 EndAttack();
             }
             autocomboStarted = false;
@@ -518,7 +523,7 @@ public class PlayerCombatNew : MonoBehaviour
 
     void StartParry()
     {
-        if (!parryStarted && attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput && !aiming && !myPlayerMovement.inWater)
+        if (myPlayerMovement.moveSt != MoveState.Boost && !parryStarted && attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput && !aiming && !myPlayerMovement.inWater)
         {
             parryStarted = true;
             StartAttack(parry);
