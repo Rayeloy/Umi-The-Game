@@ -79,10 +79,6 @@ public class PlayerMovement : MonoBehaviour
     public float instantRotationMinAngle = 120;
     float rotationRestrictedPercentage = 1;
 
-    [Header("Body Mass")]
-    [Tooltip("Body Mass Index. 1 is for normal body mass.")]
-    public float bodyMass;
-
     [Header("--- SPEED ---")]
     public float maxFallSpeed = 100;
     public float maxMoveSpeed = 10;
@@ -204,6 +200,9 @@ public class PlayerMovement : MonoBehaviour
     public Team team = Team.A;
     [HideInInspector]
     public PlayerSpawnInfo mySpawnInfo;
+    //[Header("Body Mass")]
+    //[Tooltip("Body Mass Index. 1 is for normal body mass.")]
+    [HideInInspector] public float bodyMass;
 
     //BOOL PARA PERMITIR O BLOQUEAR INPUTS
     [HideInInspector]
