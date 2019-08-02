@@ -60,6 +60,23 @@ public class HitboxHookBig : MonoBehaviour
                         //print("Hook: Collision with HookPoint 1");
                         CollideWithHookPoint(col);
                         break;
+                    case "Hitbox":
+                        Hitbox hb = col.GetComponent<Hitbox>();
+                        if(hb!=null && hb.myPlayerMov.team != myPlayerMov.team)
+                        {
+                            if(hb.myAttackHitbox.GetEffect(EffectType.parry) != null)
+                            {
+                                int priorityDiff = hb.myPlayerCombatNew.currentAttack.attackPriority - myPlayerHook.hookPriority;
+                                priorityDiff = priorityDiff != 0 ? (int)Mathf.Sign(priorityDiff) : 0;
+                                switch (priorityDiff)
+                                {
+                                    case 1://parry with more priority than hook
+                                        myPlayerHook.StopHook();
+                                        break;
+                                }
+                            }
+                        }
+                        break;
                 }
             }
             else if (myPlayerHook.grappleSt == GrappleState.throwing)

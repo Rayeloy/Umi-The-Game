@@ -6,7 +6,7 @@ using UnityEditor;
 
 public enum WeaponType
 {
-    Q_Tip,
+    QTip,
     Hammer,
     Boxing_gloves,
     Sword,
@@ -17,25 +17,31 @@ public enum WeaponType
 [ExecuteInEditMode]
 public class WeaponData : ScriptableObject
 {
-    public WeaponType weaponType;
     [Tooltip("As you want it to show as text on the HUD for picking it up.")]
     public string weaponName;
+    public WeaponType weaponType;
+
     [Tooltip("Prefab with the Weapon script in it. It will be the base of our weapon.")]
     public GameObject weaponPrefab;
+
     [Tooltip("WeaponSkin metas.")]
     public WeaponSkinData[] weaponSkins;
+
+    [Tooltip("List of all weaponSkill metas of the weapon.")]
+    public WeaponSkillData[] allWeaponSkills;
+
 
     [Tooltip("Player maximum speed when carrying this weapon. Normal value is 10.")]
     public float playerMaxSpeed = 10;
     [Tooltip("Normal weight is 1.")]
-    [Range(0,3)]
+    [Range(0, 3)]
     public float playerWeight = 1;
     public AutocomboData autocombo;
     public AttackData parry;
     //Skill 1
     //Skill 2
 
-    
+
 
 
     [Header("Weapon in the right hand")]
@@ -72,7 +78,7 @@ public class WeaponData : ScriptableObject
             }
             if (!nameFound)
             {
-                Debug.LogError("The weapon skin name "+ skinName + " could not be found.");
+                Debug.LogError("The weapon skin name " + skinName + " could not be found.");
             }
         }
         else
@@ -104,7 +110,7 @@ public class WeaponData : ScriptableObject
         }
         else nameFound = false;
 
-        return nameFound;      
+        return nameFound;
     }
 
     public void ErrorCheck()
@@ -112,22 +118,29 @@ public class WeaponData : ScriptableObject
         Weapon auxWeap = weaponPrefab.GetComponent<Weapon>();
         if (auxWeap == null) Debug.LogError("Weapon Data -> Error: the weapon prefab has no Weapon script.");
         bool found = false;
-        for(int i=0; i< parry.activePhase.attackHitboxes.Length; i++)
+        for (int i = 0; i < parry.activePhase.attackHitboxes.Length; i++)
         {
-            for(int j=0; j< parry.activePhase.attackHitboxes[i].effects.Length; j++)
+            for (int j = 0; j < parry.activePhase.attackHitboxes[i].effects.Length; j++)
             {
                 if (parry.activePhase.attackHitboxes[i].effects[j].effectType == EffectType.parry) found = true;
             }
         }
-        if(!found) Debug.LogError("WeaponData -> Error: There is no parry for the weapon "+ weaponType + "!");
-        if (weaponSkins.Length == 0) Debug.LogError("WeaponData -> Error: There is no weapon skins for the weapon "+ weaponType + "!");
-        if(playerWeight<=0) Debug.LogError("WeaponData -> Error: Weight cannot be less or equal than 0 for the weapon " + weaponType + "!");
+        if (!found) Debug.LogError("WeaponData -> Error: There is no parry for the weapon " + weaponType + "!");
+        if (weaponSkins.Length == 0) Debug.LogError("WeaponData -> Error: There is no weapon skins for the weapon " + weaponType + "!");
+        if (playerWeight <= 0) Debug.LogError("WeaponData -> Error: Weight cannot be less or equal than 0 for the weapon " + weaponType + "!");
         autocombo.ErrorCheck();
         parry.ErrorCheck();
-        for(int i=0;i< weaponSkins.Length; i++)
+        for (int i = 0; i < weaponSkins.Length; i++)
         {
             weaponSkins[i].ErrorCheck();
         }
+
+        //Skills error check
+        for (int i = 0; allWeaponSkills != null && i < allWeaponSkills.Length; i++)
+        {
+            allWeaponSkills[i].ErrorCheck();
+        }
     }
-    
 }
+    
+

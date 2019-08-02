@@ -25,8 +25,9 @@ public enum EffectType
 [System.Serializable]
 public class AttackEffect
 {
-    public EffectType effectType;
+    [HideInInspector] public string name;
 
+    public EffectType effectType;
     [Header("[--- KNOCKBACK ---]")]
     public KnockbackType knockbackType;
     [Tooltip("If using the knockbackType Autocenter, the magnitude indicates how far away in front of the player will the hit send the enemy (in Unity units).")]
@@ -54,31 +55,32 @@ public class AttackEffect
 
     
 
-    public void ErrorCheck()
+    public void ErrorCheck(string AttackName, string PhaseName, string HitboxName)
     {
-        if (effectType == EffectType.none) Debug.LogError("AttackEffect-> Error: the effectType is set to none!");
+        name = effectType.ToString();
+        if (effectType == EffectType.none) Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ",the effectType is set to none!");
         switch (effectType)
         {
             case EffectType.knockback:
-                if(knockbackType==KnockbackType.none) Debug.LogError("AttackEffect-> Error: the effect is of type knockback but the knockbackType is set to none!");
-                if (knockbackMagnitude == 0) Debug.LogError("AttackEffect-> Error: the effect is of type knockback but the knockbackMagnitude is set to 0!");
+                if(knockbackType==KnockbackType.none) Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ",the effect is of type knockback but the knockbackType is set to none!");
+                if (knockbackMagnitude == 0) Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ",the effect is of type knockback but the knockbackMagnitude is set to 0!");
                 if (knockbackType == KnockbackType.customDir && knockbackDir==Vector3.zero)
-                    Debug.LogError("AttackEffect-> Error: the effect is of type knockback and the knockbackType is set to customDir but the customDir is set to Vector3.zero!");
+                    Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ",the effect is of type knockback and the knockbackType is set to customDir but the customDir is set to Vector3.zero!");
                 if (knockbackType == KnockbackType.redirect && redirectMaxAngle==0)
-                    Debug.LogError("AttackEffect-> Error: the effect is of type knockback and the knockbackType is set to redirect but the redirectMaxAngle is set to 0!");
+                    Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ",the effect is of type knockback and the knockbackType is set to redirect but the redirectMaxAngle is set to 0!");
                 break;
             case EffectType.softStun:
-                if(stunTime==0) Debug.LogError("AttackEffect-> Error: the effect is of type softStun but the stunTime is set to 0!");
+                if(stunTime==0) Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ",the effect is of type softStun but the stunTime is set to 0!");
                 break;
             case EffectType.stun:
-                if (stunTime == 0) Debug.LogError("AttackEffect-> Error: the effect is of type stun but the stunTime is set to 0!");
+                if (stunTime == 0) Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ",the effect is of type stun but the stunTime is set to 0!");
                 break;
             case EffectType.knockdown:
-                if (knockdownTime == 0) Debug.LogError("AttackEffect-> Error: the effect is of type knockdown but the knockdownTime is set to 0!");
+                if (knockdownTime == 0) Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ",the effect is of type knockdown but the knockdownTime is set to 0!");
                 break;
             case EffectType.parry:
-                if (parryStunTime == 0) Debug.LogError("AttackEffect-> Error: the effect is of type parry but the parryStunTime is set to 0!");
-                if (parryRecoveryTime == 1) Debug.LogError("AttackEffect-> Error: the effect is of type parry but the parryRecoveryTime is set to 1 which means we do the full recovery animation of the parry!");
+                if (parryStunTime == 0) Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ", the effect is of type parry but the parryStunTime is set to 0!");
+                if (parryRecoveryTime == 1) Debug.LogError("AttackEffect-> Error: In the attack "+ AttackName + ", phase "+ PhaseName + ", hitbox "+ HitboxName + ", the effect is of type parry but the parryRecoveryTime is set to 1 which means we do the full recovery animation of the parry!");
                 break;
         }
     }

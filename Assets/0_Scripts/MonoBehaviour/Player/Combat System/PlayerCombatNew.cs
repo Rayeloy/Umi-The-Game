@@ -12,26 +12,29 @@ public class PlayerCombatNew : MonoBehaviour
     PlayerHUD myPlayerHUD;
     public Material[] hitboxMats;//0 -> charging; 1-> startup; 2 -> active; 3 -> recovery
     public Transform hitboxesParent;
-    [HideInInspector]
-    public Transform weaponEdge;
-    [HideInInspector]
-    public Transform weaponHandle;
+    [HideInInspector] public Transform weaponEdge;
+    [HideInInspector] public Transform weaponHandle;
 
-    [Header("IMPULSE")]
-    [Range(0,180)]
-    public float maxImpulseAngle = 60;
-
+    [Header(" --- SKILLS ---")]
+    [HideInInspector]public WeaponSkill[] equipedWeaponSkills = new WeaponSkill[2];
 
     #endregion
 
     #region ----[ PROPERTIES ]----
-    [HideInInspector]
-    public WeaponData currentWeapon;
+    [HideInInspector] public WeaponData currentWeapon;
     bool hasWeapon
     {
         get
         {
             return currentWeapon != null && myPlayerWeap.hasWeapon;
+        }
+    }
+    [HideInInspector]public bool canDoCombat
+    {
+        get
+        {
+            return !aiming && !myPlayerMovement.noInput && !myPlayerMovement.inWater && myPlayerMovement.moveSt != MoveState.Boost && attackStg == AttackPhaseType.ready &&
+                !myPlayerMovement.wallJumping && !myPlayerMovement.hooked;
         }
     }
 
@@ -69,6 +72,30 @@ public class PlayerCombatNew : MonoBehaviour
     float parryTimePercentage = 1;
     bool hitParryStarted = false;
 
+    //SKILLS
+    int weaponSkillIndex = -1;//can be 0 or 1;
+    bool weaponSkillStarted
+    {
+        get
+        {
+            return weaponSkillIndex >= 0;
+        }
+    }
+    [HideInInspector] public WeaponSkill currentWeaponSkill
+    {
+        get
+        {
+            if (weaponSkillIndex >= 0)
+            {
+                return equipedWeaponSkills[weaponSkillIndex];
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
     [HideInInspector]
     public bool aiming;
 
@@ -98,6 +125,8 @@ public class PlayerCombatNew : MonoBehaviour
         currentHitboxes = new List<GameObject>();
         attackStg = AttackPhaseType.ready;
         attackTime = 0;
+        equipedWeaponSkills = new WeaponSkill[2];
+
     }
     #endregion
 
@@ -108,6 +137,7 @@ public class PlayerCombatNew : MonoBehaviour
         //ChangeAttackType(gC.attackX);
         HideAttackHitBox();
         //ChangeNextAttackType();
+
     }
     #endregion
 
@@ -133,13 +163,13 @@ public class PlayerCombatNew : MonoBehaviour
             //Skill 1
             if (myPlayerMovement.Actions.Y.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
             {
-
+                StartWeaponSkill(0);
             }
 
             //Skill 2
             if (myPlayerMovement.Actions.B.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "B"))
             {
-
+                StartWeaponSkill(1);
             }
 
             //HOOK INPUT CHECK
@@ -151,6 +181,7 @@ public class PlayerCombatNew : MonoBehaviour
                 //StartAttack();
             }
         }
+        ProcessWeaponSkill();
         ProcessAutocombo();
         ProcessInvulnerability();
         ProcessAttack();
@@ -173,7 +204,7 @@ public class PlayerCombatNew : MonoBehaviour
 
     #region --- Change Attack / Hitbox ---
 
-    void ChangeAttackPhase(AttackPhaseType attackStage)
+    public void ChangeAttackPhase(AttackPhaseType attackStage)
     {
         if (!myPlayerMovement.disableAllDebugs) Debug.Log("Change attack phase to " + attackStage);
         attackStg = attackStage;
@@ -311,27 +342,34 @@ public class PlayerCombatNew : MonoBehaviour
     #region --- IMPULSE ---
     void CalculateImpulse(AttackData attack)
     {
-        Vector3 impulseDir = Vector3.zero;
-        if (myPlayerMovement.currentInputDir != Vector3.zero)
+        if (currentAttack.impulseDistance != 0)
         {
-            float angleWithJoysitck = myPlayerMovement.SignedRelativeAngle(myPlayerMovement.rotateObj.forward, myPlayerMovement.currentInputDir, Vector3.up);
-            angleWithJoysitck = Mathf.Clamp(angleWithJoysitck, -maxImpulseAngle, maxImpulseAngle);
-            impulseDir = Quaternion.Euler(0, angleWithJoysitck, 0) * myPlayerMovement.rotateObj.forward;
+            Vector3 impulseDir = Vector3.zero;
+            if (myPlayerMovement.currentInputDir != Vector3.zero)
+            {
+                float angleWithJoysitck = myPlayerMovement.SignedRelativeAngle(myPlayerMovement.rotateObj.forward, myPlayerMovement.currentInputDir, Vector3.up);
+                angleWithJoysitck = Mathf.Clamp(angleWithJoysitck, -myPlayerMovement.maxImpulseAngle, myPlayerMovement.maxImpulseAngle);
+                impulseDir = Quaternion.Euler(0, angleWithJoysitck, 0) * myPlayerMovement.rotateObj.forward;
+            }
+            else
+            {
+                impulseDir = myPlayerMovement.rotateObj.forward;
+            }
+            float impulseTime = currentAttack.activePhase.duration;
+            //float acceleration = myPlayerMovement.breakAcc;
+            float realFinalSpeed = myPlayerMovement.currentMaxMoveSpeed;
+            //v=(2*d)/t; InitialSpeed =0;
+            float finalSpeed = (2 * currentAttack.impulseDistance) / impulseTime;
+            // a = v/t;
+            float acceleration = -(finalSpeed / impulseTime);
+            realFinalSpeed += finalSpeed;
+            //currentImpulse = impulseDir.normalized * realFinalSpeed;
+            currentImpulse = new ImpulseInfo(impulseDir.normalized, currentAttack.impulseDistance, realFinalSpeed, impulseTime, acceleration, Vector3.zero);
         }
         else
         {
-            impulseDir = myPlayerMovement.rotateObj.forward;
+            currentImpulse = new ImpulseInfo(Vector3.zero, 0, 0, 0, 0, Vector3.zero);
         }
-        float impulseTime = currentAttack.activePhase.duration;
-        //float acceleration = myPlayerMovement.breakAcc;
-        float realFinalSpeed = myPlayerMovement.currentMaxMoveSpeed;
-        //v=(2*d)/t; InitialSpeed =0;
-        float finalSpeed = (2 * currentAttack.impulseDistance) / impulseTime;
-        // a = v/t;
-        float acceleration = -(finalSpeed / impulseTime);
-        realFinalSpeed += finalSpeed;
-        //currentImpulse = impulseDir.normalized * realFinalSpeed;
-        currentImpulse = new ImpulseInfo(impulseDir.normalized, currentAttack.impulseDistance, realFinalSpeed, impulseTime, acceleration,Vector3.zero);
     }
 
     #endregion
@@ -341,7 +379,7 @@ public class PlayerCombatNew : MonoBehaviour
     bool StartAutocombo()
     {
         bool exito = false;
-        if (!autocomboStarted && attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput && !aiming && !myPlayerMovement.inWater)
+        if (!autocomboStarted && canDoCombat)
         {
             if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Started");
             exito = true;
@@ -357,7 +395,7 @@ public class PlayerCombatNew : MonoBehaviour
     bool StartNextAttackAutocombo()
     {
         bool exito = false;
-        if (autocomboStarted && attackStg == AttackPhaseType.ready && lastAutocomboAttackFinished)
+        if (autocomboStarted && canDoCombat)
         {
             exito = true;
             autocomboIndex++;
@@ -372,8 +410,7 @@ public class PlayerCombatNew : MonoBehaviour
         if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Start or Continue input. calledFromBuffer = "+calledFromBuffer+ "; autocomboStarted = "+ autocomboStarted);
 
         bool result = false;
-        if (myPlayerMovement.moveSt != MoveState.Boost)
-        {
+
             if (!autocomboStarted)
             {
                 result = StartAutocombo();
@@ -382,7 +419,6 @@ public class PlayerCombatNew : MonoBehaviour
             {
                 result = StartNextAttackAutocombo();
             }
-        }
 
         if(!result && !calledFromBuffer)
         {
@@ -432,9 +468,9 @@ public class PlayerCombatNew : MonoBehaviour
     #endregion
 
     #region --- ATTACK ---
-    void StartAttack(AttackData newAttack)
+    public void StartAttack(AttackData newAttack)
     {
-        if (attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput && !aiming && !myPlayerMovement.inWater)
+        if (canDoCombat)
         {
             if (!myPlayerMovement.disableAllDebugs) Debug.Log("Starting Attack " + newAttack.attackName);
             landedSinceAttackStarted = myPlayerMovement.controller.collisions.below ? true : false;
@@ -483,10 +519,17 @@ public class PlayerCombatNew : MonoBehaviour
                     }
                     break;
                 case AttackPhaseType.active:
-                    if (attackTime >= currentAttack.activePhase.duration)
+                    switch (currentAttack.activePhase.phaseCompletionType)
                     {
-                        attackTime = 0;
-                        ChangeAttackPhase(AttackPhaseType.recovery);
+                        case PhaseCompletionType.time:
+                            if (attackTime >= currentAttack.activePhase.duration)
+                            {
+                                attackTime = 0;
+                                ChangeAttackPhase(AttackPhaseType.recovery);
+                            }
+                            break;
+                        case PhaseCompletionType.none:
+                            break;
                     }
                     break;
                 case AttackPhaseType.recovery:
@@ -500,7 +543,7 @@ public class PlayerCombatNew : MonoBehaviour
         }
     }
 
-    void EndAttack()
+    public void EndAttack()
     {
         attackTime = 0;
         landedSinceAttackStarted = false;
@@ -523,13 +566,12 @@ public class PlayerCombatNew : MonoBehaviour
 
     void StartParry()
     {
-        if (myPlayerMovement.moveSt != MoveState.Boost && !parryStarted && attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput && !aiming && !myPlayerMovement.inWater)
+        if (!parryStarted && canDoCombat)
         {
             parryStarted = true;
             StartAttack(parry);
         }
     }
-
 
     //EN DESUSO
     void ProcessParry()
@@ -599,6 +641,45 @@ public class PlayerCombatNew : MonoBehaviour
     }
     #endregion
 
+    #region --- SKILLS ---
+    public void StartWeaponSkill(int _weaponSkillIndex)
+    {
+        if (canDoCombat && !weaponSkillStarted && equipedWeaponSkills[_weaponSkillIndex].weaponSkillSt==WeaponSkillState.ready)
+        {
+            weaponSkillIndex = _weaponSkillIndex;
+            currentWeaponSkill.KonoAwake();
+            currentWeaponSkill.StartSkill();
+        }
+        else if(weaponSkillStarted && currentWeaponSkill.myWeaponSkillData.pressAgainToStopSkill)
+        {
+            Debug.LogError("SKILL Y STOPPED!");
+            StopWeaponSkill();
+        }
+    }
+
+    void ProcessWeaponSkill()
+    {
+        for(int i = 0; i < equipedWeaponSkills.Length; i++)
+        {
+            if (equipedWeaponSkills[i].weaponSkillSt != WeaponSkillState.ready)
+            {
+                equipedWeaponSkills[i].KonoUpdate();
+            }
+        }
+    }
+
+    public void StopWeaponSkill()
+    {
+        if (weaponSkillStarted)
+        {
+            WeaponSkill auxWeapSkill = currentWeaponSkill;
+            weaponSkillIndex = -1;
+            auxWeapSkill.StopSkill();
+        }
+    }
+    
+    #endregion
+
     #endregion
 
     #region ----[ PUBLIC FUNCTIONS ]----
@@ -627,8 +708,10 @@ public class PlayerCombatNew : MonoBehaviour
         }
 
         //Skill 1
+        equipedWeaponSkills[0] = new WeaponSkill(this, currentWeapon.allWeaponSkills[0]);
 
         //Skill 2
+        equipedWeaponSkills[1] = new WeaponSkill(this, currentWeapon.allWeaponSkills[0]);
     }
 
     public void DropWeapon()
@@ -649,11 +732,12 @@ public class PlayerCombatNew : MonoBehaviour
     {
         StopAutocombo();
         StopParry();
+        StopWeaponSkill();
     }
 
     public void StartAiming()
     {
-        if (!aiming && attackStg==AttackPhaseType.ready)
+        if (!aiming && attackStg==AttackPhaseType.ready && !myPlayerMovement.noInput)
         {
             aiming = true;
             myPlayerMovement.myCamera.SwitchCamera(cameraMode.Shoulder);

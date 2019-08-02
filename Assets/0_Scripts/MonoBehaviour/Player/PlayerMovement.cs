@@ -98,19 +98,21 @@ public class PlayerMovement : MonoBehaviour
     [Header(" - IMPULSE - ")]
     [Range(0, 1)]
     public float airImpulsePercentage = 0.5f;
+    [Range(0, 180)]
+    public float maxImpulseAngle = 60;
 
     [Header("--- BOOST ---")]
     public float boostSpeed = 20f;
     public float boostCapacity = 1f;
-    [Tooltip("1 = 1 capacity per second")]
+    [Tooltip("1 -> 1 capacity per second")]
     public float boostDepletingSpeed = 1f;
-    [Tooltip("1 = 1 capacity per second")]
+    [Tooltip("1 -> 1 capacity per second")]
     public float boostRechargingSpeed = 0.3f;
     [HideInInspector]
     public float boostCurrentFuel = 1;
-    public float boostCDMaxTime = 0.3f;
-    float boostCDTime = 0;
-    bool boostCDStarted = false;
+    //public float boostCDMaxTime = 0.3f;
+    //float boostCDTime = 0;
+    //bool boostCDStarted = false;
     [Tooltip("0-> none; 1-> All the fuel")]
     [Range(0, 1)]
     public float boostFuelLostOnStart = 0.15f;
@@ -122,7 +124,7 @@ public class PlayerMovement : MonoBehaviour
     {
         get
         {
-            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !boostCDStarted && !haveFlag && !inWater);
+            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !haveFlag && !inWater);
         }
     }
     Vector3 boostDir;
@@ -166,7 +168,8 @@ public class PlayerMovement : MonoBehaviour
     public float wallJumpMinHeightPercent = 0.55f;
     public float stopWallMaxTime = 0.5f;
     float stopWallTime = 0;
-    bool wallJumping = false;
+    [HideInInspector]
+    public bool wallJumping = false;
     Vector3 anchorPoint;
     Vector3 wallNormal;
     [Tooltip("Vertical angle in which the player wall-jumps.")]
@@ -881,7 +884,7 @@ public class PlayerMovement : MonoBehaviour
     #region -- IMPULSE --
     public void StartImpulse(ImpulseInfo _impulse)
     {
-        if (_impulse.impulseInitialSpeed != 0)
+        if (_impulse.impulseDistance != 0)
         {
             currentImpulse = _impulse;
             currentImpulse.initialPlayerPos = transform.position;
@@ -1285,7 +1288,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 ProcessBoostRecharge();
             }
-            ProcessBoostCD();
+            //ProcessBoostCD();
         }
     }
 
@@ -1295,7 +1298,7 @@ public class PlayerMovement : MonoBehaviour
         {
             //print("STOP BOOST");
             moveSt = MoveState.None;
-            StartBoostCD();
+            //StartBoostCD();
             myPlayerHUD.StopCamVFX(CameraVFXType.Dash);
         }
         //noInput = false;
@@ -1313,34 +1316,34 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void StartBoostCD()
-    {
-        if (!boostCDStarted)
-        {
-            boostCDStarted = true;
-            boostCDTime = 0;
-        }
-    }
+    //void StartBoostCD()
+    //{
+    //    if (!boostCDStarted)
+    //    {
+    //        boostCDStarted = true;
+    //        boostCDTime = 0;
+    //    }
+    //}
 
-    void ProcessBoostCD()
-    {
-        if (boostCDStarted)
-        {
-            boostCDTime += Time.deltaTime;
-            if (boostCDTime >= boostCDMaxTime)
-            {
-                StopBoostCD();
-            }
-        }
-    }
+    //void ProcessBoostCD()
+    //{
+    //    if (boostCDStarted)
+    //    {
+    //        boostCDTime += Time.deltaTime;
+    //        if (boostCDTime >= boostCDMaxTime)
+    //        {
+    //            StopBoostCD();
+    //        }
+    //    }
+    //}
 
-    void StopBoostCD()
-    {
-        if (boostCDStarted)
-        {
-            boostCDStarted = false;
-        }
-    }
+    //void StopBoostCD()
+    //{
+    //    if (boostCDStarted)
+    //    {
+    //        boostCDStarted = false;
+    //    }
+    //}
 
     void WallBoost(GameObject wall)
     {

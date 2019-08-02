@@ -76,6 +76,7 @@ public class PlayerHook : MonoBehaviour
     }
 
     [Header("--- HOOK ---")]
+    public int hookPriority = 4;
     public float hookFowardSpeed;
     public float hookBackwardsSpeed;
     public float hookGrapplingSpeed;

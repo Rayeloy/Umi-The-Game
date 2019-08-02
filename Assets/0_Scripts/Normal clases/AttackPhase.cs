@@ -11,7 +11,15 @@ public enum AttackPhaseType
     active = 3,
     recovery = 4
 }
+
+public enum PhaseCompletionType
+{
+    none,
+    time,
+
+}
 #endregion
+
 [System.Serializable]
 public class AttackPhase
 {
@@ -19,31 +27,30 @@ public class AttackPhase
     public bool isFoldedInEditor;
     [HideInInspector]
     public AttackPhaseType attackPhaseType;
-    public AttackHitbox[] attackHitboxes;
 
+    [Tooltip("Only used in the active phase.")]
+    public PhaseCompletionType phaseCompletionType = PhaseCompletionType.time;
     public float duration;
-
     [Tooltip("0 means 0% rotation, 1 -> 100% rotation")]
-    [Range(0,1)]
+    [Range(0, 1)]
     public float rotationSpeedPercentage;
     [Tooltip("0 means 0% movement, 1 -> 100% movement")]
     [Range(0, 1)]
     public float movementSpeedPercentage;
-
-    //[Tooltip("Do you want this phase to have a hitbox?")]
-    //public bool hasHitbox;
-    //[Tooltip("Leave empty if no hitbox needed.")]
-    //public GameObject hitboxPrefab;
     [Tooltip("Player is invulnerable to attacks during this phase.")]
     public bool invulnerability;
+
+    public AttackHitbox[] attackHitboxes;
+
 
     private void OnEnable()
     {
         Debug.Log("AttackPhaseData OnEnable() and I'm " + this);
     }
 
-    public void ErrorCheck()
+    public void ErrorCheck(string AttackName)
     {
+        //phaseCompletionType = PhaseCompletionType.time;
         if(attackPhaseType== AttackPhaseType.active && attackHitboxes.Length==0)
         {
             Debug.LogError("AttackPhase-> Error: this is an active phase attackPhase but there is no hitbox!");
@@ -56,7 +63,7 @@ public class AttackPhase
         {
             for (int i = 0; i < attackHitboxes.Length; i++)
             {
-                attackHitboxes[i].ErrorCheck();
+                attackHitboxes[i].ErrorCheck(AttackName, attackPhaseType.ToString());
             }
         }
     }

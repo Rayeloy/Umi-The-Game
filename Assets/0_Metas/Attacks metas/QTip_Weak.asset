@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ce7d05d43dd0aa4fb7f72139bf0f199, type: 3}
+  m_Name: QTip_Weak
+  m_EditorClassIdentifier: 
+  attackName: Q-Tip Weak Attack
+  attackID: 0
+  attackPriority: 0
+  hasChargingPhase: 0
+  chargingPhase:
+    isFoldedInEditor: 0
+    attackPhaseType: 1
+    phaseCompletionType: 0
+    duration: 0
+    rotationSpeedPercentage: 0
+    movementSpeedPercentage: 0
+    invulnerability: 0
+    attackHitboxes: []
+  startupPhase:
+    isFoldedInEditor: 0
+    attackPhaseType: 2
+    phaseCompletionType: 0
+    duration: 0.2
+    rotationSpeedPercentage: 0
+    movementSpeedPercentage: 0
+    invulnerability: 0
+    attackHitboxes: []
+  activePhase:
+    isFoldedInEditor: 0
+    attackPhaseType: 3
+    phaseCompletionType: 0
+    duration: 0.2
+    rotationSpeedPercentage: 0
+    movementSpeedPercentage: 0
+    invulnerability: 0
+    attackHitboxes: []
+  recoveryPhase:
+    isFoldedInEditor: 0
+    attackPhaseType: 4
+    phaseCompletionType: 0
+    duration: 0.2
+    rotationSpeedPercentage: 0
+    movementSpeedPercentage: 0
+    invulnerability: 0
+    attackHitboxes: []
+  impulseDistance: 0

@@ -118,9 +118,9 @@ public class AttackData : ScriptableObject
             }
         }
 
-        if (hasChargingPhase) chargingPhase.ErrorCheck();
-        startupPhase.ErrorCheck();
-        activePhase.ErrorCheck();
-        recoveryPhase.ErrorCheck();
+        if (hasChargingPhase) chargingPhase.ErrorCheck(attackName);
+        startupPhase.ErrorCheck(attackName);
+        activePhase.ErrorCheck(attackName);
+        recoveryPhase.ErrorCheck(attackName);
     }
 }

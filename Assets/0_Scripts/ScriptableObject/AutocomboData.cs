@@ -40,7 +40,7 @@ public class AutocomboData : ScriptableObject
                     else
                     {
                         Debug.LogWarning("Autocombo -> Warning: The attack " + attacks[i].attackName + " in the autocombo " + autocomboName +
-                            " has a softStun that is longer than the maxTimeToNextAttack ("+ maxTimeToNextAttack+") needed. Maybe you want to lower it a bit.");
+                            " has a softStun ("+ maxSoftStunFound + ") that is longer than the maxTimeToNextAttack ("+ maxTimeToNextAttack+") needed. Maybe you want to lower it a bit.");
                     }
                 }
                 else

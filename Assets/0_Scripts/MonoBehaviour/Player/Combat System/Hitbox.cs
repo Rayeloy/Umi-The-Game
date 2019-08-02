@@ -294,7 +294,8 @@ public class Hitbox : MonoBehaviour
                                     targetsHit.Add(enemy.playerNumber);
 
                                     //QUE TIPO DE EFFECT
-                                    int priorityDiff = (int)Mathf.Sign(myPlayerCombatNew.currentAttack.attackPriority - otherHitbox.myPlayerCombatNew.currentAttack.attackPriority);
+                                    int priorityDiff = myPlayerCombatNew.currentAttack.attackPriority - otherHitbox.myPlayerCombatNew.currentAttack.attackPriority;
+                                    priorityDiff = priorityDiff != 0 ? (int)Mathf.Sign(priorityDiff):0;
                                     switch (priorityDiff)
                                     {
                                         case -1://TENEMOS MENOS PRIORIDAD

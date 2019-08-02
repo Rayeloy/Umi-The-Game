@@ -15,12 +15,27 @@ public enum HitboxParentType
 [System.Serializable]
 public class AttackHitbox
 {
+    [HideInInspector] public string name;
     public HitboxParentType parentType;
     public GameObject hitboxPrefab;
     public AttackEffect[] effects;
 
-    public void ErrorCheck()
+    public AttackEffect GetEffect(EffectType effectType)
     {
+        AttackEffect effect = null;
+        for(int i=0; i < effects.Length; i++)
+        {
+            if(effects[i].effectType == effectType)
+            {
+                effect = effects[i];
+            }
+        }
+        return effect;
+    }
+
+    public void ErrorCheck(string attackName, string phaseName)
+    {
+        name = hitboxPrefab.name;
         List<EffectType> auxEffects = new List<EffectType>();
         bool errorFound = false;
         for(int i=0;i< effects.Length && !errorFound; i++)
@@ -47,7 +62,7 @@ public class AttackHitbox
         }
         for(int i=0; i< effects.Length; i++)
         {
-            effects[i].ErrorCheck();
+            effects[i].ErrorCheck(attackName, phaseName, name);
         }
     }
     

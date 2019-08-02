@@ -14,7 +14,7 @@ public class WeaponSkinData : ScriptableObject
     public void ErrorCheck()
     {
         if (skinName=="") Debug.LogError("Weapon Skin -> Error: the weapon skin " + name + "has no skinName");
-        if (skinName == name) Debug.LogError("Weapon Skin -> Error: the weapon skin " + name + " and it's skinName ("+ skinName + ") are different. You may want to change them to be the same.");
+        if (skinName != name) Debug.LogError("Weapon Skin -> Error: the weapon skin " + name + " and it's skinName ("+ skinName + ") are different. You may want to change them to be the same.");
         //if (skinPrefab == null) Debug.LogError("Weapon Skin -> Error: the weapon skin " + skinName + " has no skinPrefab");
         //WeaponSkin weapSkin = skinPrefab.GetComponent<WeaponSkin>();
         //if (weapSkin == null) Debug.LogError("Weapon Skin -> Error: the weapon skin "+ skinName + " skinPrefab's WeaponSkin script could not be found.");

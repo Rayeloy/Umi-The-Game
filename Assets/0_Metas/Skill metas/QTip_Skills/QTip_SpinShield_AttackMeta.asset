@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ce7d05d43dd0aa4fb7f72139bf0f199, type: 3}
+  m_Name: QTip_SpinShield_AttackMeta
+  m_EditorClassIdentifier: 
+  attackName: QTip_SpinShield_Attack
+  attackID: 5
+  attackPriority: 4
+  hasChargingPhase: 0
+  chargingPhase:
+    isFoldedInEditor: 0
+    attackPhaseType: 1
+    phaseCompletionType: 1
+    duration: 0
+    rotationSpeedPercentage: 0
+    movementSpeedPercentage: 0
+    invulnerability: 0
+    attackHitboxes: []
+  startupPhase:
+    isFoldedInEditor: 0
+    attackPhaseType: 2
+    phaseCompletionType: 1
+    duration: 0.15
+    rotationSpeedPercentage: 0.5
+    movementSpeedPercentage: 0.5
+    invulnerability: 0
+    attackHitboxes: []
+  activePhase:
+    isFoldedInEditor: 0
+    attackPhaseType: 3
+    phaseCompletionType: 1
+    duration: 2
+    rotationSpeedPercentage: 0.2
+    movementSpeedPercentage: 0.2
+    invulnerability: 0
+    attackHitboxes:
+    - name: 
+      parentType: 0
+      hitboxPrefab: {fileID: 1916937922129876723, guid: b1842333aa96de541bd263d59e503fda,
+        type: 3}
+      effects:
+      - name: 
+        effectType: 5
+        knockbackType: 0
+        knockbackMagnitude: 0
+        knockbackDir: {x: 0, y: 0, z: 0}
+        redirectMaxAngle: 0
+        knockbackYAngle: 10
+        stunTime: 0
+        parryStunTime: 0.5
+        parryRecoveryTime: 1
+  recoveryPhase:
+    isFoldedInEditor: 0
+    attackPhaseType: 4
+    phaseCompletionType: 1
+    duration: 0.1
+    rotationSpeedPercentage: 0.5
+    movementSpeedPercentage: 0.5
+    invulnerability: 0
+    attackHitboxes: []
+  impulseDistance: 0
