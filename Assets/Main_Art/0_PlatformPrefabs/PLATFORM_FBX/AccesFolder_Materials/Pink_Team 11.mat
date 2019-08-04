@@ -21,7 +21,7 @@ Material:
     m_TexEnvs:
     - _Albedo:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
+        m_Scale: {x: 5, y: 1.06}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
@@ -48,16 +48,16 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetalRSmoothG:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: d3c90fed0e07531498905b964981759a, type: 3}
+        m_Scale: {x: 5, y: 1.06}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Normal:
-        m_Texture: {fileID: 2800000, guid: 8cfcf3c635dc91f45918c2a76cd6d1fb, type: 3}
-        m_Scale: {x: 3.57, y: 0.9}
+        m_Texture: {fileID: 2800000, guid: 93b049eba865627489b5fb0b49757de5, type: 3}
+        m_Scale: {x: -2.3, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
@@ -89,7 +89,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _SSSAdd: 1
+    - _SSSAdd: 0.87
     - _SSSMultiply: 1
     - _SmoothnessTextureChannel: 0
     - _Smoothness_Add: 0.688
@@ -100,11 +100,11 @@ Material:
     - _TransNormalDistortion: 0.1
     - _TransScattering: 2
     - _TransShadow: 0.9
-    - _Translucency: 1
+    - _Translucency: 0.9
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 1
     m_Colors:
-    - _Color: {r: 0, g: 0, b: 0, a: 1}
+    - _Color: {r: 1, g: 0.15566039, b: 0.5800405, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SSSTint: {r: 0, g: 0.20429796, b: 0.4716981, a: 0}
+    - _SSSTint: {r: 1, g: 0.3204095, b: 0, a: 0}
