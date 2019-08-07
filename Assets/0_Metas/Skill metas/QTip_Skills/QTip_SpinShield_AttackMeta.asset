@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackName: QTip_SpinShield_Attack
   attackID: 5
-  attackPriority: 4
+  attackPriority: 5
   hasChargingPhase: 0
   chargingPhase:
     isFoldedInEditor: 0
@@ -38,7 +38,7 @@ MonoBehaviour:
     isFoldedInEditor: 0
     attackPhaseType: 3
     phaseCompletionType: 1
-    duration: 2
+    duration: 3
     rotationSpeedPercentage: 0.2
     movementSpeedPercentage: 0.2
     invulnerability: 0
@@ -57,6 +57,26 @@ MonoBehaviour:
         knockbackYAngle: 10
         stunTime: 0
         parryStunTime: 0.5
+        parryRecoveryTime: 1
+      - name: 
+        effectType: 1
+        knockbackType: 1
+        knockbackMagnitude: 15
+        knockbackDir: {x: 0, y: 0, z: 0}
+        redirectMaxAngle: 0
+        knockbackYAngle: 10
+        stunTime: 0
+        parryStunTime: 0
+        parryRecoveryTime: 1
+      - name: 
+        effectType: 2
+        knockbackType: 0
+        knockbackMagnitude: 0
+        knockbackDir: {x: 0, y: 0, z: 0}
+        redirectMaxAngle: 0
+        knockbackYAngle: 10
+        stunTime: 0.5
+        parryStunTime: 0
         parryRecoveryTime: 1
   recoveryPhase:
     isFoldedInEditor: 0

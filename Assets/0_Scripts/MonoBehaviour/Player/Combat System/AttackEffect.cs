@@ -10,7 +10,8 @@ public enum KnockbackType
     inwards = 2,
     autoCenter=3,
     customDir = 4,
-    redirect=5
+    redirect=5,
+    outwardsFromHitbox = 6
 }
 public enum EffectType
 {

@@ -231,7 +231,8 @@ public class TeamSetupManager : MonoBehaviour
 
     bool JoinButtonWasPressedOnListener( PlayerActions actions )
 	{
-        return actions.X.WasPressed || actions.Y.WasPressed || actions.B.WasPressed || (actions != keyboardListener && actions.A.WasPressed);
+        return  actions.Y.WasPressed || actions.B.WasPressed || (actions != keyboardListener && (actions.A.WasPressed || actions.X.WasPressed)) ||
+            (actions == keyboardListener && (Input.GetKeyDown(KeyCode.Alpha1)));
 	}
 
 	PlayerSelected FindPlayerUsingJoystick( InputDevice inputDevice )

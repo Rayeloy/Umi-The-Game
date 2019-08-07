@@ -6,7 +6,7 @@ public class PlayerCombatNew : MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     //Referencias
-    PlayerMovement myPlayerMovement;
+    [HideInInspector] public PlayerMovement myPlayerMovement;
     PlayerWeapons myPlayerWeap;
     PlayerHook myHook;
     PlayerHUD myPlayerHUD;
@@ -44,6 +44,7 @@ public class PlayerCombatNew : MonoBehaviour
     [HideInInspector]
     public bool invulnerable=false;
 
+    //ATTACK
     [HideInInspector]
     public AttackPhaseType attackStg = AttackPhaseType.ready;
     float attackTime = 0;
@@ -54,6 +55,7 @@ public class PlayerCombatNew : MonoBehaviour
     [HideInInspector]
     public bool landedSinceAttackStarted = false;
     bool currentAttackHasRedirect = false;
+    List<Hitbox> hitboxes;
 
     //Autocombo
     AutocomboData autocombo;
@@ -62,7 +64,7 @@ public class PlayerCombatNew : MonoBehaviour
     int autocomboIndex = -1;
     bool lastAutocomboAttackFinished = false;
     float autocomboTime = 0;
-    List<GameObject> currentHitboxes;
+    [HideInInspector]public List<GameObject> currentHitboxes;
 
     //Parry
     AttackData parry;
@@ -74,7 +76,7 @@ public class PlayerCombatNew : MonoBehaviour
 
     //SKILLS
     int weaponSkillIndex = -1;//can be 0 or 1;
-    bool weaponSkillStarted
+    [HideInInspector] public bool weaponSkillStarted
     {
         get
         {
@@ -257,6 +259,7 @@ public class PlayerCombatNew : MonoBehaviour
                 HideAttackHitBox();
                 break;
             case AttackPhaseType.charging:
+                hitboxes = new List<Hitbox>();
                 for (int i = 0; i < currentAttack.activePhase.attackHitboxes.Length; i++)
                 {
                     AddHitbox(currentAttack.activePhase.attackHitboxes[i]);
@@ -269,7 +272,8 @@ public class PlayerCombatNew : MonoBehaviour
             case AttackPhaseType.startup:
                 if (!currentAttack.hasChargingPhase)
                 {
-                    for(int i=0; i < currentAttack.activePhase.attackHitboxes.Length; i++)
+                    hitboxes = new List<Hitbox>();
+                    for (int i=0; i < currentAttack.activePhase.attackHitboxes.Length; i++)
                     {
                         AddHitbox(currentAttack.activePhase.attackHitboxes[i]);
                     }
@@ -309,20 +313,43 @@ public class PlayerCombatNew : MonoBehaviour
             case HitboxParentType.weaponHandle:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab, weaponHandle);
                 break;
+            case HitboxParentType.player_localParent:
+                auxHitbox = Instantiate(attackHitbox.hitboxPrefab, hitboxesParent);
+                auxHitbox = auxHitbox.GetComponentInChildren<Hitbox>().gameObject;
+                break;
+            case HitboxParentType.player_followTransform:
+                auxHitbox = Instantiate(attackHitbox.hitboxPrefab, hitboxesParent);
+                //auxHitbox = auxHitbox.GetComponentInChildren<Hitbox>().gameObject;
+                Transform follTrans = null;
+                if (weaponSkillStarted)
+                {
+                    switch (currentWeaponSkill.myWeaponSkillData.skillName)
+                    {
+                        case "QTip_Cannon_Skill"://Q-Tip_Cannon
+                            follTrans = currentHitboxes[0].GetComponent<Hitbox>().referencePos1;
+                            break;
+                    }
+                }
+                auxHitbox.GetComponent<FollowTransform>().followTransform = follTrans;
+                break;
             default:
                 Debug.LogError("Error: the hitboxParentType is not supported: " + attackHitbox.parentType);
                 break;
         }
-        if(attackHitbox.parentType==HitboxParentType.player || attackHitbox.parentType == HitboxParentType.weaponEdge || attackHitbox.parentType == HitboxParentType.weaponHandle)
-        {
+        //if(attackHitbox.parentType!= HitboxParentType.player_animated)
+        //{
+        Debug.Log("CurrentHitboxes ADD -> "+ auxHitbox.name);
             currentHitboxes.Add(auxHitbox);
-            auxHitbox.GetComponent<Hitbox>().myAttackHitbox = attackHitbox;
-        }
+            Hitbox hb = auxHitbox.GetComponent<Hitbox>();
+            hb.myAttackHitbox = attackHitbox;
+            hitboxes.Add(hb);
+        //}
     }
 
     void HideAttackHitBox()
     {
-        for(int i=0;i<100 && currentHitboxes.Count>0;i++)
+        hitboxes = new List<Hitbox>();
+        for (int i=0;i<100 && currentHitboxes.Count>0;i++)
         {
             Destroy(currentHitboxes[0]);
             currentHitboxes.RemoveAt(0);
@@ -647,12 +674,22 @@ public class PlayerCombatNew : MonoBehaviour
         if (canDoCombat && !weaponSkillStarted && equipedWeaponSkills[_weaponSkillIndex].weaponSkillSt==WeaponSkillState.ready)
         {
             weaponSkillIndex = _weaponSkillIndex;
-            currentWeaponSkill.KonoAwake();
-            currentWeaponSkill.StartSkill();
+            Debug.Log("Skill "+currentWeaponSkill.myWeaponSkillData.skillName+" started!");
+            switch (currentWeaponSkill.myWeaponSkillData.weaponSkillType)
+            {
+                case WeaponSkillType.attack:
+                    currentWeaponSkill.KonoAwake();
+                    currentWeaponSkill.StartSkill();
+                    break;
+                case WeaponSkillType.attack_extend:
+                    (currentWeaponSkill as WeaponSkill_AttackExtend).KonoAwake();
+                    (currentWeaponSkill as WeaponSkill_AttackExtend).StartSkill();
+                    break;
+            }
         }
         else if(weaponSkillStarted && currentWeaponSkill.myWeaponSkillData.pressAgainToStopSkill)
         {
-            Debug.LogError("SKILL Y STOPPED!");
+            if (!myPlayerMovement.disableAllDebugs) Debug.LogError("SKILL Y STOPPED!");
             StopWeaponSkill();
         }
     }
@@ -672,9 +709,28 @@ public class PlayerCombatNew : MonoBehaviour
     {
         if (weaponSkillStarted)
         {
-            WeaponSkill auxWeapSkill = currentWeaponSkill;
-            weaponSkillIndex = -1;
-            auxWeapSkill.StopSkill();
+
+            switch (currentWeaponSkill.myWeaponSkillData.weaponSkillType)
+            {
+                case WeaponSkillType.attack:
+                    WeaponSkill auxWeapSkill = currentWeaponSkill;
+                    weaponSkillIndex = -1;
+                    auxWeapSkill.StopSkill();
+                    break;
+                case WeaponSkillType.attack_extend:
+                    if((currentWeaponSkill as WeaponSkill_AttackExtend).attackExtendStg != AttackExtendStage.finished)
+                    {
+                        (currentWeaponSkill as WeaponSkill_AttackExtend).StartRetracting();
+                    }
+                    else
+                    {
+                        (currentWeaponSkill as WeaponSkill_AttackExtend).attackExtendStg = AttackExtendStage.notStarted;
+                        auxWeapSkill = currentWeaponSkill;
+                        weaponSkillIndex = -1;
+                        (auxWeapSkill as WeaponSkill_AttackExtend).StopSkill();
+                    }
+                    break;
+            }
         }
     }
     
@@ -707,11 +763,19 @@ public class PlayerCombatNew : MonoBehaviour
             }
         }
 
-        //Skill 1
-        equipedWeaponSkills[0] = new WeaponSkill(this, currentWeapon.allWeaponSkills[0]);
-
-        //Skill 2
-        equipedWeaponSkills[1] = new WeaponSkill(this, currentWeapon.allWeaponSkills[0]);
+        //Skills
+        for (int i=0; i< currentWeapon.allWeaponSkills.Length;i++)
+        {
+            switch (currentWeapon.allWeaponSkills[i].weaponSkillType)
+            {
+                case WeaponSkillType.attack:
+                    equipedWeaponSkills[i] = new WeaponSkill(this, currentWeapon.allWeaponSkills[i]);
+                    break;
+                case WeaponSkillType.attack_extend:
+                    equipedWeaponSkills[i] = new WeaponSkill_AttackExtend(this, currentWeapon.allWeaponSkills[i]);
+                    break;
+            }
+        }
     }
 
     public void DropWeapon()

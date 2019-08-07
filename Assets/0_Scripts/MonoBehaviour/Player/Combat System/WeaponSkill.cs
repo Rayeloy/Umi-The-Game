@@ -50,6 +50,13 @@ public class WeaponSkill
     {
         weaponSkillSt = WeaponSkillState.ready;
         //AttackStg = AttackPhaseType.ready;
+
+        SpecificAwake();
+    }
+
+    protected virtual void SpecificAwake()
+    {
+
     }
     #endregion
 
@@ -60,6 +67,7 @@ public class WeaponSkill
     public void KonoUpdate()
     {
         ProcessSkill();
+        SpecificProcessSkill();
         ProcessCD();
     }
     #endregion
@@ -73,7 +81,7 @@ public class WeaponSkill
     {
         if (weaponSkillSt == WeaponSkillState.active)
         {
-            Debug.LogError("START SKILL CD");
+            if (!myPlayerCombat.myPlayerMovement.disableAllDebugs) Debug.LogError("START SKILL CD");
             weaponSkillSt = WeaponSkillState.cd;
             currentCDTime = 0;
         }
@@ -95,7 +103,7 @@ public class WeaponSkill
     {
         if (weaponSkillSt == WeaponSkillState.cd)
         {
-            Debug.LogError("STOP SKILL CD");
+            if(!myPlayerCombat.myPlayerMovement.disableAllDebugs) Debug.Log("STOP SKILL CD");
             weaponSkillSt = WeaponSkillState.ready;
         }
     }
@@ -108,12 +116,17 @@ public class WeaponSkill
     #region -- Skill Flow Functions --
     public void StartSkill()
     {
+        Debug.Log("START SKILL?");
         if (weaponSkillSt == WeaponSkillState.ready && myPlayerCombat.canDoCombat)
         {
+            Debug.Log("SKILL STARTED ");
             weaponSkillSt = WeaponSkillState.active;
             switch (myWeaponSkillData.weaponSkillType)
             {
                 case WeaponSkillType.attack:
+                    myPlayerCombat.StartAttack(myWeaponSkillData.attack);
+                    break;
+                case WeaponSkillType.attack_extend:
                     myPlayerCombat.StartAttack(myWeaponSkillData.attack);
                     break;
             }
@@ -131,11 +144,11 @@ public class WeaponSkill
                     {
                         StopSkill();
                     }
-                    if (myWeaponSkillData.attack.activePhase.phaseCompletionType == PhaseCompletionType.none)
-                    {
-                        //End active phase?
-                        EndAttackActivePhase();
-                    }
+                    //if (myWeaponSkillData.attack.activePhase.phaseCompletionType == PhaseCompletionType.none)
+                    //{
+                    //    //End active phase?
+                    //    EndAttackActivePhase();
+                    //}
                     break;
             }
         }
@@ -143,7 +156,10 @@ public class WeaponSkill
 
     protected virtual void EndAttackActivePhase()
     {
-        myPlayerCombat.ChangeAttackPhase(AttackPhaseType.recovery);
+        if(myPlayerCombat.attackStg == AttackPhaseType.active)
+        {
+            myPlayerCombat.ChangeAttackPhase(AttackPhaseType.recovery);
+        }
     }
 
     public void StopSkill()
@@ -159,6 +175,11 @@ public class WeaponSkill
             StartCD();
             myPlayerCombat.StopWeaponSkill();
         }
+    }
+
+    protected virtual void SpecificProcessSkill()
+    {
+
     }
     #endregion
 

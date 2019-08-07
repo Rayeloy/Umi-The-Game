@@ -138,6 +138,8 @@ public class WeaponData : ScriptableObject
         //Skills error check
         for (int i = 0; allWeaponSkills != null && i < allWeaponSkills.Length; i++)
         {
+            if (weaponType != allWeaponSkills[i].weaponType) Debug.LogError("WeaponData->Error: The weapon "+weaponName+" has a skill ("+allWeaponSkills[i].skillName+
+                ") that is for a different weapon type");
             allWeaponSkills[i].ErrorCheck();
         }
     }

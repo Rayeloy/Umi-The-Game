@@ -229,7 +229,7 @@ public class PlayerWeapons : MonoBehaviour {
         {
             weaponsNearby.Add(weapPickup);
         }
-        UpdateNearestWeapon();
+        //UpdateNearestWeapon();
     }
 
     public void RemoveWeaponNearby(Weapon weapPickup)
@@ -238,7 +238,7 @@ public class PlayerWeapons : MonoBehaviour {
         {
             weaponsNearby.Remove(weapPickup);
         }
-        UpdateNearestWeapon();
+        //UpdateNearestWeapon();
     }
     
     public void RemoveWeaponNearby(WeaponData weapData)
@@ -252,7 +252,7 @@ public class PlayerWeapons : MonoBehaviour {
                 found = true;
             }
         }
-        UpdateNearestWeapon();
+        //UpdateNearestWeapon();
     }
 
     public void ChangeWeaponSkin(string skinName="", string recolorName="")

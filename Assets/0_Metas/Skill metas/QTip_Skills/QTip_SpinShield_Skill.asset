@@ -12,11 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e9c46879a7daa849ade1687801ebcc5, type: 3}
   m_Name: QTip_SpinShield_Skill
   m_EditorClassIdentifier: 
-  skillName: 
+  skillName: QTip_SpinShield_Skill
   weaponSkillType: 0
   weaponType: 0
   pressAgainToStopSkill: 1
   attack: {fileID: 11400000, guid: b4df3750df5dc6d43acd6971cd73c412, type: 2}
-  cd: 20
+  cd: 9
   weaponSkillHUDImage: {fileID: 0}
   levelNeededToUnlock: 0
+  maxAttackRange: 6
+  extendingSpeed: 10
+  retractingSpeed: 10

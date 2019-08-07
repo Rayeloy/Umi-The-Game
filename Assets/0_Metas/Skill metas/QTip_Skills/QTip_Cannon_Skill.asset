@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e9c46879a7daa849ade1687801ebcc5, type: 3}
+  m_Name: QTip_Cannon_Skill
+  m_EditorClassIdentifier: 
+  skillName: QTip_Cannon_Skill
+  weaponSkillType: 1
+  weaponType: 0
+  pressAgainToStopSkill: 1
+  attack: {fileID: 11400000, guid: 2ca0db257f6ebc341bae3aa9d39483ac, type: 2}
+  cd: 5
+  weaponSkillHUDImage: {fileID: 0}
+  levelNeededToUnlock: 0
+  maxAttackRange: 8
+  extendingSpeed: 10
+  retractingSpeed: 10

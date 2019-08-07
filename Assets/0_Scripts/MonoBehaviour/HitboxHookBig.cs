@@ -19,7 +19,7 @@ public class HitboxHookBig : MonoBehaviour
         //print("Hook: Collision with " + col.name);
         if (col.gameObject != myPlayerMov.gameObject)
         {
-            Debug.Log("HOOK has hit "+ col.tag + " : checking team");
+            Debug.Log("HOOK has hit "+ col.tag);
             if (myPlayerHook.canHookSomething)
             {
                 switch (col.tag)
@@ -62,15 +62,23 @@ public class HitboxHookBig : MonoBehaviour
                         break;
                     case "Hitbox":
                         Hitbox hb = col.GetComponent<Hitbox>();
+                        Debug.LogError("Hook has hit a hitbox");
                         if(hb!=null && hb.myPlayerMov.team != myPlayerMov.team)
                         {
-                            if(hb.myAttackHitbox.GetEffect(EffectType.parry) != null)
+                            Debug.LogError("Hook has hit a hitbox that is from an enemy");
+
+                            if (hb.myAttackHitbox.GetEffect(EffectType.parry) != null && hb.myPlayerCombatNew.attackStg == AttackPhaseType.active)
                             {
+                                Debug.LogError("Hook has hit a hitbox that is from an enemy and has a parry effect and is active");
+
                                 int priorityDiff = hb.myPlayerCombatNew.currentAttack.attackPriority - myPlayerHook.hookPriority;
                                 priorityDiff = priorityDiff != 0 ? (int)Mathf.Sign(priorityDiff) : 0;
+                                Debug.Log("priorityDiff = "+ priorityDiff + "; hb.myPlayerCombatNew.currentAttack.attackPriority = "+ hb.myPlayerCombatNew.currentAttack.attackPriority +
+                                    "; myPlayerHook.hookPriority = " + myPlayerHook.hookPriority);
                                 switch (priorityDiff)
                                 {
                                     case 1://parry with more priority than hook
+                                        Debug.LogError("Hook has hit a hitbox that is from an enemy and has a parry effect and has more priority than my hook.");
                                         myPlayerHook.StopHook();
                                         break;
                                 }

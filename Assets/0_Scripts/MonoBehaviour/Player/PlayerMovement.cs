@@ -1523,7 +1523,7 @@ public class PlayerMovement : MonoBehaviour
                 case EffectType.knockdown:
                     if (disableAllDebugs) Debug.LogError("KNOCKDOWN !!!!!!!!");
                     noInput = true;
-                    myPlayerCombatNew.StartInvulnerabilty(_maxTime);
+                    //myPlayerCombatNew.StartInvulnerabilty(_maxTime);
                     break;
                 case EffectType.none:
                     break;
@@ -1551,6 +1551,28 @@ public class PlayerMovement : MonoBehaviour
             return true;
         }
         else return false;
+    }
+    
+    public void StartRecieveParry(PlayerMovement enemy, AttackEffect effect = null)
+    {
+        Debug.Log("PARRY!!!");
+        Vector3 enemyPos = enemy.transform.position;
+        //Reduce Recovery Time Player 1
+        enemy.myPlayerCombatNew.HitParry();
+
+        //StartRecieveParry Player2
+        float maxStunTime = effect != null && effect.parryStunTime>0?effect.parryStunTime:0.5f;
+        //Knockback outwards
+        Vector3 parryMyPos = enemyPos;
+        Vector3 parryColPos = transform.position;
+        Vector3 resultKnockback = new Vector3(parryColPos.x - parryMyPos.x, 0, parryColPos.z - parryMyPos.z).normalized;
+        //resultKnockback = Quaternion.Euler(0, effect.knockbackYAngle, 0) * resultKnockback;
+        Debug.Log("resultKnockback 1 = " + resultKnockback);
+        resultKnockback = Hitbox.CalculateYAngle(enemyPos, resultKnockback, 25f);
+        Debug.Log("resultKnockback 2 = " + resultKnockback);
+        resultKnockback = resultKnockback * 10;
+        Debug.Log("resultKnockback 3 = "+ resultKnockback + "; maxStunTime = "+ maxStunTime );
+        StartRecieveHit(enemy, resultKnockback, EffectType.softStun, maxStunTime);
     }
 
     void RecieveKnockback()
