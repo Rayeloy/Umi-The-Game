@@ -10,41 +10,46 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5ce7d05d43dd0aa4fb7f72139bf0f199, type: 3}
-  m_Name: Q_Tip_Strong
+  m_Name: QTip_Strong
   m_EditorClassIdentifier: 
   attackName: Q-Tip Strong Attack
+  attackID: 0
+  attackPriority: 0
   hasChargingPhase: 0
   chargingPhase:
     isFoldedInEditor: 0
+    attackPhaseType: 1
+    phaseCompletionType: 1
     duration: 0
-    restrictRotation: 0
-    rotationSpeed: 0
-    hasHitbox: 0
-    hitboxPrefab: {fileID: 0}
+    rotationSpeedPercentage: 0
+    movementSpeedPercentage: 0
+    invulnerability: 0
+    attackHitboxes: []
   startupPhase:
     isFoldedInEditor: 0
+    attackPhaseType: 2
+    phaseCompletionType: 1
     duration: 0.2
-    restrictRotation: 1
-    rotationSpeed: 100
-    hasHitbox: 0
-    hitboxPrefab: {fileID: 0}
+    rotationSpeedPercentage: 0
+    movementSpeedPercentage: 0
+    invulnerability: 0
+    attackHitboxes: []
   activePhase:
     isFoldedInEditor: 0
+    attackPhaseType: 3
+    phaseCompletionType: 1
     duration: 0.2
-    restrictRotation: 1
-    rotationSpeed: 100
-    hasHitbox: 1
-    hitboxPrefab: {fileID: 1106858598728734, guid: 0170b6bc00f63cf4c815c19c4e7103f5,
-      type: 3}
+    rotationSpeedPercentage: 0
+    movementSpeedPercentage: 0
+    invulnerability: 0
+    attackHitboxes: []
   recoveryPhase:
     isFoldedInEditor: 0
+    attackPhaseType: 4
+    phaseCompletionType: 1
     duration: 0.2
-    restrictRotation: 1
-    rotationSpeed: 100
-    hasHitbox: 0
-    hitboxPrefab: {fileID: 0}
-  comboDifferentAttackPercent: 50
-  stunTime: 1.2
-  knockbackSpeed: 40
-  knockbackType: 2
-  knockbackDirection: {x: 0, y: 0.3, z: 1}
+    rotationSpeedPercentage: 0
+    movementSpeedPercentage: 0
+    invulnerability: 0
+    attackHitboxes: []
+  impulseDistance: 0
