@@ -97,6 +97,7 @@ public class PlayerCombatNew : MonoBehaviour
             }
         }
     }
+    float skillCurrentTime = 0;
 
     [HideInInspector]
     public bool aiming;
@@ -214,7 +215,7 @@ public class PlayerCombatNew : MonoBehaviour
         //change hitbox
         //HideAttackHitBox();
         ChangeHitboxes(attackStg);
-        if (attackStg!=AttackPhaseType.ready && currentAttack.GetAttackPhase(attackStg).invulnerability) StartInvulnerabilty(currentAttack.GetAttackPhase(attackStg).duration);
+        if (attackStg!=AttackPhaseType.ready && currentAttack.GetAttackPhase(attackStg).invulnerability) StartInvulnerability(currentAttack.GetAttackPhase(attackStg).duration);
 
         switch (attackStg)
         {
@@ -572,20 +573,23 @@ public class PlayerCombatNew : MonoBehaviour
 
     public void EndAttack()
     {
-        attackTime = 0;
-        landedSinceAttackStarted = false;
-        ChangeAttackPhase(AttackPhaseType.ready);
-        if (autocomboStarted)
+        if (attackStg != AttackPhaseType.ready)
         {
-            lastAutocomboAttackFinished = true;
-            if (autocomboIndex + 1 >= autocombo.attacks.Length)
+            attackTime = 0;
+            landedSinceAttackStarted = false;
+            ChangeAttackPhase(AttackPhaseType.ready);
+            if (autocomboStarted)
             {
-                StopAutocombo();
+                lastAutocomboAttackFinished = true;
+                if (autocomboIndex + 1 >= autocombo.attacks.Length)
+                {
+                    StopAutocombo();
+                }
             }
+            StopParry();
+            StopHitParry();
+            //myAttacks[attackIndex].StartCD();
         }
-        StopParry();
-        StopHitParry();
-        //myAttacks[attackIndex].StartCD();
     }
     #endregion
 
@@ -614,6 +618,7 @@ public class PlayerCombatNew : MonoBehaviour
         if (parryStarted)
         {
             parryStarted = false;
+            EndAttack();
         }
     }
 
@@ -638,8 +643,9 @@ public class PlayerCombatNew : MonoBehaviour
     #endregion
 
     #region --- INVULNERABILTY ---
-    public void StartInvulnerabilty(float maxTime)
+    public void StartInvulnerability(float maxTime)
     {
+        Debug.LogWarning("START INVULNERABILITY");
         float missingInvulTime = 0;
         if(invulnerable) missingInvulTime = maxInvulTime - invulTime;
 
@@ -674,6 +680,7 @@ public class PlayerCombatNew : MonoBehaviour
         if (canDoCombat && !weaponSkillStarted && equipedWeaponSkills[_weaponSkillIndex].weaponSkillSt==WeaponSkillState.ready)
         {
             weaponSkillIndex = _weaponSkillIndex;
+            skillCurrentTime = 0;
             Debug.Log("Skill "+currentWeaponSkill.myWeaponSkillData.skillName+" started!");
             switch (currentWeaponSkill.myWeaponSkillData.weaponSkillType)
             {
@@ -687,7 +694,7 @@ public class PlayerCombatNew : MonoBehaviour
                     break;
             }
         }
-        else if(weaponSkillStarted && currentWeaponSkill.myWeaponSkillData.pressAgainToStopSkill)
+        else if(weaponSkillStarted && currentWeaponSkill.myWeaponSkillData.pressAgainToStopSkill && skillCurrentTime >= 0.4f)
         {
             if (!myPlayerMovement.disableAllDebugs) Debug.LogError("SKILL Y STOPPED!");
             StopWeaponSkill();
@@ -698,6 +705,10 @@ public class PlayerCombatNew : MonoBehaviour
     {
         for(int i = 0; i < equipedWeaponSkills.Length; i++)
         {
+            if (weaponSkillStarted)
+            {
+                skillCurrentTime += Time.deltaTime;
+            }
             if (equipedWeaponSkills[i].weaponSkillSt != WeaponSkillState.ready)
             {
                 equipedWeaponSkills[i].KonoUpdate();

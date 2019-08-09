@@ -63,6 +63,8 @@ public class WeaponSkill_AttackExtend : WeaponSkill
     {
         if (attackExtendStg == AttackExtendStage.extending || attackExtendStg == AttackExtendStage.retracting)
         {
+            Debug.Log("referencePoint.position = " + referencePoint.position);
+            Debug.Log("initialPos = " + initialPos);
             currentDist = (referencePoint.position - initialPos).magnitude;
             switch (attackExtendStg)
             {
@@ -100,8 +102,9 @@ public class WeaponSkill_AttackExtend : WeaponSkill
     {
         if (attackExtendStg == AttackExtendStage.retracting)
         {
-            attackExtendStg = AttackExtendStage.finished;
+            StopExtensionAttack();
             EndAttackActivePhase();
+            StopSkill();
         }
     }
 

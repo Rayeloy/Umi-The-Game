@@ -21,8 +21,8 @@ MonoBehaviour:
     attackPhaseType: 1
     phaseCompletionType: 1
     duration: 0
-    rotationSpeedPercentage: 0
-    movementSpeedPercentage: 0
+    rotationSpeedPercentage: 0.15
+    movementSpeedPercentage: 0.01
     invulnerability: 0
     attackHitboxes: []
   startupPhase:
@@ -30,7 +30,7 @@ MonoBehaviour:
     attackPhaseType: 2
     phaseCompletionType: 1
     duration: 0.15
-    rotationSpeedPercentage: 0.25
+    rotationSpeedPercentage: 0.15
     movementSpeedPercentage: 0.01
     invulnerability: 0
     attackHitboxes: []
@@ -39,7 +39,7 @@ MonoBehaviour:
     attackPhaseType: 3
     phaseCompletionType: 0
     duration: 0
-    rotationSpeedPercentage: 0.25
+    rotationSpeedPercentage: 0.15
     movementSpeedPercentage: 0.01
     invulnerability: 0
     attackHitboxes:
@@ -98,8 +98,8 @@ MonoBehaviour:
     attackPhaseType: 4
     phaseCompletionType: 1
     duration: 0
-    rotationSpeedPercentage: 0.25
-    movementSpeedPercentage: 0.01
+    rotationSpeedPercentage: 0
+    movementSpeedPercentage: 0
     invulnerability: 0
     attackHitboxes: []
   impulseDistance: 0

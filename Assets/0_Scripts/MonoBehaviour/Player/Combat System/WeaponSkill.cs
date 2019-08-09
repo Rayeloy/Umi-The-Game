@@ -92,6 +92,7 @@ public class WeaponSkill
         if (weaponSkillSt == WeaponSkillState.cd)
         {
             currentCDTime += Time.deltaTime;
+            //Debug.Log("SKILL "+myWeaponSkillData.skillName+" CD = " + currentCDTime);
             if (currentCDTime >= myWeaponSkillData.cd)
             {
                 StopCD();

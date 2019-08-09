@@ -106,9 +106,9 @@ public class PlayerMovement : MonoBehaviour
     public float boostRechargingSpeed = 0.3f;
     [HideInInspector]
     public float boostCurrentFuel = 1;
-    //public float boostCDMaxTime = 0.3f;
-    //float boostCDTime = 0;
-    //bool boostCDStarted = false;
+    public float boostCDMaxTime = 0.3f;
+    float boostCDTime = 0;
+    bool boostCDStarted = false;
     [Tooltip("0-> none; 1-> All the fuel")]
     [Range(0, 1)]
     public float boostFuelLostOnStart = 0.15f;
@@ -120,7 +120,7 @@ public class PlayerMovement : MonoBehaviour
     {
         get
         {
-            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !haveFlag && !inWater);
+            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !boostCDStarted && !haveFlag && !inWater);
         }
     }
     Vector3 boostDir;
@@ -676,6 +676,7 @@ public class PlayerMovement : MonoBehaviour
             if (knockbackDone && impulseDone)
             {
                 Debug.LogError("ERROR, they should not happen at the same time!");
+                StopImpulse();
             }
             else if (knockbackDone)
             {
@@ -777,7 +778,8 @@ public class PlayerMovement : MonoBehaviour
                     }
                     else
                     {
-                        newDir = horizontalVel.normalized + (currentInputDir * (finalMovingAcc * Time.deltaTime));
+                        Vector3 oldDir = horizontalVel.magnitude==0 && myPlayerCombatNew.attackStg != AttackPhaseType.ready ? rotateObj.forward.normalized: horizontalVel.normalized;
+                        newDir = oldDir + (currentInputDir * (finalMovingAcc * Time.deltaTime));
                         float auxAngle = Vector3.Angle(oldCurrentVel, newDir);
                         if (!disableAllDebugs) Debug.LogWarning("MOVING: finalMovingAcc2 = " + finalMovingAcc + ";  auxAngle = " + auxAngle + "; (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude = "
                              + (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude + "; (currentInputDir * finalMovingAcc * Time.deltaTime) = "
@@ -851,7 +853,6 @@ public class PlayerMovement : MonoBehaviour
                     moveSt = MoveState.NotMoving;
                     break;
             }
-
         }
         horVel = new Vector3(currentVel.x, 0, currentVel.z);
         //print("CurrentVel after processing= " + currentVel.ToString("F6") + "; CurrentSpeed 1.4 = " + currentSpeed + "; horVel.magnitude = " 
@@ -1287,7 +1288,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 ProcessBoostRecharge();
             }
-            //ProcessBoostCD();
+            ProcessBoostCD();
         }
     }
 
@@ -1297,7 +1298,7 @@ public class PlayerMovement : MonoBehaviour
         {
             //print("STOP BOOST");
             moveSt = MoveState.None;
-            //StartBoostCD();
+            StartBoostCD();
             myPlayerHUD.StopCamVFX(CameraVFXType.Dash);
         }
         //noInput = false;
@@ -1315,34 +1316,34 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    //void StartBoostCD()
-    //{
-    //    if (!boostCDStarted)
-    //    {
-    //        boostCDStarted = true;
-    //        boostCDTime = 0;
-    //    }
-    //}
+    void StartBoostCD()
+    {
+        if (!boostCDStarted)
+        {
+            boostCDStarted = true;
+            boostCDTime = 0;
+        }
+    }
 
-    //void ProcessBoostCD()
-    //{
-    //    if (boostCDStarted)
-    //    {
-    //        boostCDTime += Time.deltaTime;
-    //        if (boostCDTime >= boostCDMaxTime)
-    //        {
-    //            StopBoostCD();
-    //        }
-    //    }
-    //}
+    void ProcessBoostCD()
+    {
+        if (boostCDStarted)
+        {
+            boostCDTime += Time.deltaTime;
+            if (boostCDTime >= boostCDMaxTime)
+            {
+                StopBoostCD();
+            }
+        }
+    }
 
-    //void StopBoostCD()
-    //{
-    //    if (boostCDStarted)
-    //    {
-    //        boostCDStarted = false;
-    //    }
-    //}
+    void StopBoostCD()
+    {
+        if (boostCDStarted)
+        {
+            boostCDStarted = false;
+        }
+    }
 
     void WallBoost(GameObject wall)
     {
@@ -1496,7 +1497,7 @@ public class PlayerMovement : MonoBehaviour
 
     public bool StartRecieveHit(PlayerMovement attacker, Vector3 _knockback, EffectType efecto, float _maxTime = 0)
     {
-        if (sufferingEffect != EffectType.knockdown && !myPlayerCombatNew.invulnerable)
+        if (!myPlayerCombatNew.invulnerable)
         {
             if (!disableAllDebugs) print("Recieve hit with knockback= " + _knockback + "; effect = " + efecto + "; maxtime = " + _maxTime);
             myPlayerHook.FinishAutoGrapple();
@@ -1556,12 +1557,14 @@ public class PlayerMovement : MonoBehaviour
     public void StartRecieveParry(PlayerMovement enemy, AttackEffect effect = null)
     {
         Debug.Log("PARRY!!!");
+        float knockbackMag = effect == null ? 10 : effect.knockbackMagnitude;
+        float maxStunTime = effect != null && effect.parryStunTime > 0 ? effect.parryStunTime : 0.5f;
+
         Vector3 enemyPos = enemy.transform.position;
         //Reduce Recovery Time Player 1
         enemy.myPlayerCombatNew.HitParry();
 
         //StartRecieveParry Player2
-        float maxStunTime = effect != null && effect.parryStunTime>0?effect.parryStunTime:0.5f;
         //Knockback outwards
         Vector3 parryMyPos = enemyPos;
         Vector3 parryColPos = transform.position;
@@ -1570,7 +1573,7 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("resultKnockback 1 = " + resultKnockback);
         resultKnockback = Hitbox.CalculateYAngle(enemyPos, resultKnockback, 25f);
         Debug.Log("resultKnockback 2 = " + resultKnockback);
-        resultKnockback = resultKnockback * 10;
+        resultKnockback = resultKnockback * knockbackMag;
         Debug.Log("resultKnockback 3 = "+ resultKnockback + "; maxStunTime = "+ maxStunTime );
         StartRecieveHit(enemy, resultKnockback, EffectType.softStun, maxStunTime);
     }

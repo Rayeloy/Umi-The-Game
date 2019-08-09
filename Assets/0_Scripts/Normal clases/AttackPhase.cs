@@ -48,6 +48,22 @@ public class AttackPhase
         Debug.Log("AttackPhaseData OnEnable() and I'm " + this);
     }
 
+    public bool HasEffect(EffectType effect)
+    {
+        bool result = false;
+        for(int i=0; i<attackHitboxes.Length && !result; i++ )
+        {
+            for(int j=0; j<attackHitboxes[i].effects.Length && !result; j++)
+            {
+                if(attackHitboxes[i].effects[j].effectType == effect)
+                {
+                    result = true;
+                }
+            }
+        }
+        return result;
+    }
+
     public void ErrorCheck(string AttackName)
     {
         //phaseCompletionType = PhaseCompletionType.time;

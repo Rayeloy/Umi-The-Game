@@ -43,39 +43,39 @@ MonoBehaviour:
     movementSpeedPercentage: 0.2
     invulnerability: 0
     attackHitboxes:
-    - name: 
+    - name: QTip_SpinShield_Attack_hb
       parentType: 0
       hitboxPrefab: {fileID: 1916937922129876723, guid: b1842333aa96de541bd263d59e503fda,
         type: 3}
       effects:
-      - name: 
+      - name: parry
         effectType: 5
         knockbackType: 0
-        knockbackMagnitude: 0
+        knockbackMagnitude: 10
         knockbackDir: {x: 0, y: 0, z: 0}
         redirectMaxAngle: 0
         knockbackYAngle: 10
         stunTime: 0
-        parryStunTime: 0.5
+        parryStunTime: 1
         parryRecoveryTime: 1
-      - name: 
+      - name: knockback
         effectType: 1
         knockbackType: 1
-        knockbackMagnitude: 15
+        knockbackMagnitude: 18
         knockbackDir: {x: 0, y: 0, z: 0}
         redirectMaxAngle: 0
         knockbackYAngle: 10
         stunTime: 0
         parryStunTime: 0
         parryRecoveryTime: 1
-      - name: 
+      - name: softStun
         effectType: 2
         knockbackType: 0
         knockbackMagnitude: 0
         knockbackDir: {x: 0, y: 0, z: 0}
         redirectMaxAngle: 0
         knockbackYAngle: 10
-        stunTime: 0.5
+        stunTime: 0.6
         parryStunTime: 0
         parryRecoveryTime: 1
   recoveryPhase:

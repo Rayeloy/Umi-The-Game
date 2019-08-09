@@ -28,13 +28,14 @@ public class Hitbox : MonoBehaviour
 
     private void OnTriggerEnter(Collider col)
     {
+        Debug.Log("HITBOX COLLIDED WITH " + col.name);
         if (col.gameObject != myPlayerMov.gameObject)
         {
             if (myPlayerCombatNew.weaponSkillStarted && myPlayerCombatNew.currentWeaponSkill.myWeaponSkillData.weaponSkillType == WeaponSkillType.attack_extend)
             {
                 if ((myPlayerCombatNew.currentWeaponSkill as WeaponSkill_AttackExtend).attackExtendStg == AttackExtendStage.extending)
                 {
-                    if(col.tag == "Stage" && col.tag == "Player")
+                    if(col.tag == "Stage")//|| col.tag == "Player"
                     {
                         (myPlayerCombatNew.currentWeaponSkill as WeaponSkill_AttackExtend).StartRetracting();
                     }
@@ -72,7 +73,8 @@ public class Hitbox : MonoBehaviour
                             }
                             if (!encontrado)
                             {
-                                if (otherPlayer.myPlayerCombatNew.parryStarted && !targetsHitWait1Frame.Contains(otherPlayer.name))
+                                if (otherPlayer.myPlayerCombatNew.attackStg == AttackPhaseType.active && otherPlayer.myPlayerCombatNew.currentAttack.HasEffect(EffectType.parry) &&
+                                    !targetsHitWait1Frame.Contains(otherPlayer.name))
                                 {
                                         targetsHitWait1Frame.Add(otherPlayer.name);
                                 }
@@ -196,7 +198,7 @@ public class Hitbox : MonoBehaviour
                                     {
                                         targetsHitWait1Frame.Remove(otherPlayer.name);
                                     }
-                                    Debug.Log("Añadimos al jugador " + otherPlayer.name + " a la lista de jugadores ya pegados");
+                                    Debug.Log("Soy "+myPlayerMov.name+" y añado al jugador " + otherPlayer.name + " a la lista de jugadores ya pegados");
                                     targetsHit.Add(otherPlayer.name);
                                     otherPlayer.StartRecieveHit(myPlayerMov, resultKnockback, stunLikeEffect, maxStunTime);
                                     //print("I'm " + myPlayerMov.gameObject.name + " and I Hit against " + col.gameObject);
@@ -337,17 +339,19 @@ public class Hitbox : MonoBehaviour
                                                 break;
                                             case 1://TENEMOS MÁS PRIORIDAD
                                                 //targetsHit.Add(enemy.playerNumber);
+                                                Debug.LogWarning("Soy "+myPlayerMov.name+" y hago efecto parry con mi ataque "+myPlayerCombatNew.currentAttack.attackName+" al jugador " +enemy.name);
                                                 enemy.StartRecieveParry(myPlayerMov, parryEffect);
                                                 //targetsHit.RemoveAt(targetsHit.Count - 1);
                                                 break;
                                             case 0://TENEMOS IGUAL PRIORIDAD
-                                                //targetsHit.Add(enemy.playerNumber);
+                                                   //targetsHit.Add(enemy.playerNumber);
+                                                Debug.LogWarning("Soy " + myPlayerMov.name + " y hago efecto parry MUTUO con mi ataque " + myPlayerCombatNew.currentAttack.attackName + " al jugador " + enemy.name);
                                                 enemy.StartRecieveParry(myPlayerMov);
                                                 myPlayerMov.StartRecieveParry(enemy);
                                                 //targetsHit.RemoveAt(targetsHit.Count - 1);
                                                 break;
                                         }
-                                        Debug.Log("Añadimos al jugador " + enemy.name + " a la lista de jugadores ya pegados");
+                                        //Debug.Log("Añadimos al jugador " + enemy.name + " a la lista de jugadores ya pegados");
                                     }
                                     else
                                     {

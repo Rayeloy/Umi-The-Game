@@ -40,6 +40,7 @@ public class AttackData : ScriptableObject
         if (activePhase.attackPhaseType != AttackPhaseType.active) activePhase.attackPhaseType = AttackPhaseType.active;
         if (recoveryPhase.attackPhaseType != AttackPhaseType.recovery) recoveryPhase.attackPhaseType = AttackPhaseType.recovery;
     }
+
     private void OnEnable()
     {
         if (chargingPhase.attackPhaseType != AttackPhaseType.charging) chargingPhase.attackPhaseType = AttackPhaseType.charging;
@@ -72,6 +73,13 @@ public class AttackData : ScriptableObject
         //    recoveryPhase = CreateInstance(typeof(AttackPhase)) as AttackPhase;
         //    //recoveryPhase = new AttackPhase();
         //}
+    }
+
+    public bool HasEffect(EffectType effect)
+    {
+        bool result = false;
+        result = activePhase.HasEffect(effect);
+        return result;
     }
 
     public AttackPhase GetAttackPhase(AttackPhaseType attackStage)
