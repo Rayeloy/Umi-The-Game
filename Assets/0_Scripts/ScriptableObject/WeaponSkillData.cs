@@ -21,7 +21,7 @@ public class WeaponSkillData : ScriptableObject
     public bool pressAgainToStopSkill = false;
     public AttackData attack;
     public float cd;
-    public Image weaponSkillHUDImage;
+    public Sprite weaponSkillHUDImage;
     public int levelNeededToUnlock = 0;
 
     [Header(" -- QTipCannon -- ")]

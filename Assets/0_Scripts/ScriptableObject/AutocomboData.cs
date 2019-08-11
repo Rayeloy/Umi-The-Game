@@ -7,7 +7,7 @@ public class AutocomboData : ScriptableObject
 {
     public string autocomboName;
     public AttackData[] attacks;
-    public float maxTimeBetweenAttacks = 0.2f;
+    public float maxTimeBetweenAttacks = 0.3f;
 
     public void ErrorCheck()
     {

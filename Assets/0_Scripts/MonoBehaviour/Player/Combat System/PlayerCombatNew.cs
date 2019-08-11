@@ -9,7 +9,7 @@ public class PlayerCombatNew : MonoBehaviour
     [HideInInspector] public PlayerMovement myPlayerMovement;
     PlayerWeapons myPlayerWeap;
     PlayerHook myHook;
-    PlayerHUD myPlayerHUD;
+    [HideInInspector]public PlayerHUD myPlayerHUD;
     public Material[] hitboxMats;//0 -> charging; 1-> startup; 2 -> active; 3 -> recovery
     public Transform hitboxesParent;
     [HideInInspector] public Transform weaponEdge;
@@ -679,6 +679,7 @@ public class PlayerCombatNew : MonoBehaviour
     {
         if (canDoCombat && !weaponSkillStarted && equipedWeaponSkills[_weaponSkillIndex].weaponSkillSt==WeaponSkillState.ready)
         {
+            StopDoingCombat();
             weaponSkillIndex = _weaponSkillIndex;
             skillCurrentTime = 0;
             Debug.Log("Skill "+currentWeaponSkill.myWeaponSkillData.skillName+" started!");
@@ -694,10 +695,14 @@ public class PlayerCombatNew : MonoBehaviour
                     break;
             }
         }
-        else if(weaponSkillStarted && currentWeaponSkill.myWeaponSkillData.pressAgainToStopSkill && skillCurrentTime >= 0.4f)
+        else if(weaponSkillStarted && currentWeaponSkill.myWeaponSkillData.pressAgainToStopSkill && skillCurrentTime >= 0.3f)
         {
             if (!myPlayerMovement.disableAllDebugs) Debug.LogError("SKILL Y STOPPED!");
             StopWeaponSkill();
+        }
+        else//CANT DO SKILL
+        {
+            myPlayerHUD.StartSkillCantDoAnim(_weaponSkillIndex);
         }
     }
 
@@ -786,7 +791,10 @@ public class PlayerCombatNew : MonoBehaviour
                     equipedWeaponSkills[i] = new WeaponSkill_AttackExtend(this, currentWeapon.allWeaponSkills[i]);
                     break;
             }
+            equipedWeaponSkills[i].skillIndex = i;
         }
+
+        myPlayerHUD.SetupSkillsHUD(equipedWeaponSkills);
     }
 
     public void DropWeapon()
@@ -819,6 +827,8 @@ public class PlayerCombatNew : MonoBehaviour
             myPlayerWeap.AttachWeaponToBack();
             myPlayerHUD.StartAim();
             //ChangeAttackType(GameController.instance.attackHook);
+            myPlayerMovement.aimingAndTouchedGroundOnce = false;
+            if (myPlayerMovement.controller.collisions.below) myPlayerMovement.aimingAndTouchedGroundOnce = true;
         }
     }
 

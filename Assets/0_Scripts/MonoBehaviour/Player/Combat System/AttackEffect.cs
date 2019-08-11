@@ -18,9 +18,7 @@ public enum EffectType
     none=0,
     knockback=1,
     softStun=2,
-    stun=3,
-    knockdown=4,
-    parry=5
+    parry=3
 }
 #endregion
 [System.Serializable]
@@ -42,11 +40,8 @@ public class AttackEffect
     [Header("- Inwards/Outwards/Redirect -")]
     [Range(-90,90)]
     public float knockbackYAngle = 0;
-    [Header("[--- STUN & SOFTSTUN ---]")]
+    [Header("[--- SOFTSTUN ---]")]
     public float stunTime = 0;
-    //[Header("--- Knockdown ---")]
-    [HideInInspector]
-    public const float knockdownTime = 3;
     [Header("[--- PARRY ---]")]
     public float parryStunTime = 0;
 
@@ -73,12 +68,9 @@ public class AttackEffect
             case EffectType.softStun:
                 if(stunTime==0) Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ",the effect is of type softStun but the stunTime is set to 0!");
                 break;
-            case EffectType.stun:
-                if (stunTime == 0) Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ",the effect is of type stun but the stunTime is set to 0!");
-                break;
-            case EffectType.knockdown:
-                if (knockdownTime == 0) Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ",the effect is of type knockdown but the knockdownTime is set to 0!");
-                break;
+            //case EffectType.stun:
+            //    if (stunTime == 0) Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ",the effect is of type stun but the stunTime is set to 0!");
+            //    break;
             case EffectType.parry:
                 if (parryStunTime == 0) Debug.LogError("AttackEffect-> Error: In the attack " + AttackName + ", phase " + PhaseName + ", hitbox " + HitboxName + ", the effect is of type parry but the parryStunTime is set to 0!");
                 if (parryRecoveryTime == 1) Debug.LogError("AttackEffect-> Error: In the attack "+ AttackName + ", phase "+ PhaseName + ", hitbox "+ HitboxName + ", the effect is of type parry but the parryRecoveryTime is set to 1 which means we do the full recovery animation of the parry!");

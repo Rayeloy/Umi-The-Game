@@ -56,50 +56,154 @@
  * 
  * float derivativeValue = derivativeFunc(0, 10, 0.67f);
  */
-
+public enum Ease
+{
+    EaseInQuad = 0,
+    EaseOutQuad,
+    EaseInOutQuad,
+    EaseInCubic,
+    EaseOutCubic,
+    EaseInOutCubic,
+    EaseInQuart,
+    EaseOutQuart,
+    EaseInOutQuart,
+    EaseInQuint,
+    EaseOutQuint,
+    EaseInOutQuint,
+    EaseInSine,
+    EaseOutSine,
+    EaseInOutSine,
+    EaseInExpo,
+    EaseOutExpo,
+    EaseInOutExpo,
+    EaseInCirc,
+    EaseOutCirc,
+    EaseInOutCirc,
+    Linear,
+    Spring,
+    EaseInBounce,
+    EaseOutBounce,
+    EaseInOutBounce,
+    EaseInBack,
+    EaseOutBack,
+    EaseInOutBack,
+    EaseInElastic,
+    EaseOutElastic,
+    EaseInOutElastic,
+    None
+}
 public class EasingFunction
 {
-    public enum Ease
-    {
-        EaseInQuad = 0,
-        EaseOutQuad,
-        EaseInOutQuad,
-        EaseInCubic,
-        EaseOutCubic,
-        EaseInOutCubic,
-        EaseInQuart,
-        EaseOutQuart,
-        EaseInOutQuart,
-        EaseInQuint,
-        EaseOutQuint,
-        EaseInOutQuint,
-        EaseInSine,
-        EaseOutSine,
-        EaseInOutSine,
-        EaseInExpo,
-        EaseOutExpo,
-        EaseInOutExpo,
-        EaseInCirc,
-        EaseOutCirc,
-        EaseInOutCirc,
-        Linear,
-        Spring,
-        EaseInBounce,
-        EaseOutBounce,
-        EaseInOutBounce,
-        EaseInBack,
-        EaseOutBack,
-        EaseInOutBack,
-        EaseInElastic,
-        EaseOutElastic,
-        EaseInOutElastic,
-    }
 
     private const float NATURAL_LOG_OF_2 = 0.693147181f;
 
     //
     // Easing functions
     //
+
+    public static float SelectEasingFunction(Ease ease, float start, float end, float value)
+    {
+        switch (ease)
+        {
+            case Ease.EaseInBack:
+                return EaseInBack(start, end, value);
+                break;
+            case Ease.EaseInBounce:
+                return EaseInBounce(start, end, value);
+                break;
+            case Ease.EaseInCirc:
+                return EaseInCirc(start, end, value);
+                break;
+            case Ease.EaseInCubic:
+                return EaseInCubic(start, end, value);
+                break;
+            case Ease.EaseInElastic:
+                return EaseInElastic(start, end, value);
+                break;
+            case Ease.EaseInExpo:
+                return EaseInExpo(start, end, value);
+                break;
+            case Ease.EaseInOutBack:
+                return EaseInOutBack(start, end, value);
+                break;
+            case Ease.EaseInOutBounce:
+                return EaseInOutBounce(start, end, value);
+                break;
+            case Ease.EaseInOutCirc:
+                return EaseInOutCirc(start, end, value);
+                break;
+            case Ease.EaseInOutCubic:
+                return EaseInOutCubic(start, end, value);
+                break;
+            case Ease.EaseInOutElastic:
+                return EaseInOutElastic(start, end, value);
+                break;
+            case Ease.EaseInOutExpo:
+                return EaseInOutExpo(start, end, value);
+                break;
+            case Ease.EaseInOutQuad:
+                return EaseInOutQuad(start, end, value);
+                break;
+            case Ease.EaseInOutQuart:
+                return EaseInOutQuart(start, end, value);
+                break;
+            case Ease.EaseInOutQuint:
+                return EaseInOutQuint(start, end, value);
+                break;
+            case Ease.EaseInOutSine:
+                return EaseInOutSine(start, end, value);
+                break;
+            case Ease.EaseInQuad:
+                return EaseInQuad(start, end, value);
+                break;
+            case Ease.EaseInQuart:
+                return EaseInQuart(start, end, value);
+                break;
+            case Ease.EaseInQuint:
+                return EaseInQuint(start, end, value);
+                break;
+            case Ease.EaseInSine:
+                return EaseInSine(start, end, value);
+                break;
+            case Ease.EaseOutBack:
+                return EaseOutBack(start, end, value);
+                break;
+            case Ease.EaseOutBounce:
+                return EaseOutBounce(start, end, value);
+                break;
+            case Ease.EaseOutCirc:
+                return EaseOutCirc(start, end, value);
+                break;
+            case Ease.EaseOutCubic:
+                return EaseOutCubic(start, end, value);
+                break;
+            case Ease.EaseOutElastic:
+                return EaseOutElastic(start, end, value);
+                break;
+            case Ease.EaseOutExpo:
+                return EaseOutExpo(start, end, value);
+                break;
+            case Ease.EaseOutQuad:
+                return EaseOutQuad(start, end, value);
+                break;
+            case Ease.EaseOutQuart:
+                return EaseOutQuart(start, end, value);
+                break;
+            case Ease.EaseOutQuint:
+                return EaseOutQuint(start, end, value);
+                break;
+            case Ease.EaseOutSine:
+                return EaseOutSine(start, end, value);
+                break;
+            case Ease.Linear:
+                return Linear(start, end, value);
+                break;
+            case Ease.Spring:
+                return Spring(start, end, value);
+                break;
+        }
+        return -1;
+    }
 
     public static float Linear(float start, float end, float value)
     {

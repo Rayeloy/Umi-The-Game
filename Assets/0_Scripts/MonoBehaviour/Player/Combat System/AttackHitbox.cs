@@ -49,8 +49,7 @@ public class AttackHitbox
         {
             if (!auxEffects.Contains(effects[i].effectType))
             {
-                if((effects[i].effectType==EffectType.softStun || effects[i].effectType == EffectType.stun || effects[i].effectType == EffectType.knockdown) && 
-                    (auxEffects.Contains(EffectType.softStun) || auxEffects.Contains(EffectType.stun) || auxEffects.Contains(EffectType.knockdown)))
+                if((effects[i].effectType==EffectType.softStun) && (auxEffects.Contains(EffectType.softStun)))
                 {
                     Debug.LogError("AttackHitbox-> Error: there can only be 1 stun/softStun/knockDown effect at the same type!");
                     return;

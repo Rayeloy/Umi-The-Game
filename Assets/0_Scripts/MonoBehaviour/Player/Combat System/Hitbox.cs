@@ -172,24 +172,20 @@ public class Hitbox : MonoBehaviour
                                                     }
                                                     if (!myPlayerMov.disableAllDebugs) print("KNOCKBACK RESULT= " + resultKnockback);
                                                     break;
-                                                case EffectType.knockdown:
-                                                    stunLikeEffect = EffectType.knockdown;
-                                                    maxStunTime = AttackEffect.knockdownTime;
-                                                    break;
                                                 case EffectType.softStun:
-                                                    if (stunLikeEffect != EffectType.knockdown && stunLikeEffect != EffectType.stun)
-                                                    {
+                                                    //if (stunLikeEffect != EffectType.stun)
+                                                    //{
                                                         stunLikeEffect = EffectType.softStun;
                                                         maxStunTime = myAttackHitbox.effects[i].stunTime;
-                                                    }
+                                                    //}
                                                     break;
-                                                case EffectType.stun:
-                                                    if (stunLikeEffect != EffectType.knockdown)
-                                                    {
-                                                        stunLikeEffect = EffectType.stun;
-                                                        maxStunTime = myAttackHitbox.effects[i].stunTime;
-                                                    }
-                                                    break;
+                                                //case EffectType.stun:
+                                                //    if (stunLikeEffect != EffectType.knockdown)
+                                                //    {
+                                                //        stunLikeEffect = EffectType.stun;
+                                                //        maxStunTime = myAttackHitbox.effects[i].stunTime;
+                                                //    }
+                                                //    break;
                                             }
                                             #endregion
                                         }
@@ -278,24 +274,24 @@ public class Hitbox : MonoBehaviour
                                         }
                                         //print("KNOCKBACK DIR= " + result);
                                         break;
-                                    case EffectType.knockdown:
-                                        stunLikeEffect = EffectType.knockdown;
-                                        maxStunTime = AttackEffect.knockdownTime;
-                                        break;
+                                    //case EffectType.knockdown:
+                                    //    stunLikeEffect = EffectType.knockdown;
+                                    //    maxStunTime = AttackEffect.knockdownTime;
+                                    //    break;
                                     case EffectType.softStun:
-                                        if (stunLikeEffect != EffectType.knockdown && stunLikeEffect != EffectType.stun)
-                                        {
+                                        //if (stunLikeEffect != EffectType.knockdown && stunLikeEffect != EffectType.stun)
+                                        //{
                                             stunLikeEffect = EffectType.softStun;
                                             maxStunTime = myAttackHitbox.effects[i].stunTime;
-                                        }
+                                        //}
                                         break;
-                                    case EffectType.stun:
-                                        if (stunLikeEffect != EffectType.knockdown)
-                                        {
-                                            stunLikeEffect = EffectType.stun;
-                                            maxStunTime = myAttackHitbox.effects[i].stunTime;
-                                        }
-                                        break;
+                                    //case EffectType.stun:
+                                    //    if (stunLikeEffect != EffectType.knockdown)
+                                    //    {
+                                    //        stunLikeEffect = EffectType.stun;
+                                    //        maxStunTime = myAttackHitbox.effects[i].stunTime;
+                                    //    }
+                                    //    break;
                                     case EffectType.parry:
                                         break;
                                 }

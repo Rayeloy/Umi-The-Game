@@ -24,6 +24,7 @@ public class WeaponSkill
     #region ----[ PROPERTIES ]----
     // PRIVATE AND [HideInInspector] PUBLIC VARIABLES HERE
     public WeaponSkillState weaponSkillSt = WeaponSkillState.ready;
+    public int skillIndex;
     //AttackPhaseType attackStg = AttackPhaseType.ready;
     //float attackTime = 0;
 
@@ -31,7 +32,7 @@ public class WeaponSkill
     //bool currentAttackHasRedirect=false;
 
     //CD
-    float currentCDTime = 0;
+    [HideInInspector] public float currentCDTime = 0;
     #endregion
 
     #region ----[ CONSTRUCTOR ]----
@@ -84,6 +85,7 @@ public class WeaponSkill
             if (!myPlayerCombat.myPlayerMovement.disableAllDebugs) Debug.LogError("START SKILL CD");
             weaponSkillSt = WeaponSkillState.cd;
             currentCDTime = 0;
+            myPlayerCombat.myPlayerHUD.StartSkillCD(skillIndex);
         }
     }
 
@@ -106,6 +108,7 @@ public class WeaponSkill
         {
             if(!myPlayerCombat.myPlayerMovement.disableAllDebugs) Debug.Log("STOP SKILL CD");
             weaponSkillSt = WeaponSkillState.ready;
+            myPlayerCombat.myPlayerHUD.SetSkillReady(skillIndex);
         }
     }
     #endregion
@@ -131,6 +134,7 @@ public class WeaponSkill
                     myPlayerCombat.StartAttack(myWeaponSkillData.attack);
                     break;
             }
+            myPlayerCombat.myPlayerHUD.StartSkillActive(skillIndex);
         }
     }
 

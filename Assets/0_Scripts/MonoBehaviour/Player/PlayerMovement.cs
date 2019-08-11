@@ -298,7 +298,7 @@ public class PlayerMovement : MonoBehaviour
     {
         get
         {
-            return (sufferingEffect == EffectType.softStun || sufferingEffect == EffectType.stun || sufferingEffect == EffectType.knockdown);
+            return (sufferingEffect == EffectType.softStun);//|| sufferingEffect == EffectType.stun || sufferingEffect == EffectType.knockdown
         }
     }
 
@@ -312,7 +312,9 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector]
     public bool hooked = false;
     bool hooking = false;
-    bool hookingAndTouchedGroundOnce = false;
+    [HideInInspector] public bool aimingAndTouchedGroundOnce = false;
+    [HideInInspector] public bool hookingAndTouchedGroundOnce = false;
+
 
     //GRAPPLE
     bool grappling = false;
@@ -778,7 +780,7 @@ public class PlayerMovement : MonoBehaviour
                     }
                     else
                     {
-                        Vector3 oldDir = horizontalVel.magnitude==0 && myPlayerCombatNew.attackStg != AttackPhaseType.ready ? rotateObj.forward.normalized: horizontalVel.normalized;
+                        Vector3 oldDir = horizontalVel.magnitude == 0 && myPlayerCombatNew.attackStg != AttackPhaseType.ready ? rotateObj.forward.normalized : horizontalVel.normalized;
                         newDir = oldDir + (currentInputDir * (finalMovingAcc * Time.deltaTime));
                         float auxAngle = Vector3.Angle(oldCurrentVel, newDir);
                         if (!disableAllDebugs) Debug.LogWarning("MOVING: finalMovingAcc2 = " + finalMovingAcc + ";  auxAngle = " + auxAngle + "; (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude = "
@@ -930,8 +932,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (impulseStarted)
         {
-            if(!disableAllDebugs)Debug.LogWarning("STOP IMPULSE: impulseTime = "+ impulseTime + "; currentImpulse.impulseMaxTime = "+ currentImpulse.impulseMaxTime +
-                ";currentSpeed  = "+ currentSpeed + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
+            if (!disableAllDebugs) Debug.LogWarning("STOP IMPULSE: impulseTime = " + impulseTime + "; currentImpulse.impulseMaxTime = " + currentImpulse.impulseMaxTime +
+                  ";currentSpeed  = " + currentSpeed + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
             //moveSt = MoveState.NotMoving;
             impulseStarted = false;
             impulseDone = false;
@@ -1506,26 +1508,26 @@ public class PlayerMovement : MonoBehaviour
             StopBoost();
             myPlayerCombatNew.StopDoingCombat();
             StopImpulse();
-            if (sufferingEffect == EffectType.stun)
-            {
-                efecto = EffectType.knockdown;
-                _maxTime = AttackEffect.knockdownTime;
-            }
+            //if (sufferingEffect == EffectType.stun)
+            //{
+            //    efecto = EffectType.knockdown;
+            //    _maxTime = AttackEffect.knockdownTime;
+            //}
             sufferingEffect = efecto;
             switch (efecto)
             {
                 case EffectType.softStun:
                     noInput = true;
                     break;
-                case EffectType.stun:
-                    if (disableAllDebugs) Debug.LogError("STUN !!!!!!!!");
-                    noInput = true;
-                    break;
-                case EffectType.knockdown:
-                    if (disableAllDebugs) Debug.LogError("KNOCKDOWN !!!!!!!!");
-                    noInput = true;
-                    //myPlayerCombatNew.StartInvulnerabilty(_maxTime);
-                    break;
+                //case EffectType.stun:
+                //    if (disableAllDebugs) Debug.LogError("STUN !!!!!!!!");
+                //    noInput = true;
+                //    break;
+                //case EffectType.knockdown:
+                //    if (disableAllDebugs) Debug.LogError("KNOCKDOWN !!!!!!!!");
+                //    noInput = true;
+                //    //myPlayerCombatNew.StartInvulnerabilty(_maxTime);
+                //    break;
                 case EffectType.none:
                     break;
                 default:
@@ -1553,7 +1555,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else return false;
     }
-    
+
     public void StartRecieveParry(PlayerMovement enemy, AttackEffect effect = null)
     {
         Debug.Log("PARRY!!!");
@@ -1574,7 +1576,7 @@ public class PlayerMovement : MonoBehaviour
         resultKnockback = Hitbox.CalculateYAngle(enemyPos, resultKnockback, 25f);
         Debug.Log("resultKnockback 2 = " + resultKnockback);
         resultKnockback = resultKnockback * knockbackMag;
-        Debug.Log("resultKnockback 3 = "+ resultKnockback + "; maxStunTime = "+ maxStunTime );
+        Debug.Log("resultKnockback 3 = " + resultKnockback + "; maxStunTime = " + maxStunTime);
         StartRecieveHit(enemy, resultKnockback, EffectType.softStun, maxStunTime);
     }
 
@@ -1589,7 +1591,7 @@ public class PlayerMovement : MonoBehaviour
     void ProcessSufferingEffect()
     {
         RecieveKnockback();
-        if (sufferingEffect == EffectType.softStun || sufferingEffect == EffectType.stun || sufferingEffect == EffectType.knockdown)
+        if (sufferingEffect == EffectType.softStun)//|| sufferingEffect == EffectType.stun || sufferingEffect == EffectType.knockdown
         {
             effectTime += Time.deltaTime;
             if (effectTime >= effectMaxTime)
@@ -1609,16 +1611,16 @@ public class PlayerMovement : MonoBehaviour
                 sufferingEffect = EffectType.none;
                 effectTime = 0;
                 break;
-            case EffectType.stun:
-                noInput = false;
-                sufferingEffect = EffectType.none;
-                effectTime = 0;
-                break;
-            case EffectType.knockdown:
-                noInput = false;
-                sufferingEffect = EffectType.none;
-                effectTime = 0;
-                break;
+            //case EffectType.stun:
+            //    noInput = false;
+            //    sufferingEffect = EffectType.none;
+            //    effectTime = 0;
+            //    break;
+            //case EffectType.knockdown:
+            //    noInput = false;
+            //    sufferingEffect = EffectType.none;
+            //    effectTime = 0;
+            //    break;
             case EffectType.none:
                 break;
             default:
@@ -1691,7 +1693,6 @@ public class PlayerMovement : MonoBehaviour
             {
                 StopBoost();
             }
-            //To Do:
             //Stop attacking
             myPlayerCombatNew.StopDoingCombat();
             StopImpulse();
@@ -1727,8 +1728,9 @@ public class PlayerMovement : MonoBehaviour
         if (!hooking)
         {
             hooking = true;
-            if (controller.collisions.below) hookingAndTouchedGroundOnce = true;
             myPlayerCombatNew.StopDoingCombat();
+            hookingAndTouchedGroundOnce = false;
+            if (controller.collisions.below) hookingAndTouchedGroundOnce = true;
         }
     }
 
@@ -1740,12 +1742,9 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (controller.collisions.below) hookingAndTouchedGroundOnce = true;
             }
-            else
+            else if (currentMaxMoveSpeed > maxHookingSpeed)
             {
-                if (currentMaxMoveSpeed > maxHookingSpeed)
-                {
-                    currentMaxMoveSpeed = maxHookingSpeed;
-                }
+                currentMaxMoveSpeed = maxHookingSpeed;
             }
         }
     }
@@ -1760,7 +1759,14 @@ public class PlayerMovement : MonoBehaviour
 
     void ProcessAiming()
     {
-        if (myPlayerCombatNew.aiming && currentMaxMoveSpeed > maxAimingSpeed)
+        if (!aimingAndTouchedGroundOnce)
+        {
+            if (controller.collisions.below)
+            {
+                aimingAndTouchedGroundOnce = true;
+            }
+        }
+        else if (myPlayerCombatNew.aiming && currentMaxMoveSpeed > maxAimingSpeed)
         {
             currentMaxMoveSpeed = maxAimingSpeed;
         }

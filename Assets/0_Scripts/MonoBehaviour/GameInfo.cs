@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using InControl;
+using UnityEngine.UI;
 
 //Esta clase es para guardar datos del juego entre escenas
 public enum UIAnimType
 {
     none,
-    shake
+    shake,
+    color_alpha,
 }
 public class GameInfo : MonoBehaviour
 {
@@ -64,28 +66,28 @@ public class GameInfo : MonoBehaviour
             else if (t == Team.B)
                 nRojo++;
         }
-        if(nAzul == nRojo) //Mismo num de jugadores rojos que azules, random
+        if (nAzul == nRojo) //Mismo num de jugadores rojos que azules, random
         {
             if (Random.value < 0.5f)
                 return Team.A;
             else
                 return Team.B;
         }
-       else if (nAzul > nRojo)  //mas numero de jugadores azules
-           return Team.B;
-       else                     //mas numero de jugadores rojos
-           return Team.A;
-//       else
-//       {
-//           if (Random.value < 0.5f){
-//               Debug.Log("Random Azul");
-//               return Team.blue;
-//           }
-//           else{
-//               Debug.Log("Random Rojo");
-//               return Team.red;
-//           }
-//       }
+        else if (nAzul > nRojo)  //mas numero de jugadores azules
+            return Team.B;
+        else                     //mas numero de jugadores rojos
+            return Team.A;
+        //       else
+        //       {
+        //           if (Random.value < 0.5f){
+        //               Debug.Log("Random Azul");
+        //               return Team.blue;
+        //           }
+        //           else{
+        //               Debug.Log("Random Rojo");
+        //               return Team.red;
+        //           }
+        //       }
     }
 
     #region Controls
@@ -117,7 +119,7 @@ public class GameInfo : MonoBehaviour
     {
         if (inputDevice == null)
         {
-            if(myControls.controlsType != InputDeviceClass.Keyboard)
+            if (myControls.controlsType != InputDeviceClass.Keyboard)
             {
                 myControls = PlayerActions.CreateWithKeyboardBindings();
             }
@@ -135,9 +137,9 @@ public class GameInfo : MonoBehaviour
 
     public void StartAnimation(UIAnimation uIAnimation, Camera canvasCamera)
     {
-        for(int i = 0; i<uIAnimations.Count; i++)
+        for (int i = 0; i < uIAnimations.Count; i++)
         {
-            if(uIAnimations[i].rect == uIAnimation.rect)
+            if (uIAnimations[i].rect == uIAnimation.rect)
             {
                 Debug.LogError("UIAnimation Error: you are trying to animate the same RectTransform at the same time with " +
                     "more than 1 animation. Are you sure this is correct?");
@@ -154,15 +156,26 @@ public class GameInfo : MonoBehaviour
         {
             uIAnimation.RestartAnimation();
         }
-
     }
 
     void ProcessUIAnimations()
     {
-        for(int i = 0; i< uIAnimations.Count; i++)
+        for (int i = 0; i < uIAnimations.Count; i++)
         {
             if (!uIAnimations[i].ProcessAnimation())
             {
+                uIAnimations.RemoveAt(i);
+            }
+        }
+    }
+
+    public void StopUIAnimation(UIAnimation uIAnimation)
+    {
+        for (int i = 0; i < uIAnimations.Count; i++)
+        {
+            if (uIAnimations[i] == uIAnimation)
+            {
+                uIAnimations[i].StopAnimation();
                 uIAnimations.RemoveAt(i);
             }
         }
@@ -175,18 +188,29 @@ public class UIAnimation
 {
     public UIAnimType type = UIAnimType.none;
     public RectTransform rect;
-    public float xAmplitude = 7f;
-    public float frequency = 0.06f;
     public float duration = 0.5f;
-    [Range(0,1)]
+    public bool endless = false;
+    public bool cycleAnimDir = true;
+    public float frequency = 0.06f;
+    [Range(0, 1)]
     public float cycleStartPoint = 0.5f;
-
-    Vector3 originalLocalPos;
     int animDir;//1 going right; -1 going left
-    float currentDuration, currentCycleTime, totalSpace;
+    public Ease easeFunction = Ease.None;
 
-    public UIAnimation(UIAnimType _type, ref RectTransform _rect, float _xAmplitude = 7f, float _frequency = 0.06f, 
-        float _duration = 0.5f, float _cycleStartPoint=0.5f)
+    [Header("--- SHAKE ---")]
+    public float xAmplitude = 7f;
+    float currentDuration, currentCycleTime, totalSpace;
+    Vector3 originalLocalPos;
+
+    [Header("--- COLOR_ALPHA ---")]
+    [Range(0, 1)]
+    public float alphaMin = 0;
+    [Range(0, 1)]
+    public float alphaMax = 1;
+    Image image;
+
+    public UIAnimation(UIAnimType _type, ref RectTransform _rect, float _xAmplitude = 7f, float _frequency = 0.06f,
+        float _duration = 0.5f, float _cycleStartPoint = 0.5f)
     {
         type = _type;
         rect = _rect;
@@ -200,11 +224,20 @@ public class UIAnimation
 
     public void StartAnimation()
     {
-        animDir = 1;
-        currentCycleTime = cycleStartPoint * frequency;
         currentDuration = 0;
-        totalSpace = xAmplitude * 2;
-        originalLocalPos = rect.localPosition;
+        currentCycleTime = cycleStartPoint * frequency;
+        switch (type)
+        {
+            case UIAnimType.shake:
+                animDir = 1;
+                totalSpace = xAmplitude * 2;
+                originalLocalPos = rect.localPosition;
+                break;
+            case UIAnimType.color_alpha:
+                animDir = 1;
+                image = rect.GetComponent<Image>();
+                break;
+        }
     }
 
     public void RestartAnimation()
@@ -212,10 +245,19 @@ public class UIAnimation
         animDir = 1;
         currentCycleTime = cycleStartPoint * frequency;
         currentDuration = 0;
+        switch (type)
+        {
+            case UIAnimType.shake:
+                break;
+            case UIAnimType.color_alpha:
+                break;
+        }
     }
 
     public bool ProcessAnimation()
     {
+        //if(currentDuration< duration)
+        //{
         float progress = currentCycleTime / frequency;
         switch (type)
         {
@@ -227,21 +269,57 @@ public class UIAnimation
                 finalPos.x = originX + xIncrement;
                 rect.localPosition = finalPos;
                 break;
+            case UIAnimType.color_alpha:
+                progress = animDir == 1 ? progress : 1 - progress;
+                Color newColor = image.color;
+                float value = EasingFunction.SelectEasingFunction(easeFunction, alphaMin, alphaMax, progress);
+                //float aIncrement = value * animDir;
+                //float alphaStartPoint = animDir == 1?alphaMin:alphaMax;
+                newColor.a = value;
+                image.color = newColor;
+                Debug.Log("Progress = " + progress + "; value = " + value);
+                break;
         }
 
+        //CHANGE ANIM DIR
         currentCycleTime += Time.deltaTime;
-        if (currentCycleTime >= frequency)
+        if (cycleAnimDir)
         {
-            animDir = animDir == 1 ? -1 : 1;
-            currentCycleTime = 0;
+            if (currentCycleTime >= frequency)
+            {
+                animDir = animDir == 1 ? -1 : 1;
+                currentCycleTime = 0;
+            }
         }
 
+        //END
         currentDuration += Time.deltaTime;
-        if(currentDuration>= duration)
+        if (!endless && currentDuration >= duration)
         {
-            rect.localPosition = originalLocalPos;
+            StopAnimation();
             return false;
         }
         return true;
+        //}
+        //return false;
+    }
+
+    public void StopAnimation()
+    {
+        if (currentDuration >= duration)
+        {
+            currentDuration = duration;
+        }
+        switch (type)
+        {
+            case UIAnimType.shake:
+                rect.localPosition = originalLocalPos;
+                break;
+            case UIAnimType.color_alpha:
+                Color newColor = image.color;
+                newColor.a = 0;
+                image.color = newColor;
+                break;
+        }
     }
 }

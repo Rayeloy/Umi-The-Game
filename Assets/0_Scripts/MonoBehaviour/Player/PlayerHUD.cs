@@ -24,6 +24,8 @@ public class PlayerHUD : MonoBehaviour
     [HideInInspector]
     public PlayerMovement myPlayerMov;
     [HideInInspector]
+    public PlayerCombatNew myPlayerCombat;
+    [HideInInspector]
     public Camera myCamera;
     [HideInInspector]
     public Camera myUICamera;
@@ -99,6 +101,24 @@ public class PlayerHUD : MonoBehaviour
     bool dashHUDCantDoAnimStarted = false;
     public UIAnimation dashHUDCantDoAnimation;
     float dashHUDCantDoAnimTime = 0;
+
+    //SKILLS HUD
+    [Header("SKILLS HUD")]
+    public Image[] skillHUDIcons;
+    public Image[] skillHUDProgressBars;
+    public Image[] skillHUDBackgrounds;
+    public UIAnimation[] skillHUDCantDoAnimations;
+    bool[] skillHUDCantDoAnimStarted;
+    float[] skillHUDCantDoAnimTime;
+    [Tooltip("0 -> COLOR WHEN READY; 1 -> COLOR WHEN CD; 2 -> COLOR WHEN ACTIVE; 3 -> COLOR WHEN CANT DO ANIM;")]
+    public Color[] skillHUDBackgroundColors, skillHUDIconColors;//0 -> COLOR WHEN READY; 1 -> COLOR WHEN CD; 2 -> COLOR WHEN ACTIVE; 3 -> COLOR WHEN CANT DO ANIM;
+    [Header(" - Activation Glow -")]
+    public UIAnimation[] skillHUDActivationGlow;
+    [Header(" - Active Glow -")]
+    public UIAnimation[] skillHUDActiveGlow;
+    public Animator[] orangeCircleAnimation;
+
+
     #endregion
 
     #region ----[ PROPERTIES ]----
@@ -152,13 +172,15 @@ public class PlayerHUD : MonoBehaviour
         }
         UpdateAllHookPointHUDs();
         UpdateDashHUDFuel();
+        ProcessSkillsCD();
         ProcessDashHUDCantDoAnimation();
+        ProcessSkillCantDoAnim();
     }
     #endregion
 
     #endregion
 
-    #region ----[ FUNCTIONS ]----
+    #region ----[ CLASS FUNCTIONS ]----
 
     public void AdaptCanvasHeightScale()
     {
@@ -520,11 +542,14 @@ public class PlayerHUD : MonoBehaviour
 
     public void StartDashHUDCantDoAnimation()
     {
-        if (!myPlayerMov.disableAllDebugs) if (!myPlayerMov.disableAllDebugs) if (!myPlayerMov.disableAllDebugs) print("Start DashHUD Cant Use Animation");
-        dashHUDCantDoAnimStarted = true;
-        dashHUDCantDoAnimTime = 0;
-        dashHUDEdges.color = dashHUDEdgesColor[1];
-        GameInfo.instance.StartAnimation(dashHUDCantDoAnimation, myUICamera);
+        if (!dashHUDCantDoAnimStarted)
+        {
+            if (!myPlayerMov.disableAllDebugs) print("Start DashHUD Cant Use Animation");
+            dashHUDCantDoAnimStarted = true;
+            dashHUDCantDoAnimTime = 0;
+            dashHUDEdges.color = dashHUDEdgesColor[1];
+            GameInfo.instance.StartAnimation(dashHUDCantDoAnimation, myUICamera);
+        }
     }
 
     void ProcessDashHUDCantDoAnimation()
@@ -591,6 +616,129 @@ public class PlayerHUD : MonoBehaviour
         //print("SetBoostUI: fillAmout= " + f);
         Boost.fillAmount = Mathf.Clamp01(f);
     }
+    #endregion
+
+    #region --- SKILLS ---
+    public void SetupSkillsHUD(WeaponSkill[] equippedSkills)
+    {
+        skillHUDCantDoAnimTime = new float[equippedSkills.Length];
+        skillHUDCantDoAnimStarted = new bool[equippedSkills.Length];
+        for (int i=0; i < equippedSkills.Length; i++)
+        {
+            skillHUDIcons[i].sprite = equippedSkills[i].myWeaponSkillData.weaponSkillHUDImage;
+            skillHUDIcons[i].color = Color.white;
+            skillHUDProgressBars[i].fillAmount = 1;
+            skillHUDCantDoAnimTime[i]=0;
+            skillHUDCantDoAnimStarted[i] = false;
+            SetSkillHUDColors(i);
+            //orangeCircleAnimation[i].gameObject.SetActive(false);
+        }
+    }
+
+    void ProcessSkillsCD()
+    {
+        for(int i=0; i < myPlayerCombat.equipedWeaponSkills.Length; i++)
+        {
+            WeaponSkill skill = myPlayerCombat.equipedWeaponSkills[i];
+            switch (skill.weaponSkillSt)
+            {
+                case WeaponSkillState.cd:
+                    float progress = skill.currentCDTime / skill.myWeaponSkillData.cd;
+                    //Set Progress bar
+                    skillHUDProgressBars[i].fillAmount = progress;
+                    break;
+                case WeaponSkillState.active:
+                    //if (orangeCircleAnimation[i].)
+                    //{
+
+                    //}
+                    break;
+                //case WeaponSkillState.ready:
+                //    break;
+            }
+        }
+    }
+
+    void SetSkillHUDColors(int index)
+    {
+        switch (myPlayerCombat.equipedWeaponSkills[index].weaponSkillSt)
+        {
+            case WeaponSkillState.ready:
+                skillHUDIcons[index].color = skillHUDIconColors[0];
+                skillHUDBackgrounds[index].color = skillHUDBackgroundColors[0];         
+                break;
+            case WeaponSkillState.cd:
+                skillHUDIcons[index].color = skillHUDIconColors[1];
+                skillHUDBackgrounds[index].color = skillHUDBackgroundColors[1];
+                break;
+            case WeaponSkillState.active:
+                skillHUDIcons[index].color = skillHUDIconColors[2];
+                skillHUDBackgrounds[index].color = skillHUDBackgroundColors[2];
+                break;
+        }
+    }
+
+    public void StartSkillActive(int index)
+    {
+        skillHUDProgressBars[index].fillAmount = 1;
+        SetSkillHUDColors(index);
+        GameInfo.instance.StartAnimation(skillHUDActiveGlow[index], myUICamera);
+        //orangeCircleAnimation[index].gameObject.SetActive(true);
+        orangeCircleAnimation[index].SetTrigger("startAnim");
+    }
+
+    public void StartSkillCD(int index)
+    {
+        GameInfo.instance.StopUIAnimation(skillHUDActiveGlow[index]);
+        skillHUDProgressBars[index].fillAmount = 0;
+        SetSkillHUDColors(index);
+        //orangeCircleAnimation[index].gameObject.SetActive(false);
+    }
+
+    public void SetSkillReady(int index)
+    {
+        skillHUDProgressBars[index].fillAmount = 1;
+        SetSkillHUDColors(index);
+        GameInfo.instance.StartAnimation(skillHUDActivationGlow[index], myUICamera);
+    }
+
+    public void StartSkillCantDoAnim(int index)
+    {
+        Debug.Log("INDEX = " + index + "; skillHUDCantDoAnimStarted[].Lenght = "+ skillHUDCantDoAnimStarted.Length);
+        if (!skillHUDCantDoAnimStarted[index])
+        {
+            skillHUDCantDoAnimStarted[index] = true;
+            skillHUDCantDoAnimTime[index] = 0;
+            skillHUDIcons[index].color = skillHUDIconColors[3];
+            skillHUDBackgrounds[index].color = skillHUDBackgroundColors[3];
+            GameInfo.instance.StartAnimation(skillHUDCantDoAnimations[index], myUICamera);
+        }
+    }
+
+    void ProcessSkillCantDoAnim()
+    {
+        for(int i=0; i< skillHUDCantDoAnimations.Length; i++)
+        {
+            if (skillHUDCantDoAnimStarted[i])
+            {
+                skillHUDCantDoAnimTime[i] += Time.deltaTime;
+                if (skillHUDCantDoAnimTime[i] >= skillHUDCantDoAnimations[i].duration)
+                {
+                    StopSkillCantDoAnim(i);
+                }
+            }
+        }
+    }
+
+    void StopSkillCantDoAnim(int index)
+    {
+        if (skillHUDCantDoAnimStarted[index])
+        {
+            skillHUDCantDoAnimStarted[index] = false;
+            SetSkillHUDColors(index);
+        }
+    }
+
     #endregion
 
     #endregion
@@ -681,6 +829,21 @@ public class HookPointHUDInfo
         }
     }
 }
+//public enum HUDSkillState
+//{
+//    cd,
+//    ready
+//}
+//public class HUDSkill
+//{
+//    public HUDSkillState hudSkillSt = HUDSkillState.ready;
+//    public float currentCD = 0;
+//    public void StartCD()
+//    {
+//        if(hudSkillSt == HUDSkillState.ready)
+//        currentCD = 0;
+//    }
+//}
 #endregion
 
 
