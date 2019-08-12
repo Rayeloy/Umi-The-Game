@@ -83,14 +83,14 @@ MonoBehaviour:
         stunTime: 0
         parryStunTime: 0
         parryRecoveryTime: 0
-      - name: knockdown
-        effectType: 4
+      - name: softStun
+        effectType: 2
         knockbackType: 0
         knockbackMagnitude: 0
-        knockbackDir: {x: 0, y: 0, z: 0}
+        knockbackDir: {x: 0, y: 0.2, z: 1}
         redirectMaxAngle: 0
         knockbackYAngle: 0
-        stunTime: 0
+        stunTime: 1.5
         parryStunTime: 0
         parryRecoveryTime: 0
   recoveryPhase:

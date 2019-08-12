@@ -64,13 +64,19 @@ public class PlayerHUD : MonoBehaviour
 
     //Flag Arrow
     [Header("Flag Arrow")]
-    [SerializeField]
-    Transform Arrow;
-    [SerializeField]
-    Transform Wale;
-    [SerializeField]
-    [Tooltip("Offset de la pantalla al que se bloquea la flecha de la bola")]
-    float offsetPantalla;
+    public Transform flagWhale;
+    public Transform flagArrow;
+    public Transform flagAro;
+    public Color[] flagArrowColors;//0 -> not picked; 1 -> respawning
+    Transform flagArrowFollowTarget;
+    Transform flagSpawn;
+    //[Tooltip("Offset de la pantalla al que se bloquea la flecha de la bola")]
+    //public float offsetPantalla;
+    bool arrowToFlagActivated = false;
+    public UIAnimation flagArrowRespawnGlowAnim;
+    public UIAnimation flagArrowPickFlagGlowAnim;
+    bool flagArrowPickupStarted = false;
+    bool flagArrowRespawnRestarted = false;
 
     //Grapple
     [Header("AutoGrapple")]
@@ -143,12 +149,8 @@ public class PlayerHUD : MonoBehaviour
             flagForSlider = (gC as GameController_FlagMode).flags[0];
         }
         if (gC.gameMode == GameMode.Tutorial)
-        {
-            Arrow.gameObject.SetActive(false);
-            Wale.gameObject.SetActive(false);
+        {       
             contador.gameObject.SetActive(false);
-
-
         }
         Interaction_Message.SetActive(false);
         crosshair.enabled = false;
@@ -160,6 +162,7 @@ public class PlayerHUD : MonoBehaviour
         pressButtonToGrappleMessage.SetActive(false);
         SetUpCameraCenter();
         SetupDashHUD();
+        SetupArrowToFlag();
     }
     #endregion
 
@@ -169,6 +172,8 @@ public class PlayerHUD : MonoBehaviour
         if (gC.gameMode == GameMode.CaptureTheFlag)// && !PhotonNetwork.IsConnected)
         {
             UpdateFlagSlider();
+            // Flecha a Bola
+            ArrowToFlagUpdate();
         }
         UpdateAllHookPointHUDs();
         UpdateDashHUDFuel();
@@ -197,6 +202,9 @@ public class PlayerHUD : MonoBehaviour
             blueTeamScoreText.rectTransform.localScale = new Vector3(blueTeamScoreText.rectTransform.localScale.x * invScaleValue, blueTeamScoreText.rectTransform.localScale.y, 1);
             timeText.rectTransform.localScale = new Vector3(timeText.rectTransform.localScale.x, timeText.rectTransform.localScale.y * scaleValue, 1);
             dashHUDParent.localScale = new Vector3(dashHUDParent.localScale.x * scaleValue, dashHUDParent.localScale.y, 1);
+            flagWhale.GetComponent<RectTransform>().localScale = new Vector3(flagWhale.GetComponent<RectTransform>().localScale.x * scaleValue, flagWhale.GetComponent<RectTransform>().localScale.y, 1);
+            flagArrow.GetComponent<RectTransform>().localScale = new Vector3(flagArrow.GetComponent<RectTransform>().localScale.x * scaleValue, flagArrow.GetComponent<RectTransform>().localScale.y, 1);
+            //flagAro.GetComponent<RectTransform>().localScale = new Vector3(flagAro.GetComponent<RectTransform>().localScale.x * scaleValue, flagAro.GetComponent<RectTransform>().localScale.y, 1);
             //CameraVFXParent.localScale = new Vector3(CameraVFXParent.localScale.x * scaleValue, CameraVFXParent.localScale.y, 1);
         }
     }
@@ -246,11 +254,10 @@ public class PlayerHUD : MonoBehaviour
         flagSlider.localPosition = (flagSliderStart.localPosition - flagSliderEnd.localPosition) / 2;
 
         //Flecha bola
-        Arrow.gameObject.SetActive(false);
-        Wale.gameObject.SetActive(false);
+        flagArrow.gameObject.SetActive(false);
+        flagWhale.gameObject.SetActive(false);
     }
 
-    Vector3 ArrowPointing;
     void UpdateFlagSlider()
     {
         float progress = 0.5f;
@@ -271,38 +278,156 @@ public class PlayerHUD : MonoBehaviour
         Vector3 newPos = flagSliderStart.localPosition;
         newPos.x += currentX;
         flagSlider.localPosition = newPos;
-
-        // Flecha a Bola
-        ArrowToFlag();
     }
 
-    void ArrowToFlag()
+    #endregion
+
+    #region --- FLAG ARROW ---
+    void SetupArrowToFlag()
     {
+        flagSpawn = (gC as GameController_FlagMode).flagsParent;
+        flagArrowFollowTarget = flag;
+        DeactivateArrowToFlag();
+    }
 
-        Vector3 dir = myCamera.WorldToScreenPoint(flag.position);
-
-        if (dir.x > offsetPantalla && dir.x < Screen.width - offsetPantalla && dir.y > offsetPantalla && dir.y < Screen.height - offsetPantalla)
+    void ActivateArrowToFlag()
+    {
+        if (!arrowToFlagActivated)
         {
-            Arrow.gameObject.SetActive(false);
-            Wale.gameObject.SetActive(false);
+            Debug.LogError("Activate FLAG ARROW");
+            arrowToFlagActivated = true;
+            flagArrow.gameObject.SetActive(true);
+            flagWhale.gameObject.SetActive(true);
+            if(flagForSlider.currentOwner!=null && !flagAro.gameObject.activeInHierarchy)flagAro.gameObject.SetActive(true);
+            else if(flagForSlider.currentOwner == null && flagAro.gameObject.activeInHierarchy) flagAro.gameObject.SetActive(false);
+        }
+    }
+
+    void DeactivateArrowToFlag()
+    {
+        if (arrowToFlagActivated)
+        {
+            Debug.LogError("Deactivate FLAG ARROW");
+            arrowToFlagActivated = false;
+            flagArrow.gameObject.SetActive(false);
+            flagWhale.gameObject.SetActive(false);
+            flagAro.gameObject.SetActive(false);
+        }
+    }
+
+    void ProcessArrowToFlag()
+    {
+        if (arrowToFlagActivated)
+        {
+            ArrowToFlagStartPickup();
+            ArrowToFlagStopPickup();
+            ArrowToFlagStartRespawn();
+            ArrowToFlagStopRespawn();
+            //float pixelW = myCamera.pixelWidth;
+            //float pixelH = myCamera.pixelHeight;
+            //Vector3 dir = myCamera.WorldToScreenPoint(flag.position);
+
+            //float offsetX = -((pixelW / 2) + (myCamera.rect.x * 2 * pixelW));
+            //float offsetY = -((pixelH / 2) + (myCamera.rect.y * 2 * pixelH));
+            //RectTransform arrowRect = Arrow.GetComponent<RectTransform>();
+            //arrowRect.localPosition = new Vector3(dir.x + offsetX, dir.y + offsetY, 0);
+
+            //ArrowPointing.z = Mathf.Atan2((arrowRect.localPosition.y - dir.y), (arrowRect.localPosition.x - dir.x)) * Mathf.Rad2Deg - 90;
+
+            //arrowRect.localRotation = Quaternion.Euler(ArrowPointing);
+            ////Arrow.position = new Vector3(Mathf.Clamp(dir.x, offsetPantalla, Screen.width - offsetPantalla), Mathf.Clamp(dir.y, offsetPantalla, Screen.height - offsetPantalla), 0);
+            //RectTransform waleRect = Wale.GetComponent<RectTransform>();
+            //waleRect.localPosition = arrowRect.localPosition;
+
+            Vector3 flagViewportPos, flagArrowPos;
+            flagArrowPos = flagViewportPos = myCamera.WorldToViewportPoint(flagArrowFollowTarget.position);
+
+            flagArrowPos.x -= 0.5f;  // Translate to use center of viewport
+            flagArrowPos.y -= 0.5f;
+            flagArrowPos.z = 0;      // I think I can do this rather than do a 
+                                     //   a full projection onto the plane
+
+            float fAngle = Mathf.Atan2(flagArrowPos.x, flagArrowPos.y);
+
+            float yProportion = myCamera.rect.height < 1 ? 0.4f : 0.41f;
+            float xProportion = myCamera.rect.width < 1 ? 0.445f : 0.45f;
+            flagArrowPos.x = xProportion * Mathf.Sin(fAngle) + 0.5f;  // Place on ellipse touching 
+            flagArrowPos.y = yProportion * Mathf.Cos(fAngle) + 0.5f;  //   side of viewport
+            if (flagViewportPos.z < myCamera.nearClipPlane)
+            {
+                flagArrowPos.x = 1 - flagArrowPos.x;
+                flagArrowPos.y = 1 - flagArrowPos.y;
+            }
+            Debug.LogWarning(" flagArrowPos = " + flagArrowPos.ToString("F4"));
+            flagArrowPos.z = myCamera.nearClipPlane + 0.001f;  // Looking from neg to pos Z;
+            float finalAngle = 180 + (-fAngle * Mathf.Rad2Deg) + (flagViewportPos.z < myCamera.nearClipPlane ? 0 : 180);
+            flagArrow.localEulerAngles = new Vector3(0.0f, 0.0f, finalAngle);
+            flagWhale.position = myCamera.ViewportToWorldPoint(flagArrowPos);
+            flagArrow.position = flagWhale.position;
+        }
+    }
+
+    void ArrowToFlagUpdate()
+    {
+        Vector3 flagViewportPos = myCamera.WorldToViewportPoint(flagArrowFollowTarget.position);
+        if (flagViewportPos.z > myCamera.nearClipPlane && (flagViewportPos.x >= 0.0f && flagViewportPos.x <= 1.0f && flagViewportPos.y >= 0.0f && flagViewportPos.y <= 1.0f))
+        {
+            DeactivateArrowToFlag();
         }
         else
         {
-            Arrow.gameObject.SetActive(true);
-            Wale.gameObject.SetActive(true);
+            ActivateArrowToFlag();
+        }
+        ProcessArrowToFlag();
+    }
 
-            ArrowPointing.z = Mathf.Atan2((Arrow.transform.position.y - dir.y), (Arrow.transform.position.x - dir.x)) * Mathf.Rad2Deg - 90;
-
-            Arrow.transform.rotation = Quaternion.Euler(ArrowPointing);
-            Arrow.transform.position = new Vector3(Mathf.Clamp(dir.x, offsetPantalla, Screen.width - offsetPantalla), Mathf.Clamp(dir.y, offsetPantalla, Screen.height - offsetPantalla), 0);
-
-            Wale.transform.position = Arrow.transform.position;
+    void ArrowToFlagStartPickup()
+    {
+        if (!flagArrowPickupStarted && flagForSlider.currentOwner!=null)
+        {
+            flagArrowPickupStarted = true;
+            GameInfo.instance.StartAnimation( flagArrowPickFlagGlowAnim, myCamera);
+            if(!flagAro.gameObject.activeInHierarchy) flagAro.gameObject.SetActive(true);
         }
     }
+
+    void ArrowToFlagStopPickup()
+    {
+        if (flagArrowPickupStarted && flagForSlider.currentOwner == null)
+        {
+            flagArrowPickupStarted = false;
+            GameInfo.instance.StopUIAnimation(flagArrowPickFlagGlowAnim);
+            if(flagAro.gameObject.activeInHierarchy) flagAro.gameObject.SetActive(false);
+        }
+    }
+
+    void ArrowToFlagStartRespawn()
+    {
+        if (!flagArrowRespawnRestarted && flagForSlider.respawning)
+        {
+            flagArrowRespawnRestarted = true;
+            flagArrowFollowTarget = flagSpawn;
+            flagArrow.GetComponent<Image>().color = flagArrowColors[1];
+            flagWhale.GetComponent<Image>().color = flagArrowColors[1];
+        }
+    }
+
+    void ArrowToFlagStopRespawn()
+    {
+        if (flagArrowRespawnRestarted && !flagForSlider.respawning)
+        {
+            flagArrowRespawnRestarted = false;
+            GameInfo.instance.StartAnimation(flagArrowRespawnGlowAnim, myCamera);
+            flagArrowFollowTarget = flag;
+            flagArrow.GetComponent<Image>().color = flagArrowColors[0];
+            flagWhale.GetComponent<Image>().color = flagArrowColors[0];
+        }
+    }
+
     #endregion
 
     #region --- GRAPPLE//HOOK POINT ---
-    // --- GRAPPLE//Hook Point ---
+
     void UpdateAllHookPointHUDs()
     {
         for (int i = 0; i < hookPointHUDInfoList.Count; i++)

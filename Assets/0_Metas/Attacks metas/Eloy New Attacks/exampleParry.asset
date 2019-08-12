@@ -19,28 +19,37 @@ MonoBehaviour:
   chargingPhase:
     isFoldedInEditor: 0
     attackPhaseType: 1
-    attackHitboxes: []
+    phaseCompletionType: 1
     duration: 0
     rotationSpeedPercentage: 0
     movementSpeedPercentage: 0
     invulnerability: 0
+    attackHitboxes: []
   startupPhase:
     isFoldedInEditor: 0
     attackPhaseType: 2
-    attackHitboxes: []
+    phaseCompletionType: 1
     duration: 0.1
     rotationSpeedPercentage: 0.5
     movementSpeedPercentage: 0.5
     invulnerability: 0
+    attackHitboxes: []
   activePhase:
     isFoldedInEditor: 0
     attackPhaseType: 3
+    phaseCompletionType: 1
+    duration: 0.3
+    rotationSpeedPercentage: 0.5
+    movementSpeedPercentage: 0.5
+    invulnerability: 0
     attackHitboxes:
-    - parentType: 0
+    - name: Basic attack hb
+      parentType: 0
       hitboxPrefab: {fileID: 1106858598728734, guid: 0170b6bc00f63cf4c815c19c4e7103f5,
         type: 3}
       effects:
-      - effectType: 5
+      - name: 5
+        effectType: 3
         knockbackType: 0
         knockbackMagnitude: 0
         knockbackDir: {x: 0, y: 0, z: 0}
@@ -49,17 +58,13 @@ MonoBehaviour:
         stunTime: 0
         parryStunTime: 1.5
         parryRecoveryTime: 0
-    duration: 0.3
-    rotationSpeedPercentage: 0.5
-    movementSpeedPercentage: 0.5
-    invulnerability: 0
   recoveryPhase:
     isFoldedInEditor: 0
     attackPhaseType: 4
-    attackHitboxes: []
+    phaseCompletionType: 1
     duration: 1
     rotationSpeedPercentage: 0.5
     movementSpeedPercentage: 0.5
     invulnerability: 0
-  impulseMagnitude: 0
-  comboDifferentAttackPercent: 50
+    attackHitboxes: []
+  impulseDistance: 0
