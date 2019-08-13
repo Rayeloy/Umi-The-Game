@@ -12,6 +12,14 @@ public enum CameraVFXType
     Water,
     PickFlag
 }
+
+public enum FlagArrowState
+{
+    none,
+    deactivated,
+    activated_OnScreen,
+    activated_OffScreen
+}
 #endregion
 
 public class PlayerHUD : MonoBehaviour
@@ -64,17 +72,21 @@ public class PlayerHUD : MonoBehaviour
 
     //Flag Arrow
     [Header("Flag Arrow")]
-    public Transform flagWhale;
-    public Transform flagArrow;
-    public Transform flagAro;
+    [Tooltip("Minimum distance the flag needs to be separated from the player to show the flag arrow even when looking directly at it")]
+    public float minDistanceToShowWhenOnCamera = 25;
+    public Transform flagArrowWhale;
+    public Transform flagArrowArrow;
+    public Transform flagArrowRing;
+    public Transform flagArrowFixedRing;
+    public Transform flagArrowParent;
     public Color[] flagArrowColors;//0 -> not picked; 1 -> respawning
-    Transform flagArrowFollowTarget;
-    Transform flagSpawn;
-    //[Tooltip("Offset de la pantalla al que se bloquea la flecha de la bola")]
-    //public float offsetPantalla;
-    bool arrowToFlagActivated = false;
     public UIAnimation flagArrowRespawnGlowAnim;
     public UIAnimation flagArrowPickFlagGlowAnim;
+    public Color[] arrowToFlagGlowTeamColors;//0 -> Green team; 1-> Pink team
+    public LayerMask arrowToFlagCameraLM;
+    FlagArrowState flagArrowSt = FlagArrowState.deactivated;
+    Transform flagArrowFollowTarget;
+    Transform flagSpawn;
     bool flagArrowPickupStarted = false;
     bool flagArrowRespawnRestarted = false;
 
@@ -123,11 +135,13 @@ public class PlayerHUD : MonoBehaviour
     [Header(" - Active Glow -")]
     public UIAnimation[] skillHUDActiveGlow;
     public Animator[] orangeCircleAnimation;
+    PlayerMovement flagCurrentOwner = null;
 
 
     #endregion
 
     #region ----[ PROPERTIES ]----
+    Color whiteTransparent = new Color(1, 1, 1, 0);
     #endregion
 
     #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
@@ -149,7 +163,7 @@ public class PlayerHUD : MonoBehaviour
             flagForSlider = (gC as GameController_FlagMode).flags[0];
         }
         if (gC.gameMode == GameMode.Tutorial)
-        {       
+        {
             contador.gameObject.SetActive(false);
         }
         Interaction_Message.SetActive(false);
@@ -202,8 +216,11 @@ public class PlayerHUD : MonoBehaviour
             blueTeamScoreText.rectTransform.localScale = new Vector3(blueTeamScoreText.rectTransform.localScale.x * invScaleValue, blueTeamScoreText.rectTransform.localScale.y, 1);
             timeText.rectTransform.localScale = new Vector3(timeText.rectTransform.localScale.x, timeText.rectTransform.localScale.y * scaleValue, 1);
             dashHUDParent.localScale = new Vector3(dashHUDParent.localScale.x * scaleValue, dashHUDParent.localScale.y, 1);
-            flagWhale.GetComponent<RectTransform>().localScale = new Vector3(flagWhale.GetComponent<RectTransform>().localScale.x * scaleValue, flagWhale.GetComponent<RectTransform>().localScale.y, 1);
-            flagArrow.GetComponent<RectTransform>().localScale = new Vector3(flagArrow.GetComponent<RectTransform>().localScale.x * scaleValue, flagArrow.GetComponent<RectTransform>().localScale.y, 1);
+            //flagArrowParent.GetComponent<RectTransform>().localScale = new Vector3(flagArrowParent.GetComponent<RectTransform>().localScale.x * scaleValue, flagArrowParent.GetComponent<RectTransform>().localScale.y, 1);
+            flagArrowWhale.GetComponent<RectTransform>().localScale = new Vector3(flagArrowWhale.GetComponent<RectTransform>().localScale.x * scaleValue, flagArrowWhale.GetComponent<RectTransform>().localScale.y, 1);
+            flagArrowArrow.GetComponent<RectTransform>().localScale = new Vector3(flagArrowArrow.GetComponent<RectTransform>().localScale.x * scaleValue, flagArrowArrow.GetComponent<RectTransform>().localScale.y, 1);
+            flagArrowFixedRing.GetComponent<RectTransform>().localScale = new Vector3(flagArrowFixedRing.GetComponent<RectTransform>().localScale.x * scaleValue, flagArrowFixedRing.GetComponent<RectTransform>().localScale.y, 1);
+
             //flagAro.GetComponent<RectTransform>().localScale = new Vector3(flagAro.GetComponent<RectTransform>().localScale.x * scaleValue, flagAro.GetComponent<RectTransform>().localScale.y, 1);
             //CameraVFXParent.localScale = new Vector3(CameraVFXParent.localScale.x * scaleValue, CameraVFXParent.localScale.y, 1);
         }
@@ -254,8 +271,8 @@ public class PlayerHUD : MonoBehaviour
         flagSlider.localPosition = (flagSliderStart.localPosition - flagSliderEnd.localPosition) / 2;
 
         //Flecha bola
-        flagArrow.gameObject.SetActive(false);
-        flagWhale.gameObject.SetActive(false);
+        flagArrowArrow.gameObject.SetActive(false);
+        flagArrowWhale.gameObject.SetActive(false);
     }
 
     void UpdateFlagSlider()
@@ -287,108 +304,247 @@ public class PlayerHUD : MonoBehaviour
     {
         flagSpawn = (gC as GameController_FlagMode).flagsParent;
         flagArrowFollowTarget = flag;
-        DeactivateArrowToFlag();
+        DeactivateArrowToFlagOffScreen();
     }
 
-    void ActivateArrowToFlag()
+    void ActivateArrowToFlagOffScreen()
     {
-        if (!arrowToFlagActivated)
+        if (flagArrowSt != FlagArrowState.activated_OffScreen)
         {
-            Debug.LogError("Activate FLAG ARROW");
-            arrowToFlagActivated = true;
-            flagArrow.gameObject.SetActive(true);
-            flagWhale.gameObject.SetActive(true);
-            if(flagForSlider.currentOwner!=null && !flagAro.gameObject.activeInHierarchy)flagAro.gameObject.SetActive(true);
-            else if(flagForSlider.currentOwner == null && flagAro.gameObject.activeInHierarchy) flagAro.gameObject.SetActive(false);
+            DeactivateArrowToFlagOnScreen();
+            if (!myPlayerMov.disableAllDebugs) Debug.LogError("Activate FLAG ARROW");
+            flagArrowSt = FlagArrowState.activated_OffScreen;
+            flagArrowArrow.gameObject.SetActive(true);
+            flagArrowWhale.gameObject.SetActive(true);
+            flagArrowFixedRing.gameObject.SetActive(false);
+            if (flagForSlider.currentOwner != null && !flagArrowRing.gameObject.activeInHierarchy) flagArrowRing.gameObject.SetActive(true);
+            else if (flagForSlider.currentOwner == null && flagArrowRing.gameObject.activeInHierarchy) flagArrowRing.gameObject.SetActive(false);
+            ArrowToFlagSetTeamColorsAndRing();
         }
     }
 
-    void DeactivateArrowToFlag()
+    void DeactivateArrowToFlagOffScreen()
     {
-        if (arrowToFlagActivated)
+        if (flagArrowSt == FlagArrowState.activated_OffScreen)
         {
-            Debug.LogError("Deactivate FLAG ARROW");
-            arrowToFlagActivated = false;
-            flagArrow.gameObject.SetActive(false);
-            flagWhale.gameObject.SetActive(false);
-            flagAro.gameObject.SetActive(false);
+            if (!myPlayerMov.disableAllDebugs) Debug.LogError("Deactivate FLAG ARROW");
+            flagArrowSt = FlagArrowState.deactivated;
+            flagArrowArrow.gameObject.SetActive(false);
+            flagArrowWhale.gameObject.SetActive(false);
+            flagArrowRing.gameObject.SetActive(false);
+            flagArrowFixedRing.gameObject.SetActive(false);
+        }
+    }
+
+    void ActivateArrowToFlagOnScreen()
+    {
+        if (flagArrowSt != FlagArrowState.activated_OnScreen)
+        {
+            DeactivateArrowToFlagOffScreen();
+            if (!myPlayerMov.disableAllDebugs) Debug.LogError("Activate FLAG ARROW ON FLAG");
+            flagArrowSt = FlagArrowState.activated_OnScreen;
+            flagArrowArrow.gameObject.SetActive(false);
+            flagArrowWhale.gameObject.SetActive(true);
+            if (flagForSlider.currentOwner != null && !flagArrowFixedRing.gameObject.activeInHierarchy) flagArrowFixedRing.gameObject.SetActive(true);
+            else if (flagForSlider.currentOwner == null && flagArrowFixedRing.gameObject.activeInHierarchy) flagArrowFixedRing.gameObject.SetActive(false);
+            flagArrowWhale.localScale = new Vector3(flagArrowWhale.localScale.x * 0.8f, flagArrowWhale.localScale.y * 0.8f, 1);
+            ArrowToFlagSetTeamColorsAndRing();
+        }
+    }
+
+    void DeactivateArrowToFlagOnScreen()
+    {
+        if (flagArrowSt == FlagArrowState.activated_OnScreen)
+        {
+            if (!myPlayerMov.disableAllDebugs) Debug.LogError("Deactivate FLAG ARROW ON FLAG");
+            flagArrowSt = FlagArrowState.deactivated;
+            flagArrowWhale.localScale = new Vector3(flagArrowWhale.localScale.x / 0.8f, flagArrowWhale.localScale.y / 0.8f, 1);
+            flagArrowArrow.gameObject.SetActive(false);
+            flagArrowWhale.gameObject.SetActive(false);
+            flagArrowRing.gameObject.SetActive(false);
+            flagArrowFixedRing.gameObject.SetActive(false);
         }
     }
 
     void ProcessArrowToFlag()
     {
-        if (arrowToFlagActivated)
+
+        if (flagArrowSt == FlagArrowState.activated_OffScreen || flagArrowSt == FlagArrowState.activated_OnScreen)
         {
-            ArrowToFlagStartPickup();
             ArrowToFlagStopPickup();
+            ArrowToFlagStartPickup();
+            ArrowToFlagSetNewOwner();
             ArrowToFlagStartRespawn();
             ArrowToFlagStopRespawn();
-            //float pixelW = myCamera.pixelWidth;
-            //float pixelH = myCamera.pixelHeight;
-            //Vector3 dir = myCamera.WorldToScreenPoint(flag.position);
+        }
 
-            //float offsetX = -((pixelW / 2) + (myCamera.rect.x * 2 * pixelW));
-            //float offsetY = -((pixelH / 2) + (myCamera.rect.y * 2 * pixelH));
-            //RectTransform arrowRect = Arrow.GetComponent<RectTransform>();
-            //arrowRect.localPosition = new Vector3(dir.x + offsetX, dir.y + offsetY, 0);
+        //float pixelW = myCamera.pixelWidth;
+        //float pixelH = myCamera.pixelHeight;
+        //Vector3 dir = myCamera.WorldToScreenPoint(flag.position);
 
-            //ArrowPointing.z = Mathf.Atan2((arrowRect.localPosition.y - dir.y), (arrowRect.localPosition.x - dir.x)) * Mathf.Rad2Deg - 90;
+        //float offsetX = -((pixelW / 2) + (myCamera.rect.x * 2 * pixelW));
+        //float offsetY = -((pixelH / 2) + (myCamera.rect.y * 2 * pixelH));
+        //RectTransform arrowRect = Arrow.GetComponent<RectTransform>();
+        //arrowRect.localPosition = new Vector3(dir.x + offsetX, dir.y + offsetY, 0);
 
-            //arrowRect.localRotation = Quaternion.Euler(ArrowPointing);
-            ////Arrow.position = new Vector3(Mathf.Clamp(dir.x, offsetPantalla, Screen.width - offsetPantalla), Mathf.Clamp(dir.y, offsetPantalla, Screen.height - offsetPantalla), 0);
-            //RectTransform waleRect = Wale.GetComponent<RectTransform>();
-            //waleRect.localPosition = arrowRect.localPosition;
+        //ArrowPointing.z = Mathf.Atan2((arrowRect.localPosition.y - dir.y), (arrowRect.localPosition.x - dir.x)) * Mathf.Rad2Deg - 90;
 
-            Vector3 flagViewportPos, flagArrowPos;
-            flagArrowPos = flagViewportPos = myCamera.WorldToViewportPoint(flagArrowFollowTarget.position);
+        //arrowRect.localRotation = Quaternion.Euler(ArrowPointing);
+        ////Arrow.position = new Vector3(Mathf.Clamp(dir.x, offsetPantalla, Screen.width - offsetPantalla), Mathf.Clamp(dir.y, offsetPantalla, Screen.height - offsetPantalla), 0);
+        //RectTransform waleRect = Wale.GetComponent<RectTransform>();
+        //waleRect.localPosition = arrowRect.localPosition;
 
-            flagArrowPos.x -= 0.5f;  // Translate to use center of viewport
-            flagArrowPos.y -= 0.5f;
-            flagArrowPos.z = 0;      // I think I can do this rather than do a 
-                                     //   a full projection onto the plane
+        switch (flagArrowSt)
+        {
+            case FlagArrowState.activated_OffScreen:
+                Vector3 flagViewportPos, flagArrowPos;
+                flagArrowPos = flagViewportPos = myCamera.WorldToViewportPoint(flagArrowFollowTarget.position);
 
-            float fAngle = Mathf.Atan2(flagArrowPos.x, flagArrowPos.y);
+                flagArrowPos.x -= 0.5f;  // Translate to use center of viewport
+                flagArrowPos.y -= 0.5f;
+                flagArrowPos.z = 0;      // I think I can do this rather than do a 
+                                         //   a full projection onto the plane
 
-            float yProportion = myCamera.rect.height < 1 ? 0.4f : 0.41f;
-            float xProportion = myCamera.rect.width < 1 ? 0.445f : 0.45f;
-            flagArrowPos.x = xProportion * Mathf.Sin(fAngle) + 0.5f;  // Place on ellipse touching 
-            flagArrowPos.y = yProportion * Mathf.Cos(fAngle) + 0.5f;  //   side of viewport
-            if (flagViewportPos.z < myCamera.nearClipPlane)
-            {
-                flagArrowPos.x = 1 - flagArrowPos.x;
-                flagArrowPos.y = 1 - flagArrowPos.y;
-            }
-            Debug.LogWarning(" flagArrowPos = " + flagArrowPos.ToString("F4"));
-            flagArrowPos.z = myCamera.nearClipPlane + 0.001f;  // Looking from neg to pos Z;
-            float finalAngle = 180 + (-fAngle * Mathf.Rad2Deg) + (flagViewportPos.z < myCamera.nearClipPlane ? 0 : 180);
-            flagArrow.localEulerAngles = new Vector3(0.0f, 0.0f, finalAngle);
-            flagWhale.position = myCamera.ViewportToWorldPoint(flagArrowPos);
-            flagArrow.position = flagWhale.position;
+                float fAngle = Mathf.Atan2(flagArrowPos.x, flagArrowPos.y);
+
+                float yProportion = myCamera.rect.height < 1 ? 0.4f : 0.41f;
+                float xProportion = myCamera.rect.width < 1 ? 0.445f : 0.45f;
+                flagArrowPos.x = xProportion * Mathf.Sin(fAngle) + 0.5f;  // Place on ellipse touching 
+                flagArrowPos.y = yProportion * Mathf.Cos(fAngle) + 0.5f;  //   side of viewport
+                if (flagViewportPos.z < myCamera.nearClipPlane)
+                {
+                    flagArrowPos.x = 1 - flagArrowPos.x;
+                    flagArrowPos.y = 1 - flagArrowPos.y;
+                }
+                //Debug.LogWarning(" flagArrowPos = " + flagArrowPos.ToString("F4"));
+                flagArrowPos.z = myCamera.nearClipPlane + 0.001f;  // Looking from neg to pos Z;
+                float finalAngle = 180 + (-fAngle * Mathf.Rad2Deg) + (flagViewportPos.z < myCamera.nearClipPlane ? 0 : 180);
+                flagArrowArrow.localEulerAngles = new Vector3(0.0f, 0.0f, finalAngle);
+                flagArrowWhale.position = myCamera.ViewportToWorldPoint(flagArrowPos);
+                flagArrowArrow.position = flagArrowWhale.position;
+                break;
+            case FlagArrowState.activated_OnScreen:
+                flagArrowPos = flagArrowFollowTarget.position; flagArrowPos.y += 3;
+                Vector3 flagArrowViewportPos = myCamera.WorldToViewportPoint(flagArrowPos);
+                flagArrowViewportPos.z = myCamera.nearClipPlane + 0.001f;
+                flagArrowWhale.position = myCamera.ViewportToWorldPoint(flagArrowViewportPos);
+                flagArrowFixedRing.position = flagArrowWhale.position;
+                break;
         }
     }
 
     void ArrowToFlagUpdate()
     {
-        Vector3 flagViewportPos = myCamera.WorldToViewportPoint(flagArrowFollowTarget.position);
-        if (flagViewportPos.z > myCamera.nearClipPlane && (flagViewportPos.x >= 0.0f && flagViewportPos.x <= 1.0f && flagViewportPos.y >= 0.0f && flagViewportPos.y <= 1.0f))
+        if (myPlayerMov.haveFlag)
         {
-            DeactivateArrowToFlag();
+            DeactivateArrowToFlagOnScreen();
+            DeactivateArrowToFlagOffScreen();
         }
         else
         {
-            ActivateArrowToFlag();
+            Vector3 flagViewportPos = myCamera.WorldToViewportPoint(flagArrowFollowTarget.position);
+            if (flagViewportPos.z > myCamera.nearClipPlane && (flagViewportPos.x >= 0.0f && flagViewportPos.x <= 1.0f && flagViewportPos.y >= 0.0f && flagViewportPos.y <= 1.0f))
+            {
+                DeactivateArrowToFlagOffScreen();
+                float distToFlag = (flagArrowFollowTarget.position - myPlayerMov.transform.position).magnitude;
+                if (distToFlag >= minDistanceToShowWhenOnCamera)
+                {
+                    ActivateArrowToFlagOnScreen();
+                }
+                else
+                {
+                    Debug.DrawLine(myCamera.transform.position, flagArrowFollowTarget.position, Color.yellow);
+                    RaycastHit hit;
+                    bool collided = false;
+                    if (Physics.Linecast(myCamera.transform.position, flagArrowFollowTarget.position, out hit, arrowToFlagCameraLM, QueryTriggerInteraction.Collide))
+                    {
+                        //Debug.LogWarning("COLLISIONS BETWEEN CAMERA AND FLAG");
+                        if (hit.collider.gameObject.tag == "Stage" || hit.collider.gameObject.tag == "Player")
+                        {
+                            collided = true;
+                        }
+                    }
+
+                    if (collided)
+                    {
+                        ActivateArrowToFlagOnScreen();
+                    }
+                    else
+                    {
+                        //Debug.LogWarning("NO COLLISIONS BETWEEN CAMERA AND FLAG");
+                        DeactivateArrowToFlagOnScreen();
+                    }
+                }
+            }
+            else
+            {
+                ActivateArrowToFlagOffScreen();
+            }
+
+            ProcessArrowToFlag();
+        }    
+    }
+
+    void ArrowToFlagSetNewOwner()
+    {
+        if (flagArrowPickupStarted && flagForSlider.currentOwner != null && flagForSlider.currentOwner.GetComponent<PlayerMovement>() != flagCurrentOwner)
+        {
+            flagArrowPickupStarted = false;
+            ArrowToFlagStartPickup();
         }
-        ProcessArrowToFlag();
     }
 
     void ArrowToFlagStartPickup()
     {
-        if (!flagArrowPickupStarted && flagForSlider.currentOwner!=null)
+        if (!flagArrowPickupStarted && flagForSlider.currentOwner != null)
         {
             flagArrowPickupStarted = true;
-            GameInfo.instance.StartAnimation( flagArrowPickFlagGlowAnim, myCamera);
-            if(!flagAro.gameObject.activeInHierarchy) flagAro.gameObject.SetActive(true);
+            flagCurrentOwner = flagForSlider.currentOwner.GetComponent<PlayerMovement>();
+            GameInfo.instance.StartAnimation(flagArrowPickFlagGlowAnim, myCamera);
+            ArrowToFlagSetTeamColorsAndRing();
         }
+    }
+
+    void ArrowToFlagSetTeamColorsAndRing()
+    {
+        if (flagArrowPickupStarted)
+        {
+            switch (flagArrowSt)
+            {
+                case FlagArrowState.activated_OffScreen:
+                    if (!flagArrowRing.gameObject.activeInHierarchy) flagArrowRing.gameObject.SetActive(true);
+                    flagArrowRing.GetComponent<Image>().color = flagForSlider.currentOwner.GetComponent<PlayerMovement>().team == Team.A ?
+                        arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
+                    flagArrowArrow.GetComponent<Image>().color = flagForSlider.currentOwner.GetComponent<PlayerMovement>().team == Team.A ?
+    arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
+                    flagArrowPickFlagGlowAnim.rect.GetComponent<Image>().color = flagForSlider.currentOwner.GetComponent<PlayerMovement>().team == Team.A ?
+                        arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
+                    break;
+                case FlagArrowState.activated_OnScreen:
+                    if (!flagArrowFixedRing.gameObject.activeInHierarchy) flagArrowFixedRing.gameObject.SetActive(true);
+                    flagArrowFixedRing.GetComponent<Image>().color = flagForSlider.currentOwner.GetComponent<PlayerMovement>().team == Team.A ?
+    arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
+                    flagArrowPickFlagGlowAnim.rect.GetComponent<Image>().color = flagForSlider.currentOwner.GetComponent<PlayerMovement>().team == Team.A ?
+                        arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
+                    break;
+            }
+        }
+        else
+        {
+            switch (flagArrowSt)
+            {
+                case FlagArrowState.activated_OffScreen:
+                    if (flagArrowRing.gameObject.activeInHierarchy) flagArrowRing.gameObject.SetActive(false);
+                    flagArrowRing.GetComponent<Image>().color = Color.white;
+                    flagArrowArrow.GetComponent<Image>().color = Color.white;
+                    break;
+                case FlagArrowState.activated_OnScreen:
+                    if (flagArrowFixedRing.gameObject.activeInHierarchy) flagArrowFixedRing.gameObject.SetActive(false);
+                    flagArrowFixedRing.GetComponent<Image>().color = Color.white;
+                    break;
+            }
+        }
+
     }
 
     void ArrowToFlagStopPickup()
@@ -396,8 +552,10 @@ public class PlayerHUD : MonoBehaviour
         if (flagArrowPickupStarted && flagForSlider.currentOwner == null)
         {
             flagArrowPickupStarted = false;
+            flagCurrentOwner = null;
             GameInfo.instance.StopUIAnimation(flagArrowPickFlagGlowAnim);
-            if(flagAro.gameObject.activeInHierarchy) flagAro.gameObject.SetActive(false);
+            ArrowToFlagSetTeamColorsAndRing();
+            flagArrowPickFlagGlowAnim.rect.GetComponent<Image>().color = whiteTransparent;
         }
     }
 
@@ -407,8 +565,9 @@ public class PlayerHUD : MonoBehaviour
         {
             flagArrowRespawnRestarted = true;
             flagArrowFollowTarget = flagSpawn;
-            flagArrow.GetComponent<Image>().color = flagArrowColors[1];
-            flagWhale.GetComponent<Image>().color = flagArrowColors[1];
+            flagArrowArrow.GetComponent<Image>().color = flagArrowColors[0];
+            flagArrowWhale.GetComponent<Image>().color = flagArrowColors[1];
+            flagArrowPickFlagGlowAnim.rect.GetComponent<Image>().color = whiteTransparent;
         }
     }
 
@@ -419,8 +578,8 @@ public class PlayerHUD : MonoBehaviour
             flagArrowRespawnRestarted = false;
             GameInfo.instance.StartAnimation(flagArrowRespawnGlowAnim, myCamera);
             flagArrowFollowTarget = flag;
-            flagArrow.GetComponent<Image>().color = flagArrowColors[0];
-            flagWhale.GetComponent<Image>().color = flagArrowColors[0];
+            flagArrowArrow.GetComponent<Image>().color = flagArrowColors[0];
+            flagArrowWhale.GetComponent<Image>().color = flagArrowColors[0];
         }
     }
 
@@ -475,7 +634,7 @@ public class PlayerHUD : MonoBehaviour
 
     void AddHookPointHUD(HookPoint hookPoint)
     {
-        print("CREATE NEW hookPointHUDObject");
+        if (!myPlayerMov.disableAllDebugs) print("CREATE NEW hookPointHUDObject");
         GameObject hookPointHUDObject = Instantiate(hookPointHUDPrefab, transform, false);
         hookPointHUDObject.transform.SetParent(hookPointsParent, true);
         HookPointHUDInfo auxHookPointHUDInfo = new HookPointHUDInfo(hookPointHUDObject.GetComponent<HookPointHUD>());
@@ -527,7 +686,7 @@ public class PlayerHUD : MonoBehaviour
 
     public void SetChosenHookPointHUD(HookPoint hookPoint)
     {
-        print("SetChosenHookPointHUD(" + hookPoint.name + ")");
+        if (!myPlayerMov.disableAllDebugs) print("SetChosenHookPointHUD(" + hookPoint.name + ")");
         for (int i = 0; i < hookPointHUDInfoList.Count; i++)
         {
             if (hookPointHUDInfoList[i].hookPointHUD.myHookPoint == hookPoint && !hookPointHUDInfoList[i].chosenOne)
@@ -682,7 +841,7 @@ public class PlayerHUD : MonoBehaviour
         if (dashHUDCantDoAnimStarted)
         {
             dashHUDCantDoAnimTime += Time.deltaTime;
-            if(dashHUDCantDoAnimTime >= dashHUDCantDoAnimation.duration)
+            if (dashHUDCantDoAnimTime >= dashHUDCantDoAnimation.duration)
             {
                 StopDashHUDCantDoAnimation();
             }
@@ -748,12 +907,12 @@ public class PlayerHUD : MonoBehaviour
     {
         skillHUDCantDoAnimTime = new float[equippedSkills.Length];
         skillHUDCantDoAnimStarted = new bool[equippedSkills.Length];
-        for (int i=0; i < equippedSkills.Length; i++)
+        for (int i = 0; i < equippedSkills.Length; i++)
         {
             skillHUDIcons[i].sprite = equippedSkills[i].myWeaponSkillData.weaponSkillHUDImage;
             skillHUDIcons[i].color = Color.white;
             skillHUDProgressBars[i].fillAmount = 1;
-            skillHUDCantDoAnimTime[i]=0;
+            skillHUDCantDoAnimTime[i] = 0;
             skillHUDCantDoAnimStarted[i] = false;
             SetSkillHUDColors(i);
             //orangeCircleAnimation[i].gameObject.SetActive(false);
@@ -762,7 +921,7 @@ public class PlayerHUD : MonoBehaviour
 
     void ProcessSkillsCD()
     {
-        for(int i=0; i < myPlayerCombat.equipedWeaponSkills.Length; i++)
+        for (int i = 0; i < myPlayerCombat.equipedWeaponSkills.Length; i++)
         {
             WeaponSkill skill = myPlayerCombat.equipedWeaponSkills[i];
             switch (skill.weaponSkillSt)
@@ -778,8 +937,8 @@ public class PlayerHUD : MonoBehaviour
 
                     //}
                     break;
-                //case WeaponSkillState.ready:
-                //    break;
+                    //case WeaponSkillState.ready:
+                    //    break;
             }
         }
     }
@@ -790,7 +949,7 @@ public class PlayerHUD : MonoBehaviour
         {
             case WeaponSkillState.ready:
                 skillHUDIcons[index].color = skillHUDIconColors[0];
-                skillHUDBackgrounds[index].color = skillHUDBackgroundColors[0];         
+                skillHUDBackgrounds[index].color = skillHUDBackgroundColors[0];
                 break;
             case WeaponSkillState.cd:
                 skillHUDIcons[index].color = skillHUDIconColors[1];
@@ -829,7 +988,7 @@ public class PlayerHUD : MonoBehaviour
 
     public void StartSkillCantDoAnim(int index)
     {
-        Debug.Log("INDEX = " + index + "; skillHUDCantDoAnimStarted[].Lenght = "+ skillHUDCantDoAnimStarted.Length);
+        Debug.Log("INDEX = " + index + "; skillHUDCantDoAnimStarted[].Lenght = " + skillHUDCantDoAnimStarted.Length);
         if (!skillHUDCantDoAnimStarted[index])
         {
             skillHUDCantDoAnimStarted[index] = true;
@@ -842,7 +1001,7 @@ public class PlayerHUD : MonoBehaviour
 
     void ProcessSkillCantDoAnim()
     {
-        for(int i=0; i< skillHUDCantDoAnimations.Length; i++)
+        for (int i = 0; i < skillHUDCantDoAnimations.Length; i++)
         {
             if (skillHUDCantDoAnimStarted[i])
             {

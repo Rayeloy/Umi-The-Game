@@ -602,6 +602,7 @@ MonoBehaviour:
   boostDepletingSpeed: 1.2
   boostRechargingSpeed: 0.15
   boostCurrentFuel: 1
+  boostCDMaxTime: 0.3
   boostFuelLostOnStart: 0.1
   boostMinFuelNeeded: 0.2
   initialAcc: 60
@@ -648,6 +649,8 @@ MonoBehaviour:
   inWater: 0
   currentMaxMoveSpeed: 0
   hooked: 0
+  aimingAndTouchedGroundOnce: 0
+  hookingAndTouchedGroundOnce: 0
   jumpedOutOfWater: 1
 --- !u!114 &6457576688623177950
 MonoBehaviour:
@@ -661,6 +664,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d372f8544bb3b841b6a7d9814157b34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myPlayerMovement: {fileID: 0}
+  myPlayerHUD: {fileID: 0}
   hitboxMats:
   - {fileID: 2100000, guid: 2700333b147dd394c8452531278051f7, type: 2}
   - {fileID: 2100000, guid: 8ef3e573ffcdc814aa37206d968bffe3, type: 2}
@@ -675,6 +680,7 @@ MonoBehaviour:
   currentAttack: {fileID: 0}
   landedSinceAttackStarted: 0
   autocomboStarted: 0
+  currentHitboxes: []
   parryStarted: 0
   aiming: 0
 --- !u!114 &2740053844141714977
@@ -913,6 +919,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c93038202fd599c40a3b5b418ee1908b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myPlayerMovement: {fileID: 2740017724817165817}
   hookPoints: []
 --- !u!1001 &1436167881027110408
 PrefabInstance:

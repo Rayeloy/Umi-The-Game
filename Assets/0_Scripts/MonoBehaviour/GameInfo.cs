@@ -148,7 +148,7 @@ public class GameInfo : MonoBehaviour
         if (!uIAnimations.Contains(uIAnimation))
         {
             float prop = Mathf.Min(canvasCamera.rect.width, canvasCamera.rect.height);
-            uIAnimation.xAmplitude *= prop;
+            uIAnimation.currentXAmplitude = uIAnimation.xAmplitude * prop;
             uIAnimations.Add(uIAnimation);
             uIAnimation.StartAnimation();
         }
@@ -199,6 +199,7 @@ public class UIAnimation
 
     [Header("--- SHAKE ---")]
     public float xAmplitude = 7f;
+    [HideInInspector] public float currentXAmplitude;
     float currentDuration, currentCycleTime, totalSpace;
     Vector3 originalLocalPos;
 
@@ -215,6 +216,7 @@ public class UIAnimation
         type = _type;
         rect = _rect;
         xAmplitude = _xAmplitude;
+        currentXAmplitude = xAmplitude;
         frequency = _frequency;//cycle max time
         duration = _duration;
         _cycleStartPoint = Mathf.Clamp01(_cycleStartPoint);
@@ -230,8 +232,9 @@ public class UIAnimation
         {
             case UIAnimType.shake:
                 animDir = 1;
-                totalSpace = xAmplitude * 2;
+                totalSpace = currentXAmplitude * 2;
                 originalLocalPos = rect.localPosition;
+                //Debug.LogWarning(" currentxAmplitude= " + currentxAmplitude + "; totalSpace = " + totalSpace);
                 break;
             case UIAnimType.color_alpha:
                 animDir = 1;
@@ -264,10 +267,11 @@ public class UIAnimation
             case UIAnimType.shake:
                 float xIncrement = progress * totalSpace * animDir;
                 //float xIncrement = animDir * EasingFunction.EaseInOutQuart(0, xAmplitude, progress);
-                float originX = originalLocalPos.x + (xAmplitude * -animDir);
+                float originX = originalLocalPos.x + (currentXAmplitude * -animDir);
                 Vector3 finalPos = originalLocalPos;
                 finalPos.x = originX + xIncrement;
                 rect.localPosition = finalPos;
+                //Debug.Log("xIncrement = "+ xIncrement + "; totalSpace = "+ totalSpace + "; progress = " + progress+ "; originX = " + originX+ "; finalPos.x ="+ finalPos.x);
                 break;
             case UIAnimType.color_alpha:
                 progress = animDir == 1 ? progress : 1 - progress;
@@ -277,7 +281,7 @@ public class UIAnimation
                 //float alphaStartPoint = animDir == 1?alphaMin:alphaMax;
                 newColor.a = value;
                 image.color = newColor;
-                Debug.Log("Progress = " + progress + "; value = " + value);
+                //Debug.Log("Progress = " + progress + "; value = " + value);
                 break;
         }
 

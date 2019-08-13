@@ -187,7 +187,7 @@ public class PlayerHook : MonoBehaviour
 
     public void StartGrappling(HookPoint hookPoint, Transform _currentHookPointPos)
     {
-        print("START GRAPPLING");
+        if (!myPlayerMov.disableAllDebugs) print("START GRAPPLING");
         currentGrapplingHookPoint = hookPoint;
         currentHookPointPos=_currentHookPointPos;
         myPlayerMov.StopBoost();
@@ -617,7 +617,7 @@ public class PlayerHook : MonoBehaviour
                 float lastFrameDist = Mathf.Abs(lastCurrentDistance - currentDistance);
                 if (currentDistance <= grappleStopMinDistance || (lastFrameDist < 0.01f && timeGrappling > 0.1f))//CHECK IF ARRIVED OR STUCK
                 {
-                    print("FINISH AUTOGRAPPLE: currentDistance = " + currentDistance + "; grappleStopMinDistance = " + grappleStopMinDistance + "; lastFrameDist = "+lastFrameDist+"; timeGrappling = "+timeGrappling);
+                    if (!myPlayerMov.disableAllDebugs) print("FINISH AUTOGRAPPLE: currentDistance = " + currentDistance + "; grappleStopMinDistance = " + grappleStopMinDistance + "; lastFrameDist = "+lastFrameDist+"; timeGrappling = "+timeGrappling);
                     FinishAutoGrapple();
                 }
                 else

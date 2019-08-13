@@ -9,6 +9,7 @@ public class PlayerObjectDetection : MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     //Referencias
+    public PlayerMovement myPlayerMovement;
     #endregion
 
     #region ----[ PROPERTIES ]----
@@ -68,7 +69,7 @@ public class PlayerObjectDetection : MonoBehaviour
                     {
                         if (hookPoints.Contains(hookPoint))
                         {
-                            print("hookpoint removed");
+                            if (!myPlayerMovement.disableAllDebugs) print("hookpoint removed");
                             hookPoints.Remove(hookPoint);
                         }
                     }
