@@ -324,6 +324,7 @@ public class PlayerHook : MonoBehaviour
                 if (cdTime >= cdMaxTime)
                 {
                     hookSt = HookState.ready;
+                    cdTime = cdMaxTime;
                 }
                 break;
         }

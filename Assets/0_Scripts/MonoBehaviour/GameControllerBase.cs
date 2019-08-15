@@ -74,7 +74,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     #region ----[ PROPERTIES ]----
 
-    protected int playerNumTeamA = 0, playerNumTeamB = 0;
+    [HideInInspector] public int playerNumTeamA = 0, playerNumTeamB = 0;
     private PlayerActions playerActions;
     private PlayerSpawnInfo[] playerSpawnInfoList;
 
@@ -105,7 +105,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     [HideInInspector]
     public PlayerActions BaseGameActions { get; set; }
     [HideInInspector]
-    bool jugadaGalaxia = true;//esto es pura caca porque no sabemos usar photonview, revisar pis
+    bool jugadaGalaxia = true;//esto es pura caca porque no sabemos usar photonview, revisar plis
 
     [HideInInspector]
     public bool HasPlayerFlatCamera(PlayerMovement pM)

@@ -1254,6 +1254,8 @@ public class PlayerMovement : MonoBehaviour
                 RotateCharacter(newMoveDir);
             }
             myPlayerHUD.StartCamVFX(CameraVFXType.Dash);
+            myPlayerVFX.ActivateEffect(PlayerVFXType.DashWaterImpulse);
+            myPlayerVFX.ActivateEffect(PlayerVFXType.DashTrail);
             myPlayerCombatNew.StopDoingCombat();
             StopImpulse();
         }
@@ -1302,6 +1304,8 @@ public class PlayerMovement : MonoBehaviour
             moveSt = MoveState.None;
             StartBoostCD();
             myPlayerHUD.StopCamVFX(CameraVFXType.Dash);
+            myPlayerVFX.DeactivateEffect(PlayerVFXType.DashWaterImpulse);
+            myPlayerVFX.DeactivateEffect(PlayerVFXType.DashTrail);
         }
         //noInput = false;
         //PARA ORTU: Variable para terminar boost

@@ -7,7 +7,9 @@ public enum PlayerVFXType
 {
     None,
     SwimmingEffect,
-    WaterSplash
+    WaterSplash,
+    DashWaterImpulse,
+    DashTrail
 }
 #endregion
 
@@ -18,6 +20,7 @@ public class PlayerVFX : MonoBehaviour
     public PlayerMovement myPlayerMovement;
 
     public effect[] effects;
+    public TrailRenderer dashTrail;
     #endregion
 
     #region ----[ PROPERTIES ]----
@@ -39,16 +42,20 @@ public class PlayerVFX : MonoBehaviour
     #endregion
 
     #region Start
+    private void Start()
+    {
+        dashTrail.emitting = false;
+    }
     #endregion
 
     #region Update
-    private void LateUpdate()
-    {
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            transform.GetChild(i).rotation = Quaternion.Euler(0.0f, 0.0f, transform.rotation.z * -1.0f);
-        }
-    }
+    //private void LateUpdate()
+    //{
+    //    for (int i = 0; i < transform.childCount; i++)
+    //    {
+    //        transform.GetChild(i).rotation = Quaternion.Euler(0.0f, 0.0f, transform.rotation.z * -1.0f);
+    //    }
+    //}
     #endregion
 
     #endregion
@@ -60,23 +67,39 @@ public class PlayerVFX : MonoBehaviour
 
     public void ActivateEffect(PlayerVFXType effectType)
     {
-        for(int i=0; i < effects.Length; i++)
+        switch (effectType)
         {
-            if(effects[i].effectType == effectType)
-            {
-                effects[i].Activate();
-            }
+            case PlayerVFXType.DashTrail:
+                dashTrail.emitting = true;
+                break;
+            default:
+                for (int i = 0; i < effects.Length; i++)
+                {
+                    if (effects[i].effectType == effectType)
+                    {
+                        effects[i].Activate();
+                    }
+                }
+                break;
         }
     }
 
     public void DeactivateEffect(PlayerVFXType effectType)
     {
-        for (int i = 0; i < effects.Length; i++)
+        switch (effectType)
         {
-            if (effects[i].effectType == effectType)
-            {
-                effects[i].Deactivate();
-            }
+            case PlayerVFXType.DashTrail:
+                dashTrail.emitting = false;
+                break;
+            default:
+                for (int i = 0; i < effects.Length; i++)
+                {
+                    if (effects[i].effectType == effectType)
+                    {
+                        effects[i].Deactivate();
+                    }
+                }
+                break;
         }
     }
     #endregion

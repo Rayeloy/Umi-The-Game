@@ -56,6 +56,10 @@ public class PlayerHUD : MonoBehaviour
     //public Text pressText;
     public Image interactButtonImage;
 
+    [Header("Scoreboard")]
+    public Image[] teamAPlayerIcons;
+    public Image[] teamBPlayerIcons;
+
     //Flag Slider
     [Header("Flag Slider")]
     public RectTransform flagSlider;
@@ -74,6 +78,14 @@ public class PlayerHUD : MonoBehaviour
     [Header("Flag Arrow")]
     [Tooltip("Minimum distance the flag needs to be separated from the player to show the flag arrow even when looking directly at it")]
     public float minDistanceToShowWhenOnCamera = 25;
+    [Tooltip("Ball Pointer proportion when at max distance (minProportionWOCMaxDist)")]
+    public float minProportionWhenOnCamera = 0.4f;
+    [Tooltip("Ball Pointer proportion when at min distance (maxProportionWOCMinDist)")]
+    public float maxProportionWhenOnCamera = 0.85f;
+    [Tooltip("The Distance at which the Ball Pointer has the min proportion size When On Camera. This should be always higher than the maxProportionWOCMinDist")]
+    public float minProportionWOCMaxDist = 70;
+    [Tooltip("The Distance at which the Ball Pointer has the max proportion size When On Camera. This should be always lower than the minProportionWOCMaxDist")]
+    public float maxProportionWOCMinDist = 30;
     public Transform flagArrowWhale;
     public Transform flagArrowArrow;
     public Transform flagArrowRing;
@@ -84,6 +96,7 @@ public class PlayerHUD : MonoBehaviour
     public UIAnimation flagArrowPickFlagGlowAnim;
     public Color[] arrowToFlagGlowTeamColors;//0 -> Green team; 1-> Pink team
     public LayerMask arrowToFlagCameraLM;
+    Vector3 flagArrowWhaleOriginalProportion;
     FlagArrowState flagArrowSt = FlagArrowState.deactivated;
     Transform flagArrowFollowTarget;
     Transform flagSpawn;
@@ -176,7 +189,9 @@ public class PlayerHUD : MonoBehaviour
         pressButtonToGrappleMessage.SetActive(false);
         SetUpCameraCenter();
         SetupDashHUD();
+        SetUpHookUI();
         SetupArrowToFlag();
+        SetUpScoreBoard();
     }
     #endregion
 
@@ -256,6 +271,25 @@ public class PlayerHUD : MonoBehaviour
         if (Interaction_Message.activeInHierarchy) Interaction_Message.SetActive(false);
     }
 
+    #region --- SCOREBOARD ---
+    void SetUpScoreBoard()
+    {
+        Color whiteHalfTransparent = new Color(1, 1, 1, 0.35f);
+        int playerNumTeamACopy = gC.playerNumTeamA;
+        for (int i=0; i < teamAPlayerIcons.Length; i++)
+        {
+            teamAPlayerIcons[i].color = playerNumTeamACopy>0?Color.white:whiteHalfTransparent;
+            if(playerNumTeamACopy>0)playerNumTeamACopy--;
+        }
+        int playerNumTeamBCopy = gC.playerNumTeamB;
+        for (int i = 0; i < teamBPlayerIcons.Length; i++)
+        {
+            teamBPlayerIcons[i].color = playerNumTeamBCopy > 0 ? Color.white : whiteHalfTransparent;
+            if (playerNumTeamBCopy > 0) playerNumTeamBCopy--;
+        }
+    }
+    #endregion
+
     #region --- FLAG SLIDER ---
 
     void SetupFlagSlider()
@@ -305,6 +339,11 @@ public class PlayerHUD : MonoBehaviour
         flagSpawn = (gC as GameController_FlagMode).flagsParent;
         flagArrowFollowTarget = flag;
         DeactivateArrowToFlagOffScreen();
+        if (minProportionWOCMaxDist <= maxProportionWhenOnCamera) Debug.LogError("Error: minProportionWOCMaxDist("+ minProportionWOCMaxDist + ") should be always higher than the " +
+            "maxProportionWOCMinDist("+ maxProportionWhenOnCamera + "). Change the values please.");
+        if (maxProportionWhenOnCamera <= minProportionWhenOnCamera) Debug.LogError("Error: maxProportionWhenOnCamera(" + maxProportionWhenOnCamera + ") should be always higher than the " +
+    "minProportionWhenOnCamera(" + minProportionWhenOnCamera + "). Change the values please.");
+        flagArrowWhaleOriginalProportion = flagArrowWhale.localScale;
     }
 
     void ActivateArrowToFlagOffScreen()
@@ -347,7 +386,7 @@ public class PlayerHUD : MonoBehaviour
             flagArrowWhale.gameObject.SetActive(true);
             if (flagForSlider.currentOwner != null && !flagArrowFixedRing.gameObject.activeInHierarchy) flagArrowFixedRing.gameObject.SetActive(true);
             else if (flagForSlider.currentOwner == null && flagArrowFixedRing.gameObject.activeInHierarchy) flagArrowFixedRing.gameObject.SetActive(false);
-            flagArrowWhale.localScale = new Vector3(flagArrowWhale.localScale.x * 0.8f, flagArrowWhale.localScale.y * 0.8f, 1);
+            //flagArrowWhale.localScale = new Vector3(flagArrowWhale.localScale.x * 0.8f, flagArrowWhale.localScale.y * 0.8f, 1);
             ArrowToFlagSetTeamColorsAndRing();
         }
     }
@@ -358,7 +397,7 @@ public class PlayerHUD : MonoBehaviour
         {
             if (!myPlayerMov.disableAllDebugs) Debug.LogError("Deactivate FLAG ARROW ON FLAG");
             flagArrowSt = FlagArrowState.deactivated;
-            flagArrowWhale.localScale = new Vector3(flagArrowWhale.localScale.x / 0.8f, flagArrowWhale.localScale.y / 0.8f, 1);
+            flagArrowWhale.localScale = new Vector3(flagArrowWhaleOriginalProportion.x, flagArrowWhaleOriginalProportion.y, 1);
             flagArrowArrow.gameObject.SetActive(false);
             flagArrowWhale.gameObject.SetActive(false);
             flagArrowRing.gameObject.SetActive(false);
@@ -407,7 +446,7 @@ public class PlayerHUD : MonoBehaviour
 
                 float fAngle = Mathf.Atan2(flagArrowPos.x, flagArrowPos.y);
 
-                float yProportion = myCamera.rect.height < 1 ? 0.4f : 0.41f;
+                float yProportion = myCamera.rect.height < 1 ? 0.21f : 0.22f;
                 float xProportion = myCamera.rect.width < 1 ? 0.445f : 0.45f;
                 flagArrowPos.x = xProportion * Mathf.Sin(fAngle) + 0.5f;  // Place on ellipse touching 
                 flagArrowPos.y = yProportion * Mathf.Cos(fAngle) + 0.5f;  //   side of viewport
@@ -423,7 +462,17 @@ public class PlayerHUD : MonoBehaviour
                 flagArrowWhale.position = myCamera.ViewportToWorldPoint(flagArrowPos);
                 flagArrowArrow.position = flagArrowWhale.position;
                 break;
+
             case FlagArrowState.activated_OnScreen:
+                float distToFlag = (flagArrowFollowTarget.position - myPlayerMov.transform.position).magnitude;
+                distToFlag = Mathf.Clamp(distToFlag,maxProportionWOCMinDist,minProportionWOCMaxDist) - maxProportionWOCMinDist;
+                float totalDist = minProportionWOCMaxDist - maxProportionWOCMinDist;
+                float progress = distToFlag / totalDist;
+                float totalPropDif = maxProportionWhenOnCamera - minProportionWhenOnCamera;
+                float currentProportion = maxProportionWhenOnCamera - (progress * totalPropDif);
+                //Debug.LogWarning("currentProportion = "+ currentProportion + "; progress = "+ progress + "; distToFlag = "+ distToFlag + "; totalDist = "+ totalDist + "; totalPropDif = " + totalPropDif);
+
+                flagArrowWhale.localScale = new Vector3(flagArrowWhaleOriginalProportion.x * currentProportion, flagArrowWhaleOriginalProportion.y * currentProportion, 1);
                 flagArrowPos = flagArrowFollowTarget.position; flagArrowPos.y += 3;
                 Vector3 flagArrowViewportPos = myCamera.WorldToViewportPoint(flagArrowPos);
                 flagArrowViewportPos.z = myCamera.nearClipPlane + 0.001f;
@@ -443,7 +492,7 @@ public class PlayerHUD : MonoBehaviour
         else
         {
             Vector3 flagViewportPos = myCamera.WorldToViewportPoint(flagArrowFollowTarget.position);
-            if (flagViewportPos.z > myCamera.nearClipPlane && (flagViewportPos.x >= 0.0f && flagViewportPos.x <= 1.0f && flagViewportPos.y >= 0.0f && flagViewportPos.y <= 1.0f))
+            if (flagViewportPos.z > myCamera.nearClipPlane && (flagViewportPos.x >= 0.05f && flagViewportPos.x <= 0.95f && flagViewportPos.y >= 0.2f && flagViewportPos.y <= 0.75f))
             {
                 DeactivateArrowToFlagOffScreen();
                 float distToFlag = (flagArrowFollowTarget.position - myPlayerMov.transform.position).magnitude;
@@ -888,6 +937,11 @@ public class PlayerHUD : MonoBehaviour
 
     #region --- HOOK CD AND BOOST CD ---
     // --- Hook CD and Boost CD ---
+
+    void SetUpHookUI()
+    {
+        Hook.fillAmount = 1;
+    }
 
     public void setHookUI(float f)
     {
