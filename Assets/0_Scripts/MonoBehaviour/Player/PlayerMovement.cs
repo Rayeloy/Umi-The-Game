@@ -59,6 +59,8 @@ public class PlayerMovement : MonoBehaviour
     public PlayerModel myPlayerModel;
     public PlayerVFX myPlayerVFX;
 
+    public bool startBeingHitAnimation = false;
+
     public GameControllerBase gC;
     public CameraController myCamera;
     public Transform cameraFollow;
@@ -757,7 +759,11 @@ public class PlayerMovement : MonoBehaviour
             {
                 hardSteerStarted = false;
             }
-            if (knockbackDone && currentSpeed <= maxMoveSpeed) knockbackDone = false;
+            if (knockbackDone && currentSpeed <= maxMoveSpeed)
+            {
+                knockbackDone = false;
+                startBeingHitAnimation = false;
+            }
         }
         #endregion
         #endregion
@@ -1505,6 +1511,9 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!myPlayerCombatNew.invulnerable)
         {
+            //Variable para Ortu
+            startBeingHitAnimation = true;
+
             if (!disableAllDebugs) print("Recieve hit with knockback= " + _knockback + "; effect = " + efecto + "; maxtime = " + _maxTime);
             myPlayerHook.FinishAutoGrapple();
             myPlayerHook.StopHook();
@@ -1512,6 +1521,7 @@ public class PlayerMovement : MonoBehaviour
             StopBoost();
             myPlayerCombatNew.StopDoingCombat();
             StopImpulse();
+
             //if (sufferingEffect == EffectType.stun)
             //{
             //    efecto = EffectType.knockdown;
@@ -1631,6 +1641,7 @@ public class PlayerMovement : MonoBehaviour
                 Debug.LogError("Error: cannot have a 'sufferingEffect' of type " + sufferingEffect);
                 break;
         }
+        startBeingHitAnimation = false;
     }
 
     #endregion

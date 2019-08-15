@@ -14,6 +14,9 @@ public class PlayerAnimation_01 : MonoBehaviour
     AnimatorStateInfo stateInfo;
 
 
+    public bool animHit = false;
+
+
     int idleHash = Animator.StringToHash("Idle_1"); //Done
     bool idle_01;
 
@@ -328,7 +331,7 @@ public class PlayerAnimation_01 : MonoBehaviour
         }
 
 
-        if (!frontHit && myPlayerMovement.moveSt == MoveState.Knockback)
+        if (!frontHit && myPlayerMovement.startBeingHitAnimation) /*(moveSt == MoveState.Knockback)*/
         {
             noControl = true;
             animator.SetBool(noControlHash, noControl);
@@ -336,7 +339,7 @@ public class PlayerAnimation_01 : MonoBehaviour
             frontHit = true;
             animator.SetBool(frontHitHash, frontHit);
         }
-        else if (frontHit && myPlayerMovement.moveSt != MoveState.Knockback)
+        else if (frontHit && !myPlayerMovement.startBeingHitAnimation)
         {
             noControl = false;
             animator.SetBool(noControlHash, noControl);
