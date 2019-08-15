@@ -103,7 +103,7 @@ public class Demo_MainMenu : MonoBehaviour
             }
             else if (scene == 4)
             {
-                SceneManager.LoadScene("Tutorial_v2");
+                //SceneManager.LoadScene("Tutorial_v2");
             }
             else if (scene == 3)
             {
