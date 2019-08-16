@@ -75,7 +75,7 @@ public class PlayerHUD : MonoBehaviour
     Vector3 flagPos;
 
     //Flag Arrow
-    [Header("Flag Arrow")]
+    [Header("Flag Arrow && Flag Home Arrow")]
     [Tooltip("Minimum distance the flag needs to be separated from the player to show the flag arrow even when looking directly at it")]
     public float minDistanceToShowWhenOnCamera = 25;
     [Tooltip("Ball Pointer proportion when at max distance (minProportionWOCMaxDist)")]
@@ -86,11 +86,13 @@ public class PlayerHUD : MonoBehaviour
     public float minProportionWOCMaxDist = 70;
     [Tooltip("The Distance at which the Ball Pointer has the max proportion size When On Camera. This should be always lower than the minProportionWOCMaxDist")]
     public float maxProportionWOCMinDist = 30;
+
+    [Header("Flag Arrow")]
     public Transform flagArrowWhale;
     public Transform flagArrowArrow;
     public Transform flagArrowRing;
     public Transform flagArrowFixedRing;
-    public Transform flagArrowParent;
+    //public Transform flagArrowParent;
     public Color[] flagArrowColors;//0 -> not picked; 1 -> respawning
     public UIAnimation flagArrowRespawnGlowAnim;
     public UIAnimation flagArrowPickFlagGlowAnim;
@@ -102,6 +104,16 @@ public class PlayerHUD : MonoBehaviour
     Transform flagSpawn;
     bool flagArrowPickupStarted = false;
     bool flagArrowRespawnRestarted = false;
+
+    [Header("Flag Home Arrow")]
+    public RectTransform flagHomeArrowIcon;
+    public RectTransform flagHomeArrowArrow;
+    FlagArrowState flagHomeArrowSt = FlagArrowState.deactivated;
+    Transform flagHomeTransform;
+    Vector3 flagHomeArrowFlagHomePos;
+    Vector3 flagHomeArrowIconOriginalProportion;
+
+
 
     //Grapple
     [Header("AutoGrapple")]
@@ -191,6 +203,7 @@ public class PlayerHUD : MonoBehaviour
         SetupDashHUD();
         SetUpHookUI();
         SetupArrowToFlag();
+        SetUpFlagHomeArrow();
         SetUpScoreBoard();
     }
     #endregion
@@ -203,6 +216,7 @@ public class PlayerHUD : MonoBehaviour
             UpdateFlagSlider();
             // Flecha a Bola
             ArrowToFlagUpdate();
+            UpdateFlagHomeArrow();
         }
         UpdateAllHookPointHUDs();
         UpdateDashHUDFuel();
@@ -235,6 +249,8 @@ public class PlayerHUD : MonoBehaviour
             flagArrowWhale.GetComponent<RectTransform>().localScale = new Vector3(flagArrowWhale.GetComponent<RectTransform>().localScale.x * scaleValue, flagArrowWhale.GetComponent<RectTransform>().localScale.y, 1);
             flagArrowArrow.GetComponent<RectTransform>().localScale = new Vector3(flagArrowArrow.GetComponent<RectTransform>().localScale.x * scaleValue, flagArrowArrow.GetComponent<RectTransform>().localScale.y, 1);
             flagArrowFixedRing.GetComponent<RectTransform>().localScale = new Vector3(flagArrowFixedRing.GetComponent<RectTransform>().localScale.x * scaleValue, flagArrowFixedRing.GetComponent<RectTransform>().localScale.y, 1);
+            flagHomeArrowIcon.GetComponent<RectTransform>().localScale = new Vector3(flagHomeArrowIcon.GetComponent<RectTransform>().localScale.x * scaleValue, flagHomeArrowIcon.GetComponent<RectTransform>().localScale.y, 1);
+            flagHomeArrowArrow.GetComponent<RectTransform>().localScale = new Vector3(flagHomeArrowArrow.GetComponent<RectTransform>().localScale.x * scaleValue, flagHomeArrowArrow.GetComponent<RectTransform>().localScale.y, 1);
 
             //flagAro.GetComponent<RectTransform>().localScale = new Vector3(flagAro.GetComponent<RectTransform>().localScale.x * scaleValue, flagAro.GetComponent<RectTransform>().localScale.y, 1);
             //CameraVFXParent.localScale = new Vector3(CameraVFXParent.localScale.x * scaleValue, CameraVFXParent.localScale.y, 1);
@@ -408,14 +424,14 @@ public class PlayerHUD : MonoBehaviour
     void ProcessArrowToFlag()
     {
 
-        if (flagArrowSt == FlagArrowState.activated_OffScreen || flagArrowSt == FlagArrowState.activated_OnScreen)
-        {
+        //if (flagArrowSt == FlagArrowState.activated_OffScreen || flagArrowSt == FlagArrowState.activated_OnScreen)
+        //{
             ArrowToFlagStopPickup();
             ArrowToFlagStartPickup();
             ArrowToFlagSetNewOwner();
             ArrowToFlagStartRespawn();
             ArrowToFlagStopRespawn();
-        }
+        //}
 
         //float pixelW = myCamera.pixelWidth;
         //float pixelH = myCamera.pixelHeight;
@@ -491,7 +507,7 @@ public class PlayerHUD : MonoBehaviour
         }
         else
         {
-            Vector3 flagViewportPos = myCamera.WorldToViewportPoint(flagArrowFollowTarget.position);
+            Vector3 flagViewportPos = myCamera.WorldToViewportPoint(flagArrowFollowTarget.position+ Vector3.up*3);
             if (flagViewportPos.z > myCamera.nearClipPlane && (flagViewportPos.x >= 0.05f && flagViewportPos.x <= 0.95f && flagViewportPos.y >= 0.2f && flagViewportPos.y <= 0.75f))
             {
                 DeactivateArrowToFlagOffScreen();
@@ -529,7 +545,7 @@ public class PlayerHUD : MonoBehaviour
             {
                 ActivateArrowToFlagOffScreen();
             }
-
+            
             ProcessArrowToFlag();
         }    
     }
@@ -556,7 +572,7 @@ public class PlayerHUD : MonoBehaviour
 
     void ArrowToFlagSetTeamColorsAndRing()
     {
-        if (flagArrowPickupStarted)
+        if (flagArrowPickupStarted && !myPlayerMov.haveFlag)
         {
             switch (flagArrowSt)
             {
@@ -593,7 +609,6 @@ public class PlayerHUD : MonoBehaviour
                     break;
             }
         }
-
     }
 
     void ArrowToFlagStopPickup()
@@ -617,6 +632,8 @@ public class PlayerHUD : MonoBehaviour
             flagArrowArrow.GetComponent<Image>().color = flagArrowColors[0];
             flagArrowWhale.GetComponent<Image>().color = flagArrowColors[1];
             flagArrowPickFlagGlowAnim.rect.GetComponent<Image>().color = whiteTransparent;
+            DeactivateFlagHomeArrowOffScreen();
+            DeactivateFlagHomeArrowOnScreen();
         }
     }
 
@@ -629,6 +646,201 @@ public class PlayerHUD : MonoBehaviour
             flagArrowFollowTarget = flag;
             flagArrowArrow.GetComponent<Image>().color = flagArrowColors[0];
             flagArrowWhale.GetComponent<Image>().color = flagArrowColors[0];
+        }
+    }
+
+    #endregion
+
+    #region --- FLAG HOME ARROW ---
+    void SetUpFlagHomeArrow()
+    {
+        flagHomeTransform = myPlayerMov.team==Team.A? (gC as GameController_FlagMode).FlagHome_TeamA : (gC as GameController_FlagMode).FlagHome_TeamB;
+        flagHomeArrowIcon.gameObject.SetActive(false);
+        flagHomeArrowArrow.gameObject.SetActive(false);
+        flagHomeArrowIconOriginalProportion = flagHomeArrowIcon.localScale;
+    }
+
+    void UpdateFlagHomeArrow()
+    {
+        //Debug.Log("FLAGHOME ARROW UPDATE:  flagCurrentOwner= "+ flagCurrentOwner + "; flagCurrentOwner.team = "+ flagCurrentOwner.team + "; myPlayerMov.team = " + myPlayerMov.team);
+        if (flagForSlider.currentOwner != null && flagForSlider.currentOwner.GetComponent<PlayerMovement>().team == myPlayerMov.team)
+        {
+            //Debug.Log("FLAGHOME ARROW UPDATE:  flagCurrentOwner= " + flagCurrentOwner + "; flagCurrentOwner.team = " + flagCurrentOwner.team + "; myPlayerMov.team = " + myPlayerMov.team);
+            flagHomeArrowFlagHomePos = flagHomeTransform.position + Vector3.up * 3;
+            Vector3 flagHomeViewportPos = myCamera.WorldToViewportPoint(flagHomeArrowFlagHomePos);
+            Debug.Log("flagHomeViewportPos = " + flagHomeViewportPos.ToString("F4"));
+            if (flagHomeViewportPos.z > myCamera.nearClipPlane && (flagHomeViewportPos.x >= 0.05f && flagHomeViewportPos.x <= 0.95f && flagHomeViewportPos.y >= 0.2f && flagHomeViewportPos.y <= 0.75f))
+            {
+                DeactivateFlagHomeArrowOffScreen();
+                float distToFlagHome = (flagHomeTransform.position - myPlayerMov.transform.position).magnitude;
+                if (distToFlagHome >= minDistanceToShowWhenOnCamera)
+                {
+                    Debug.LogWarning("Trying to Activate Flag Home Arrow On Screen");
+                    ActivateFlagHomeArrowOnScreen();
+                }
+                else
+                {
+                    Debug.DrawLine(myCamera.transform.position, flagHomeTransform.position, Color.yellow);
+                    RaycastHit hit;
+                    bool collided = false;
+                    if (Physics.Linecast(myCamera.transform.position, flagHomeTransform.position, out hit, arrowToFlagCameraLM, QueryTriggerInteraction.Collide))
+                    {
+                        if (hit.collider.gameObject.tag == "Stage" || hit.collider.gameObject.tag == "Player")
+                        {
+                            Debug.LogWarning("COLLISIONS BETWEEN CAMERA AND FLAG: collided with "+ hit.collider.gameObject);
+                            collided = true;
+                        }
+                    }
+
+                    if (collided)
+                    {
+                        Debug.LogWarning("Trying to Activate Flag Home Arrow On Screen because there is a collision");
+                        ActivateFlagHomeArrowOnScreen();
+                    }
+                    else
+                    {
+                        Debug.LogWarning("NO COLLISIONS BETWEEN CAMERA AND FLAG");
+                        DeactivateFlagHomeArrowOnScreen();
+                    }
+                }
+            }
+            else
+            {
+                ActivateFlagHomeArrowOffScreen();
+            }
+
+            ProcessFlagHomeArrow();
+        }
+        else
+        {
+            DeactivateFlagHomeArrowOffScreen();
+            DeactivateFlagHomeArrowOnScreen();
+        }
+    }
+
+    void ProcessFlagHomeArrow()
+    {
+        switch (flagHomeArrowSt)
+        {
+            case FlagArrowState.activated_OffScreen:
+                Vector3 flagHomeViewportPos, flagHomeArrowPos;
+                flagHomeArrowPos = flagHomeViewportPos = myCamera.WorldToViewportPoint(flagHomeTransform.position);
+
+                flagHomeArrowPos.x -= 0.5f;  // Translate to use center of viewport
+                flagHomeArrowPos.y -= 0.5f;
+                flagHomeArrowPos.z = 0;      // I think I can do this rather than do a 
+                                         //   a full projection onto the plane
+
+                float fAngle = Mathf.Atan2(flagHomeArrowPos.x, flagHomeArrowPos.y);
+
+                float yProportion = myCamera.rect.height < 1 ? 0.21f : 0.22f;
+                float xProportion = myCamera.rect.width < 1 ? 0.445f : 0.45f;
+                flagHomeArrowPos.x = xProportion * Mathf.Sin(fAngle) + 0.5f;  // Place on ellipse touching 
+                flagHomeArrowPos.y = yProportion * Mathf.Cos(fAngle) + 0.5f;  //   side of viewport
+                if (flagHomeViewportPos.z < myCamera.nearClipPlane)
+                {
+                    flagHomeArrowPos.x = 1 - flagHomeArrowPos.x;
+                    flagHomeArrowPos.y = 1 - flagHomeArrowPos.y;
+                }
+                //Debug.LogWarning(" flagArrowPos = " + flagArrowPos.ToString("F4"));
+                flagHomeArrowPos.z = myCamera.nearClipPlane + 0.001f;  // Looking from neg to pos Z;
+                float finalAngle = 180 + (-fAngle * Mathf.Rad2Deg) + (flagHomeViewportPos.z < myCamera.nearClipPlane ? 0 : 180);
+                flagHomeArrowArrow.localEulerAngles = new Vector3(0.0f, 0.0f, finalAngle);
+                flagHomeArrowIcon.position = myCamera.ViewportToWorldPoint(flagHomeArrowPos);
+                flagHomeArrowArrow.position = flagHomeArrowIcon.position;
+                break;
+
+            case FlagArrowState.activated_OnScreen:
+                float distToFlagHome = (flagHomeTransform.position - myPlayerMov.transform.position).magnitude;
+                distToFlagHome = Mathf.Clamp(distToFlagHome, maxProportionWOCMinDist, minProportionWOCMaxDist) - maxProportionWOCMinDist;
+                float totalDist = minProportionWOCMaxDist - maxProportionWOCMinDist;
+                float progress = distToFlagHome / totalDist;
+                float totalPropDif = maxProportionWhenOnCamera - minProportionWhenOnCamera;
+                float currentProportion = maxProportionWhenOnCamera - (progress * totalPropDif);
+                //Debug.LogWarning("currentProportion = "+ currentProportion + "; progress = "+ progress + "; distToFlag = "+ distToFlag + "; totalDist = "+ totalDist + "; totalPropDif = " + totalPropDif);
+
+                flagHomeArrowIcon.localScale = new Vector3(flagHomeArrowIconOriginalProportion.x * currentProportion, flagHomeArrowIconOriginalProportion.y * currentProportion, 1);
+                Vector3 flagHomeArrowViewportPos = myCamera.WorldToViewportPoint(flagHomeArrowFlagHomePos);
+                flagHomeArrowViewportPos.z = myCamera.nearClipPlane + 0.001f;
+                flagHomeArrowIcon.position = myCamera.ViewportToWorldPoint(flagHomeArrowViewportPos);
+                //flagArrowFixedRing.position = flagArrowWhale.position;
+                break;
+        }
+    }
+
+    void ActivateFlagHomeArrowOffScreen()
+    {
+        if (flagHomeArrowSt != FlagArrowState.activated_OffScreen)
+        {
+            DeactivateFlagHomeArrowOnScreen();
+            //if (!myPlayerMov.disableAllDebugs) Debug.LogError("Activate FLAG HOME ARROW OFF SCREEN");
+            Debug.LogError("Activate FLAG HOME ARROW OFF SCREEN");
+            flagHomeArrowSt = FlagArrowState.activated_OffScreen;
+            flagHomeArrowIcon.gameObject.SetActive(true);
+            flagHomeArrowArrow.gameObject.SetActive(true);
+            //ArrowToFlagSetTeamColorsAndRing();
+            FlagHomeArrowSetTeamColors();
+        }
+    }
+
+    void DeactivateFlagHomeArrowOffScreen()
+    {
+        if (flagHomeArrowSt == FlagArrowState.activated_OffScreen)
+        {
+            //if (!myPlayerMov.disableAllDebugs) Debug.LogError("Deactivate FLAG HOME ARROW OFF SCREEN");
+            Debug.LogError("Deactivate FLAG HOME ARROW OFF SCREEN");
+            flagHomeArrowSt = FlagArrowState.deactivated;
+            flagHomeArrowIcon.gameObject.SetActive(false);
+            flagHomeArrowArrow.gameObject.SetActive(false);
+        }
+    }
+
+    void ActivateFlagHomeArrowOnScreen()
+    {
+        if (flagHomeArrowSt != FlagArrowState.activated_OnScreen)
+        {
+            DeactivateFlagHomeArrowOnScreen();
+            //if (!myPlayerMov.disableAllDebugs) Debug.LogError("Activate FLAG HOME ARROW ON SCREEN");
+            Debug.LogError("Activate FLAG HOME ARROW ON SCREEN");
+            flagHomeArrowSt = FlagArrowState.activated_OnScreen;
+            flagHomeArrowArrow.gameObject.SetActive(false);
+            flagHomeArrowIcon.gameObject.SetActive(true);
+            //flagArrowWhale.localScale = new Vector3(flagArrowWhale.localScale.x * 0.8f, flagArrowWhale.localScale.y * 0.8f, 1);
+            FlagHomeArrowSetTeamColors();
+        }
+    }
+
+    void DeactivateFlagHomeArrowOnScreen()
+    {
+        if (flagHomeArrowSt == FlagArrowState.activated_OnScreen)
+        {
+            //if (!myPlayerMov.disableAllDebugs) Debug.LogError("Deactivate FLAG HOME ARROW ON SCREEN");
+            Debug.LogError("Deactivate FLAG HOME ARROW ON SCREEN");
+            flagHomeArrowSt = FlagArrowState.deactivated;
+            flagHomeArrowIcon.localScale = new Vector3(flagHomeArrowIconOriginalProportion.x, flagHomeArrowIconOriginalProportion.y, 1);
+            flagHomeArrowArrow.gameObject.SetActive(false);
+            flagHomeArrowIcon.gameObject.SetActive(false);
+        }
+    }
+
+    void FlagHomeArrowSetTeamColors()
+    {
+        switch (flagHomeArrowSt)
+        {
+            case FlagArrowState.activated_OffScreen:
+                //if (!flagHomeArrowArrow.gameObject.activeInHierarchy) flagHomeArrowArrow.gameObject.SetActive(true);
+                flagHomeArrowArrow.GetComponent<Image>().color = flagForSlider.currentOwner.GetComponent<PlayerMovement>().team == Team.A ?
+                        arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
+                flagHomeArrowIcon.GetComponent<Image>().color = flagForSlider.currentOwner.GetComponent<PlayerMovement>().team == Team.A ?
+arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
+                //flagArrowPickFlagGlowAnim.rect.GetComponent<Image>().color = flagForSlider.currentOwner.GetComponent<PlayerMovement>().team == Team.A ?
+                //    arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
+                break;
+            case FlagArrowState.activated_OnScreen:
+                //if (flagHomeArrowArrow.gameObject.activeInHierarchy) flagArrowFixedRing.gameObject.SetActive(false);
+                flagHomeArrowIcon.GetComponent<Image>().color = flagForSlider.currentOwner.GetComponent<PlayerMovement>().team == Team.A ?
+arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
+                break;
         }
     }
 

@@ -22,7 +22,7 @@ public class PlayerModel : MonoBehaviour
 
     //PLAYER MODEL MATERIALS
     [Header("--- PLAYER MODEL MATERIALS ---")]
-    public Material[] hairMats;//0 -> Team A (Green/Blue); 1 -> Team B (Pink/Red)
+    public Material[] hairMats;//0 -> Team A (Green/Blue); 1 -> Team B (Pink/Red); 2 -> None
     public Material[] skinMats;
     public Material[] wetsuitMats;
     public Material[] accesoriesMats;
@@ -75,6 +75,13 @@ public class PlayerModel : MonoBehaviour
                 wetsuit.material = wetsuitMats[1];
                 accesories.material = accesoriesMats[1];
                 boots.material = bootsMats[1];
+                break;
+            case Team.none:
+                hair.material = hairMats[2];
+                skin.material = skinMats[2];
+                wetsuit.material = wetsuitMats[2];
+                accesories.material = accesoriesMats[2];
+                boots.material = bootsMats[2];
                 break;
         }
     }
