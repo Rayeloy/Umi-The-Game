@@ -107,6 +107,7 @@ public class PlayerHUD : MonoBehaviour
 
     [Header("Flag Home Arrow")]
     public RectTransform flagHomeArrowIcon;
+    public RectTransform flagHomeArrowIconOutline;
     public RectTransform flagHomeArrowArrow;
     FlagArrowState flagHomeArrowSt = FlagArrowState.deactivated;
     Transform flagHomeTransform;
@@ -249,9 +250,9 @@ public class PlayerHUD : MonoBehaviour
             flagArrowWhale.GetComponent<RectTransform>().localScale = new Vector3(flagArrowWhale.GetComponent<RectTransform>().localScale.x * scaleValue, flagArrowWhale.GetComponent<RectTransform>().localScale.y, 1);
             flagArrowArrow.GetComponent<RectTransform>().localScale = new Vector3(flagArrowArrow.GetComponent<RectTransform>().localScale.x * scaleValue, flagArrowArrow.GetComponent<RectTransform>().localScale.y, 1);
             flagArrowFixedRing.GetComponent<RectTransform>().localScale = new Vector3(flagArrowFixedRing.GetComponent<RectTransform>().localScale.x * scaleValue, flagArrowFixedRing.GetComponent<RectTransform>().localScale.y, 1);
-            flagHomeArrowIcon.GetComponent<RectTransform>().localScale = new Vector3(flagHomeArrowIcon.GetComponent<RectTransform>().localScale.x * scaleValue, flagHomeArrowIcon.GetComponent<RectTransform>().localScale.y, 1);
+            //flagHomeArrowIcon.GetComponent<RectTransform>().localScale = new Vector3(flagHomeArrowIcon.GetComponent<RectTransform>().localScale.x * scaleValue, flagHomeArrowIcon.GetComponent<RectTransform>().localScale.y, 1);
             flagHomeArrowArrow.GetComponent<RectTransform>().localScale = new Vector3(flagHomeArrowArrow.GetComponent<RectTransform>().localScale.x * scaleValue, flagHomeArrowArrow.GetComponent<RectTransform>().localScale.y, 1);
-
+            flagHomeArrowIconOutline.GetComponent<RectTransform>().localScale = new Vector3(flagHomeArrowIconOutline.GetComponent<RectTransform>().localScale.x * scaleValue, flagHomeArrowIconOutline.GetComponent<RectTransform>().localScale.y, 1);
             //flagAro.GetComponent<RectTransform>().localScale = new Vector3(flagAro.GetComponent<RectTransform>().localScale.x * scaleValue, flagAro.GetComponent<RectTransform>().localScale.y, 1);
             //CameraVFXParent.localScale = new Vector3(CameraVFXParent.localScale.x * scaleValue, CameraVFXParent.localScale.y, 1);
         }
@@ -655,9 +656,9 @@ public class PlayerHUD : MonoBehaviour
     void SetUpFlagHomeArrow()
     {
         flagHomeTransform = myPlayerMov.team==Team.A? (gC as GameController_FlagMode).FlagHome_TeamA : (gC as GameController_FlagMode).FlagHome_TeamB;
-        flagHomeArrowIcon.gameObject.SetActive(false);
+        flagHomeArrowIconOutline.gameObject.SetActive(false);
         flagHomeArrowArrow.gameObject.SetActive(false);
-        flagHomeArrowIconOriginalProportion = flagHomeArrowIcon.localScale;
+        flagHomeArrowIconOriginalProportion = flagHomeArrowIconOutline.localScale;
     }
 
     void UpdateFlagHomeArrow()
@@ -746,8 +747,8 @@ public class PlayerHUD : MonoBehaviour
                 flagHomeArrowPos.z = myCamera.nearClipPlane + 0.001f;  // Looking from neg to pos Z;
                 float finalAngle = 180 + (-fAngle * Mathf.Rad2Deg) + (flagHomeViewportPos.z < myCamera.nearClipPlane ? 0 : 180);
                 flagHomeArrowArrow.localEulerAngles = new Vector3(0.0f, 0.0f, finalAngle);
-                flagHomeArrowIcon.position = myCamera.ViewportToWorldPoint(flagHomeArrowPos);
-                flagHomeArrowArrow.position = flagHomeArrowIcon.position;
+                flagHomeArrowIconOutline.position = myCamera.ViewportToWorldPoint(flagHomeArrowPos);
+                flagHomeArrowArrow.position = flagHomeArrowIconOutline.position;
                 break;
 
             case FlagArrowState.activated_OnScreen:
@@ -759,10 +760,10 @@ public class PlayerHUD : MonoBehaviour
                 float currentProportion = maxProportionWhenOnCamera - (progress * totalPropDif);
                 //Debug.LogWarning("currentProportion = "+ currentProportion + "; progress = "+ progress + "; distToFlag = "+ distToFlag + "; totalDist = "+ totalDist + "; totalPropDif = " + totalPropDif);
 
-                flagHomeArrowIcon.localScale = new Vector3(flagHomeArrowIconOriginalProportion.x * currentProportion, flagHomeArrowIconOriginalProportion.y * currentProportion, 1);
+                flagHomeArrowIconOutline.localScale = new Vector3(flagHomeArrowIconOriginalProportion.x * currentProportion, flagHomeArrowIconOriginalProportion.y * currentProportion, 1);
                 Vector3 flagHomeArrowViewportPos = myCamera.WorldToViewportPoint(flagHomeArrowFlagHomePos);
                 flagHomeArrowViewportPos.z = myCamera.nearClipPlane + 0.001f;
-                flagHomeArrowIcon.position = myCamera.ViewportToWorldPoint(flagHomeArrowViewportPos);
+                flagHomeArrowIconOutline.position = myCamera.ViewportToWorldPoint(flagHomeArrowViewportPos);
                 //flagArrowFixedRing.position = flagArrowWhale.position;
                 break;
         }
@@ -776,7 +777,7 @@ public class PlayerHUD : MonoBehaviour
             //if (!myPlayerMov.disableAllDebugs) Debug.LogError("Activate FLAG HOME ARROW OFF SCREEN");
             Debug.LogError("Activate FLAG HOME ARROW OFF SCREEN");
             flagHomeArrowSt = FlagArrowState.activated_OffScreen;
-            flagHomeArrowIcon.gameObject.SetActive(true);
+            flagHomeArrowIconOutline.gameObject.SetActive(true);
             flagHomeArrowArrow.gameObject.SetActive(true);
             //ArrowToFlagSetTeamColorsAndRing();
             FlagHomeArrowSetTeamColors();
@@ -790,7 +791,7 @@ public class PlayerHUD : MonoBehaviour
             //if (!myPlayerMov.disableAllDebugs) Debug.LogError("Deactivate FLAG HOME ARROW OFF SCREEN");
             Debug.LogError("Deactivate FLAG HOME ARROW OFF SCREEN");
             flagHomeArrowSt = FlagArrowState.deactivated;
-            flagHomeArrowIcon.gameObject.SetActive(false);
+            flagHomeArrowIconOutline.gameObject.SetActive(false);
             flagHomeArrowArrow.gameObject.SetActive(false);
         }
     }
@@ -804,7 +805,7 @@ public class PlayerHUD : MonoBehaviour
             Debug.LogError("Activate FLAG HOME ARROW ON SCREEN");
             flagHomeArrowSt = FlagArrowState.activated_OnScreen;
             flagHomeArrowArrow.gameObject.SetActive(false);
-            flagHomeArrowIcon.gameObject.SetActive(true);
+            flagHomeArrowIconOutline.gameObject.SetActive(true);
             //flagArrowWhale.localScale = new Vector3(flagArrowWhale.localScale.x * 0.8f, flagArrowWhale.localScale.y * 0.8f, 1);
             FlagHomeArrowSetTeamColors();
         }
@@ -817,9 +818,9 @@ public class PlayerHUD : MonoBehaviour
             //if (!myPlayerMov.disableAllDebugs) Debug.LogError("Deactivate FLAG HOME ARROW ON SCREEN");
             Debug.LogError("Deactivate FLAG HOME ARROW ON SCREEN");
             flagHomeArrowSt = FlagArrowState.deactivated;
-            flagHomeArrowIcon.localScale = new Vector3(flagHomeArrowIconOriginalProportion.x, flagHomeArrowIconOriginalProportion.y, 1);
+            flagHomeArrowIconOutline.localScale = new Vector3(flagHomeArrowIconOriginalProportion.x, flagHomeArrowIconOriginalProportion.y, 1);
             flagHomeArrowArrow.gameObject.SetActive(false);
-            flagHomeArrowIcon.gameObject.SetActive(false);
+            flagHomeArrowIconOutline.gameObject.SetActive(false);
         }
     }
 

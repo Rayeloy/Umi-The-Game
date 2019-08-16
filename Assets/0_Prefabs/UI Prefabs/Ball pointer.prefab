@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7250357324054310554}
   - component: {fileID: 3477373117588606699}
   - component: {fileID: 2799404654691782028}
+  - component: {fileID: 5501758940105509666}
   m_Layer: 5
   m_Name: FixedRing
   m_TagString: Untagged
@@ -74,6 +75,21 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &5501758940105509666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1246201286291075989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1573420865, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.8509804}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!1 &4575997088955838874
 GameObject:
   m_ObjectHideFlags: 0
@@ -159,6 +175,7 @@ GameObject:
   - component: {fileID: 4125547252187544305}
   - component: {fileID: 9151970188101457875}
   - component: {fileID: 5632577571869885846}
+  - component: {fileID: 6671259543952873819}
   m_Layer: 5
   m_Name: Arrow
   m_TagString: Untagged
@@ -223,6 +240,21 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &6671259543952873819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5781557040692791985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1573420865, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.8509804}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!1 &7562369078611092863
 GameObject:
   m_ObjectHideFlags: 0
@@ -234,6 +266,7 @@ GameObject:
   - component: {fileID: 5823565704851570676}
   - component: {fileID: 8981471710190063292}
   - component: {fileID: 949210472314424142}
+  - component: {fileID: 6287808511014272152}
   m_Layer: 5
   m_Name: Ring
   m_TagString: Untagged
@@ -297,6 +330,21 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &6287808511014272152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7562369078611092863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1573420865, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.8509804}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!1 &8156118386221190847
 GameObject:
   m_ObjectHideFlags: 0
@@ -346,6 +394,7 @@ GameObject:
   - component: {fileID: 2742325033675161004}
   - component: {fileID: 6740778307358598547}
   - component: {fileID: 4325456258340884184}
+  - component: {fileID: 3000380525217824048}
   m_Layer: 5
   m_Name: Wale
   m_TagString: Untagged
@@ -410,3 +459,18 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &3000380525217824048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8592336685017622966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1573420865, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.8509804}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1

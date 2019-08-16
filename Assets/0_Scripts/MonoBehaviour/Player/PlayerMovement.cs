@@ -1821,7 +1821,7 @@ public class PlayerMovement : MonoBehaviour
 
     #region  WATER ---------------------------------------------
 
-    public void EnterWater()
+    public void EnterWater(Collider waterTrigger = null)
     {
         if (!inWater)
         {
@@ -1841,6 +1841,12 @@ public class PlayerMovement : MonoBehaviour
                 (gC as GameController_FlagMode).myScoreManager.PlayerEliminado();
             }
             myPlayerVFX.ActivateEffect(PlayerVFXType.SwimmingEffect);
+            if (waterTrigger != null)
+            {
+                Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;//.y = waterTrigger.bounds.max.y;
+                waterSplashPos.y = waterTrigger.bounds.max.y -0.5f;
+                myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
+            }
             myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
             myPlayerCombatNew.StopDoingCombat();
             myPlayerHook.StopHook();
@@ -1859,7 +1865,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void ExitWater()
+    public void ExitWater(Collider waterTrigger = null)
     {
         if (inWater)
         {
@@ -1867,6 +1873,12 @@ public class PlayerMovement : MonoBehaviour
             inWater = false;
             myPlayerWeap.AttatchWeapon();
             myPlayerVFX.DeactivateEffect(PlayerVFXType.SwimmingEffect);
+            if (waterTrigger != null)
+            {
+                Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;//.y = waterTrigger.bounds.max.y;
+                waterSplashPos.y = waterTrigger.bounds.max.y - 0.5f;
+                myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
+            }
             myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
         }
     }

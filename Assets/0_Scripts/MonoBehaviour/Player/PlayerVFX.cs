@@ -102,6 +102,18 @@ public class PlayerVFX : MonoBehaviour
                 break;
         }
     }
+
+    public GameObject GetEffectGO(PlayerVFXType effectType)
+    {
+        for(int i = 0; i < effects.Length; i++)
+        {
+            if(effects[i].effectType == effectType)
+            {
+                return effects[i].effectPrefab;
+            }
+        }
+        return null;
+    }
     #endregion
 
     #region ----[ PUN CALLBACKS ]----

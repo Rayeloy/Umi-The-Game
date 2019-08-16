@@ -21,11 +21,11 @@ public class PlayerBody : MonoBehaviour {
                 float waterSurface = col.GetComponent<Collider>().bounds.max.y;
                 if (transform.position.y <= waterSurface)
                 {
-                    myPlayerMov.EnterWater();
+                    myPlayerMov.EnterWater(col);
                 }
                 else
                 {
-                    myPlayerMov.ExitWater();
+                    myPlayerMov.ExitWater(col);
                 }
                 break;
             case "Flag":
