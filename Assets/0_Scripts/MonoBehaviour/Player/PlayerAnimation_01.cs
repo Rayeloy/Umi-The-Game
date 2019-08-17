@@ -302,7 +302,23 @@ public class PlayerAnimation_01 : MonoBehaviour
             animator.SetBool(groundHash, ground);
         }
 
-        if(!safeBelow && myPlayerMovement.controller.collisions.safeBelow && !noControl)
+        if (ground && myPlayerMovement.controller.collisions.below && myPlayerMovement.inWater && !noControl)
+        {
+
+            ground = false;
+            animator.SetBool(groundHash, ground);
+
+            water = true;
+            animator.SetBool(waterHash, water);
+        }
+
+        if (!ground && !air && !myPlayerMovement.inWater && !noControl)
+        {
+            air = true;
+            animator.SetBool(airHash, air);
+        }
+
+        if (!safeBelow && myPlayerMovement.controller.collisions.safeBelow && !noControl)
         {
             safeBelow = true;
             animator.SetBool(safeBelowHash, safeBelow);
