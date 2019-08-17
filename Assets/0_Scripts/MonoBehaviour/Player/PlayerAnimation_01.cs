@@ -312,6 +312,12 @@ public class PlayerAnimation_01 : MonoBehaviour
             animator.SetBool(waterHash, water);
         }
 
+        if (ground && startJump)
+        {
+            startJump = false;
+            animator.SetBool(startJumpHash, startJump);
+        }
+
         if (!ground && !air && !myPlayerMovement.inWater && !noControl)
         {
             air = true;
