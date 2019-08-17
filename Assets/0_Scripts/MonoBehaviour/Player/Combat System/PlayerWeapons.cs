@@ -25,6 +25,8 @@ public class PlayerWeapons : MonoBehaviour {
     public WeaponData currentWeaponData;
     [HideInInspector]
     public Weapon currentWeapon;
+    [HideInInspector]
+    public WeaponSkin currentWeaponSkin = null;
     private Transform currentWeapObject;
     [HideInInspector]
     public List<Weapon> weaponsNearby;
@@ -203,10 +205,10 @@ public class PlayerWeapons : MonoBehaviour {
             switch (myPlayerMovement.team)
             {
                 case Team.A:
-                    currentWeapon.SetSkin("Skin2","Green");
+                    ChangeWeaponSkin("Skin2","Green");
                     break;
                 case Team.B:
-                    currentWeapon.SetSkin("Skin2","Pink");
+                    ChangeWeaponSkin("Skin2","Pink");
                     break;
             }
         }
@@ -257,7 +259,7 @@ public class PlayerWeapons : MonoBehaviour {
 
     public void ChangeWeaponSkin(string skinName="", string recolorName="")
     {
-        currentWeapon.SetSkin(skinName, recolorName);
+        currentWeapon.SetSkin(out currentWeaponSkin, skinName, recolorName);
     }
 
     #endregion

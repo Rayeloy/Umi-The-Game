@@ -177,6 +177,10 @@ public class PlayerMovement : MonoBehaviour
     [Range(0, 89)]
     public float wallJumpMinHorizAngle = 30;
 
+    [Header("TEAM COLORS")]
+    public Gradient StinrayGradient;
+    public Gradient OktiromeGradient;
+
     [Header("----- ONLINE VARIABLES ----")]
     [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
     public static GameObject LocalPlayerInstance;
@@ -354,7 +358,7 @@ public class PlayerMovement : MonoBehaviour
             airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airHardSteerAcc, airBreakAcc);
 
             //PLAYER MODEL
-            myPlayerModel.SwitchTeam(team);
+            SwitchTeam(team);
 
             //WALLJUMP
             wallJumpCheckRaysRows = 5;
@@ -381,7 +385,7 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             //PLAYER MODEL
-            myPlayerModel.SwitchTeam(team);
+            SwitchTeam(team);
         }
 
 
@@ -484,6 +488,14 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region ----[ CLASS FUNCTIONS ]----
+
+    void SwitchTeam(Team team)
+    {
+        myPlayerModel.SwitchTeam(team);
+        TrailRenderer dashTR = myPlayerVFX.GetEffectGO(PlayerVFXType.DashTrail).GetComponent<TrailRenderer>();
+        dashTR.colorGradient = team == Team.A? StinrayGradient: OktiromeGradient;
+        //dashTR.endColor = team == Team.A ? StinrayColors [1]: OktiromeColors[1];
+    }
 
     #region INPUTS BUFFERING
 

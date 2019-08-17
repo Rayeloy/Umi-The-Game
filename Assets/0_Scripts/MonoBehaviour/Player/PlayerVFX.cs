@@ -21,6 +21,8 @@ public class PlayerVFX : MonoBehaviour
 
     public effect[] effects;
     public TrailRenderer dashTrail;
+    [HideInInspector]
+    public TrailRenderer[] weaponTrailRenderers;
     #endregion
 
     #region ----[ PROPERTIES ]----
@@ -45,6 +47,11 @@ public class PlayerVFX : MonoBehaviour
     private void Start()
     {
         dashTrail.emitting = false;
+        weaponTrailRenderers = myPlayerMovement.myPlayerWeap.currentWeaponSkin.trailRenderers;
+        for (int i = 0; i < weaponTrailRenderers.Length; i++)
+        {
+            weaponTrailRenderers[i].emitting = false;
+        }
     }
     #endregion
 
@@ -105,14 +112,39 @@ public class PlayerVFX : MonoBehaviour
 
     public GameObject GetEffectGO(PlayerVFXType effectType)
     {
-        for(int i = 0; i < effects.Length; i++)
+        switch (effectType)
         {
-            if(effects[i].effectType == effectType)
-            {
-                return effects[i].effectPrefab;
-            }
+            case PlayerVFXType.DashTrail:
+                return dashTrail.gameObject;
+                break;
+            default:
+                for (int i = 0; i < effects.Length; i++)
+                {
+                    if (effects[i].effectType == effectType)
+                    {
+                        return effects[i].effectPrefab;
+                    }
+                }
+                break;
         }
+
         return null;
+    }
+
+    public void ActivateWeaponTrails()
+    {
+        for (int i = 0; i < weaponTrailRenderers.Length; i++)
+        {
+            weaponTrailRenderers[i].emitting = true;
+        }
+    }
+
+    public void DeactivateWeaponTrails()
+    {
+        for (int i = 0; i < weaponTrailRenderers.Length; i++)
+        {
+            weaponTrailRenderers[i].emitting = false;
+        }
     }
     #endregion
 
@@ -151,7 +183,7 @@ public class effect
 
     public void KonoAwake()
     {
-        effectParticleSystem= effectPrefab.GetComponent<ParticleSystem>();
+        effectParticleSystem = effectPrefab.GetComponent<ParticleSystem>();
         if (playOnAwake)
         {
             Activate();

@@ -56,9 +56,10 @@ public class Weapon : MonoBehaviour
     //    if (currentWeaponPrefab == null) Debug.LogError("Error: WeaponData: Weapon with index " + index + " not found");
     //}
 
-    public void SetSkin(string skinName = "", string skinRecolorName = "")
+    public void SetSkin(out WeaponSkin weaponSkin, string skinName = "", string skinRecolorName = "")
     {
         bool exito = false;
+        weaponSkin = null;
         if (weaponData.GetSkin(out currentSkin, out currentSkinRecolor, skinName, skinRecolorName))
         {
             for (int i=0; i< weaponSkinsParent.childCount;i++)
@@ -66,6 +67,7 @@ public class Weapon : MonoBehaviour
                 Destroy(weaponSkinsParent.GetChild(i).gameObject);
             }
             currentSkinTransf = Instantiate(currentSkinRecolor.skinRecolorPrefab,transform).transform;
+            weaponSkin = currentSkinTransf.GetComponent<WeaponSkin>();
             exito = true;
         }
         //for (int i = 0; i < weaponData.weaponSkins.Length; i++)

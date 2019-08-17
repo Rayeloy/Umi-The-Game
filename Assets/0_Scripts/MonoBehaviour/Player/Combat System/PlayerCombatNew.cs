@@ -239,6 +239,9 @@ public class PlayerCombatNew : MonoBehaviour
                 if (currentAttack.activePhase.rotationSpeedPercentage < 1) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.activePhase.rotationSpeedPercentage);
                 if (currentAttack.activePhase.movementSpeedPercentage < 1) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.activePhase.movementSpeedPercentage);
 
+                //WeaponTrails
+                myPlayerMovement.myPlayerVFX.ActivateWeaponTrails();
+
                 //Do impulse
                 if(!currentAttackHasRedirect) CalculateImpulse(currentAttack);
                 myPlayerMovement.StartImpulse(currentImpulse);
@@ -246,6 +249,9 @@ public class PlayerCombatNew : MonoBehaviour
             case AttackPhaseType.recovery:
                 if (currentAttack.recoveryPhase.rotationSpeedPercentage < 1) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.recoveryPhase.rotationSpeedPercentage);
                 if (currentAttack.recoveryPhase.movementSpeedPercentage < 1) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.recoveryPhase.movementSpeedPercentage);
+
+                //WeaponTrails
+                myPlayerMovement.myPlayerVFX.DeactivateWeaponTrails();
                 break;
         }
     }
@@ -588,6 +594,10 @@ public class PlayerCombatNew : MonoBehaviour
             }
             StopParry();
             StopHitParry();
+
+            //WeaponTrails
+            myPlayerMovement.myPlayerVFX.DeactivateWeaponTrails();
+
             //myAttacks[attackIndex].StartCD();
         }
     }

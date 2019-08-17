@@ -633,6 +633,7 @@ MonoBehaviour:
   myPlayerObjectDetection: {fileID: 1593201641832413956}
   myPlayerModel: {fileID: 604705034532906637}
   myPlayerVFX: {fileID: 2159948544499626671}
+  startBeingHitAnimation: 0
   gC: {fileID: 0}
   myCamera: {fileID: 0}
   cameraFollow: {fileID: 2847219716704171441}
@@ -679,6 +680,64 @@ MonoBehaviour:
   wallJumping: 0
   wallJumpAngle: 25.5
   wallJumpMinHorizAngle: 30
+  StinrayGradient:
+    serializedVersion: 2
+    key0: {r: 0.53065217, g: 1, b: 0, a: 1}
+    key1: {r: 0.8979895, g: 1, b: 0, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 31997
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  OktiromeGradient:
+    serializedVersion: 2
+    key0: {r: 1, g: 0.24056602, b: 0.5552154, a: 1}
+    key1: {r: 1, g: 0.53566676, b: 0, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 34502
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
   myUICamera: {fileID: 0}
   myPlayerHUD: {fileID: 0}
   online: 0
@@ -825,6 +884,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 6540143348302519117}
+  animHit: 0
   enterWater: 0
   exitWater: 0
   dash: 0
@@ -1486,12 +1546,12 @@ PrefabInstance:
     - target: {fileID: 504999572725316613, guid: e547ba05db3d3ed46a219441523d8deb,
         type: 3}
       propertyPath: m_Parameters.colorGradient.key1.g
-      value: 0.99437773
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 504999572725316613, guid: e547ba05db3d3ed46a219441523d8deb,
         type: 3}
       propertyPath: m_Parameters.colorGradient.key1.b
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 504999572725316613, guid: e547ba05db3d3ed46a219441523d8deb,
         type: 3}
@@ -1511,7 +1571,7 @@ PrefabInstance:
     - target: {fileID: 504999572725316613, guid: e547ba05db3d3ed46a219441523d8deb,
         type: 3}
       propertyPath: m_Parameters.numCornerVertices
-      value: 0
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 504999572725316613, guid: e547ba05db3d3ed46a219441523d8deb,
         type: 3}
@@ -1551,7 +1611,7 @@ PrefabInstance:
     - target: {fileID: 504999572725316613, guid: e547ba05db3d3ed46a219441523d8deb,
         type: 3}
       propertyPath: m_MinVertexDistance
-      value: 0
+      value: 0.0001
       objectReference: {fileID: 0}
     - target: {fileID: 504999572725316613, guid: e547ba05db3d3ed46a219441523d8deb,
         type: 3}
