@@ -27,6 +27,7 @@ public class GameInterface : MonoBehaviour
 
     [Header(" --- Pause --- ")]
     public string menuScene;
+    public string teamSelectScene;
     public GameObject pauseRestartButton;
     public GameObject pauseMenuButton; 
 
@@ -105,6 +106,18 @@ public class GameInterface : MonoBehaviour
     public void ExitGame()
     {
         Application.Quit();
+    }
+
+    public void BackToTeamSelect()
+    {
+        gC.UnPauseGame();
+        if (GameInfo.instance.inControlManager != null)
+        {
+            //Eloy: hay que encontrar una mejor manera de resetear/borrar los controles...
+            Destroy(GameInfo.instance.inControlManager);
+        }
+        print("LOAD MAIN TEAM SELECT");
+        SceneManager.LoadScene(teamSelectScene);
     }
 
     public void GoBackToMenu()
