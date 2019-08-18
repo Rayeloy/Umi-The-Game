@@ -7,14 +7,15 @@ using UnityEngine.SceneManagement;
 public class Demo_MainMenu : MonoBehaviour
 {
     // Valor a Cambiar para activar las camaras en el switch
+    public string teamSetupScene;
     int scene = 0;
 
     [Range(0,1)]
     public float deadzone;
 
     //Temporizador
-    float timeToStart = 1.7f;
-    float maxTimeLeft = 2.5f;
+    float timeToStart = 0f;
+    float maxTimeLeft = 1.7f;
     float timeLeft;
     
     bool timer1 = false;
@@ -95,14 +96,14 @@ public class Demo_MainMenu : MonoBehaviour
             }
             else if (scene == 1)
             {
-                SceneManager.LoadScene("UmiLand");
+                SceneManager.LoadScene(teamSetupScene);
             }
             else if (scene == 2)
             {
-                SceneManager.LoadScene("TeamSetup");
             }
             else if (scene == 4)
             {
+                SceneManager.LoadScene("UmiLand");
                 //SceneManager.LoadScene("Tutorial_v2");
             }
             else if (scene == 3)

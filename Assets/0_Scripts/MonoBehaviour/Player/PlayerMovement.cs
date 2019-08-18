@@ -8,9 +8,9 @@ using Photon.Realtime;
 #region ----[ PUBLIC ENUMS ]----
 public enum Team
 {
-    A,// Blue - Green
-    B,// Red - Pink
-    none
+    A=1,// Blue - Green
+    B=2,// Red - Pink
+    none=0
 }
 public enum MoveState
 {

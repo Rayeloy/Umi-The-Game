@@ -62,10 +62,11 @@ public class TeamSetupManager : MonoBehaviour
     {
         if(GameInfo.instance == null)
         {
-            stockGameInfo.SetActive(true);
-            stockGameInfo.GetComponent<GameInfo>().Awake();
             stockInControlManager.SetActive(true);
             stockInControlManager.GetComponent<InControlManager>().OnEnable();
+            stockGameInfo.SetActive(true);
+            stockGameInfo.GetComponent<GameInfo>().Awake();
+
         }
         instance = this;
         minNumPlayers = Mathf.Clamp(minNumPlayers, 1, 6);

@@ -107,100 +107,100 @@ public class EasingFunction
         {
             case Ease.EaseInBack:
                 return EaseInBack(start, end, value);
-                break;
+                //break;
             case Ease.EaseInBounce:
                 return EaseInBounce(start, end, value);
-                break;
+                //break;
             case Ease.EaseInCirc:
                 return EaseInCirc(start, end, value);
-                break;
+                //break;
             case Ease.EaseInCubic:
                 return EaseInCubic(start, end, value);
-                break;
+                //break;
             case Ease.EaseInElastic:
                 return EaseInElastic(start, end, value);
-                break;
+                //break;
             case Ease.EaseInExpo:
                 return EaseInExpo(start, end, value);
-                break;
+                //break;
             case Ease.EaseInOutBack:
                 return EaseInOutBack(start, end, value);
-                break;
+                //break;
             case Ease.EaseInOutBounce:
                 return EaseInOutBounce(start, end, value);
-                break;
+                //break;
             case Ease.EaseInOutCirc:
                 return EaseInOutCirc(start, end, value);
-                break;
+                //break;
             case Ease.EaseInOutCubic:
                 return EaseInOutCubic(start, end, value);
-                break;
+                //break;
             case Ease.EaseInOutElastic:
                 return EaseInOutElastic(start, end, value);
-                break;
+                //break;
             case Ease.EaseInOutExpo:
                 return EaseInOutExpo(start, end, value);
-                break;
+                //break;
             case Ease.EaseInOutQuad:
                 return EaseInOutQuad(start, end, value);
-                break;
+                //break;
             case Ease.EaseInOutQuart:
                 return EaseInOutQuart(start, end, value);
-                break;
+                //break;
             case Ease.EaseInOutQuint:
                 return EaseInOutQuint(start, end, value);
-                break;
+                //break;
             case Ease.EaseInOutSine:
                 return EaseInOutSine(start, end, value);
-                break;
+                //break;
             case Ease.EaseInQuad:
                 return EaseInQuad(start, end, value);
-                break;
+                //break;
             case Ease.EaseInQuart:
                 return EaseInQuart(start, end, value);
-                break;
+                //break;
             case Ease.EaseInQuint:
                 return EaseInQuint(start, end, value);
-                break;
+                //break;
             case Ease.EaseInSine:
                 return EaseInSine(start, end, value);
-                break;
+                //break;
             case Ease.EaseOutBack:
                 return EaseOutBack(start, end, value);
-                break;
+                //break;
             case Ease.EaseOutBounce:
                 return EaseOutBounce(start, end, value);
-                break;
+                //break;
             case Ease.EaseOutCirc:
                 return EaseOutCirc(start, end, value);
-                break;
+                //break;
             case Ease.EaseOutCubic:
                 return EaseOutCubic(start, end, value);
-                break;
+                //break;
             case Ease.EaseOutElastic:
                 return EaseOutElastic(start, end, value);
-                break;
+                //break;
             case Ease.EaseOutExpo:
                 return EaseOutExpo(start, end, value);
-                break;
+                //break;
             case Ease.EaseOutQuad:
                 return EaseOutQuad(start, end, value);
-                break;
+                //break;
             case Ease.EaseOutQuart:
                 return EaseOutQuart(start, end, value);
-                break;
+                //break;
             case Ease.EaseOutQuint:
                 return EaseOutQuint(start, end, value);
-                break;
+               //break;
             case Ease.EaseOutSine:
                 return EaseOutSine(start, end, value);
-                break;
+                //break;
             case Ease.Linear:
                 return Linear(start, end, value);
-                break;
+                //break;
             case Ease.Spring:
                 return Spring(start, end, value);
-                break;
+                //break;
         }
         return -1;
     }

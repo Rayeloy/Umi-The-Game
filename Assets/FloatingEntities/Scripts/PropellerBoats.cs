@@ -80,6 +80,6 @@ public class PropellerBoats : MonoBehaviour
 
   void OnDrawGizmos()
   {
-    Handles.Label(propellers[0].position, engine_rpm.ToString());
+    //Handles.Label(propellers[0].position, engine_rpm.ToString());
   }
 }

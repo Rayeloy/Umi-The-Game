@@ -157,11 +157,14 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             //Eloy: he cambiado esto porque me he dado cuenta de que es necesario hasta en la build final, no solo en el editor.
             if (GameInfo.instance == null || GameInfo.instance.inControlManager == null)
             {
-                string escena = TeamSetupManager.siguienteEscena;
+                //string escena = TeamSetupManager.siguienteEscena;
                 //print(escena);
                 TeamSetupManager.siguienteEscena = SceneManager.GetActiveScene().name;
                 TeamSetupManager.startFromMap = true;
-                SceneManager.LoadScene("TeamSetup");
+                //TO CHANGE TO:
+                Alpha_Team_Select.startFromMapScene = SceneManager.GetActiveScene().name;
+                Alpha_Team_Select.startFromMap = true;
+                SceneManager.LoadScene("Demo_TeamSetUp");
                 return;
             }
         }

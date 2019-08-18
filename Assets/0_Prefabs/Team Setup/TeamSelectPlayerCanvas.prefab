@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3994023249872422076}
   - component: {fileID: 9101003048912925598}
   - component: {fileID: 2121846174120067372}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: NotJoinedScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33,10 +33,10 @@ RectTransform:
   m_Father: {fileID: 7368652533971165749}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: -0.4904668, y: -0.49054998}
+  m_AnchorMax: {x: 1.4904668, y: 1.49055}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1744.1, y: 981.1}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9101003048912925598
 CanvasRenderer:
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 2338783991956572070}
   - component: {fileID: 5785483219811932540}
   - component: {fileID: 7106675497675594868}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,10 +107,10 @@ RectTransform:
   m_Father: {fileID: 3994023249872422076}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.000015259, y: -0.000011444}
-  m_SizeDelta: {x: 1237.3, y: 231.8}
+  m_AnchorMin: {x: 0.32435194, y: 0.44149715}
+  m_AnchorMax: {x: 0.67564803, y: 0.55850285}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5785483219811932540
 CanvasRenderer:
@@ -144,7 +144,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 180
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 0
     m_MaxSize: 180
     m_Alignment: 4
@@ -153,7 +153,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Press A to join
+  m_Text: Press start to join
 --- !u!1 &5323858648739802478
 GameObject:
   m_ObjectHideFlags: 0
@@ -166,7 +166,7 @@ GameObject:
   - component: {fileID: 13827354598272786}
   - component: {fileID: 3207041999190073243}
   - component: {fileID: 7871565322761987006}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: TeamSelectPlayerCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,7 +211,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
-  m_SortingLayerID: 0
+  m_SortingLayerID: 1215519431
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &3207041999190073243

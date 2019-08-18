@@ -41,6 +41,7 @@ public class GameInfo : MonoBehaviour
     {
         //UpdateControls();
         ProcessUIAnimations();
+        if (myControls.L1.WasPressed) Debug.Log("L1 was pressed");
     }
 
     void OnEnable()
@@ -77,17 +78,6 @@ public class GameInfo : MonoBehaviour
             return Team.B;
         else                     //mas numero de jugadores rojos
             return Team.A;
-        //       else
-        //       {
-        //           if (Random.value < 0.5f){
-        //               Debug.Log("Random Azul");
-        //               return Team.blue;
-        //           }
-        //           else{
-        //               Debug.Log("Random Rojo");
-        //               return Team.red;
-        //           }
-        //       }
     }
 
     #region Controls
@@ -115,22 +105,22 @@ public class GameInfo : MonoBehaviour
     }
 
     //NO SE USA
-    void SetMyControls(InputDevice inputDevice)
-    {
-        if (inputDevice == null)
-        {
-            if (myControls.controlsType != InputDeviceClass.Keyboard)
-            {
-                myControls = PlayerActions.CreateWithKeyboardBindings();
-            }
-        }
-        else
-        {
-            PlayerActions actions = PlayerActions.CreateWithJoystickBindings();
-            actions.Device = inputDevice;
-            myControls = actions;
-        }
-    }
+    //void SetMyControls(InputDevice inputDevice)
+    //{
+    //    if (inputDevice == null)
+    //    {
+    //        if (myControls.controlsType != InputDeviceClass.Keyboard)
+    //        {
+    //            myControls = PlayerActions.CreateWithKeyboardBindings();
+    //        }
+    //    }
+    //    else
+    //    {
+    //        PlayerActions actions = PlayerActions.CreateWithJoystickBindings();
+    //        actions.Device = inputDevice;
+    //        myControls = actions;
+    //    }
+    //}
     #endregion
 
     #region UIAnimations

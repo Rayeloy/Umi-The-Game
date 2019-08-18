@@ -57,6 +57,7 @@ public class PlayerActions : PlayerActionSet
         LJUp = CreatePlayerAction("LJUp");
         LJDown = CreatePlayerAction("LJDown");
         LeftJoystick = CreateTwoAxisPlayerAction(LJLeft, LJRight, LJDown, LJUp);
+        //LeftJoystick.LowerDeadZone = 
 
         R3 = CreatePlayerAction("R3");
         L3 = CreatePlayerAction("L3");
@@ -67,7 +68,6 @@ public class PlayerActions : PlayerActionSet
     public static PlayerActions CreateDefaultBindings()
     {
         var actions = new PlayerActions();
-
         //KEYBOARD AND MOUSE
         actions.controlsType = InputDeviceClass.Keyboard;
 
@@ -81,6 +81,7 @@ public class PlayerActions : PlayerActionSet
         actions.Y.AddDefaultBinding(Key.Key2);
         actions.B.AddDefaultBinding(Key.Key3);
 
+        //actions.RJLeft.LowerDeadZone = 0.2f;
         actions.RJUp.AddDefaultBinding(Mouse.PositiveY);
         actions.RJDown.AddDefaultBinding(Mouse.NegativeY);
         actions.RJLeft.AddDefaultBinding(Mouse.NegativeX);
@@ -113,6 +114,7 @@ public class PlayerActions : PlayerActionSet
         actions.RJDown.AddDefaultBinding(InputControlType.RightStickDown);
         actions.RJLeft.AddDefaultBinding(InputControlType.RightStickLeft);
         actions.RJRight.AddDefaultBinding(InputControlType.RightStickRight);
+        
 
         actions.LJUp.AddDefaultBinding(InputControlType.LeftStickUp);
         actions.LJDown.AddDefaultBinding(InputControlType.LeftStickDown);

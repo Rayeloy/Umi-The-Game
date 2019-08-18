@@ -15,17 +15,23 @@ public enum TeamSelectMenuState
 }
 public class Alpha_Team_Select : MonoBehaviour
 {
+    public static Alpha_Team_Select instance;
     //Variables
     public GameObject stockGameInfo;
     public GameObject stockInControlManager;
     public GameObject selectNumberOfPlayersCanvas;
 
+    [HideInInspector] public static bool startFromMap = false;
+    [HideInInspector] public static string startFromMapScene;
+    public string nextScene;
+
     PlayerActions keyboardListener;
     PlayerActions joystickListener;
+    JoyStickControls myJoyStickControls;
 
     TeamSelectMenuState selectPlayerMenuSt = TeamSelectMenuState.ChoosingNumberOfPlayers;
 
-    public string nextScene;
+
     [Range(0, 1)]
     public float deadzone;
     public Camera selectNumberOfPlayersCam;
@@ -41,25 +47,18 @@ public class Alpha_Team_Select : MonoBehaviour
     bool ready = false; //Can´t change team
     int nPlayers = 1;
 
-
     private void Awake()
     {
+        instance = this;
         if (GameInfo.instance == null)
         {
-            stockGameInfo.SetActive(true);
-            stockGameInfo.GetComponent<GameInfo>().Awake();
             stockInControlManager.SetActive(true);
-            stockInControlManager.GetComponent<InControlManager>().OnEnable();
+            //stockInControlManager.GetComponent<InControlManager>().OnEnable();
+            stockGameInfo.SetActive(true);
+           // stockGameInfo.GetComponent<GameInfo>().Awake();
+
         }
 
-        if (GameInfo.instance != null)
-        {
-            GameInfo.instance.inControlManager = GameObject.Find("InControl manager");
-        }
-        else
-        {
-            Debug.LogError("Error: GameInfo is null or has not done it's awake yet. It should be awaken and ready.");
-        }
         selectNumberOfPlayersCanvas.SetActive(true);
         selectNumberOfPlayersCam.gameObject.SetActive(true);
         for (int i = 0; i < selectPlayers.Length; i++)
@@ -68,40 +67,72 @@ public class Alpha_Team_Select : MonoBehaviour
             selectPlayers[i].myCanvas.gameObject.SetActive(false);
             selectPlayers[i].deadzone = deadzone;
         }
+        myJoyStickControls = new JoyStickControls();
     }
 
     void Start()
     {
+        if (GameInfo.instance != null)
+        {
+            GameInfo.instance.inControlManager = GameObject.Find("InControl manager");
+        }
+        else
+        {
+            Debug.LogError("Error: GameInfo is null or has not done it's awake yet. It should be awaken and ready.");
+        }
+
         MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
     }
 
     void Update()
     {
+        if (GameInfo.instance.myControls.A.WasPressed) Debug.Log("A WAS PRESSED");
         switch (selectPlayerMenuSt)
         {
             case TeamSelectMenuState.ChoosingNumberOfPlayers:
-                if (Input.GetKeyDown(KeyCode.LeftArrow) || GameInfo.instance.myControls.LeftJoystick.X < -deadzone)
+                if (Input.GetKeyDown(KeyCode.LeftArrow) || ((GameInfo.instance.myControls.LeftJoystick.X <= -deadzone) && !myJoyStickControls.leftIsPressed))
                 {
+                    myJoyStickControls.leftIsPressed = true;
                     MoveLeft();
                 }
-                else if (Input.GetKeyDown(KeyCode.RightArrow) || GameInfo.instance.myControls.LeftJoystick.X > deadzone)
+                else if (Input.GetKeyDown(KeyCode.RightArrow) || ((GameInfo.instance.myControls.LeftJoystick.X >= deadzone) && !myJoyStickControls.rightIsPressed))
                 {
+                    myJoyStickControls.rightIsPressed = true;
                     MoveRight();
                 }
-                else if (Input.GetKeyDown(KeyCode.UpArrow) || GameInfo.instance.myControls.LeftJoystick.Y < -deadzone)
+                else if (Input.GetKeyDown(KeyCode.UpArrow) || ((GameInfo.instance.myControls.LeftJoystick.Y <= -deadzone) && !myJoyStickControls.downIsPressed))
                 {
+                    myJoyStickControls.downIsPressed = true;
                     MoveUp();
                 }
-                else if (Input.GetKeyDown(KeyCode.DownArrow) || GameInfo.instance.myControls.LeftJoystick.Y > deadzone)
+                else if (Input.GetKeyDown(KeyCode.DownArrow) || ((GameInfo.instance.myControls.LeftJoystick.Y >= deadzone) && !myJoyStickControls.upIsPressed))
                 {
+                    myJoyStickControls.upIsPressed = true;
                     MoveDown();
                 }
                 else if ((Input.GetKeyDown(KeyCode.Space) || (Input.GetKeyDown(KeyCode.Return)) || GameInfo.instance.myControls.A.WasPressed))
                 {
                     LockSelectNumberOfPlayers();
                 }
+                if (GameInfo.instance.myControls.LeftJoystick.Y > -deadzone && myJoyStickControls.downIsPressed)
+                {
+                    myJoyStickControls.downIsPressed = false;
+                }
+                if (GameInfo.instance.myControls.LeftJoystick.Y < deadzone && myJoyStickControls.upIsPressed)
+                {
+                    myJoyStickControls.upIsPressed = false;
+                }
+                if (GameInfo.instance.myControls.LeftJoystick.X > -deadzone && myJoyStickControls.leftIsPressed)
+                {
+                    myJoyStickControls.leftIsPressed = false;
+                }
+                if (GameInfo.instance.myControls.LeftJoystick.X < deadzone && myJoyStickControls.rightIsPressed)
+                {
+                    myJoyStickControls.rightIsPressed = false;
+                }
                 break;
             case TeamSelectMenuState.ChoosingTeam:
+
                 if (JoinButtonWasPressedOnListener(joystickListener))
                 {
                     InputDevice inputDevice = InputManager.ActiveDevice;
@@ -124,6 +155,55 @@ public class Alpha_Team_Select : MonoBehaviour
                 {
                     selectPlayers[i].KonoUpdate();
                 }
+
+                //CHECK IF ALL READY
+                bool allReady = true;
+                for (int i=0; i<selectPlayers.Length;i++)
+                {
+                    if (i < nPlayers && selectPlayers[i].teamSelectPlayerSt != TeamSelectPlayerState.TeamLocked)
+                    {
+                        allReady = false;
+                    }
+                }
+                if (allReady)
+                {
+                    for (int i=0;i<playersJoined;i++)
+                    {
+                        //GameInfo.playerActionsList[i] = players[i].Actions;
+                        GameInfo.instance.playerActionsList.Add(selectPlayers[i].myControls);
+                        GameInfo.instance.playerTeamList.Add(selectPlayers[i].myTeam);
+                        //Debug.Log(ps.Actions);
+                    }
+                    GameInfo.instance.nPlayers = playersJoined;
+                    Debug.Log("LOAD GAME ");
+                    if (startFromMap)
+                    {
+                        Debug.Log("Start from map: " + startFromMapScene);
+                        SceneManager.LoadScene(startFromMapScene);
+                    }
+                    else
+                    {
+                        Debug.Log("Start from menu");
+                        SceneManager.LoadScene(nextScene);
+                    }
+                }
+
+                if (GameInfo.instance.myControls.B.IsPressed || Input.GetKeyDown(KeyCode.Escape))
+                {
+                    bool allNotJoined = true;
+                    for (int i = 0; i < selectPlayers.Length; i++)
+                    {
+                        if (selectPlayers[i].teamSelectPlayerSt != TeamSelectPlayerState.NotJoined)
+                        {
+                            allNotJoined = false;
+                        }
+                    }
+                    if (allNotJoined)
+                    {
+                        BackToChooseNumberOfPlayers();
+                    }
+                }
+
                 break;
         }
     }
@@ -142,9 +222,22 @@ public class Alpha_Team_Select : MonoBehaviour
         keyboardListener.Destroy();
     }
 
+    void BackToChooseNumberOfPlayers()
+    {
+        selectNumberOfPlayersCam.gameObject.SetActive(true);
+        selectNumberOfPlayersCanvas.SetActive(true);
+        for (int i = 0; i < selectPlayers.Length; i++)
+        {
+            selectPlayers[i].myCamera.gameObject.SetActive(false);
+            //selectPlayers[i].myUICamera.gameObject.SetActive(false);
+            selectPlayerMenuSt = TeamSelectMenuState.ChoosingNumberOfPlayers;
+        }
+    }
+
     bool JoinButtonWasPressedOnListener(PlayerActions actions)
     {
-        return actions.Y.WasPressed || actions.B.WasPressed || (actions != keyboardListener && (actions.A.WasPressed || actions.X.WasPressed)) ||
+        //Debug.Log("CHECK IF BUTTON WAS PRESSED ON LISTENER");
+        return (actions.Start.WasPressed)||(actions != keyboardListener && (actions.Start.WasPressed)) ||
             (actions == keyboardListener && (Input.GetKeyDown(KeyCode.Alpha1)));
     }
 
@@ -157,7 +250,6 @@ public class Alpha_Team_Select : MonoBehaviour
                 return selectPlayers[i];
             }
         }
-
         return null;
     }
 
@@ -165,12 +257,11 @@ public class Alpha_Team_Select : MonoBehaviour
     {
         for (int i = 0; i < selectPlayers.Length; i++)
         {
-            if (selectPlayers[i].myControls.Device == inputDevice)
+            if (selectPlayers[i].myControls !=null && selectPlayers[i].myControls.Device == inputDevice)
             {
                 return selectPlayers[i];
             }
         }
-
         return null;
     }
 
@@ -195,6 +286,7 @@ public class Alpha_Team_Select : MonoBehaviour
 
     SelectPlayer CreatePlayer(InputDevice inputDevice)
     {
+        Debug.Log("START CREATE PLAYER?");
         if (playersJoined < offlineMaxPlayers)
         {
             //// Pop a position off the list. We'll add it back if the player is removed.
@@ -232,7 +324,9 @@ public class Alpha_Team_Select : MonoBehaviour
             player.JoinTeamSelect();
             playersJoined++;
 
+            Debug.Log("PLAYER CREATED");
             return player;
+
         }
 
         return null;
@@ -250,7 +344,7 @@ public class Alpha_Team_Select : MonoBehaviour
         return -1;
     }
 
-    void RemovePlayer(SelectPlayer player)
+    public void RemovePlayer(SelectPlayer player)
     {
         for (int i = 0; i < selectPlayers.Length; i++)
         {
@@ -261,7 +355,7 @@ public class Alpha_Team_Select : MonoBehaviour
         }
     }
 
-    void RemovePlayer(int index)
+    public void RemovePlayer(int index)
     {
         selectPlayers[index].myControls = null;
         selectPlayers[index].ExitTeamSelect();
@@ -377,63 +471,7 @@ public class Alpha_Team_Select : MonoBehaviour
         }
         MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
     }
-
-    //public void UpdateNPlayers()
-    //{
-    //    selectNPlayersCamera.SetActive(false);
-
-    //    //Difuminado a Negro
-
-    //    switch (nPlayers)
-    //    {
-    //        case 1:
-
-    //            // 1 Player
-
-    //            camera1player.SetActive(true);
-    //            camera2player.SetActive(false);
-    //            camera3player.SetActive(false);
-    //            camera4player.SetActive(false);
-
-    //            break;
-
-    //        case 2:
-
-    //            // 2 player
-
-    //            camera1player.SetActive(false);
-    //            camera2player.SetActive(true);
-    //            camera3player.SetActive(false);
-    //            camera4player.SetActive(false);
-
-    //            break;
-
-    //        case 3:
-
-    //            // 3 player
-
-    //            camera1player.SetActive(false);
-    //            camera2player.SetActive(false);
-    //            camera3player.SetActive(true);
-    //            camera4player.SetActive(false);
-
-    //            break;
-
-    //        case 4:
-
-    //            // 4 player
-
-    //            camera1player.SetActive(false);
-    //            camera2player.SetActive(false);
-    //            camera3player.SetActive(false);
-    //            camera4player.SetActive(true);
-
-    //            break;
-    //    }
-
-    //    cameraSet = true;
-    //}
-
+    
     public void MakeSpriteBig(Transform spriteTransform)
     {
         spriteTransform.localScale *= scaleSpriteBig;
@@ -468,6 +506,35 @@ public class SelectPlayer
     [Range(0,1)]
     [HideInInspector]public float deadzone = 0.2f;
     [HideInInspector]public PlayerActions myControls;
+    JoyStickControls myJoyStickControls;
+
+
+    [Header("Referencias Animator")]
+    public Animator[] animators;
+
+    //[Header("Animator Variables")]
+    //public bool anim_ready;
+    //AnimatorStateInfo stateInfo;
+    //int idleReadyHash = Animator.StringToHash("IdleReady");
+    //bool idleReady;
+
+    //public void KonoUpdate()
+    //{
+    //    //if keypressed A variable
+    //    if (!anim_ready)
+    //    {
+    //        idleReady = true;
+            
+    //    }
+
+    //    //if keypressed B variable
+    //    if (anim_ready)
+    //    {
+    //        idleReady = false;
+    //        animator.SetBool(idleReadyHash, idleReady);
+    //    }
+
+    //}
 
     public SelectPlayer(float _deadzone = 0.2f, Team _myTeam = Team.none)
     {
@@ -499,7 +566,7 @@ public class SelectPlayer
                     case 4:
                         myCamera.rect = new Rect(0, 0.5f, 0.5f, 0.5f);
                         myUICamera.rect = new Rect(0, 0.5f, 0.5f, 0.5f);
-                        myCamera.depth = 1;
+                        //myCamera.depth = 1;
                         break;
                 }
                 break;
@@ -543,12 +610,14 @@ public class SelectPlayer
                 }
                 break;
         }
+        myJoyStickControls = new JoyStickControls();
     }
 
     public void KonoUpdate()
     {
         if (myControls != null)
         {
+            //Debug.Log("My controls exist: teamSelectPlayerSt = "+ teamSelectPlayerSt);
             switch (teamSelectPlayerSt)
             {
                 case TeamSelectPlayerState.NotJoined:
@@ -558,17 +627,20 @@ public class SelectPlayer
                     }
                     break;
                 case TeamSelectPlayerState.SelectingTeam:
-                    if (myControls.LeftJoystick.X < -deadzone && teamSelectPlayerSt == TeamSelectPlayerState.SelectingTeam)
+                    //Debug.Log("Selecting Team: myControls.LeftJoystick.X = "+ myControls.LeftJoystick.X);
+                    if (myControls.LeftJoystick.X < -deadzone && !myJoyStickControls.leftIsPressed)
                     {
+                        myJoyStickControls.leftIsPressed = true;
                         ChangeTeam(0);
                         //Animation Left
                     }
-                    else if (myControls.LeftJoystick.X > deadzone && teamSelectPlayerSt == TeamSelectPlayerState.SelectingTeam)
+                    else if (myControls.LeftJoystick.X > deadzone && !myJoyStickControls.rightIsPressed)
                     {
+                        myJoyStickControls.rightIsPressed = true;
                         ChangeTeam(1);
                         //Animation Right
                     }
-                    else if (myControls.A.WasPressed && teamSelectPlayerSt == TeamSelectPlayerState.SelectingTeam)
+                    else if (myControls.A.WasPressed)
                     {
                         LockTeam();
                     }else if (myControls.B.WasPressed)
@@ -583,6 +655,22 @@ public class SelectPlayer
                     }
                     break;
             }
+            if (GameInfo.instance.myControls.LeftJoystick.Y > -deadzone && myJoyStickControls.downIsPressed)
+            {
+                myJoyStickControls.upIsPressed = false;
+            }
+            if (GameInfo.instance.myControls.LeftJoystick.Y < deadzone && myJoyStickControls.upIsPressed)
+            {
+                myJoyStickControls.downIsPressed = false;
+            }
+            if (GameInfo.instance.myControls.LeftJoystick.X > -deadzone && myJoyStickControls.leftIsPressed)
+            {
+                myJoyStickControls.leftIsPressed = false;
+            }
+            if (GameInfo.instance.myControls.LeftJoystick.X < deadzone && myJoyStickControls.rightIsPressed)
+            {
+                myJoyStickControls.rightIsPressed = false;
+            }
         }
     }
 
@@ -590,6 +678,7 @@ public class SelectPlayer
     {
         if(teamSelectPlayerSt == TeamSelectPlayerState.NotJoined)
         {
+            Debug.Log("JOIN TEAM SELECT");
             notJoinedScreen.SetActive(false);
             teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
         }
@@ -599,8 +688,10 @@ public class SelectPlayer
     {
         if(teamSelectPlayerSt == TeamSelectPlayerState.SelectingTeam)
         {
+            Debug.Log("EXIT TEAM SELECT");
             notJoinedScreen.SetActive(true);
             teamSelectPlayerSt = TeamSelectPlayerState.NotJoined;
+            Alpha_Team_Select.instance.RemovePlayer(this);
         }
     }
 
@@ -645,8 +736,11 @@ public class SelectPlayer
     {
         if (teamSelectPlayerSt == TeamSelectPlayerState.SelectingTeam)
         {
+            Debug.Log("LOCK TEAM");
             teamSelectPlayerSt = TeamSelectPlayerState.TeamLocked;
             //Visual Lock
+            Debug.Log("ANIMATOR = "+animators[(int)myTeam].gameObject);
+            animators[(int)myTeam].SetBool("IdleReady", true);
         }
     }
 
@@ -654,8 +748,18 @@ public class SelectPlayer
     {
         if (teamSelectPlayerSt == TeamSelectPlayerState.TeamLocked)
         {
+            Debug.Log("UNLOCK TEAM");
             teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
             //Visual Unlock
+            animators[(int)myTeam].SetBool("IdleReady", false);
         }
     }
+}
+
+public class JoyStickControls
+{
+    public bool leftIsPressed = false;
+    public bool downIsPressed = false;
+    public bool rightIsPressed = false;
+    public bool upIsPressed = false;
 }
