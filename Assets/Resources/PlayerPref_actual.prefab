@@ -65,6 +65,7 @@ MonoBehaviour:
     forceStart: 1
     effectParticleSystem: {fileID: 0}
   dashTrail: {fileID: 6365649591701701943}
+  weaponTrailRenderers: []
 --- !u!114 &4180938866177338103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,7 +127,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 634944359275515547}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -147,6 +148,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f86da022b117edf4e87d00d05d5b6049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DoRotate: 0
+  dontRotateXAxis: 0
+  dontRotateYAxis: 0
+  dontRotateZAxis: 1
+  rotateChildren: 0
+  localRotation: {x: 0, y: 0, z: 0}
 --- !u!1 &2852381263137244687
 GameObject:
   m_ObjectHideFlags: 0
@@ -812,6 +819,7 @@ MonoBehaviour:
   startingWeapon: {fileID: 11400000, guid: 34c19bb7b66fdae4399b358c4b2337ba, type: 2}
   currentWeaponData: {fileID: 0}
   currentWeapon: {fileID: 0}
+  currentWeaponSkin: {fileID: 0}
   weaponsNearby: []
 --- !u!114 &2739443829118614599
 MonoBehaviour:
@@ -1346,6 +1354,11 @@ PrefabInstance:
       propertyPath: leftHand
       value: 
       objectReference: {fileID: 2847143392388605829}
+    - target: {fileID: 2172765206518705216, guid: 7fe8d16465f14ca4cb1a013784d61b03,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7fe8d16465f14ca4cb1a013784d61b03, type: 3}
 --- !u!137 &2772722180483752095 stripped

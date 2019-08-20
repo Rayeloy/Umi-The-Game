@@ -237,7 +237,7 @@ public class PlayerHUD : MonoBehaviour
         if (scale != 0)
         {
             float scaleValue = scale;
-            float invScaleValue = 1 + (1 - scale);
+            float invScaleValue = 1 + (1 - scale);//2- SCALE
             contador.localScale = new Vector3(contador.localScale.x * scaleValue, contador.localScale.y, 1);
             powerUpPanel.localScale = new Vector3(powerUpPanel.localScale.x * scaleValue, powerUpPanel.localScale.y, 1);
             crosshair.rectTransform.localScale = new Vector3(crosshair.rectTransform.localScale.x * scaleValue, crosshair.rectTransform.localScale.y, 1);

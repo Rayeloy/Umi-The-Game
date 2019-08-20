@@ -42,10 +42,8 @@ public class Alpha_Team_Select : MonoBehaviour
     //public bool cameraSet = false;
     int playersJoined = 0;
     int offlineMaxPlayers = 4;
-    int team = 0;
-    int f_Team = 0; //Team Selected while being ready
-    bool ready = false; //Can´t change team
     int nPlayers = 1;
+
 
     private void Awake()
     {
@@ -55,7 +53,7 @@ public class Alpha_Team_Select : MonoBehaviour
             stockInControlManager.SetActive(true);
             //stockInControlManager.GetComponent<InControlManager>().OnEnable();
             stockGameInfo.SetActive(true);
-           // stockGameInfo.GetComponent<GameInfo>().Awake();
+            // stockGameInfo.GetComponent<GameInfo>().Awake();
 
         }
 
@@ -151,14 +149,14 @@ public class Alpha_Team_Select : MonoBehaviour
                     }
                 }
 
-                for (int i=0; i < selectPlayers.Length; i++)
+                for (int i = 0; i < selectPlayers.Length; i++)
                 {
                     selectPlayers[i].KonoUpdate();
                 }
 
                 //CHECK IF ALL READY
                 bool allReady = true;
-                for (int i=0; i<selectPlayers.Length;i++)
+                for (int i = 0; i < selectPlayers.Length; i++)
                 {
                     if (i < nPlayers && selectPlayers[i].teamSelectPlayerSt != TeamSelectPlayerState.TeamLocked)
                     {
@@ -167,7 +165,7 @@ public class Alpha_Team_Select : MonoBehaviour
                 }
                 if (allReady)
                 {
-                    for (int i=0;i<playersJoined;i++)
+                    for (int i = 0; i < playersJoined; i++)
                     {
                         //GameInfo.playerActionsList[i] = players[i].Actions;
                         GameInfo.instance.playerActionsList.Add(selectPlayers[i].myControls);
@@ -237,7 +235,7 @@ public class Alpha_Team_Select : MonoBehaviour
     bool JoinButtonWasPressedOnListener(PlayerActions actions)
     {
         //Debug.Log("CHECK IF BUTTON WAS PRESSED ON LISTENER");
-        return (actions.Start.WasPressed)||(actions != keyboardListener && (actions.Start.WasPressed)) ||
+        return (actions.Start.WasPressed) || (actions != keyboardListener && (actions.Start.WasPressed)) ||
             (actions == keyboardListener && (Input.GetKeyDown(KeyCode.Alpha1)));
     }
 
@@ -257,7 +255,7 @@ public class Alpha_Team_Select : MonoBehaviour
     {
         for (int i = 0; i < selectPlayers.Length; i++)
         {
-            if (selectPlayers[i].myControls !=null && selectPlayers[i].myControls.Device == inputDevice)
+            if (selectPlayers[i].myControls != null && selectPlayers[i].myControls.Device == inputDevice)
             {
                 return selectPlayers[i];
             }
@@ -334,9 +332,9 @@ public class Alpha_Team_Select : MonoBehaviour
 
     int FindNotJoinedPlayer()
     {
-        for(int i = 0; i < selectPlayers.Length; i++)
+        for (int i = 0; i < selectPlayers.Length; i++)
         {
-            if(selectPlayers[i].teamSelectPlayerSt == TeamSelectPlayerState.NotJoined)
+            if (selectPlayers[i].teamSelectPlayerSt == TeamSelectPlayerState.NotJoined)
             {
                 return i;
             }
@@ -373,7 +371,7 @@ public class Alpha_Team_Select : MonoBehaviour
         selectNumberOfPlayersCanvas.gameObject.SetActive(false);
         for (int i = 0; i < nPlayers; i++)
         {
-            selectPlayers[i].KonoAwake(nPlayers,i);
+            selectPlayers[i].KonoAwake(nPlayers, i);
         }
     }
 
@@ -385,7 +383,7 @@ public class Alpha_Team_Select : MonoBehaviour
 
     void MoveUp()
     {
-        MakeSpriteSmall(numPlayerSprites[nPlayers - 1]); 
+        MakeSpriteSmall(numPlayerSprites[nPlayers - 1]);
 
         switch (nPlayers)
         {
@@ -396,7 +394,7 @@ public class Alpha_Team_Select : MonoBehaviour
                 nPlayers = 4;
                 break;
             case 3:
-                nPlayers = 1;           
+                nPlayers = 1;
                 break;
             case 4:
                 nPlayers = 2;
@@ -471,7 +469,7 @@ public class Alpha_Team_Select : MonoBehaviour
         }
         MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
     }
-    
+
     public void MakeSpriteBig(Transform spriteTransform)
     {
         spriteTransform.localScale *= scaleSpriteBig;
@@ -489,24 +487,27 @@ public class Alpha_Team_Select : MonoBehaviour
 
 public enum TeamSelectPlayerState
 {
-   NotJoined,
-   SelectingTeam,
-   TeamLocked
+    NotJoined,
+    SelectingTeam,
+    TeamLocked
 }
 [System.Serializable]
 public class SelectPlayer
 {
-    [HideInInspector]public Team myTeam = Team.none;
-    [HideInInspector]public TeamSelectPlayerState teamSelectPlayerSt = TeamSelectPlayerState.NotJoined;
+    [HideInInspector] public Team myTeam = Team.none;
+    [HideInInspector] public TeamSelectPlayerState teamSelectPlayerSt = TeamSelectPlayerState.NotJoined;
     public Camera myCamera;
     public Camera myUICamera;
     public GameObject myCanvas;
     public GameObject notJoinedScreen;
     public Transform playerModelsParent;
-    [Range(0,1)]
-    [HideInInspector]public float deadzone = 0.2f;
-    [HideInInspector]public PlayerActions myControls;
+    [Range(0, 1)]
+    [HideInInspector] public float deadzone = 0.2f;
+    [HideInInspector] public PlayerActions myControls;
     JoyStickControls myJoyStickControls;
+
+    [Header("TEAM SELECT PLAYER HUD")]
+    public TeamSelectPlayerCanvas myTeamSelectPlayerCanvas;
 
 
     [Header("Referencias Animator")]
@@ -524,7 +525,7 @@ public class SelectPlayer
     //    if (!anim_ready)
     //    {
     //        idleReady = true;
-            
+
     //    }
 
     //    //if keypressed B variable
@@ -535,11 +536,6 @@ public class SelectPlayer
     //    }
 
     //}
-
-    public SelectPlayer(float _deadzone = 0.2f, Team _myTeam = Team.none)
-    {
-
-    }
 
     public void KonoAwake(int nPlayers, int myPlayerNum)
     {
@@ -611,155 +607,232 @@ public class SelectPlayer
                 break;
         }
         myJoyStickControls = new JoyStickControls();
-    }
 
-    public void KonoUpdate()
-    {
-        if (myControls != null)
+        float scale = myUICamera.rect.width - myUICamera.rect.height;
+        if (scale != 0)
         {
-            //Debug.Log("My controls exist: teamSelectPlayerSt = "+ teamSelectPlayerSt);
-            switch (teamSelectPlayerSt)
-            {
-                case TeamSelectPlayerState.NotJoined:
-                    if (myControls.A.WasPressed)
-                    {
-                        JoinTeamSelect();
-                    }
-                    break;
-                case TeamSelectPlayerState.SelectingTeam:
-                    //Debug.Log("Selecting Team: myControls.LeftJoystick.X = "+ myControls.LeftJoystick.X);
-                    if (myControls.LeftJoystick.X < -deadzone && !myJoyStickControls.leftIsPressed)
-                    {
-                        myJoyStickControls.leftIsPressed = true;
-                        ChangeTeam(0);
-                        //Animation Left
-                    }
-                    else if (myControls.LeftJoystick.X > deadzone && !myJoyStickControls.rightIsPressed)
-                    {
-                        myJoyStickControls.rightIsPressed = true;
-                        ChangeTeam(1);
-                        //Animation Right
-                    }
-                    else if (myControls.A.WasPressed)
-                    {
-                        LockTeam();
-                    }else if (myControls.B.WasPressed)
-                    {
-                        ExitTeamSelect();
-                    }
-                    break;
-                case TeamSelectPlayerState.TeamLocked:
-                    if (myControls.B.WasPressed)
-                    {
-                        UnlockTeam();
-                    }
-                    break;
-            }
-            if (GameInfo.instance.myControls.LeftJoystick.Y > -deadzone && myJoyStickControls.downIsPressed)
-            {
-                myJoyStickControls.upIsPressed = false;
-            }
-            if (GameInfo.instance.myControls.LeftJoystick.Y < deadzone && myJoyStickControls.upIsPressed)
-            {
-                myJoyStickControls.downIsPressed = false;
-            }
-            if (GameInfo.instance.myControls.LeftJoystick.X > -deadzone && myJoyStickControls.leftIsPressed)
-            {
-                myJoyStickControls.leftIsPressed = false;
-            }
-            if (GameInfo.instance.myControls.LeftJoystick.X < deadzone && myJoyStickControls.rightIsPressed)
-            {
-                myJoyStickControls.rightIsPressed = false;
-            }
+            float scaleValue = scale;
+            float invScaleValue = 1 + (1 - scale);//2- SCALE
+            myTeamSelectPlayerCanvas.teamSelectHUDParent.localScale = new Vector3(myTeamSelectPlayerCanvas.teamSelectHUDParent.GetComponent<RectTransform>().localScale.x * scaleValue,
+                myTeamSelectPlayerCanvas.teamSelectHUDParent.GetComponent<RectTransform>().localScale.y, 1);
+            RectTransform teamText = myTeamSelectPlayerCanvas.teamNameText.GetComponent<RectTransform>();
+            teamText.localScale = new Vector3(teamText.localScale.x * 2,
+               teamText.localScale.y, 1);
         }
     }
 
-    public void JoinTeamSelect()
-    {
-        if(teamSelectPlayerSt == TeamSelectPlayerState.NotJoined)
+        public void KonoUpdate()
         {
-            Debug.Log("JOIN TEAM SELECT");
-            notJoinedScreen.SetActive(false);
-            teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
-        }
-    }
-
-    public void ExitTeamSelect()
-    {
-        if(teamSelectPlayerSt == TeamSelectPlayerState.SelectingTeam)
-        {
-            Debug.Log("EXIT TEAM SELECT");
-            notJoinedScreen.SetActive(true);
-            teamSelectPlayerSt = TeamSelectPlayerState.NotJoined;
-            Alpha_Team_Select.instance.RemovePlayer(this);
-        }
-    }
-
-    void ChangeTeam(int direction) // 0 es izda y 1 es derecha
-    {
-        switch (direction)
-        {
-            case 0:
-                playerModelsParent.localRotation *= Quaternion.Euler(0, 120, 0);
-                 switch(myTeam)
-                {        
-                    case Team.A:
-                        myTeam = Team.B;
-                        break;
-                    case Team.B:
-                        myTeam = Team.none;
-                        break;
-                    case Team.none:
-                        myTeam = Team.A;
-                        break;
-                }
-                break;
-            case 1:
-                playerModelsParent.localRotation *= Quaternion.Euler(0, -120, 0);
-                switch (myTeam)
+            if (myControls != null)
+            {
+                //Debug.Log("My controls exist: teamSelectPlayerSt = "+ teamSelectPlayerSt);
+                switch (teamSelectPlayerSt)
                 {
-                    case Team.A:
-                        myTeam = Team.none;
+                    case TeamSelectPlayerState.NotJoined:
+                        if (myControls.A.WasPressed)
+                        {
+                            JoinTeamSelect();
+                        }
                         break;
-                    case Team.B:
-                        myTeam = Team.A;
+                    case TeamSelectPlayerState.SelectingTeam:
+                        //Debug.Log("Selecting Team: myControls.LeftJoystick.X = "+ myControls.LeftJoystick.X);
+                        if (myControls.LeftJoystick.X < -deadzone && !myJoyStickControls.leftIsPressed)
+                        {
+                            myJoyStickControls.leftIsPressed = true;
+                            ChangeTeam(0);
+                            //Animation Left
+                        }
+                        else if (myControls.LeftJoystick.X > deadzone && !myJoyStickControls.rightIsPressed)
+                        {
+                            myJoyStickControls.rightIsPressed = true;
+                            ChangeTeam(1);
+                            //Animation Right
+                        }
+                        else if (myControls.A.WasPressed)
+                        {
+                            LockTeam();
+                        }
+                        else if (myControls.B.WasPressed)
+                        {
+                            ExitTeamSelect();
+                        }
+
+                        IluminateArrows();
                         break;
-                    case Team.none:
-                        myTeam = Team.B;
+                    case TeamSelectPlayerState.TeamLocked:
+                        if (myControls.B.WasPressed)
+                        {
+                            UnlockTeam();
+                        }
                         break;
                 }
-                break;            
+                if (GameInfo.instance.myControls.LeftJoystick.Y > -deadzone && myJoyStickControls.downIsPressed)
+                {
+                    myJoyStickControls.upIsPressed = false;
+                }
+                if (GameInfo.instance.myControls.LeftJoystick.Y < deadzone && myJoyStickControls.upIsPressed)
+                {
+                    myJoyStickControls.downIsPressed = false;
+                }
+                if (GameInfo.instance.myControls.LeftJoystick.X > -deadzone && myJoyStickControls.leftIsPressed)
+                {
+                    myJoyStickControls.leftIsPressed = false;
+                }
+                if (GameInfo.instance.myControls.LeftJoystick.X < deadzone && myJoyStickControls.rightIsPressed)
+                {
+                    myJoyStickControls.rightIsPressed = false;
+                }
+            }
         }
-    }
 
-    void LockTeam()
-    {
-        if (teamSelectPlayerSt == TeamSelectPlayerState.SelectingTeam)
+        public void JoinTeamSelect()
         {
-            Debug.Log("LOCK TEAM");
-            teamSelectPlayerSt = TeamSelectPlayerState.TeamLocked;
-            //Visual Lock
-            Debug.Log("ANIMATOR = "+animators[(int)myTeam].gameObject);
-            animators[(int)myTeam].SetBool("IdleReady", true);
+            if (teamSelectPlayerSt == TeamSelectPlayerState.NotJoined)
+            {
+                Debug.Log("JOIN TEAM SELECT");
+                notJoinedScreen.SetActive(false);
+                teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
+                ChangeHUDTeam(myTeam);
+            }
         }
-    }
 
-    void UnlockTeam()
-    {
-        if (teamSelectPlayerSt == TeamSelectPlayerState.TeamLocked)
+        public void ExitTeamSelect()
         {
-            Debug.Log("UNLOCK TEAM");
-            teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
-            //Visual Unlock
-            animators[(int)myTeam].SetBool("IdleReady", false);
+            if (teamSelectPlayerSt == TeamSelectPlayerState.SelectingTeam)
+            {
+                Debug.Log("EXIT TEAM SELECT");
+                notJoinedScreen.SetActive(true);
+                teamSelectPlayerSt = TeamSelectPlayerState.NotJoined;
+                Alpha_Team_Select.instance.RemovePlayer(this);
+            }
+        }
+
+        void IluminateArrows()
+        {
+            if (teamSelectPlayerSt == TeamSelectPlayerState.SelectingTeam)
+            {
+                if (myJoyStickControls.leftIsPressed)
+                {
+                    Color auxColor = myTeamSelectPlayerCanvas.leftArrow.color;
+                    auxColor.a = 1;
+                    myTeamSelectPlayerCanvas.leftArrow.color = auxColor;
+                }
+                else
+                {
+                    Color auxColor = myTeamSelectPlayerCanvas.leftArrow.color;
+                    auxColor.a = myTeamSelectPlayerCanvas.alphaDeactivated;
+                    myTeamSelectPlayerCanvas.leftArrow.color = auxColor;
+                }
+                if (myJoyStickControls.rightIsPressed)
+                {
+                    Color auxColor = myTeamSelectPlayerCanvas.rightArrow.color;
+                    auxColor.a = 1;
+                    myTeamSelectPlayerCanvas.rightArrow.color = auxColor;
+                }
+                else
+                {
+                    Color auxColor = myTeamSelectPlayerCanvas.rightArrow.color;
+                    auxColor.a = myTeamSelectPlayerCanvas.alphaDeactivated;
+                    myTeamSelectPlayerCanvas.rightArrow.color = auxColor;
+                }
+            }
+        }
+
+        void ChangeTeam(int direction) // 0 es izda y 1 es derecha
+        {
+            switch (direction)
+            {
+                case 0:
+                    playerModelsParent.localRotation *= Quaternion.Euler(0, 120, 0);
+                    switch (myTeam)
+                    {
+                        case Team.A:
+                            myTeam = Team.B;
+                            break;
+                        case Team.B:
+                            myTeam = Team.none;
+                            break;
+                        case Team.none:
+                            myTeam = Team.A;
+                            break;
+                    }
+                    break;
+                case 1:
+                    playerModelsParent.localRotation *= Quaternion.Euler(0, -120, 0);
+                    switch (myTeam)
+                    {
+                        case Team.A:
+                            myTeam = Team.none;
+                            break;
+                        case Team.B:
+                            myTeam = Team.A;
+                            break;
+                        case Team.none:
+                            myTeam = Team.B;
+                            break;
+                    }
+                    break;
+            }
+            ChangeHUDTeam(myTeam);
+        }
+
+        void ChangeHUDTeam(Team team)
+        {
+            myTeamSelectPlayerCanvas.teamNameBackground.sprite = myTeamSelectPlayerCanvas.teamBackgrounds[(int)team];
+            myTeamSelectPlayerCanvas.teamNameText.text = myTeamSelectPlayerCanvas.teamTexts[(int)team];
+            myTeamSelectPlayerCanvas.teamIcon.sprite = myTeamSelectPlayerCanvas.teamIcons[(int)team];
+        }
+
+        void LockTeam()
+        {
+            if (teamSelectPlayerSt == TeamSelectPlayerState.SelectingTeam)
+            {
+                Debug.Log("LOCK TEAM");
+                teamSelectPlayerSt = TeamSelectPlayerState.TeamLocked;
+                //Visual Lock
+                Debug.Log("ANIMATOR = " + animators[(int)myTeam].gameObject);
+                animators[(int)myTeam].SetBool("IdleReady", true);
+
+                //HUD VISUAL LOCK
+                for (int i = 0; i < myTeamSelectPlayerCanvas.lockStateDeactivateImages.Length; i++)
+                {
+                    myTeamSelectPlayerCanvas.lockStateDeactivateImages[i].gameObject.SetActive(false);
+                }
+
+                for (int i = 0; i < myTeamSelectPlayerCanvas.lockStateActivateImages.Length; i++)
+                {
+                    myTeamSelectPlayerCanvas.lockStateActivateImages[i].gameObject.SetActive(true);
+                }
+            }
+        }
+
+        void UnlockTeam()
+        {
+            if (teamSelectPlayerSt == TeamSelectPlayerState.TeamLocked)
+            {
+                Debug.Log("UNLOCK TEAM");
+                teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
+                //Visual Unlock
+                animators[(int)myTeam].SetBool("IdleReady", false);
+
+                //HUD VISUAL UNLOCK
+                for (int i = 0; i < myTeamSelectPlayerCanvas.lockStateDeactivateImages.Length; i++)
+                {
+                    myTeamSelectPlayerCanvas.lockStateDeactivateImages[i].gameObject.SetActive(true);
+                }
+
+                for (int i = 0; i < myTeamSelectPlayerCanvas.lockStateActivateImages.Length; i++)
+                {
+                    myTeamSelectPlayerCanvas.lockStateActivateImages[i].gameObject.SetActive(false);
+                }
+            }
         }
     }
-}
 
-public class JoyStickControls
-{
-    public bool leftIsPressed = false;
-    public bool downIsPressed = false;
-    public bool rightIsPressed = false;
-    public bool upIsPressed = false;
-}
+    public class JoyStickControls
+    {
+        public bool leftIsPressed = false;
+        public bool downIsPressed = false;
+        public bool rightIsPressed = false;
+        public bool upIsPressed = false;
+    }
