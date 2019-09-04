@@ -1486,8 +1486,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 554725132}
-  m_LocalRotation: {x: 0.118703976, y: 0.5589848, z: 0.08118215, w: -0.81661177}
-  m_LocalPosition: {x: -96.010956, y: -13.87944, z: -90.48567}
+  m_LocalRotation: {x: -0.08657099, y: 0.025216192, z: 0.002538403, w: 0.9959233}
+  m_LocalPosition: {x: 3.9474554, y: -30.096588, z: -114.75932}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 998118678}
@@ -3244,7 +3244,8 @@ MonoBehaviour:
   stockGameInfo: {fileID: 1118436239}
   stockInControlManager: {fileID: 558034286}
   selectNumberOfPlayersCanvas: {fileID: 7787893271554404389}
-  nextScene: CTW_Gamescom
+  nextSceneHigh: CTW_Gamescom_High
+  nextSceneLOD: CTW_Gamescom_LOD
   deadzone: 0.7
   selectNumberOfPlayersCam: {fileID: 1302520097}
   scaleSpriteBig: 1.3
@@ -6379,6 +6380,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: NumPlayerSelectCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 4836511636546297987, guid: f077ba0cb33143f42ae57c30c08d4ed9,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1285716399011286673, guid: f077ba0cb33143f42ae57c30c08d4ed9,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.000015258789
+      objectReference: {fileID: 0}
+    - target: {fileID: 2830655572216718064, guid: f077ba0cb33143f42ae57c30c08d4ed9,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2830655572216718064, guid: f077ba0cb33143f42ae57c30c08d4ed9,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.000015258789
+      objectReference: {fileID: 0}
     - target: {fileID: 6572414557123942113, guid: f077ba0cb33143f42ae57c30c08d4ed9,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6483,26 +6504,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836511636546297987, guid: f077ba0cb33143f42ae57c30c08d4ed9,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2830655572216718064, guid: f077ba0cb33143f42ae57c30c08d4ed9,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2830655572216718064, guid: f077ba0cb33143f42ae57c30c08d4ed9,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.000015258789
-      objectReference: {fileID: 0}
-    - target: {fileID: 1285716399011286673, guid: f077ba0cb33143f42ae57c30c08d4ed9,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.000015258789
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}

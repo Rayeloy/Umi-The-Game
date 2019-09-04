@@ -23,7 +23,9 @@ public class Alpha_Team_Select : MonoBehaviour
 
     [HideInInspector] public static bool startFromMap = false;
     [HideInInspector] public static string startFromMapScene;
-    public string nextScene;
+    public string nextSceneHigh;
+    public string nextSceneLOD;
+
 
     PlayerActions keyboardListener;
     PlayerActions joystickListener;
@@ -182,7 +184,13 @@ public class Alpha_Team_Select : MonoBehaviour
                     else
                     {
                         Debug.Log("Start from menu");
-                        SceneManager.LoadScene(nextScene);
+                        if(nPlayers>1)
+                        SceneManager.LoadScene(nextSceneLOD);
+                        else
+                        {
+                            SceneManager.LoadScene(nextSceneHigh);
+
+                        }
                     }
                 }
 
