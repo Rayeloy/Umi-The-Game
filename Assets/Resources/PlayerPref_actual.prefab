@@ -876,7 +876,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   grappleStopMinDistance: 0.5
-  minDistanceToGrapple: 20
+  minDistanceToGrapple: 23
   hookPointMinDistToCameraCenter: 450
   grappleMaxCDTime: 0.3
 --- !u!114 &7710956411820504780
@@ -1001,6 +1001,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0

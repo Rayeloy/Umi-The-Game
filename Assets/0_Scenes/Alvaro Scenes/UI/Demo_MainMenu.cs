@@ -61,8 +61,7 @@ public class Demo_MainMenu : MonoBehaviour
     private void Update()
     {
 
-        Debug.Log(arrow);
-
+        //Debug.Log(arrow);
 
         if (timer1) //Tiempos para los logos de inicio.
         {

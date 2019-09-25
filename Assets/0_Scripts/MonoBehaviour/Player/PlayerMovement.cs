@@ -814,17 +814,17 @@ public class PlayerMovement : MonoBehaviour
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
                     break;
                 case MoveState.Boost:
-                    if (controller.collisions.collisionHorizontal)//BOOST CONTRA PARED
-                    {
-                        WallBoost(controller.collisions.horWall);
-                    }
-                    else//BOOST NORMAL
-                    {
+                    //if (controller.collisions.collisionHorizontal)//BOOST CONTRA PARED
+                    //{
+                    //    WallBoost(controller.collisions.horWall);
+                    //}
+                    //else//BOOST NORMAL
+                    //{
                         //boostDir: dirección normalizada en la que quieres hacer el boost
                         horizontalVel = new Vector3(boostDir.x, 0, boostDir.z);
                         horizontalVel = horizontalVel.normalized * boostSpeed;
                         SetVelocity(new Vector3(horizontalVel.x, 0, horizontalVel.z));
-                    }
+                    //}
                     break;
                 case MoveState.Knockback:
                     if (!knockbackDone)

@@ -616,6 +616,7 @@ public class SelectPlayer
         }
         myJoyStickControls = new JoyStickControls();
 
+        // AJUSTE DE ESCALA DE LA HUD PARA CAMARAS CON RECT DESPROPORCIONADO
         float scale = myUICamera.rect.width - myUICamera.rect.height;
         if (scale != 0)
         {

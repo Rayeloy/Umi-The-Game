@@ -66,8 +66,8 @@ MonoBehaviour:
   teamBSpawns: []
   scaleDos: 1.25
   scaleCuatro: 1.25
-  startingWeaponBlue: {fileID: 0}
-  startingWeaponRed: {fileID: 0}
+  playerNumTeamA: 0
+  playerNumTeamB: 0
   gameOverStarted: 0
   playerNum: 1
   gamePaused: 0
@@ -94,10 +94,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gC: {fileID: 8174864551433664555}
-  Tiempo: 300
+  Tiempo: 420
   End: 0
   maxScore: 3
-  tiempoProrroga: 60
+  tiempoProrroga: 0
   prorroga: 0
   orcasRedTeam:
   - {fileID: 0}
