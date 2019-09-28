@@ -41,6 +41,8 @@ public class Flag : MonoBehaviour
     public LayerMask collisionMask;
     [Tooltip("Vertical distance you want the orca to be 'levitating' over the floor")]
     public float heightFromFloor;
+    public float heightFromFloorDropFromPlayer;
+    float currentHeightFromFloor;
     public bool grounded = false;
     Vector3 rayOrigin;
     float rayLength;
@@ -48,17 +50,23 @@ public class Flag : MonoBehaviour
     float skinWidth = 0.1f;
     public float timeToDespawnInWater;
 
+
     [Header("Idle Animation Param")]
     [Tooltip("Distance from the middle (default) position to the max height and min height. The total distance of the animation will be the double of this value")]
     public float idleAnimVertDist;
+    public float idleAnimVertDistDropFromPlayer;
+    float currentIdleAnimVertDist;
     [Tooltip("Not in use yet")]
     public float idleAnimHorDist;
     [Tooltip("How much seconds per half animation cycle (i.e. from bottom to top height). The shorter the time, the faster the animation.")]
     public float idleAnimFrequency;
+    public float idleAnimFrequencyDropFromPlayer;
+    float currentIdleAnimFrequency;
     float idleAnimTime = 0;
     float maxHeight, minHeight;
     //Vector3 bodyOriginalLocalPos;
     bool idleAnimStarted = false;
+    bool droppedByPlayer = false;
 
     [Header("Flag LightBeam")]
     public GameObject lightBeam;
@@ -78,6 +86,9 @@ public class Flag : MonoBehaviour
         currentOwner = null;
         beingHooked = false;
         playerHooking = null;
+        currentHeightFromFloor = heightFromFloor;
+        currentIdleAnimVertDist = idleAnimVertDist;
+        currentIdleAnimFrequency = idleAnimFrequency;
 
     }
 
@@ -99,7 +110,7 @@ public class Flag : MonoBehaviour
                     if (hit.transform.tag != "Water")
                     {
                         grounded = true;
-                        float distToDesiredHeight = heightFromFloor - hit.distance;
+                        float distToDesiredHeight = currentHeightFromFloor - hit.distance;
                         transform.position = new Vector3(transform.position.x, transform.position.y + distToDesiredHeight, transform.position.z);
                         StartIdleAnimation();
                     }
@@ -124,7 +135,7 @@ public class Flag : MonoBehaviour
         Bounds bounds = myCol.bounds;
         bounds.Expand(skinWidth * -2);
         rayOrigin = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
-        rayLength = heightFromFloor + skinWidth;
+        rayLength = currentHeightFromFloor;
     }
 
     void Fall()
@@ -138,11 +149,11 @@ public class Flag : MonoBehaviour
         if (!idleAnimStarted)
         {
             idleAnimStarted = true;
-            idleAnimTime = 0;
-            maxHeight = transform.position.y + idleAnimVertDist;
-            minHeight = transform.position.y - idleAnimVertDist;
+            idleAnimTime = currentIdleAnimFrequency/2;
+            maxHeight = transform.position.y + currentIdleAnimVertDist;
+            minHeight = transform.position.y - currentIdleAnimVertDist;
             progress = 0.5f;
-            idleAnimUp = true;
+            idleAnimUp = false;
         }
     }
 
@@ -153,7 +164,7 @@ public class Flag : MonoBehaviour
         if (idleAnimStarted)
         {
             idleAnimTime += Time.deltaTime;
-            progress = idleAnimTime / idleAnimFrequency;
+            progress = idleAnimTime / currentIdleAnimFrequency;
             progress = Mathf.Clamp01(progress);
             float newY = 0;
             if (idleAnimUp)
@@ -166,7 +177,7 @@ public class Flag : MonoBehaviour
             }
             transform.position = new Vector3(transform.position.x, newY, transform.position.z);
 
-            if (idleAnimTime >= idleAnimFrequency)
+            if (idleAnimTime >= currentIdleAnimFrequency)
             {
                 idleAnimTime = 0;
                 idleAnimUp = !idleAnimUp;
@@ -347,6 +358,13 @@ public class Flag : MonoBehaviour
             }
         }
         grounded = false;
+
+        //IDLE ANIMATION PARAMETERS CHANGE
+        droppedByPlayer = true;
+        currentHeightFromFloor = heightFromFloorDropFromPlayer;
+        currentIdleAnimVertDist = idleAnimVertDistDropFromPlayer;
+        currentIdleAnimFrequency = idleAnimFrequencyDropFromPlayer;
+
         transform.SetParent(StoringManager.instance.transform);
         StartLocked();
     }
@@ -452,6 +470,11 @@ public class Flag : MonoBehaviour
         lightBeam.transform.localPosition = Vector3.zero;
 
         grounded = false;
+
+        droppedByPlayer = false;
+        currentHeightFromFloor = heightFromFloor;
+        currentIdleAnimVertDist = idleAnimVertDist;
+        currentIdleAnimFrequency = idleAnimFrequency;
     }
 
 

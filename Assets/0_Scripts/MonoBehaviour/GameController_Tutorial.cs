@@ -39,9 +39,6 @@ public class GameController_Tutorial : GameControllerBase
 
     #endregion
 
-    #region ----[ VARIABLES ]----
-    #endregion
-
     #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
 
     #region Awake
