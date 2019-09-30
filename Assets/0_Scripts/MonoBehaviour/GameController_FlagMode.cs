@@ -39,6 +39,10 @@ public class GameController_FlagMode : GameControllerBase
     protected override void UpdateModeExclusiveClasses()
     {
         myScoreManager.KonoUpdate();
+        for(int i = 0; i < flags.Count; i++)
+        {
+            flags[i].KonoUpdate();
+        }
     }
 
     public override void CreatePlayer(int playerNumber)

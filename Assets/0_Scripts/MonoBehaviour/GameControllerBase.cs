@@ -334,7 +334,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         {
             if (playing)
             {
-                if (playerActions.B.WasPressed || playerActions.Start.WasPressed)
+                if (RenController.instance.currentControls.B.WasPressed || RenController.instance.currentControls.Start.WasPressed)
                 {
                     UnPauseGame();
                 }
@@ -928,7 +928,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         if (!online)
         {
-            Time.timeScale = 0;
+            //Time.timeScale = 0;
             myGameInterface.PauseGame();
             playerActions = p;
             gamePaused = true;

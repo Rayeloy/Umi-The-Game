@@ -144,7 +144,8 @@ public class GameInterface : MonoBehaviour
         pauseRestartButton.SetActive(true);
         pauseMenuButton.SetActive(true);
 
-        EventSystem.current.SetSelectedGameObject(pauseRestartButton);
+        //EventSystem.current.SetSelectedGameObject(pauseRestartButton);
+        RenController.instance.SetSelectedButton(pauseRestartButton.GetComponent<RenButton>());
     }
 
     public void UnPauseGame()
