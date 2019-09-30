@@ -148,7 +148,7 @@ public class StoringManager : MonoBehaviour {
     {
         newObject.SetParent(transform);
         newObject.localPosition = Vector3.zero;
-        print("Storing Manager: " + newObject.name + " localPosition is " + newObject.localPosition);
+        //print("Storing Manager: " + newObject.name + " localPosition is " + newObject.localPosition);
         newObject.rotation = Quaternion.identity;
         objectsStored.Add(newObject);
     }

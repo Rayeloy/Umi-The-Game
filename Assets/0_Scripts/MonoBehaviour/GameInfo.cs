@@ -254,13 +254,13 @@ public class UIAnimation
                 case UIAnimType.scale:
                     //totalScaleAmplitude = Mathf.Abs(initialScale - finalScale);
                     originalScale = new Vector2(rect.localScale.x, rect.localScale.y);
-                    Debug.LogWarning(" originalScale= " + originalScale);
+                    //Debug.LogWarning("SCALEANIM: originalScale= " + originalScale);
 
                     break;
                 case UIAnimType.movement:
                     //totalAmplitude = new Vector2(Mathf.Abs(initialPos.x - finalPos.x), Mathf.Abs(initialPos.y - finalPos.y));
                     originalPos = rect.localPosition;
-                    Debug.LogWarning(" originalPos= " + originalPos );
+                    //Debug.LogWarning("MOVEANIM: originalPos= " + originalPos );
                     break;
             }
         }
@@ -286,7 +286,7 @@ public class UIAnimation
 
     public bool ProcessAnimation()
     {
-        Debug.Log("ProcessAnimation: playing = " + playing);
+        //Debug.Log("ProcessAnimation: playing = " + playing);
         if (playing)
         {
             float progress = currentCycleTime / frequency;
@@ -315,7 +315,7 @@ public class UIAnimation
                     progress = animDir == 1 ? progress : 1 - progress;
                     value = EasingFunction.SelectEasingFunction(easeFunction, initialScale, finalScale, progress);
                     rect.localScale = new Vector3(originalScale.x * value, originalScale.y * value, 1);
-                    Debug.Log("Progress = " + progress + "; value = " + value+ "; originalScale.x = " + originalScale.x + "; originalScale.y = " + originalScale.y);
+                    //Debug.Log("SCALENANIM: Progress = " + progress + "; value = " + value+ "; originalScale.x = " + originalScale.x + "; originalScale.y = " + originalScale.y);
                     break;
                 case UIAnimType.movement:
                     progress = animDir == 1 ? progress : 1 - progress;
@@ -323,7 +323,7 @@ public class UIAnimation
                     float yVal = EasingFunction.SelectEasingFunction(easeFunction, initialPos.y, finalPos.y, progress);
 
                     rect.localPosition = new Vector3(originalPos.x + xVal, originalPos.y + yVal, rect.localPosition.z);
-                    Debug.Log("Progress = " + progress + "; xVal = " + xVal+ "; yVal = " + yVal);
+                    //Debug.Log("MOVEANIM: Progress = " + progress + "; xVal = " + xVal+ "; yVal = " + yVal);
                     break;
             }
 

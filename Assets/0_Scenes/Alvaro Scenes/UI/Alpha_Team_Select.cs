@@ -55,7 +55,6 @@ public class Alpha_Team_Select : MonoBehaviour
     int currentMapIndex = 0;
 
 
-
     private void Awake()
     {
         instance = this;
@@ -281,6 +280,7 @@ public class Alpha_Team_Select : MonoBehaviour
 
         MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
         teamSelectMenuSt = TeamSelectMenuState.ChoosingNumberOfPlayers;
+        Debug.Log("LOCK MAP VARIATION");
     }
 
     void BackToChooseMapVariation()
@@ -290,6 +290,7 @@ public class Alpha_Team_Select : MonoBehaviour
         MakeSpriteBig(mapVariationsSprites[currentMapIndex]);
 
         teamSelectMenuSt = TeamSelectMenuState.ChoosingMapVariation;
+        Debug.Log("BACK TO CHOOSE MAP VARIATION");
     }
 
     void LockSelectNumberOfPlayers()
@@ -301,6 +302,7 @@ public class Alpha_Team_Select : MonoBehaviour
         {
             selectPlayers[i].KonoAwake(nPlayers, i);
         }
+        Debug.Log("LOCK PLAYER NUM");
     }
 
     void BackToChooseNumberOfPlayers()
@@ -315,6 +317,7 @@ public class Alpha_Team_Select : MonoBehaviour
             teamSelectMenuSt = TeamSelectMenuState.ChoosingNumberOfPlayers;
         }
         MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
+        Debug.Log("BACK TO CHOOSE PLAYER NUM");
     }
 
     bool JoinButtonWasPressedOnListener(PlayerActions actions)

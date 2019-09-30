@@ -222,7 +222,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                     targetImages[0].sprite = normalSprite;
                     break;
             }
-            Debug.Log("BUTTON RELEASED");
+            //Debug.Log("BUTTON RELEASED");
             onButtonPressed.Invoke();
         }
     }

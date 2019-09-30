@@ -13,9 +13,9 @@ public class RenController : MonoBehaviour
 {
     public static RenController instance;
     [HideInInspector] public bool disabled = false;
-    public bool useMouse = true;
-    public bool useControllers;
-    public bool useKeyboard;
+    public bool useMouse = false;
+    public bool useControllers = true;
+    public bool useKeyboard = true;
     public InControlManager inControlManager;
     [Tooltip("Only Anyone is working right now")]
     public ButtonControlsMode controlsType;
@@ -189,7 +189,7 @@ public class RenController : MonoBehaviour
 
     void MoveUp()
     {
-        Debug.Log("CurrentButton = "+ currentButton + "; currentButton.nextUpButton = " + currentButton.nextUpButton);
+        //Debug.Log("CurrentButton = "+ currentButton + "; currentButton.nextUpButton = " + currentButton.nextUpButton);
         if (currentButton.nextUpButton != null)
         {
             List<RenButton> listOfSeenButtons = new List<RenButton>();
@@ -198,20 +198,27 @@ public class RenController : MonoBehaviour
             if (currentButton.nextUpButton.disabled && automaticButtonFlowOnError)
             {
                 RenButton auxCurrentButton = currentButton.nextUpButton;
-                while (auxCurrentButton.disabled)
+                int i = 0;
+                while (auxCurrentButton.disabled || i > 5)
                 {
                     if (!listOfSeenButtons.Contains(auxCurrentButton))
                     {
                         listOfSeenButtons.Add(auxCurrentButton);
                         if (auxCurrentButton.nextUpButton != null)
                         {
-                            nextButton = auxCurrentButton.nextUpButton;
+                            auxCurrentButton = auxCurrentButton.nextUpButton;
+                            if (!auxCurrentButton.disabled) nextButton = auxCurrentButton;
                         }
                         else
                         {
-                            auxCurrentButton = auxCurrentButton.nextUpButton;
+                            break;
                         }
                     }
+                    else
+                    {
+                        break;
+                    }
+                    i++;
                 }
             }
             else
@@ -229,7 +236,7 @@ public class RenController : MonoBehaviour
 
     void MoveDown()
     {
-        Debug.Log("CurrentButton = " + currentButton + "; currentButton.nextDownButton = " + currentButton.nextDownButton);
+        //Debug.Log("CurrentButton = " + currentButton + "; currentButton.nextDownButton = " + currentButton.nextDownButton);
         if (currentButton.nextDownButton != null)
         {
             List<RenButton> listOfSeenButtons = new List<RenButton>();
@@ -238,20 +245,31 @@ public class RenController : MonoBehaviour
             if (currentButton.nextDownButton.disabled && automaticButtonFlowOnError)
             {
                 RenButton auxCurrentButton = currentButton.nextDownButton;
-                while (auxCurrentButton.disabled)
+                int i = 0;
+                while (auxCurrentButton.disabled || i>=5)
                 {
+                    Debug.Log("AuxCurrentButton = " + auxCurrentButton.gameObject.name+ "; auxCurrentButton.nextDownButton = " + auxCurrentButton.nextDownButton.gameObject.name);
                     if (!listOfSeenButtons.Contains(auxCurrentButton))
                     {
                         listOfSeenButtons.Add(auxCurrentButton);
                         if (auxCurrentButton.nextDownButton != null)
                         {
-                            nextButton = auxCurrentButton.nextDownButton;
+                            auxCurrentButton = auxCurrentButton.nextDownButton;
+                            if (!auxCurrentButton.disabled) nextButton = auxCurrentButton;
                         }
                         else
                         {
-                            auxCurrentButton = auxCurrentButton.nextDownButton;
+                            Debug.Log("BREAK: nextDownButton == null");
+                            break;
                         }
                     }
+                    else
+                    {
+                        Debug.Log("BREAK: listOfSeenButtons contains this button already");
+                        break;
+                    }
+                    i++;
+                    
                 }
             }
             else
