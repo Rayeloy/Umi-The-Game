@@ -149,8 +149,9 @@ public class PlayerActions : PlayerActionSet
         actions.LJLeft.AddDefaultBinding(Key.LeftArrow);
         actions.LJRight.AddDefaultBinding(Key.RightArrow);
 
+        actions.Start.AddDefaultBinding(Key.Escape);
         actions.Start.AddDefaultBinding(Key.Return);
-        actions.Start.AddDefaultBinding(Key.Space);
+        //actions.Start.AddDefaultBinding(Key.Space);
 
 
         // JOYSTICK

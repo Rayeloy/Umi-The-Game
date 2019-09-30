@@ -10,6 +10,8 @@ public enum UIAnimType
     none,
     shake,
     color_alpha,
+    scale,
+    movement
 }
 public class GameInfo : MonoBehaviour
 {
@@ -137,8 +139,11 @@ public class GameInfo : MonoBehaviour
         }
         if (!uIAnimations.Contains(uIAnimation))
         {
-            float prop = Mathf.Min(canvasCamera.rect.width, canvasCamera.rect.height);
-            uIAnimation.currentXAmplitude = uIAnimation.xAmplitude * prop;
+            if (canvasCamera != null)
+            {
+                float prop = Mathf.Min(canvasCamera.rect.width, canvasCamera.rect.height);
+                uIAnimation.currentXAmplitude = uIAnimation.xAmplitude * prop;
+            }
             uIAnimations.Add(uIAnimation);
             uIAnimation.StartAnimation();
         }
@@ -177,6 +182,7 @@ public class GameInfo : MonoBehaviour
 public class UIAnimation
 {
     public UIAnimType type = UIAnimType.none;
+    [HideInInspector] public bool playing = false;
     public RectTransform rect;
     public float duration = 0.5f;
     public bool endless = false;
@@ -200,6 +206,17 @@ public class UIAnimation
     public float alphaMax = 1;
     Image image;
 
+    [Header("--- SCALE ---")]
+    public float initialScale;
+    public float finalScale;
+    private Vector2 originalScale;
+
+    [Header("--- MOVEMENT ---")]
+    public Vector2 initialPos;
+    public Vector2 finalPos;
+    private Vector2 originalPos; 
+
+
     public UIAnimation(UIAnimType _type, ref RectTransform _rect, float _xAmplitude = 7f, float _frequency = 0.06f,
         float _duration = 0.5f, float _cycleStartPoint = 0.5f)
     {
@@ -216,20 +233,36 @@ public class UIAnimation
 
     public void StartAnimation()
     {
-        currentDuration = 0;
-        currentCycleTime = cycleStartPoint * frequency;
-        switch (type)
+        if (!playing)
         {
-            case UIAnimType.shake:
-                animDir = 1;
-                totalSpace = currentXAmplitude * 2;
-                originalLocalPos = rect.localPosition;
-                //Debug.LogWarning(" currentxAmplitude= " + currentxAmplitude + "; totalSpace = " + totalSpace);
-                break;
-            case UIAnimType.color_alpha:
-                animDir = 1;
-                image = rect.GetComponent<Image>();
-                break;
+            playing = true;
+            if (frequency == 0 && duration > 0) frequency = duration;
+            if (duration == 0 && frequency > 0) duration = frequency;
+            currentDuration = 0;
+            currentCycleTime = cycleStartPoint * frequency;
+            animDir = 1;
+            switch (type)
+            {
+                case UIAnimType.shake:
+                    totalSpace = currentXAmplitude * 2;
+                    originalLocalPos = rect.localPosition;
+                    //Debug.LogWarning(" currentxAmplitude= " + currentxAmplitude + "; totalSpace = " + totalSpace);
+                    break;
+                case UIAnimType.color_alpha:
+                    image = rect.GetComponent<Image>();
+                    break;
+                case UIAnimType.scale:
+                    //totalScaleAmplitude = Mathf.Abs(initialScale - finalScale);
+                    originalScale = new Vector2(rect.localScale.x, rect.localScale.y);
+                    Debug.LogWarning(" originalScale= " + originalScale);
+
+                    break;
+                case UIAnimType.movement:
+                    //totalAmplitude = new Vector2(Mathf.Abs(initialPos.x - finalPos.x), Mathf.Abs(initialPos.y - finalPos.y));
+                    originalPos = rect.localPosition;
+                    Debug.LogWarning(" originalPos= " + originalPos );
+                    break;
+            }
         }
     }
 
@@ -244,76 +277,104 @@ public class UIAnimation
                 break;
             case UIAnimType.color_alpha:
                 break;
+            case UIAnimType.scale:
+                break;
+            case UIAnimType.movement:
+                break;
         }
     }
 
     public bool ProcessAnimation()
     {
-        //if(currentDuration< duration)
-        //{
-        float progress = currentCycleTime / frequency;
-        switch (type)
+        Debug.Log("ProcessAnimation: playing = " + playing);
+        if (playing)
         {
-            case UIAnimType.shake:
-                float xIncrement = progress * totalSpace * animDir;
-                //float xIncrement = animDir * EasingFunction.EaseInOutQuart(0, xAmplitude, progress);
-                float originX = originalLocalPos.x + (currentXAmplitude * -animDir);
-                Vector3 finalPos = originalLocalPos;
-                finalPos.x = originX + xIncrement;
-                rect.localPosition = finalPos;
-                //Debug.Log("xIncrement = "+ xIncrement + "; totalSpace = "+ totalSpace + "; progress = " + progress+ "; originX = " + originX+ "; finalPos.x ="+ finalPos.x);
-                break;
-            case UIAnimType.color_alpha:
-                progress = animDir == 1 ? progress : 1 - progress;
-                Color newColor = image.color;
-                float value = EasingFunction.SelectEasingFunction(easeFunction, alphaMin, alphaMax, progress);
-                //float aIncrement = value * animDir;
-                //float alphaStartPoint = animDir == 1?alphaMin:alphaMax;
-                newColor.a = value;
-                image.color = newColor;
-                //Debug.Log("Progress = " + progress + "; value = " + value);
-                break;
-        }
-
-        //CHANGE ANIM DIR
-        currentCycleTime += Time.deltaTime;
-        if (cycleAnimDir)
-        {
-            if (currentCycleTime >= frequency)
+            float progress = currentCycleTime / frequency;
+            switch (type)
             {
-                animDir = animDir == 1 ? -1 : 1;
-                currentCycleTime = 0;
+                case UIAnimType.shake:
+                    float xIncrement = progress * totalSpace * animDir;
+                    //float xIncrement = animDir * EasingFunction.EaseInOutQuart(0, xAmplitude, progress);
+                    float originX = originalLocalPos.x + (currentXAmplitude * -animDir);
+                    Vector3 finalPosition = originalLocalPos;
+                    finalPosition.x = originX + xIncrement;
+                    rect.localPosition = finalPosition;
+                    //Debug.Log("xIncrement = "+ xIncrement + "; totalSpace = "+ totalSpace + "; progress = " + progress+ "; originX = " + originX+ "; finalPos.x ="+ finalPos.x);
+                    break;
+                case UIAnimType.color_alpha:
+                    progress = animDir == 1 ? progress : 1 - progress;
+                    Color newColor = image.color;
+                    float value = EasingFunction.SelectEasingFunction(easeFunction, alphaMin, alphaMax, progress);
+                    //float aIncrement = value * animDir;
+                    //float alphaStartPoint = animDir == 1?alphaMin:alphaMax;
+                    newColor.a = value;
+                    image.color = newColor;
+                    //Debug.Log("Progress = " + progress + "; value = " + value);
+                    break;
+                case UIAnimType.scale:
+                    progress = animDir == 1 ? progress : 1 - progress;
+                    value = EasingFunction.SelectEasingFunction(easeFunction, initialScale, finalScale, progress);
+                    rect.localScale = new Vector3(originalScale.x * value, originalScale.y * value, 1);
+                    Debug.Log("Progress = " + progress + "; value = " + value+ "; originalScale.x = " + originalScale.x + "; originalScale.y = " + originalScale.y);
+                    break;
+                case UIAnimType.movement:
+                    progress = animDir == 1 ? progress : 1 - progress;
+                    float xVal = EasingFunction.SelectEasingFunction(easeFunction, initialPos.x, finalPos.x, progress);
+                    float yVal = EasingFunction.SelectEasingFunction(easeFunction, initialPos.y, finalPos.y, progress);
+
+                    rect.localPosition = new Vector3(originalPos.x + xVal, originalPos.y + yVal, rect.localPosition.z);
+                    Debug.Log("Progress = " + progress + "; xVal = " + xVal+ "; yVal = " + yVal);
+                    break;
+            }
+
+            //CHANGE ANIM DIR
+            currentCycleTime += Time.deltaTime;
+            if (cycleAnimDir)
+            {
+                if (currentCycleTime >= frequency)
+                {
+                    animDir = animDir == 1 ? -1 : 1;
+                    currentCycleTime = 0;
+                }
+            }
+
+            //END
+            currentDuration += Time.deltaTime;
+            if (!endless && currentDuration >= duration)
+            {
+                StopAnimation();
+                return false;
             }
         }
-
-        //END
-        currentDuration += Time.deltaTime;
-        if (!endless && currentDuration >= duration)
-        {
-            StopAnimation();
-            return false;
-        }
         return true;
-        //}
-        //return false;
     }
 
     public void StopAnimation()
     {
-        if (currentDuration >= duration)
+        if (playing)
         {
-            currentDuration = duration;
-        }
-        switch (type)
-        {
-            case UIAnimType.shake:
-                rect.localPosition = originalLocalPos;
-                break;
-            case UIAnimType.color_alpha:
-                Color newColor = image.color;
-                newColor.a = 0;
-                image.color = newColor;
-                break;
+            playing = false;
+            if (currentDuration >= duration)
+            {
+                currentDuration = duration;
+            }
+            switch (type)
+            {
+                case UIAnimType.shake:
+                    rect.localPosition = originalLocalPos;
+                    break;
+                case UIAnimType.color_alpha:
+                    Color newColor = image.color;
+                    newColor.a = 0;
+                    image.color = newColor;
+                    break;
+                case UIAnimType.scale:
+                    rect.localScale = new Vector3(originalScale.x * finalScale, originalScale.y* finalScale, 1);
+                    break;
+                case UIAnimType.movement:
+                    rect.localPosition = finalPos;
+                    break;
+            }
         }
     }
 }

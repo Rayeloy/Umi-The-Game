@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 13742930}
   - component: {fileID: 13742931}
   - component: {fileID: 347062368}
+  - component: {fileID: 1692152522459105088}
   m_Layer: 5
-  m_Name: Victory Blue
+  m_Name: Victory Green
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,15 +28,15 @@ RectTransform:
   m_GameObject: {fileID: 13742929}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 7, y: 7, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 176777193}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.47042978, y: 0.7686431}
-  m_AnchorMax: {x: 0.53457344, y: 0.8826682}
+  m_AnchorMin: {x: -0.0025749789, y: -0.0026659898}
+  m_AnchorMax: {x: 1.0025749, y: 1.002666}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0.000061035156, y: 0.000030517578}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &13742931
 CanvasRenderer:
@@ -63,7 +64,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 11e844f60735b2c428eaa940f9bb6916, type: 3}
+  m_Sprite: {fileID: 7094224695427927900, guid: ea09aab545c9b1a4894530a200f40aea,
+    type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -73,6 +75,25 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!95 &1692152522459105088
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13742929}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 678ad3013c2df3749bd24ec28c6ed677, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &33577149
 GameObject:
   m_ObjectHideFlags: 0
@@ -234,8 +255,9 @@ GameObject:
   - component: {fileID: 121245151}
   - component: {fileID: 121245152}
   - component: {fileID: 2012987189}
+  - component: {fileID: 5540789062610955400}
   m_Layer: 5
-  m_Name: Victory Red
+  m_Name: Victory Pink
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -250,15 +272,15 @@ RectTransform:
   m_GameObject: {fileID: 121245150}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 7, y: 7, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 176777193}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.47042978, y: 0.7686431}
-  m_AnchorMax: {x: 0.53457344, y: 0.88266814}
+  m_AnchorMin: {x: -0.0025749789, y: -0.0026659898}
+  m_AnchorMax: {x: 1.0025749, y: 1.002666}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0.000061035156, y: 0.000030517578}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &121245152
 CanvasRenderer:
@@ -286,7 +308,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2ea9cc2399d70674090d6cb7c558d11f, type: 3}
+  m_Sprite: {fileID: 7786606281554435113, guid: 788d07f2ac8902d499e370dc47bcd3d5,
+    type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -296,6 +319,25 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!95 &5540789062610955400
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 121245150}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: b9af234f44346a34ca6e5102cd3dc634, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &164549826
 GameObject:
   m_ObjectHideFlags: 0
@@ -328,8 +370,8 @@ RectTransform:
   m_Father: {fileID: 176777193}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: -0.053097345, y: 0.18848167}
-  m_AnchorMax: {x: 1.0530974, y: 0.8115183}
+  m_AnchorMin: {x: -0.0501828, y: -0.022796003}
+  m_AnchorMax: {x: 1.0501828, y: 0.28333923}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -348,13 +390,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 164549826}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.7607843}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -498,6 +540,42 @@ MonoBehaviour:
   veil: {fileID: 1275665991}
   victoryRed: {fileID: 2012987189}
   victoryBlue: {fileID: 347062368}
+  victoryImageReduceAnimation:
+    type: 3
+    playing: 0
+    rect: {fileID: 121245151}
+    duration: 1
+    endless: 0
+    cycleAnimDir: 0
+    frequency: 1
+    cycleStartPoint: 0
+    easeFunction: 30
+    xAmplitude: 0
+    currentXAmplitude: 0
+    alphaMin: 0
+    alphaMax: 0
+    initialScale: 1
+    finalScale: 0.5
+    initialPos: {x: 0, y: 0}
+    finalPos: {x: 0, y: 0}
+  victoryImageMoveUpAnimation:
+    type: 4
+    playing: 0
+    rect: {fileID: 121245151}
+    duration: 1
+    endless: 0
+    cycleAnimDir: 0
+    frequency: 1
+    cycleStartPoint: 0
+    easeFunction: 8
+    xAmplitude: 0
+    currentXAmplitude: 0
+    alphaMin: 0
+    alphaMax: 0
+    initialScale: 0
+    finalScale: 0
+    initialPos: {x: 0, y: 0}
+    finalPos: {x: 0, y: 0.5}
   gameOverPressStart: {fileID: 1587776033}
   gameOverFirstButton: {fileID: 1038581424}
   menuScene: Demo_MainMenu 1
@@ -989,7 +1067,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.8039216}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.85882354}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -2161,6 +2239,11 @@ PrefabInstance:
     - target: {fileID: 880503870005479703, guid: c1c04725e7d5ab246893de4c4dc8faad,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 880503870005479700, guid: c1c04725e7d5ab246893de4c4dc8faad,
+        type: 3}
+      propertyPath: useKeyboard
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 880503870005479700, guid: c1c04725e7d5ab246893de4c4dc8faad,

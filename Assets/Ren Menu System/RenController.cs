@@ -12,6 +12,7 @@ public enum ButtonControlsMode
 public class RenController : MonoBehaviour
 {
     public static RenController instance;
+    [HideInInspector] public bool disabled = false;
     public bool useMouse = true;
     public bool useControllers;
     public bool useKeyboard;
@@ -26,6 +27,15 @@ public class RenController : MonoBehaviour
     [HideInInspector] public RenButton currentButton;
 
     [HideInInspector] public PlayerActions currentControls;
+
+
+    bool validInput
+    {
+        get
+        {
+            return ((currentControls.LastDeviceClass == InputDeviceClass.Controller && useControllers) || (currentControls.LastDeviceClass == InputDeviceClass.Keyboard && useKeyboard));
+        }
+    }
 
     private void Awake()
     {
@@ -60,29 +70,29 @@ public class RenController : MonoBehaviour
 
     private void Update()
     {
-        if((currentControls.LastDeviceClass== InputDeviceClass.Controller && useControllers) || (currentControls.LastDeviceClass == InputDeviceClass.Keyboard && useKeyboard))
+        if(!disabled)
         {
-            if (currentControls.leftJoystcikAsButtons.right.wasPressed || currentControls.leftJoystcikAsButtons.right.wasPressedLong)
+            if ((currentControls.leftJoystcikAsButtons.right.wasPressed || currentControls.leftJoystcikAsButtons.right.wasPressedLong) && validInput)
             {
                 MoveRight();
             }
-            else if (currentControls.leftJoystcikAsButtons.left.wasPressed || currentControls.leftJoystcikAsButtons.left.wasPressedLong)
+            else if ((currentControls.leftJoystcikAsButtons.left.wasPressed || currentControls.leftJoystcikAsButtons.left.wasPressedLong) && validInput)
             {
                 MoveLeft();
             }
-            else if (currentControls.leftJoystcikAsButtons.up.wasPressed || currentControls.leftJoystcikAsButtons.up.wasPressedLong)
+            else if ((currentControls.leftJoystcikAsButtons.up.wasPressed || currentControls.leftJoystcikAsButtons.up.wasPressedLong) && validInput)
             {
                 MoveUp();
             }
-            else if (currentControls.leftJoystcikAsButtons.down.wasPressed || currentControls.leftJoystcikAsButtons.down.wasPressedLong)
+            else if ((currentControls.leftJoystcikAsButtons.down.wasPressed || currentControls.leftJoystcikAsButtons.down.wasPressedLong) && validInput)
             {
                 MoveDown();
             }
-            else if (currentControls.A.WasPressed)
+            else if (currentControls.A.WasPressed && validInput)
             {
                 PressButton();
             }
-            else if (currentControls.A.WasReleased)
+            else if (currentControls.A.WasReleased && validInput)
             {
                 ReleaseButton();
             }
@@ -219,6 +229,7 @@ public class RenController : MonoBehaviour
 
     void MoveDown()
     {
+        Debug.Log("CurrentButton = " + currentButton + "; currentButton.nextDownButton = " + currentButton.nextDownButton);
         if (currentButton.nextDownButton != null)
         {
             List<RenButton> listOfSeenButtons = new List<RenButton>();

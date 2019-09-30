@@ -95,6 +95,8 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             {
                 targetImages[i].color = highlightedColor;
             }
+            RenController.instance.currentButton.StopHighlightButtonsAndText();
+            RenController.instance.currentButton = this;
             onMouseEnter.Invoke();
         }
     }
