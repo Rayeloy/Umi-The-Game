@@ -353,14 +353,23 @@ public class PlayerHUD : MonoBehaviour
     #region --- FLAG ARROW ---
     void SetupArrowToFlag()
     {
-        flagSpawn = (gC as GameController_FlagMode).flagsParent;
-        flagArrowFollowTarget = flag;
-        DeactivateArrowToFlagOffScreen();
-        if (minProportionWOCMaxDist <= maxProportionWhenOnCamera) Debug.LogError("Error: minProportionWOCMaxDist("+ minProportionWOCMaxDist + ") should be always higher than the " +
-            "maxProportionWOCMinDist("+ maxProportionWhenOnCamera + "). Change the values please.");
-        if (maxProportionWhenOnCamera <= minProportionWhenOnCamera) Debug.LogError("Error: maxProportionWhenOnCamera(" + maxProportionWhenOnCamera + ") should be always higher than the " +
-    "minProportionWhenOnCamera(" + minProportionWhenOnCamera + "). Change the values please.");
-        flagArrowWhaleOriginalProportion = flagArrowWhale.localScale;
+        if(gC.gameMode == GameMode.CaptureTheFlag)
+        {
+            flagSpawn = (gC as GameController_FlagMode).flagsParent;
+            flagArrowFollowTarget = flag;
+            DeactivateArrowToFlagOffScreen();
+            if (minProportionWOCMaxDist <= maxProportionWhenOnCamera) Debug.LogError("Error: minProportionWOCMaxDist(" + minProportionWOCMaxDist + ") should be always higher than the " +
+                "maxProportionWOCMinDist(" + maxProportionWhenOnCamera + "). Change the values please.");
+            if (maxProportionWhenOnCamera <= minProportionWhenOnCamera) Debug.LogError("Error: maxProportionWhenOnCamera(" + maxProportionWhenOnCamera + ") should be always higher than the " +
+        "minProportionWhenOnCamera(" + minProportionWhenOnCamera + "). Change the values please.");
+            flagArrowWhaleOriginalProportion = flagArrowWhale.localScale;
+        }
+        else
+        {
+            flagArrowArrow.gameObject.SetActive(false);
+            flagArrowWhale.gameObject.SetActive(false);
+            flagArrowFixedRing.gameObject.SetActive(false);
+        }
     }
 
     void ActivateArrowToFlagOffScreen()
@@ -655,67 +664,78 @@ public class PlayerHUD : MonoBehaviour
     #region --- FLAG HOME ARROW ---
     void SetUpFlagHomeArrow()
     {
-        flagHomeTransform = myPlayerMov.team==Team.A? (gC as GameController_FlagMode).FlagHome_TeamA : (gC as GameController_FlagMode).FlagHome_TeamB;
-        flagHomeArrowIconOutline.gameObject.SetActive(false);
-        flagHomeArrowArrow.gameObject.SetActive(false);
-        flagHomeArrowIconOriginalProportion = flagHomeArrowIconOutline.localScale;
+        if (gC.gameMode == GameMode.CaptureTheFlag)
+        {
+            flagHomeTransform = myPlayerMov.team == Team.A ? (gC as GameController_FlagMode).FlagHome_TeamA : (gC as GameController_FlagMode).FlagHome_TeamB;
+            flagHomeArrowIconOutline.gameObject.SetActive(false);
+            flagHomeArrowArrow.gameObject.SetActive(false);
+            flagHomeArrowIconOriginalProportion = flagHomeArrowIconOutline.localScale;
+        }
+        else
+        {
+            flagHomeArrowIconOutline.gameObject.SetActive(false);
+            flagHomeArrowArrow.gameObject.SetActive(false);
+        }
     }
 
     void UpdateFlagHomeArrow()
     {
-        //Debug.Log("FLAGHOME ARROW UPDATE:  flagCurrentOwner= "+ flagCurrentOwner + "; flagCurrentOwner.team = "+ flagCurrentOwner.team + "; myPlayerMov.team = " + myPlayerMov.team);
-        if (flagForSlider.currentOwner != null && flagForSlider.currentOwner.GetComponent<PlayerMovement>().team == myPlayerMov.team)
+        if (gC.gameMode == GameMode.CaptureTheFlag)
         {
-            //Debug.Log("FLAGHOME ARROW UPDATE:  flagCurrentOwner= " + flagCurrentOwner + "; flagCurrentOwner.team = " + flagCurrentOwner.team + "; myPlayerMov.team = " + myPlayerMov.team);
-            flagHomeArrowFlagHomePos = flagHomeTransform.position + Vector3.up * 3;
-            Vector3 flagHomeViewportPos = myCamera.WorldToViewportPoint(flagHomeArrowFlagHomePos);
-            Debug.Log("flagHomeViewportPos = " + flagHomeViewportPos.ToString("F4"));
-            if (flagHomeViewportPos.z > myCamera.nearClipPlane && (flagHomeViewportPos.x >= 0.05f && flagHomeViewportPos.x <= 0.95f && flagHomeViewportPos.y >= 0.2f && flagHomeViewportPos.y <= 0.75f))
+            //Debug.Log("FLAGHOME ARROW UPDATE:  flagCurrentOwner= "+ flagCurrentOwner + "; flagCurrentOwner.team = "+ flagCurrentOwner.team + "; myPlayerMov.team = " + myPlayerMov.team);
+            if (flagForSlider.currentOwner != null && flagForSlider.currentOwner.GetComponent<PlayerMovement>().team == myPlayerMov.team)
             {
-                DeactivateFlagHomeArrowOffScreen();
-                float distToFlagHome = (flagHomeTransform.position - myPlayerMov.transform.position).magnitude;
-                if (distToFlagHome >= minDistanceToShowWhenOnCamera)
+                //Debug.Log("FLAGHOME ARROW UPDATE:  flagCurrentOwner= " + flagCurrentOwner + "; flagCurrentOwner.team = " + flagCurrentOwner.team + "; myPlayerMov.team = " + myPlayerMov.team);
+                flagHomeArrowFlagHomePos = flagHomeTransform.position + Vector3.up * 3;
+                Vector3 flagHomeViewportPos = myCamera.WorldToViewportPoint(flagHomeArrowFlagHomePos);
+                if(!myPlayerMov.disableAllDebugs)Debug.Log("flagHomeViewportPos = " + flagHomeViewportPos.ToString("F4"));
+                if (flagHomeViewportPos.z > myCamera.nearClipPlane && (flagHomeViewportPos.x >= 0.05f && flagHomeViewportPos.x <= 0.95f && flagHomeViewportPos.y >= 0.2f && flagHomeViewportPos.y <= 0.75f))
                 {
-                    Debug.LogWarning("Trying to Activate Flag Home Arrow On Screen");
-                    ActivateFlagHomeArrowOnScreen();
-                }
-                else
-                {
-                    Debug.DrawLine(myCamera.transform.position, flagHomeTransform.position, Color.yellow);
-                    RaycastHit hit;
-                    bool collided = false;
-                    if (Physics.Linecast(myCamera.transform.position, flagHomeTransform.position, out hit, arrowToFlagCameraLM, QueryTriggerInteraction.Collide))
+                    DeactivateFlagHomeArrowOffScreen();
+                    float distToFlagHome = (flagHomeTransform.position - myPlayerMov.transform.position).magnitude;
+                    if (distToFlagHome >= minDistanceToShowWhenOnCamera)
                     {
-                        if (hit.collider.gameObject.tag == "Stage" || hit.collider.gameObject.tag == "Player")
-                        {
-                            Debug.LogWarning("COLLISIONS BETWEEN CAMERA AND FLAG: collided with "+ hit.collider.gameObject);
-                            collided = true;
-                        }
-                    }
-
-                    if (collided)
-                    {
-                        Debug.LogWarning("Trying to Activate Flag Home Arrow On Screen because there is a collision");
+                        if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Trying to Activate Flag Home Arrow On Screen");
                         ActivateFlagHomeArrowOnScreen();
                     }
                     else
                     {
-                        Debug.LogWarning("NO COLLISIONS BETWEEN CAMERA AND FLAG");
-                        DeactivateFlagHomeArrowOnScreen();
+                        Debug.DrawLine(myCamera.transform.position, flagHomeTransform.position, Color.yellow);
+                        RaycastHit hit;
+                        bool collided = false;
+                        if (Physics.Linecast(myCamera.transform.position, flagHomeTransform.position, out hit, arrowToFlagCameraLM, QueryTriggerInteraction.Collide))
+                        {
+                            if (hit.collider.gameObject.tag == "Stage" || hit.collider.gameObject.tag == "Player")
+                            {
+                                if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("COLLISIONS BETWEEN CAMERA AND FLAG: collided with " + hit.collider.gameObject);
+                                collided = true;
+                            }
+                        }
+
+                        if (collided)
+                        {
+                            if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Trying to Activate Flag Home Arrow On Screen because there is a collision");
+                            ActivateFlagHomeArrowOnScreen();
+                        }
+                        else
+                        {
+                            if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("NO COLLISIONS BETWEEN CAMERA AND FLAG");
+                            DeactivateFlagHomeArrowOnScreen();
+                        }
                     }
                 }
+                else
+                {
+                    ActivateFlagHomeArrowOffScreen();
+                }
+
+                ProcessFlagHomeArrow();
             }
             else
             {
-                ActivateFlagHomeArrowOffScreen();
+                DeactivateFlagHomeArrowOffScreen();
+                DeactivateFlagHomeArrowOnScreen();
             }
-
-            ProcessFlagHomeArrow();
-        }
-        else
-        {
-            DeactivateFlagHomeArrowOffScreen();
-            DeactivateFlagHomeArrowOnScreen();
         }
     }
 
@@ -775,7 +795,7 @@ public class PlayerHUD : MonoBehaviour
         {
             DeactivateFlagHomeArrowOnScreen();
             //if (!myPlayerMov.disableAllDebugs) Debug.LogError("Activate FLAG HOME ARROW OFF SCREEN");
-            Debug.LogWarning("Activate FLAG HOME ARROW OFF SCREEN");
+            if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Activate FLAG HOME ARROW OFF SCREEN");
             flagHomeArrowSt = FlagArrowState.activated_OffScreen;
             flagHomeArrowIconOutline.gameObject.SetActive(true);
             flagHomeArrowArrow.gameObject.SetActive(true);
@@ -789,7 +809,7 @@ public class PlayerHUD : MonoBehaviour
         if (flagHomeArrowSt == FlagArrowState.activated_OffScreen)
         {
             //if (!myPlayerMov.disableAllDebugs) Debug.LogError("Deactivate FLAG HOME ARROW OFF SCREEN");
-            Debug.LogWarning("Deactivate FLAG HOME ARROW OFF SCREEN");
+            if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Deactivate FLAG HOME ARROW OFF SCREEN");
             flagHomeArrowSt = FlagArrowState.deactivated;
             flagHomeArrowIconOutline.gameObject.SetActive(false);
             flagHomeArrowArrow.gameObject.SetActive(false);
@@ -802,7 +822,7 @@ public class PlayerHUD : MonoBehaviour
         {
             DeactivateFlagHomeArrowOnScreen();
             //if (!myPlayerMov.disableAllDebugs) Debug.LogError("Activate FLAG HOME ARROW ON SCREEN");
-            Debug.LogWarning("Activate FLAG HOME ARROW ON SCREEN");
+            if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Activate FLAG HOME ARROW ON SCREEN");
             flagHomeArrowSt = FlagArrowState.activated_OnScreen;
             flagHomeArrowArrow.gameObject.SetActive(false);
             flagHomeArrowIconOutline.gameObject.SetActive(true);
@@ -816,7 +836,7 @@ public class PlayerHUD : MonoBehaviour
         if (flagHomeArrowSt == FlagArrowState.activated_OnScreen)
         {
             //if (!myPlayerMov.disableAllDebugs) Debug.LogError("Deactivate FLAG HOME ARROW ON SCREEN");
-            Debug.LogWarning("Deactivate FLAG HOME ARROW ON SCREEN");
+            if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Deactivate FLAG HOME ARROW ON SCREEN");
             flagHomeArrowSt = FlagArrowState.deactivated;
             flagHomeArrowIconOutline.localScale = new Vector3(flagHomeArrowIconOriginalProportion.x, flagHomeArrowIconOriginalProportion.y, 1);
             flagHomeArrowArrow.gameObject.SetActive(false);

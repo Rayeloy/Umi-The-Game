@@ -90,16 +90,6 @@ public class PlayerSelected : MonoBehaviour
                 joystickNeutral = true;
             }
         }
-
-        //		else
-        //		{
-        //			// Set object material color.
-        //			//cachedRenderer.material.color = GetColorFromInput();
-        // 
-        //			// Rotate target object.
-        //			transform.Rotate( Vector3.down, 500.0f * Time.deltaTime * Actions.Movement.X, Space.World );
-        //			transform.Rotate( Vector3.right, 500.0f * Time.deltaTime * Actions.Movement.Y, Space.World );
-        //		}
     }
     bool joystickNeutral = true;
 

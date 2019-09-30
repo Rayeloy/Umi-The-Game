@@ -92,7 +92,7 @@ public class Flag : MonoBehaviour
 
     }
 
-    private void Update()
+    public void KonoUpdate()
     {
         ProcessLocked();
         ProcessRespawn();

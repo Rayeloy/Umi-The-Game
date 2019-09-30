@@ -21,6 +21,8 @@ public class GameInterface : MonoBehaviour
     public GameObject veil;
     public Image victoryRed;
     public Image victoryBlue;
+    public UIAnimation victoryImageReduceAnimation;
+    public UIAnimation victoryImageMoveUpAnimation;
     public Text gameOverPressStart;
     public GameObject gameOverFirstButton;//intento fallido de controlar qué boton se selecciona automáticamente al iniciar el menu de Game Over
     private string sceneLoadedOnReset;
@@ -29,7 +31,7 @@ public class GameInterface : MonoBehaviour
     public string menuScene;
     public string teamSelectScene;
     public GameObject pauseRestartButton;
-    public GameObject pauseMenuButton; 
+    public GameObject pauseMenuButton;
 
 
     public void KonoAwake(GameControllerBase _gC)
@@ -46,9 +48,51 @@ public class GameInterface : MonoBehaviour
 
         victoryRed.gameObject.SetActive(false);
         victoryBlue.gameObject.SetActive(false);
-        
+
         gameOverMenuOn = false;
 
+    }
+    private void Update()
+    {
+        ProcessPressStartToContinue();
+    }
+
+    bool pressStartToContinueStarted = false;
+    public void StartPressStartToContinue()
+    {
+        if (!pressStartToContinueStarted)
+        {
+            pressStartToContinueStarted = true;
+            GameInfo.instance.StartAnimation(victoryImageReduceAnimation, null);
+            victoryImageReduceAnimation.StartAnimation();
+        }
+    }
+
+    bool moveUpAnimStarted = false;
+    public void ProcessPressStartToContinue()
+    {
+        if (pressStartToContinueStarted)
+        {
+            if(!victoryImageReduceAnimation.playing & !moveUpAnimStarted)
+            {
+                Debug.Log("VICTORY ANIMATION MOVEUP ANIMATION STARTED");
+                moveUpAnimStarted = true;
+                GameInfo.instance.StartAnimation(victoryImageMoveUpAnimation, null);
+            }
+            else if (moveUpAnimStarted && !victoryImageMoveUpAnimation.playing)
+            {
+                StopPressStartToContinue();
+            }
+        }
+    }
+
+    public void StopPressStartToContinue()
+    {
+        if (pressStartToContinueStarted)
+        {
+            pressStartToContinueStarted = false;
+            SwitchGameOverMenu();
+        }
     }
 
     public void SwitchGameOverMenu()
@@ -56,30 +100,33 @@ public class GameInterface : MonoBehaviour
         //print("GAME OVER MENU");
         //print("gameOverMenuOn= " + gameOverMenuOn);
 
-            if (gameOverMenuOn)
-            {
-                //GameObject incontrol = GameObject.Find("InControl manager");
-                //Destroy(incontrol);
-                Cursor.lockState = CursorLockMode.Confined;
-                Cursor.visible = false;
-                gameOverMenuOn = false;
-                gameOverMenu.SetActive(false);
-                veil.SetActive(false);
-                victoryRed.gameObject.SetActive(false);
-                victoryBlue.gameObject.SetActive(false);
-                gameOverPressStart.enabled = false;
-                gC.gameOverStarted = false;
-            }
-            else
-            {
-                //print("ACTIVATE GAME OVER MENU");
-                //Cursor.lockState = CursorLockMode.None;
-                //Cursor.visible = true;
-                gameOverMenuOn = true;
-                gameOverMenu.SetActive(true);
-                gameOverPressStart.enabled = false;
-                EventSystem.current.SetSelectedGameObject(gameOverFirstButton);
-            }
+        if (gameOverMenuOn)
+        {
+            //GameObject incontrol = GameObject.Find("InControl manager");
+            //Destroy(incontrol);
+            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = false;
+            gameOverMenuOn = false;
+            gameOverMenu.SetActive(false);
+            veil.SetActive(false);
+            Debug.Log("VICTORY IMAGE SET TO FALSE");
+            victoryRed.gameObject.SetActive(false);
+            victoryBlue.gameObject.SetActive(false);
+            gameOverPressStart.enabled = false;
+            gC.gameOverStarted = false;
+        }
+        else
+        {
+            //print("ACTIVATE GAME OVER MENU");
+            //Cursor.lockState = CursorLockMode.None;
+            //Cursor.visible = true;
+            //victoryRed.gameObject.SetActive(false);
+            //victoryBlue.gameObject.SetActive(false);
+            gameOverMenuOn = true;
+            gameOverMenu.SetActive(true);
+            gameOverPressStart.enabled = false;
+            RenController.instance.SetSelectedButton(gameOverFirstButton.GetComponent<RenButton>());
+        }
     }
 
     public void StartGameOver(Team _winnerTeam)
@@ -144,7 +191,8 @@ public class GameInterface : MonoBehaviour
         pauseRestartButton.SetActive(true);
         pauseMenuButton.SetActive(true);
 
-        EventSystem.current.SetSelectedGameObject(pauseRestartButton);
+        //EventSystem.current.SetSelectedGameObject(pauseRestartButton);
+        RenController.instance.SetSelectedButton(pauseRestartButton.GetComponent<RenButton>());
     }
 
     public void UnPauseGame()

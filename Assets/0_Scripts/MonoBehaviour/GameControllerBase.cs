@@ -304,6 +304,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         playing = true;
         gamePaused = false;
+        RenController.instance.disabled = true;
         for (int i = 0; i < playerNum; i++)
         {
             RespawnPlayer(allPlayers[i]);
@@ -334,7 +335,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         {
             if (playing)
             {
-                if (playerActions.B.WasPressed || playerActions.Start.WasPressed)
+                if (RenController.instance.currentControls.B.WasPressed || RenController.instance.currentControls.Start.WasPressed)
                 {
                     UnPauseGame();
                 }
@@ -345,7 +346,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 {
                     for (int i = 0; i < playerNum; i++)
                     {
-                        if (allPlayers[i].Actions.Start.WasPressed)
+                        if (RenController.instance.currentControls.Start.WasReleased)
                         {
                             SwitchGameOverMenu();
                             i = playerNum;//BREAK
@@ -920,7 +921,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         if (gameOverStarted)
         {
-            myGameInterface.SwitchGameOverMenu();
+            myGameInterface.StartPressStartToContinue();
         }
     }
 
@@ -928,10 +929,11 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         if (!online)
         {
-            Time.timeScale = 0;
+            //Time.timeScale = 0;
             myGameInterface.PauseGame();
             playerActions = p;
             gamePaused = true;
+            RenController.instance.disabled = false;
         }
     }
 
@@ -954,6 +956,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
         myGameInterface.UnPauseGame();
         gamePaused = false;
+        RenController.instance.disabled = true;
     }
 
     #endregion

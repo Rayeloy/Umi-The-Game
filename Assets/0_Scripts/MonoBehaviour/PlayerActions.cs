@@ -28,6 +28,7 @@ public class PlayerActions : PlayerActionSet
     public PlayerAction LJUp;
     public PlayerAction LJDown;
     public PlayerTwoAxisAction LeftJoystick;
+    public TwoAxisButtons leftJoystcikAsButtons;
 
     public PlayerAction R3;
     public PlayerAction L3;
@@ -114,7 +115,7 @@ public class PlayerActions : PlayerActionSet
         actions.RJDown.AddDefaultBinding(InputControlType.RightStickDown);
         actions.RJLeft.AddDefaultBinding(InputControlType.RightStickLeft);
         actions.RJRight.AddDefaultBinding(InputControlType.RightStickRight);
-        
+
 
         actions.LJUp.AddDefaultBinding(InputControlType.LeftStickUp);
         actions.LJDown.AddDefaultBinding(InputControlType.LeftStickDown);
@@ -128,30 +129,16 @@ public class PlayerActions : PlayerActionSet
         return actions;
     }
 
-    public static PlayerActions CreateDefaultMenuBindings()
+    public static PlayerActions CreateDefaultMenuBindings(float _deadzone)
     {
         var actions = new PlayerActions();
+
         //KEYBOARD AND MOUSE
         actions.controlsType = InputDeviceClass.Keyboard;
 
-        //actions.R1.AddDefaultBinding(Key.T);
-        //actions.R2.AddDefaultBinding(Key.LeftShift);
-        //actions.L1.AddDefaultBinding(Key.G);
-        //actions.L2.AddDefaultBinding(Mouse.RightButton);
-
         actions.A.AddDefaultBinding(Key.Space);
         actions.A.AddDefaultBinding(Key.Return);
-        //actions.X.AddDefaultBinding(Mouse.LeftButton);
-        //actions.Y.AddDefaultBinding(Key.Key2);
         actions.B.AddDefaultBinding(Key.Escape);
-        //actions.B.AddDefaultBinding(Key.Backspace);
-
-
-        //actions.RJLeft.LowerDeadZone = 0.2f;
-        //actions.RJUp.AddDefaultBinding(Key.UpArrow);
-        //actions.RJDown.AddDefaultBinding(Key.DownArrow);
-        //actions.RJLeft.AddDefaultBinding(Key.LeftArrow);
-        //actions.RJRight.AddDefaultBinding(Key.RightArrow);
 
         actions.LJUp.AddDefaultBinding(Key.W);
         actions.LJDown.AddDefaultBinding(Key.S);
@@ -162,11 +149,9 @@ public class PlayerActions : PlayerActionSet
         actions.LJLeft.AddDefaultBinding(Key.LeftArrow);
         actions.LJRight.AddDefaultBinding(Key.RightArrow);
 
-        //actions.L3.AddDefaultBinding(Key.Key4);
-        //actions.R3.AddDefaultBinding(Key.Key5);
-
+        actions.Start.AddDefaultBinding(Key.Escape);
         actions.Start.AddDefaultBinding(Key.Return);
-        actions.Start.AddDefaultBinding(Key.Space);
+        //actions.Start.AddDefaultBinding(Key.Space);
 
 
         // JOYSTICK
@@ -187,7 +172,6 @@ public class PlayerActions : PlayerActionSet
         actions.RJLeft.AddDefaultBinding(InputControlType.RightStickLeft);
         actions.RJRight.AddDefaultBinding(InputControlType.RightStickRight);
 
-
         actions.LJUp.AddDefaultBinding(InputControlType.LeftStickUp);
         actions.LJDown.AddDefaultBinding(InputControlType.LeftStickDown);
         actions.LJLeft.AddDefaultBinding(InputControlType.LeftStickLeft);
@@ -201,6 +185,10 @@ public class PlayerActions : PlayerActionSet
         actions.L3.AddDefaultBinding(InputControlType.LeftStickButton);
 
         actions.Start.AddDefaultBinding(InputControlType.Start);
+
+
+        actions.leftJoystcikAsButtons  = new TwoAxisButtons(actions.LeftJoystick, _deadzone);
+
         return actions;
     }
 
@@ -275,18 +263,181 @@ public class PlayerActions : PlayerActionSet
     {
         //RJUp.WasPressed || RJLeft.WasPressed || RJRight.WasPressed || RJDown.WasPressed || LJUp.WasPressed || LJDown.WasPressed || LJLeft.WasPressed || LJRight.WasPressed
         if (R1.WasPressed || R2.WasPressed || L1.WasPressed || L2.WasPressed || A.WasPressed || B.WasPressed || X.WasPressed || Y.WasPressed ||
-            (RightJoystick.X>0.2f || RightJoystick.X < -0.2f) || (RightJoystick.Y > 0.2f || RightJoystick.Y < -0.2f) || (LeftJoystick.X > 0.2f || LeftJoystick.X < -0.2f) ||
+            (RightJoystick.X > 0.2f || RightJoystick.X < -0.2f) || (RightJoystick.Y > 0.2f || RightJoystick.Y < -0.2f) || (LeftJoystick.X > 0.2f || LeftJoystick.X < -0.2f) ||
             (LeftJoystick.Y > 0.2f || LeftJoystick.Y < -0.2f) || R3.WasPressed || L3.WasPressed || Start.WasPressed)
         {
-        //if (InputManager.AnyKeyIsPressed && (InputManager.ActiveDevice == this.ActiveDevice) || (this.ActiveDevice == null && Input.anyKeyDown))
-        //{
-        if(LeftJoystick.X !=0)
+            //if (InputManager.AnyKeyIsPressed && (InputManager.ActiveDevice == this.ActiveDevice) || (this.ActiveDevice == null && Input.anyKeyDown))
+            //{
+            if (LeftJoystick.X != 0)
             {
                 Debug.Log("LeftJoystick.X = " + LeftJoystick.X);
             }
-        return true;
-        //}
+            return true;
+            //}
         }
         return false;
+    }
+}
+
+public class TwoAxisButtons
+{
+    public PlayerTwoAxisAction twoAxis;
+    public float deadzone = 0.5f;
+    public ButtonForTwoAxisButtons left;
+    public ButtonForTwoAxisButtons right;
+    public ButtonForTwoAxisButtons up;
+    public ButtonForTwoAxisButtons down;
+    public TwoAxisButtons(PlayerTwoAxisAction _twoAxis, float _deadzone)
+    {
+        twoAxis = _twoAxis;
+        deadzone= _deadzone;
+
+        left = new ButtonForTwoAxisButtons(AxisDir.Left, twoAxis, deadzone);
+        right = new ButtonForTwoAxisButtons(AxisDir.Right, twoAxis, deadzone);
+        up = new ButtonForTwoAxisButtons(AxisDir.Up, twoAxis, deadzone);
+        down = new ButtonForTwoAxisButtons(AxisDir.Down, twoAxis, deadzone);
+    }
+
+}
+public enum AxisDir
+{
+    none,
+    Right,
+    Left,
+    Up,
+    Down
+}
+public class ButtonForTwoAxisButtons
+{
+    public AxisDir axisDir;
+    public PlayerTwoAxisAction twoAxis;
+    public float deadzone = 0.5f;
+
+    public bool isPressed
+    {
+        get
+        {
+            //bool result = false;
+            bool result = false;
+            switch (axisDir)
+            {
+                case AxisDir.Right:
+                    if (twoAxis.X >= deadzone)
+                    {
+                        lastDirPressed = axisDir;
+                        result = true;
+                    }
+                    return result;
+                case AxisDir.Left:
+                    if (twoAxis.X <= -deadzone)
+                    {
+                        lastDirPressed = axisDir;
+                        result = true;
+                    }
+                    return result;
+                case AxisDir.Up:
+                    if (twoAxis.Y >= deadzone)
+                    {
+                        lastDirPressed = axisDir;
+                        result = true;
+                    }
+                    return result;
+                case AxisDir.Down:
+                    if (twoAxis.Y <= -deadzone)
+                    {
+                        lastDirPressed = axisDir;
+                        result = true;
+                    }
+                    return result;
+            }
+            return false;
+        }
+    }
+    float contInputFreq = 0.1f;
+    float timeToStartContInput = 0.6f;
+    float currentContInputFreq = 0.6f;
+
+    AxisDir lastDirPressed = AxisDir.none;
+
+    public bool hasBeenPressed = false;
+    public bool wasPressed
+    {
+        get
+        {
+            bool result = false;
+            if(!hasBeenPressed && isPressed)
+            {
+                hasBeenPressed = true;
+                hasBeenReleased = false;
+                result = true;
+            }else if(hasBeenPressed && !isPressed)
+            {
+                hasBeenPressed = false;
+            }
+            return result;
+        }
+    }
+    float wasPressedTime = 0;
+
+    public bool hasBeenReleased = false;
+    public bool wasReleased
+    {
+        get
+        {
+            bool result = false;
+            if (!hasBeenReleased && !isPressed)
+            {
+                hasBeenPressed = false;
+                hasBeenReleased = true;
+                result = true;
+            }
+            else if (hasBeenReleased && isPressed)
+            {
+                hasBeenReleased = false;
+            }
+            return result;
+        }
+    }
+
+    public bool wasPressedLong
+    {
+        get
+        {
+            //Debug.Log("was Pressed Long: Start");
+            if (isPressed)
+            {
+                //Debug.Log("was Pressed Long: is pressed. wasPressedTime = "+ wasPressedTime.ToString("F4"));
+                wasPressedTime += Time.fixedDeltaTime;
+            }
+            else
+            {
+                if(currentContInputFreq != timeToStartContInput)
+                {
+                    //Debug.Log("was Pressed Long: stop being pressed");
+                    currentContInputFreq = timeToStartContInput;
+                    wasPressedTime = 0;
+                }
+            }
+
+            if (wasPressedTime >= currentContInputFreq)
+            {
+                //Debug.Log("was Pressed Long: is pressed and input true");
+                wasPressedTime = 0;
+                if(currentContInputFreq != contInputFreq)
+                currentContInputFreq = contInputFreq;
+                return true;
+            }
+            return false;
+        }
+    }
+
+
+    public ButtonForTwoAxisButtons(AxisDir _axisDir, PlayerTwoAxisAction _twoAxis, float _deadzone)
+    {
+        axisDir = _axisDir;
+        twoAxis = _twoAxis;
+        deadzone = _deadzone;
+        currentContInputFreq = timeToStartContInput;
+        wasPressedTime = 0;
     }
 }
