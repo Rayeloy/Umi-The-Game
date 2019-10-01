@@ -96,16 +96,19 @@ public class Demo_MainMenu : MonoBehaviour
             else if (scene == 1)//Capture The Whale
             {
                 GameInfo.instance.currentGameMode = GameMode.CaptureTheFlag;
+                Alpha_Team_Select.startFromMap = false;
                 SceneManager.LoadScene(teamSetupScene);
             }
             else if (scene == 2)
             {
                 GameInfo.instance.currentGameMode = GameMode.Tutorial;
+                Alpha_Team_Select.startFromMap = false;
                 SceneManager.LoadScene(teamSetupScene);
                 //Debug.Log("SCENE 2");
             }
             else if (scene == 4)//Hub
             {
+                Alpha_Team_Select.startFromMap = false;
                 SceneManager.LoadScene("UmiLand");
                 //SceneManager.LoadScene("Tutorial_v2");
             }

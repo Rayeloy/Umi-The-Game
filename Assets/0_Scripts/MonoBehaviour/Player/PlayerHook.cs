@@ -87,7 +87,7 @@ public class PlayerHook : MonoBehaviour
         get { return _cdTime; }
         set
         {
-            myPlayerHUD.setHookUI(_cdTime / cdMaxTime);
+            myPlayerHUD.SetHookUI(_cdTime / cdMaxTime);
             _cdTime = value;
         }
     }
@@ -139,6 +139,7 @@ public class PlayerHook : MonoBehaviour
         myCamera = myCameraBase.myCamera.GetComponent<Camera>();
 
         hookPointsInView = new List<HookPoint>();
+        cdTime = cdMaxTime;
     }
 
     public void KonoUpdate()

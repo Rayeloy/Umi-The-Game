@@ -1177,13 +1177,13 @@ arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
         Hook.fillAmount = 1;
     }
 
-    public void setHookUI(float f)
+    public void SetHookUI(float f)
     {
         //print("SetHookUI: fillAmout= " + f);
         Hook.fillAmount = Mathf.Clamp01(f);
     }
 
-    public void setBoostUI(float f)
+    public void SetBoostUI(float f)
     {
         //print("SetBoostUI: fillAmout= " + f);
         Boost.fillAmount = Mathf.Clamp01(f);

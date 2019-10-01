@@ -161,6 +161,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (!disabled)
         {
+            //Debug.Log("BUTTON STOP HIGHLIGHTED");
             switch (transition)
             {
                 case TransitionMode.ColorTint:
@@ -181,6 +182,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (!disabled)
         {
+            //Debug.Log("BUTTON HIGHLIGHTED");
             switch (transition)
             {
                 case TransitionMode.ColorTint:
@@ -222,8 +224,19 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (!disabled)
         {
-            StopHighlightButtonsAndText();
             //Debug.Log("BUTTON RELEASED");
+            switch (transition)
+            {
+                case TransitionMode.ColorTint:
+                    for (int i = 0; i < targetImages.Length; i++)
+                    {
+                        targetImages[i].color = highlightedColor;
+                    }
+                    break;
+                case TransitionMode.SpriteSwap:
+                    targetImages[0].sprite = highlightedSprite;
+                    break;
+            }
             onButtonPressed.Invoke();
         }
     }

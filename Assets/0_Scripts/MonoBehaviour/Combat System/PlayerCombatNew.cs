@@ -9,14 +9,14 @@ public class PlayerCombatNew : MonoBehaviour
     [HideInInspector] public PlayerMovement myPlayerMovement;
     PlayerWeapons myPlayerWeap;
     PlayerHook myHook;
-    [HideInInspector]public PlayerHUD myPlayerHUD;
+    [HideInInspector] public PlayerHUD myPlayerHUD;
     public Material[] hitboxMats;//0 -> charging; 1-> startup; 2 -> active; 3 -> recovery
     public Transform hitboxesParent;
     [HideInInspector] public Transform weaponEdge;
     [HideInInspector] public Transform weaponHandle;
 
     [Header(" --- SKILLS ---")]
-    [HideInInspector]public WeaponSkill[] equipedWeaponSkills = new WeaponSkill[2];
+    [HideInInspector] public WeaponSkill[] equipedWeaponSkills = new WeaponSkill[2];
 
     #endregion
 
@@ -29,7 +29,8 @@ public class PlayerCombatNew : MonoBehaviour
             return currentWeapon != null && myPlayerWeap.hasWeapon;
         }
     }
-    [HideInInspector]public bool canDoCombat
+    [HideInInspector]
+    public bool canDoCombat
     {
         get
         {
@@ -42,7 +43,7 @@ public class PlayerCombatNew : MonoBehaviour
     float invulTime = 0;
     float maxInvulTime = 0;
     [HideInInspector]
-    public bool invulnerable=false;
+    public bool invulnerable = false;
 
     //ATTACK
     [HideInInspector]
@@ -64,7 +65,7 @@ public class PlayerCombatNew : MonoBehaviour
     int autocomboIndex = -1;
     bool lastAutocomboAttackFinished = false;
     float autocomboTime = 0;
-    [HideInInspector]public List<GameObject> currentHitboxes;
+    [HideInInspector] public List<GameObject> currentHitboxes;
 
     //Parry
     AttackData parry;
@@ -76,14 +77,16 @@ public class PlayerCombatNew : MonoBehaviour
 
     //SKILLS
     int weaponSkillIndex = -1;//can be 0 or 1;
-    [HideInInspector] public bool weaponSkillStarted
+    [HideInInspector]
+    public bool weaponSkillStarted
     {
         get
         {
             return weaponSkillIndex >= 0;
         }
     }
-    [HideInInspector] public WeaponSkill currentWeaponSkill
+    [HideInInspector]
+    public WeaponSkill currentWeaponSkill
     {
         get
         {
@@ -176,7 +179,7 @@ public class PlayerCombatNew : MonoBehaviour
             }
 
             //HOOK INPUT CHECK
-            if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && (attackStg == AttackPhaseType.ready) 
+            if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && (attackStg == AttackPhaseType.ready)
                 && aiming && myPlayerMovement.Actions.R2.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
             {
                 myHook.StartHook();
@@ -215,7 +218,7 @@ public class PlayerCombatNew : MonoBehaviour
         //change hitbox
         //HideAttackHitBox();
         ChangeHitboxes(attackStg);
-        if (attackStg!=AttackPhaseType.ready && currentAttack.GetAttackPhase(attackStg).invulnerability) StartInvulnerability(currentAttack.GetAttackPhase(attackStg).duration);
+        if (attackStg != AttackPhaseType.ready && currentAttack.GetAttackPhase(attackStg).invulnerability) StartInvulnerability(currentAttack.GetAttackPhase(attackStg).duration);
 
         switch (attackStg)
         {
@@ -243,7 +246,7 @@ public class PlayerCombatNew : MonoBehaviour
                 myPlayerMovement.myPlayerVFX.ActivateWeaponTrails();
 
                 //Do impulse
-                if(!currentAttackHasRedirect) CalculateImpulse(currentAttack);
+                if (!currentAttackHasRedirect) CalculateImpulse(currentAttack);
                 myPlayerMovement.StartImpulse(currentImpulse);
                 break;
             case AttackPhaseType.recovery:
@@ -280,16 +283,16 @@ public class PlayerCombatNew : MonoBehaviour
                 if (!currentAttack.hasChargingPhase)
                 {
                     hitboxes = new List<Hitbox>();
-                    for (int i=0; i < currentAttack.activePhase.attackHitboxes.Length; i++)
+                    for (int i = 0; i < currentAttack.activePhase.attackHitboxes.Length; i++)
                     {
                         AddHitbox(currentAttack.activePhase.attackHitboxes[i]);
                     }
                 }
-                for(int i=0; i < currentHitboxes.Count; i++)
+                for (int i = 0; i < currentHitboxes.Count; i++)
                 {
                     currentHitboxes[i].GetComponent<MeshRenderer>().material = hitboxMats[1];
                 }
-                    break;
+                break;
             case AttackPhaseType.active:
                 for (int i = 0; i < currentHitboxes.Count; i++)
                 {
@@ -312,7 +315,7 @@ public class PlayerCombatNew : MonoBehaviour
         switch (attackHitbox.parentType)
         {
             case HitboxParentType.player:
-                auxHitbox = Instantiate(attackHitbox.hitboxPrefab,hitboxesParent);
+                auxHitbox = Instantiate(attackHitbox.hitboxPrefab, hitboxesParent);
                 break;
             case HitboxParentType.weaponEdge:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab, weaponEdge);
@@ -345,18 +348,18 @@ public class PlayerCombatNew : MonoBehaviour
         }
         //if(attackHitbox.parentType!= HitboxParentType.player_animated)
         //{
-        Debug.Log("CurrentHitboxes ADD -> "+ auxHitbox.name);
-            currentHitboxes.Add(auxHitbox);
-            Hitbox hb = auxHitbox.GetComponent<Hitbox>();
-            hb.myAttackHitbox = attackHitbox;
-            hitboxes.Add(hb);
+        if (!myPlayerMovement.disableAllDebugs) Debug.Log("CurrentHitboxes ADD -> " + auxHitbox.name);
+        currentHitboxes.Add(auxHitbox);
+        Hitbox hb = auxHitbox.GetComponent<Hitbox>();
+        hb.myAttackHitbox = attackHitbox;
+        hitboxes.Add(hb);
         //}
     }
 
     void HideAttackHitBox()
     {
         hitboxes = new List<Hitbox>();
-        for (int i=0;i<100 && currentHitboxes.Count>0;i++)
+        for (int i = 0; i < 100 && currentHitboxes.Count > 0; i++)
         {
             Destroy(currentHitboxes[0]);
             currentHitboxes.RemoveAt(0);
@@ -439,27 +442,27 @@ public class PlayerCombatNew : MonoBehaviour
         return exito;
     }
 
-    public bool StartOrContinueAutocombo(bool calledFromBuffer=false)
+    public bool StartOrContinueAutocombo(bool calledFromBuffer = false)
     {
-        if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Start or Continue input. calledFromBuffer = "+calledFromBuffer+ "; autocomboStarted = "+ autocomboStarted);
+        if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Start or Continue input. calledFromBuffer = " + calledFromBuffer + "; autocomboStarted = " + autocomboStarted);
 
         bool result = false;
 
-            if (!autocomboStarted)
-            {
-                result = StartAutocombo();
-            }
-            else
-            {
-                result = StartNextAttackAutocombo();
-            }
+        if (!autocomboStarted)
+        {
+            result = StartAutocombo();
+        }
+        else
+        {
+            result = StartNextAttackAutocombo();
+        }
 
-        if(!result && !calledFromBuffer)
+        if (!result && !calledFromBuffer)
         {
             if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Input was BUFFERED");
             myPlayerMovement.BufferInput(PlayerInput.Autocombo);
         }
-        if (!myPlayerMovement.disableAllDebugs) Debug.Log("StartOrContinueAutocombo result = "+ result);
+        if (!myPlayerMovement.disableAllDebugs) Debug.Log("StartOrContinueAutocombo result = " + result);
         return result;
     }
 
@@ -486,10 +489,10 @@ public class PlayerCombatNew : MonoBehaviour
     {
         if (autocomboStarted)
         {
-            if(!myPlayerMovement.disableAllDebugs) Debug.LogWarning("Autocombo Stopped");
+            if (!myPlayerMovement.disableAllDebugs) Debug.LogWarning("Autocombo Stopped");
             if (attackStg != AttackPhaseType.ready)
             {
-                Debug.LogError("PARAMOS EL ATAQUE PORQUE NOS HAN PEGAO O ALGO");
+                if (!myPlayerMovement.disableAllDebugs) Debug.LogError("PARAMOS EL ATAQUE PORQUE NOS HAN PEGAO O ALGO");
                 EndAttack();
             }
             autocomboStarted = false;
@@ -513,11 +516,11 @@ public class PlayerCombatNew : MonoBehaviour
             attackTime = 0;
             attackStg = currentAttack.hasChargingPhase ? AttackPhaseType.charging : AttackPhaseType.startup;
             bool found = false;
-            for(int i = 0; i < currentAttack.activePhase.attackHitboxes.Length && !found; i++)
+            for (int i = 0; i < currentAttack.activePhase.attackHitboxes.Length && !found; i++)
             {
-                for(int j=0; j < currentAttack.activePhase.attackHitboxes[i].effects.Length && !found; j++)
+                for (int j = 0; j < currentAttack.activePhase.attackHitboxes[i].effects.Length && !found; j++)
                 {
-                    if(currentAttack.activePhase.attackHitboxes[i].effects[j].effectType==EffectType.knockback &&
+                    if (currentAttack.activePhase.attackHitboxes[i].effects[j].effectType == EffectType.knockback &&
                         currentAttack.activePhase.attackHitboxes[i].effects[j].knockbackType == KnockbackType.redirect)
                     {
                         currentAttackHasRedirect = true;
@@ -657,7 +660,7 @@ public class PlayerCombatNew : MonoBehaviour
     {
         Debug.LogWarning("START INVULNERABILITY");
         float missingInvulTime = 0;
-        if(invulnerable) missingInvulTime = maxInvulTime - invulTime;
+        if (invulnerable) missingInvulTime = maxInvulTime - invulTime;
 
         if (!invulnerable || (invulnerable && maxTime > (missingInvulTime)))
         {
@@ -687,12 +690,12 @@ public class PlayerCombatNew : MonoBehaviour
     #region --- SKILLS ---
     public void StartWeaponSkill(int _weaponSkillIndex)
     {
-        if (canDoCombat && !weaponSkillStarted && equipedWeaponSkills[_weaponSkillIndex].weaponSkillSt==WeaponSkillState.ready)
+        if (canDoCombat && !weaponSkillStarted && equipedWeaponSkills[_weaponSkillIndex].weaponSkillSt == WeaponSkillState.ready)
         {
             StopDoingCombat();
             weaponSkillIndex = _weaponSkillIndex;
             skillCurrentTime = 0;
-            Debug.Log("Skill "+currentWeaponSkill.myWeaponSkillData.skillName+" started!");
+            if(!myPlayerMovement.disableAllDebugs)Debug.Log("Skill " + currentWeaponSkill.myWeaponSkillData.skillName + " started!");
             switch (currentWeaponSkill.myWeaponSkillData.weaponSkillType)
             {
                 case WeaponSkillType.attack:
@@ -705,7 +708,7 @@ public class PlayerCombatNew : MonoBehaviour
                     break;
             }
         }
-        else if(weaponSkillStarted && currentWeaponSkill.myWeaponSkillData.pressAgainToStopSkill && skillCurrentTime >= 0.3f)
+        else if (weaponSkillStarted && currentWeaponSkill.myWeaponSkillData.pressAgainToStopSkill && skillCurrentTime >= 0.3f)
         {
             if (!myPlayerMovement.disableAllDebugs) Debug.LogError("SKILL Y STOPPED!");
             StopWeaponSkill();
@@ -718,7 +721,7 @@ public class PlayerCombatNew : MonoBehaviour
 
     void ProcessWeaponSkill()
     {
-        for(int i = 0; i < equipedWeaponSkills.Length; i++)
+        for (int i = 0; i < equipedWeaponSkills.Length; i++)
         {
             if (weaponSkillStarted)
             {
@@ -744,7 +747,7 @@ public class PlayerCombatNew : MonoBehaviour
                     auxWeapSkill.StopSkill();
                     break;
                 case WeaponSkillType.attack_extend:
-                    if((currentWeaponSkill as WeaponSkill_AttackExtend).attackExtendStg != AttackExtendStage.finished)
+                    if ((currentWeaponSkill as WeaponSkill_AttackExtend).attackExtendStg != AttackExtendStage.finished)
                     {
                         (currentWeaponSkill as WeaponSkill_AttackExtend).StartRetracting();
                     }
@@ -759,7 +762,7 @@ public class PlayerCombatNew : MonoBehaviour
             }
         }
     }
-    
+
     #endregion
 
     #endregion
@@ -777,11 +780,11 @@ public class PlayerCombatNew : MonoBehaviour
         //Parry
         parry = currentWeapon.parry;
         bool found = false;
-        for(int i = 0; i < parry.activePhase.attackHitboxes.Length && !found; i++)
+        for (int i = 0; i < parry.activePhase.attackHitboxes.Length && !found; i++)
         {
-            for(int j=0; j< parry.activePhase.attackHitboxes[i].effects.Length && !found; j++)
+            for (int j = 0; j < parry.activePhase.attackHitboxes[i].effects.Length && !found; j++)
             {
-                if(parry.activePhase.attackHitboxes[i].effects[j].effectType == EffectType.parry)
+                if (parry.activePhase.attackHitboxes[i].effects[j].effectType == EffectType.parry)
                 {
                     parryEffect = parry.activePhase.attackHitboxes[i].effects[j];
                     found = true;
@@ -790,7 +793,7 @@ public class PlayerCombatNew : MonoBehaviour
         }
 
         //Skills
-        for (int i=0; i< currentWeapon.allWeaponSkills.Length;i++)
+        for (int i = 0; i < currentWeapon.allWeaponSkills.Length; i++)
         {
             switch (currentWeapon.allWeaponSkills[i].weaponSkillType)
             {
@@ -830,7 +833,7 @@ public class PlayerCombatNew : MonoBehaviour
 
     public void StartAiming()
     {
-        if (!aiming && attackStg==AttackPhaseType.ready && !myPlayerMovement.noInput)
+        if (!aiming && attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput)
         {
             aiming = true;
             myPlayerMovement.myCamera.SwitchCamera(cameraMode.Shoulder);

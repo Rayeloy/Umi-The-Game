@@ -308,6 +308,7 @@ public class RenController : MonoBehaviour
 
     public void SetSelectedButton(RenButton renButton)
     {
+        currentButton.StopHighlightButtonsAndText();
         currentButton = renButton;
         currentButton.HighlightButtonsAndTexts();
     }

@@ -273,10 +273,10 @@ public class Alpha_Team_Select : MonoBehaviour
     {
         currentMapIndex = mapIndex;
         numPlayerSpritesParent.gameObject.SetActive(true);
+        RenController.instance.SetSelectedButton(chooseNumOfPlayersButtons[0]);
         mapVariationsSpritesParent.gameObject.SetActive(false);
 
         //MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
-        RenController.instance.SetSelectedButton(chooseNumOfPlayersButtons[0]);
         switch (GameInfo.instance.currentGameMode)
         {
             case GameMode.CaptureTheFlag:
@@ -294,11 +294,11 @@ public class Alpha_Team_Select : MonoBehaviour
 
     void BackToChooseMapVariation()
     {
-        numPlayerSpritesParent.gameObject.SetActive(false);
         mapVariationsSpritesParent.gameObject.SetActive(true);
+        RenController.instance.SetSelectedButton(chooseMapVariationButtons[0]);
+        numPlayerSpritesParent.gameObject.SetActive(false);
         //MakeSpriteBig(mapVariationsSprites[currentMapIndex]);
 
-        RenController.instance.SetSelectedButton(chooseMapVariationButtons[0]);
         teamSelectMenuSt = TeamSelectMenuState.ChoosingMapVariation;
         Debug.Log("BACK TO CHOOSE MAP VARIATION");
     }
@@ -321,6 +321,8 @@ public class Alpha_Team_Select : MonoBehaviour
     {
         selectNumberOfPlayersCam.gameObject.SetActive(true);
         menusCanvas.SetActive(true);
+        RenController.instance.disabled = false;
+        RenController.instance.SetSelectedButton(chooseNumOfPlayersButtons[0]);
         for (int i = 0; i < selectPlayers.Length; i++)
         {
             selectPlayers[i].ResetSelectPlayer();
@@ -329,8 +331,7 @@ public class Alpha_Team_Select : MonoBehaviour
             teamSelectMenuSt = TeamSelectMenuState.ChoosingNumberOfPlayers;
         }
         //MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
-        RenController.instance.disabled = false;
-        RenController.instance.SetSelectedButton(chooseNumOfPlayersButtons[0]);
+
         Debug.Log("BACK TO CHOOSE PLAYER NUM");
     }
 
@@ -970,7 +971,7 @@ public class SelectPlayer
                     break;
             }
 
-            Debug.Log("START CHANGE TEAM ANIMATION: changeTeamAnimationInitialRot = " + changeTeamAnimationInitialRot + "; changeTeamAnimationTargetRot = " + changeTeamAnimationTargetRot);
+            //Debug.Log("START CHANGE TEAM ANIMATION: changeTeamAnimationInitialRot = " + changeTeamAnimationInitialRot + "; changeTeamAnimationTargetRot = " + changeTeamAnimationTargetRot);
         }
     }
 

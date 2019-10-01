@@ -194,7 +194,7 @@ public class Hitbox : MonoBehaviour
                                     {
                                         targetsHitWait1Frame.Remove(otherPlayer.name);
                                     }
-                                    Debug.Log("Soy " + myPlayerMov.name + " y añado al jugador " + otherPlayer.name + " a la lista de jugadores ya pegados");
+                                    if(!myPlayerMov.disableAllDebugs)Debug.Log("Soy " + myPlayerMov.name + " y añado al jugador " + otherPlayer.name + " a la lista de jugadores ya pegados");
                                     targetsHit.Add(otherPlayer.name);
                                     otherPlayer.StartRecieveHit(myPlayerMov, resultKnockback, stunLikeEffect, maxStunTime);
                                     //print("I'm " + myPlayerMov.gameObject.name + " and I Hit against " + col.gameObject);
@@ -202,7 +202,7 @@ public class Hitbox : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogWarning("Soy " + myPlayerMov.name + " y " + otherPlayer.name + " ya está en nuestra lista de hitboxes añadidas, así que no atacamos");
+                                if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Soy " + myPlayerMov.name + " y " + otherPlayer.name + " ya está en nuestra lista de hitboxes añadidas, así que no atacamos");
                             }
                         }
                         break;
