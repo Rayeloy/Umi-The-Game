@@ -51,6 +51,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public UnityEvent onMouseEnter;
     public UnityEvent onMouseExit;
     public UnityEvent onButtonHighlight;
+    public UnityEvent onButtonStopHighlight;
     public UnityEvent onButtonPressed;
     bool isMouseOver = false;
 
@@ -66,13 +67,23 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     private void OnGUI()
     {
-        //Debug.Log("REN BUTTON ONGUI: SET NORMAL COLOR");
+
         if (!Application.isPlaying)
         {
             for (int i = 0; i < targetImages.Length; i++)
             {
                 targetImages[i].color = normalColor;
             }
+            //if (targetTexts.Length==0)
+            //{
+            //    Debug.Log("REN BUTTON ONGUI: create 1 space for targetTexts");
+            //    targetTexts = new Text[1];
+            //}
+            //if (targetTexts[0] == null)
+            //{
+            //    Debug.Log("REN BUTTON ONGUI: find child text ");
+            //    targetTexts[0] = gameObject.GetComponentInChildren<Text>();
+            //}
         }
     }
 
@@ -162,6 +173,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                     targetImages[0].sprite = normalSprite;
                     break;
             }
+            onButtonStopHighlight.Invoke();
         }
     }
 
@@ -210,18 +222,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (!disabled)
         {
-            switch (transition)
-            {
-                case TransitionMode.ColorTint:
-                    for (int i = 0; i < targetImages.Length; i++)
-                    {
-                        targetImages[i].color = normalColor;
-                    }
-                    break;
-                case TransitionMode.SpriteSwap:
-                    targetImages[0].sprite = normalSprite;
-                    break;
-            }
+            StopHighlightButtonsAndText();
             //Debug.Log("BUTTON RELEASED");
             onButtonPressed.Invoke();
         }

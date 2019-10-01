@@ -406,22 +406,22 @@ public class ButtonForTwoAxisButtons
             //Debug.Log("was Pressed Long: Start");
             if (isPressed)
             {
-                //Debug.Log("was Pressed Long: is pressed. wasPressedTime = "+ wasPressedTime.ToString("F4"));
+                Debug.Log("was Pressed Long "+ axisDir + ": is pressed. wasPressedTime = "+ wasPressedTime.ToString("F4"));
                 wasPressedTime += Time.fixedDeltaTime;
             }
             else
             {
-                if(currentContInputFreq != timeToStartContInput)
+                wasPressedTime = 0;
+                if (currentContInputFreq != timeToStartContInput)
                 {
-                    //Debug.Log("was Pressed Long: stop being pressed");
+                    Debug.Log("was Pressed Long "+axisDir+": stop being pressed");
                     currentContInputFreq = timeToStartContInput;
-                    wasPressedTime = 0;
                 }
             }
 
             if (wasPressedTime >= currentContInputFreq)
             {
-                //Debug.Log("was Pressed Long: is pressed and input true");
+                Debug.Log("was Pressed Long "+ axisDir+": is pressed and input true");
                 wasPressedTime = 0;
                 if(currentContInputFreq != contInputFreq)
                 currentContInputFreq = contInputFreq;

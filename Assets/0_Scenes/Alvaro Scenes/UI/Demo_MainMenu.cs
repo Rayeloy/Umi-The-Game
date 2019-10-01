@@ -93,14 +93,18 @@ public class Demo_MainMenu : MonoBehaviour
                 timer1 = true;
                 //scene++;
             }
-            else if (scene == 1)
+            else if (scene == 1)//Capture The Whale
             {
+                GameInfo.instance.currentGameMode = GameMode.CaptureTheFlag;
                 SceneManager.LoadScene(teamSetupScene);
             }
             else if (scene == 2)
             {
+                GameInfo.instance.currentGameMode = GameMode.Tutorial;
+                SceneManager.LoadScene(teamSetupScene);
+                //Debug.Log("SCENE 2");
             }
-            else if (scene == 4)
+            else if (scene == 4)//Hub
             {
                 SceneManager.LoadScene("UmiLand");
                 //SceneManager.LoadScene("Tutorial_v2");
@@ -354,7 +358,7 @@ public class Demo_MainMenu : MonoBehaviour
         //animación de desaparecer
         leftArrow.SetActive(false);
         rightArrow.SetActive(false);
-        Debug.LogWarning("banisheado");
+        //Debug.LogWarning("banisheado");
         timeLeft = maxTimeLeft;
         timer2 = true;
     }

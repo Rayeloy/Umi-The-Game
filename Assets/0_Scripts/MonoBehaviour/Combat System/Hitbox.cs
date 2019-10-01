@@ -18,9 +18,9 @@ public class Hitbox : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("I'm hitbox " + name + " and I'm doing Awake");
         myPlayerMov = transform.GetComponentsInParent<PlayerMovement>()[0];
         myPlayerCombatNew = transform.GetComponentsInParent<PlayerCombatNew>()[0];
+        if (!myPlayerMov.disableAllDebugs) Debug.Log("I'm hitbox " + name + " and I'm doing Awake");
         targetsHit = new List<string>();
         dummiesHit = new List<string>();
         targetsHitWait1Frame = new List<string>();
@@ -28,7 +28,7 @@ public class Hitbox : MonoBehaviour
 
     private void OnTriggerEnter(Collider col)
     {
-        Debug.Log("HITBOX COLLIDED WITH " + col.name);
+        if (!myPlayerMov.disableAllDebugs) Debug.Log("HITBOX COLLIDED WITH " + col.name);
         if (col.gameObject != myPlayerMov.gameObject)
         {
             if (myPlayerCombatNew.weaponSkillStarted && myPlayerCombatNew.currentWeaponSkill.myWeaponSkillData.weaponSkillType == WeaponSkillType.attack_extend)
@@ -225,7 +225,7 @@ public class Hitbox : MonoBehaviour
                             //QUE TIPO DE EFFECT
                             for (int i = 0; i < myAttackHitbox.effects.Length; i++)
                             {
-                                Debug.Log("Hitbox "+gameObject.name+", MyAttackHitbox = "+ myAttackHitbox.name+": Effect number " + i+", type "+ myAttackHitbox.effects[i].effectType+
+                                if (!myPlayerMov.disableAllDebugs) Debug.Log("Hitbox "+gameObject.name+", MyAttackHitbox = "+ myAttackHitbox.name+": Effect number " + i+", type "+ myAttackHitbox.effects[i].effectType+
                                     "; stunLikeEffect = " + stunLikeEffect);
                                 if (stunLikeEffect != EffectType.parry)
                                 {
@@ -325,7 +325,7 @@ public class Hitbox : MonoBehaviour
                                 }
                             }
 
-                            Debug.Log("Soy " + myPlayerMov.name + " y añado al dummy " + dummy.name + " a la lista de dummies ya pegados");
+                            if (!myPlayerMov.disableAllDebugs) Debug.Log("Soy " + myPlayerMov.name + " y añado al dummy " + dummy.name + " a la lista de dummies ya pegados");
                             dummiesHit.Add(dummy.name);
                             dummy.StartRecieveHit(myPlayerMov, resultKnockback, stunLikeEffect, maxStunTime);
                             //print("I'm " + myPlayerMov.gameObject.name + " and I Hit against " + col.gameObject);
@@ -365,13 +365,13 @@ public class Hitbox : MonoBehaviour
                                                 break;
                                             case 1://TENEMOS MÁS PRIORIDAD
                                                 //targetsHit.Add(enemy.playerNumber);
-                                                Debug.LogWarning("Soy " + myPlayerMov.name + " y hago efecto parry con mi ataque " + myPlayerCombatNew.currentAttack.attackName + " al jugador " + enemy.name);
+                                                if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Soy " + myPlayerMov.name + " y hago efecto parry con mi ataque " + myPlayerCombatNew.currentAttack.attackName + " al jugador " + enemy.name);
                                                 enemy.StartRecieveParry(myPlayerMov, parryEffect);
                                                 //targetsHit.RemoveAt(targetsHit.Count - 1);
                                                 break;
                                             case 0://TENEMOS IGUAL PRIORIDAD
                                                    //targetsHit.Add(enemy.playerNumber);
-                                                Debug.LogWarning("Soy " + myPlayerMov.name + " y hago efecto parry MUTUO con mi ataque " + myPlayerCombatNew.currentAttack.attackName + " al jugador " + enemy.name);
+                                                if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Soy " + myPlayerMov.name + " y hago efecto parry MUTUO con mi ataque " + myPlayerCombatNew.currentAttack.attackName + " al jugador " + enemy.name);
                                                 enemy.StartRecieveParry(myPlayerMov);
                                                 myPlayerMov.StartRecieveParry(enemy);
                                                 //targetsHit.RemoveAt(targetsHit.Count - 1);
@@ -381,18 +381,18 @@ public class Hitbox : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.Log("Enemy is not in active phase, so we don't collide hitboxes");
+                                        if (!myPlayerMov.disableAllDebugs) Debug.Log("Enemy is not in active phase, so we don't collide hitboxes");
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogWarning("Soy " + myPlayerMov.name + " y " + enemy.name + " ya está en nuestra lista de hitboxes añadidas, así que no atacamos");
+                                    if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Soy " + myPlayerMov.name + " y " + enemy.name + " ya está en nuestra lista de hitboxes añadidas, así que no atacamos");
                                 }
                             }
                         }
                         else
                         {
-                            Debug.LogError("Couldn't find the hitbox or playerMovement scripts");
+                            if (!myPlayerMov.disableAllDebugs) Debug.LogError("Couldn't find the hitbox or playerMovement scripts");
                         }
                         break;
                         #endregion
@@ -441,14 +441,14 @@ public class Hitbox : MonoBehaviour
                         otherPlayer = col.GetComponent<Hitbox>().myPlayerMov;
                         if (myPlayerMov.team != otherPlayer.team)
                         {
-                            Debug.Log("" + otherPlayer.name + "'s hitbox has exit our(" + myPlayerMov.name + ") hitbox. Let's check if it was in our list:");
+                            if (!myPlayerMov.disableAllDebugs) Debug.Log("" + otherPlayer.name + "'s hitbox has exit our(" + myPlayerMov.name + ") hitbox. Let's check if it was in our list:");
                             bool encontrado = false;
                             for (int i = 0; i < targetsHit.Count && !encontrado; i++)
                             {
                                 if (targetsHit[i] == otherPlayer.name)
                                 {
                                     encontrado = true;
-                                    Debug.Log(myPlayerMov.name + " hitting " + otherPlayer + "'s hitbox, and it has exit our hitbox");
+                                    if (!myPlayerMov.disableAllDebugs) Debug.Log(myPlayerMov.name + " hitting " + otherPlayer + "'s hitbox, and it has exit our hitbox");
                                     targetsHit.RemoveAt(i);
                                 }
                             }

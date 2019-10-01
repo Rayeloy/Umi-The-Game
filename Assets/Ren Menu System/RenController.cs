@@ -49,12 +49,19 @@ public class RenController : MonoBehaviour
         }
         currentButton = initialButton;
         if(initialButton!=null)
-        initialButton.StopHighlightButtonsAndText();
+        initialButton.HighlightButtonsAndTexts();
     }
+
     private void Start()
     {
         currentControls = PlayerActions.CreateDefaultMenuBindings(deadZone);
-
+        if (inControlManager == null)
+        {
+            Debug.LogWarning("RenController warning: RenController needs a GameObject with InControlManager script on it to control buttons," +
+                " for now the variable is empty, trying to find a InControlManager in the scene...");
+            inControlManager = FindObjectOfType<InControlManager>();
+            if (inControlManager == null) Debug.LogError("RenController error: no InControlManager could be found!");
+        }
     }
 
     private void OnEnable()
@@ -119,20 +126,27 @@ public class RenController : MonoBehaviour
             if (currentButton.nextRightButton.disabled && automaticButtonFlowOnError)
             {
                 RenButton auxCurrentButton = currentButton.nextRightButton;
-                while (auxCurrentButton.disabled)
+                int i = 0;
+                while (auxCurrentButton.disabled || i > 5)
                 {
                     if (!listOfSeenButtons.Contains(auxCurrentButton))
                     {
                         listOfSeenButtons.Add(auxCurrentButton);
                         if (auxCurrentButton.nextRightButton != null)
                         {
-                            nextButton = auxCurrentButton.nextRightButton;
+                            auxCurrentButton = auxCurrentButton.nextRightButton;
+                            if (!auxCurrentButton.disabled) nextButton = auxCurrentButton;
                         }
                         else
                         {
-                            auxCurrentButton = auxCurrentButton.nextRightButton;
+                            break;
                         }
                     }
+                    else
+                    {
+                        break;
+                    }
+                    i++;
                 }
             }
             else
@@ -158,20 +172,27 @@ public class RenController : MonoBehaviour
             if (currentButton.nextLeftButton.disabled && automaticButtonFlowOnError)
             {
                 RenButton auxCurrentButton = currentButton.nextLeftButton;
-                while (auxCurrentButton.disabled)
+                int i = 0;
+                while (auxCurrentButton.disabled || i > 5)
                 {
                     if (!listOfSeenButtons.Contains(auxCurrentButton))
                     {
                         listOfSeenButtons.Add(auxCurrentButton);
                         if (auxCurrentButton.nextLeftButton != null)
                         {
-                            nextButton = auxCurrentButton.nextLeftButton;
+                            auxCurrentButton = auxCurrentButton.nextLeftButton;
+                            if (!auxCurrentButton.disabled) nextButton = auxCurrentButton;
                         }
                         else
                         {
-                            auxCurrentButton = auxCurrentButton.nextLeftButton;
+                            break;
                         }
                     }
+                    else
+                    {
+                        break;
+                    }
+                    i++;
                 }
             }
             else

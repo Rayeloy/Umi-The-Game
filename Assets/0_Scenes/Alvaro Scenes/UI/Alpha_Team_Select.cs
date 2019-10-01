@@ -20,12 +20,7 @@ public class Alpha_Team_Select : MonoBehaviour
     //Variables
     public GameObject stockGameInfo;
     public GameObject stockInControlManager;
-    public GameObject selectNumberOfPlayersCanvas;
-
-    [HideInInspector] public static bool startFromMap = false;
-    [HideInInspector] public static string startFromMapScene;
-    public string nextSceneHigh;
-    public string nextSceneLOD;
+    public GameObject menusCanvas;
 
 
     PlayerActions keyboardListener;
@@ -34,11 +29,14 @@ public class Alpha_Team_Select : MonoBehaviour
 
     TeamSelectMenuState teamSelectMenuSt = TeamSelectMenuState.ChoosingMapVariation;
 
-
+    [Header("--- MENU SETTINGS && VARIABLES---")]
     [Range(0, 1)]
     public float deadzone;
     public Camera selectNumberOfPlayersCam;
+    public RenButton[] chooseMapVariationButtons;
+    public RenButton[] chooseNumOfPlayersButtons;
     public float scaleSpriteBig;
+    [Header("--- NUMBER OF PLAYERS MENU ---")]
     public Transform[] numPlayerSprites;
     public Transform numPlayerSpritesParent;
     public SelectPlayer[] selectPlayers;
@@ -48,10 +46,17 @@ public class Alpha_Team_Select : MonoBehaviour
     int offlineMaxPlayers = 4;
     int nPlayers = 1;
 
+    //MAP VARIATIONS MENU
+    [HideInInspector] public static bool startFromMap = false;
+    [HideInInspector] public static string startFromMapScene;
+    [Header("--- MAP VARIATIONS MENU ---")]
     public Transform[] mapVariationsSprites;
-    public string[] mapVariationNames;
+    public string[] tutorialMapVariationNames;
+    public string[] CTWMapVariationNames;
+    string[] mapVariationNames;
     public Transform mapVariationsSpritesParent;
-
+    public string CTWHigh;
+    public string CTWLOD;
     int currentMapIndex = 0;
 
 
@@ -67,7 +72,7 @@ public class Alpha_Team_Select : MonoBehaviour
 
         }
 
-        selectNumberOfPlayersCanvas.SetActive(true);
+        menusCanvas.SetActive(true);
         selectNumberOfPlayersCam.gameObject.SetActive(true);
         for (int i = 0; i < selectPlayers.Length; i++)
         {
@@ -92,63 +97,43 @@ public class Alpha_Team_Select : MonoBehaviour
         numPlayerSpritesParent.gameObject.SetActive(false);
         mapVariationsSpritesParent.gameObject.SetActive(true);
 
-        MakeSpriteBig(mapVariationsSprites[currentMapIndex]);
+        switch (GameInfo.instance.currentGameMode)
+        {
+            case GameMode.Tutorial:
+                chooseMapVariationButtons[1].DisableButtonsAndText();
+                chooseMapVariationButtons[0].targetTexts[0].text = "Dummies Tutorial";
+                Debug.Log("tutorialMapVariationNames = (" + tutorialMapVariationNames[0] + ")");
+                mapVariationNames = tutorialMapVariationNames;
+                break;
+            case GameMode.CaptureTheFlag:
+                mapVariationNames = CTWMapVariationNames;
+                break;
+            default:
+                mapVariationNames = CTWMapVariationNames;
+                break;
+        }
+        //Debug.Log("mapVariationNames = ("+ mapVariationNames [0] + ")");
+        //MakeSpriteBig(mapVariationsSprites[currentMapIndex]);
 
     }
 
     void Update()
     {
-        if (GameInfo.instance.myControls.A.WasPressed) Debug.Log("A WAS PRESSED");
+        //if (GameInfo.instance.myControls.A.WasPressed) Debug.Log("A WAS PRESSED");
         switch (teamSelectMenuSt)
         {
             case TeamSelectMenuState.ChoosingMapVariation:
-                if (Input.GetKeyDown(KeyCode.UpArrow) || ((GameInfo.instance.myControls.LeftJoystick.Y <= -deadzone) && !myJoyStickControls.downIsPressed))
+                if (RenController.instance.currentControls.B.WasReleased)
                 {
-                    myJoyStickControls.downIsPressed = true;
-                    MoveUp();
+                    SceneManager.LoadScene("Demo_MainMenu 1");
                 }
-                else if (Input.GetKeyDown(KeyCode.DownArrow) || ((GameInfo.instance.myControls.LeftJoystick.Y >= deadzone) && !myJoyStickControls.upIsPressed))
-                {
-                    myJoyStickControls.upIsPressed = true;
-                    MoveDown();
-                }
-                else if ((Input.GetKeyUp(KeyCode.Space) || (Input.GetKeyUp(KeyCode.Return)) || GameInfo.instance.myControls.A.WasReleased))
-                {
-                    LockMapVariation();
-                    //LockSelectNumberOfPlayers();
-                }
-                ResetJoystickControls();
                 break;
 
             case TeamSelectMenuState.ChoosingNumberOfPlayers:
-                if (Input.GetKeyDown(KeyCode.LeftArrow) || ((GameInfo.instance.myControls.LeftJoystick.X <= -deadzone) && !myJoyStickControls.leftIsPressed))
-                {
-                    myJoyStickControls.leftIsPressed = true;
-                    MoveLeft();
-                }
-                else if (Input.GetKeyDown(KeyCode.RightArrow) || ((GameInfo.instance.myControls.LeftJoystick.X >= deadzone) && !myJoyStickControls.rightIsPressed))
-                {
-                    myJoyStickControls.rightIsPressed = true;
-                    MoveRight();
-                }
-                else if (Input.GetKeyDown(KeyCode.UpArrow) || ((GameInfo.instance.myControls.LeftJoystick.Y <= -deadzone) && !myJoyStickControls.downIsPressed))
-                {
-                    myJoyStickControls.downIsPressed = true;
-                    MoveUp();
-                }
-                else if (Input.GetKeyDown(KeyCode.DownArrow) || ((GameInfo.instance.myControls.LeftJoystick.Y >= deadzone) && !myJoyStickControls.upIsPressed))
-                {
-                    myJoyStickControls.upIsPressed = true;
-                    MoveDown();
-                }
-                else if (Input.GetKeyUp(KeyCode.Space) || (Input.GetKeyUp(KeyCode.Return)) || GameInfo.instance.myControls.A.WasReleased)
-                {
-                    LockSelectNumberOfPlayers();
-                }else if (Input.GetKeyUp(KeyCode.Escape) || GameInfo.instance.myControls.B.WasReleased)
+                if (RenController.instance.currentControls.B.WasReleased)
                 {
                     BackToChooseMapVariation();
                 }
-                ResetJoystickControls();
                 break;
             case TeamSelectMenuState.ChoosingTeam:
 
@@ -198,15 +183,26 @@ public class Alpha_Team_Select : MonoBehaviour
                     else
                     {
                         Debug.Log("Start from menu");
-                        switch (currentMapIndex)
+                        switch (GameInfo.instance.currentGameMode)
                         {
-                            case 1:
-                                if (nPlayers > 1)
-                                    SceneManager.LoadScene(nextSceneLOD);
-                                else
+                            case GameMode.CaptureTheFlag:
+                                switch (currentMapIndex)
                                 {
-                                    SceneManager.LoadScene(nextSceneHigh);
+                                    case 1:
+                                        if (nPlayers > 1)
+                                            SceneManager.LoadScene(CTWLOD);
+                                        else
+                                        {
+                                            SceneManager.LoadScene(CTWHigh);
+                                        }
+                                        break;
+                                    default:
+                                        SceneManager.LoadScene(mapVariationNames[currentMapIndex]);
+                                        break;
                                 }
+                                break;
+                            case GameMode.Tutorial:
+                                SceneManager.LoadScene(mapVariationNames[currentMapIndex]);
                                 break;
                             default:
                                 SceneManager.LoadScene(mapVariationNames[currentMapIndex]);
@@ -215,7 +211,7 @@ public class Alpha_Team_Select : MonoBehaviour
                     }
                 }
 
-                if (GameInfo.instance.myControls.B.WasReleased || Input.GetKeyUp(KeyCode.Escape))
+                if (RenController.instance.currentControls.B.WasReleased)
                 {
                     bool allNotJoined = true;
                     for (int i = 0; i < selectPlayers.Length; i++)
@@ -273,12 +269,25 @@ public class Alpha_Team_Select : MonoBehaviour
         }
     }
 
-    void LockMapVariation()
+    public void LockMapVariation(int mapIndex)
     {
+        currentMapIndex = mapIndex;
         numPlayerSpritesParent.gameObject.SetActive(true);
         mapVariationsSpritesParent.gameObject.SetActive(false);
 
-        MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
+        //MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
+        RenController.instance.SetSelectedButton(chooseNumOfPlayersButtons[0]);
+        switch (GameInfo.instance.currentGameMode)
+        {
+            case GameMode.CaptureTheFlag:
+                break;
+            case GameMode.Tutorial:
+                chooseNumOfPlayersButtons[1].DisableButtonsAndText();
+                chooseNumOfPlayersButtons[2].DisableButtonsAndText();
+                chooseNumOfPlayersButtons[3].DisableButtonsAndText();
+                break;
+        }
+
         teamSelectMenuSt = TeamSelectMenuState.ChoosingNumberOfPlayers;
         Debug.Log("LOCK MAP VARIATION");
     }
@@ -287,28 +296,31 @@ public class Alpha_Team_Select : MonoBehaviour
     {
         numPlayerSpritesParent.gameObject.SetActive(false);
         mapVariationsSpritesParent.gameObject.SetActive(true);
-        MakeSpriteBig(mapVariationsSprites[currentMapIndex]);
+        //MakeSpriteBig(mapVariationsSprites[currentMapIndex]);
 
+        RenController.instance.SetSelectedButton(chooseMapVariationButtons[0]);
         teamSelectMenuSt = TeamSelectMenuState.ChoosingMapVariation;
         Debug.Log("BACK TO CHOOSE MAP VARIATION");
     }
 
-    void LockSelectNumberOfPlayers()
+    public void LockSelectNumberOfPlayers(int playerNum)
     {
+        nPlayers = playerNum;
         teamSelectMenuSt = TeamSelectMenuState.ChoosingTeam;
         selectNumberOfPlayersCam.gameObject.SetActive(false);
-        selectNumberOfPlayersCanvas.gameObject.SetActive(false);
+        menusCanvas.gameObject.SetActive(false);
         for (int i = 0; i < nPlayers; i++)
         {
             selectPlayers[i].KonoAwake(nPlayers, i);
         }
+        RenController.instance.disabled = true;
         Debug.Log("LOCK PLAYER NUM");
     }
 
     void BackToChooseNumberOfPlayers()
     {
         selectNumberOfPlayersCam.gameObject.SetActive(true);
-        selectNumberOfPlayersCanvas.SetActive(true);
+        menusCanvas.SetActive(true);
         for (int i = 0; i < selectPlayers.Length; i++)
         {
             selectPlayers[i].ResetSelectPlayer();
@@ -316,7 +328,9 @@ public class Alpha_Team_Select : MonoBehaviour
             //selectPlayers[i].myUICamera.gameObject.SetActive(false);
             teamSelectMenuSt = TeamSelectMenuState.ChoosingNumberOfPlayers;
         }
-        MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
+        //MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
+        RenController.instance.disabled = false;
+        RenController.instance.SetSelectedButton(chooseNumOfPlayersButtons[0]);
         Debug.Log("BACK TO CHOOSE PLAYER NUM");
     }
 
@@ -452,142 +466,154 @@ public class Alpha_Team_Select : MonoBehaviour
         //Destroy(player.gameObject);
     }
 
-    void MoveUp()
-    {
-        switch (teamSelectMenuSt)
-        {
-            case TeamSelectMenuState.ChoosingMapVariation:
-                MakeSpriteSmall(mapVariationsSprites[currentMapIndex]);
+    //void MoveUp()
+    //{
+    //    switch (teamSelectMenuSt)
+    //    {
+    //        case TeamSelectMenuState.ChoosingMapVariation:
+    //            MakeSpriteSmall(mapVariationsSprites[currentMapIndex]);
 
-                switch (currentMapIndex)
-                {
-                    case 0:
-                        currentMapIndex = 1;
-                        break;
-                    case 1:
-                        currentMapIndex = 0;
-                        break;
-                }
+    //            switch (currentMapIndex)
+    //            {
+    //                case 0:
+    //                    currentMapIndex = 1;
+    //                    break;
+    //                case 1:
+    //                    currentMapIndex = 0;
+    //                    break;
+    //            }
 
-                MakeSpriteBig(mapVariationsSprites[currentMapIndex]);
+    //            MakeSpriteBig(mapVariationsSprites[currentMapIndex]);
 
-                break;
-            case TeamSelectMenuState.ChoosingNumberOfPlayers:
-                MakeSpriteSmall(numPlayerSprites[nPlayers - 1]);
+    //            break;
+    //        case TeamSelectMenuState.ChoosingNumberOfPlayers:
+    //            MakeSpriteSmall(numPlayerSprites[nPlayers - 1]);
 
-                switch (nPlayers)
-                {
-                    case 1:
-                        nPlayers = 3;
-                        break;
-                    case 2:
-                        nPlayers = 4;
-                        break;
-                    case 3:
-                        nPlayers = 1;
-                        break;
-                    case 4:
-                        nPlayers = 2;
-                        break;
-                }
+    //            switch (nPlayers)
+    //            {
+    //                case 1:
+    //                    nPlayers = 3;
+    //                    break;
+    //                case 2:
+    //                    nPlayers = 4;
+    //                    break;
+    //                case 3:
+    //                    nPlayers = 1;
+    //                    break;
+    //                case 4:
+    //                    nPlayers = 2;
+    //                    break;
+    //            }
 
-                MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
+    //            MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
 
-                break;
-        }
-    }
-    void MoveDown()
-    {
-        switch (teamSelectMenuSt)
-        {
-            case TeamSelectMenuState.ChoosingMapVariation:
-                MakeSpriteSmall(mapVariationsSprites[currentMapIndex]);
+    //            break;
+    //    }
+    //}
+    //void MoveDown()
+    //{
+    //    switch (teamSelectMenuSt)
+    //    {
+    //        case TeamSelectMenuState.ChoosingMapVariation:
+    //            MakeSpriteSmall(mapVariationsSprites[currentMapIndex]);
 
-                switch (currentMapIndex)
-                {
-                    case 0:
-                        currentMapIndex = 1;
-                        break;
-                    case 1:
-                        currentMapIndex = 0;
-                        break;
-                }
+    //            switch (currentMapIndex)
+    //            {
+    //                case 0:
+    //                    currentMapIndex = 1;
+    //                    break;
+    //                case 1:
+    //                    currentMapIndex = 0;
+    //                    break;
+    //            }
 
-                MakeSpriteBig(mapVariationsSprites[currentMapIndex]);
+    //            MakeSpriteBig(mapVariationsSprites[currentMapIndex]);
 
-                break;
-            case TeamSelectMenuState.ChoosingNumberOfPlayers:
-                MakeSpriteSmall(numPlayerSprites[nPlayers - 1]);
+    //            break;
+    //        case TeamSelectMenuState.ChoosingNumberOfPlayers:
+    //            MakeSpriteSmall(numPlayerSprites[nPlayers - 1]);
 
-                switch (nPlayers)
-                {
-                    case 1:
-                        nPlayers = 3;
-                        break;
-                    case 2:
-                        nPlayers = 4;
-                        break;
-                    case 3:
-                        nPlayers = 1;
-                        break;
-                    case 4:
-                        nPlayers = 2;
-                        break;
-                }
-                MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
-                break;
-        }
-    }
-    void MoveRight()
-    {
-        MakeSpriteSmall(numPlayerSprites[nPlayers - 1]);
+    //            switch (nPlayers)
+    //            {
+    //                case 1:
+    //                    nPlayers = 3;
+    //                    break;
+    //                case 2:
+    //                    nPlayers = 4;
+    //                    break;
+    //                case 3:
+    //                    nPlayers = 1;
+    //                    break;
+    //                case 4:
+    //                    nPlayers = 2;
+    //                    break;
+    //            }
+    //            MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
+    //            break;
+    //    }
+    //}
+    //void MoveRight()
+    //{
+    //    MakeSpriteSmall(numPlayerSprites[nPlayers - 1]);
 
-        switch (nPlayers)
-        {
-            case 1:
-                nPlayers = 2;
-                break;
-            case 2:
-                nPlayers = 1;
-                break;
-            case 3:
-                nPlayers = 4;
-                break;
-            case 4:
-                nPlayers = 3;
-                break;
-        }
-        MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
+    //    switch (nPlayers)
+    //    {
+    //        case 1:
+    //            nPlayers = 2;
+    //            break;
+    //        case 2:
+    //            nPlayers = 1;
+    //            break;
+    //        case 3:
+    //            nPlayers = 4;
+    //            break;
+    //        case 4:
+    //            nPlayers = 3;
+    //            break;
+    //    }
+    //    MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
 
-    }
-    void MoveLeft()
-    {
-        MakeSpriteSmall(numPlayerSprites[nPlayers - 1]);
+    //}
+    //void MoveLeft()
+    //{
+    //    MakeSpriteSmall(numPlayerSprites[nPlayers - 1]);
 
-        switch (nPlayers)
-        {
-            case 1:
-                nPlayers = 2;
-                break;
-            case 2:
-                nPlayers = 1;
-                break;
-            case 3:
-                nPlayers = 4;
-                break;
-            case 4:
-                nPlayers = 3;
-                break;
-        }
-        MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
-    }
+    //    switch (nPlayers)
+    //    {
+    //        case 1:
+    //            nPlayers = 2;
+    //            break;
+    //        case 2:
+    //            nPlayers = 1;
+    //            break;
+    //        case 3:
+    //            nPlayers = 4;
+    //            break;
+    //        case 4:
+    //            nPlayers = 3;
+    //            break;
+    //    }
+    //    MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
+    //}
+
+    // public void SelectMapVariation()
+    // {
+
+    // }
+
+    //public void SelectPlayerNum(int playerNum)
+    // {
+    //     nPlayers = playerNum;
+    // }
 
     public void MakeSpriteBig(Transform spriteTransform)
     {
+        //Debug.Log("MAKE SPRITE BIG -> " + spriteTransform.name);
         spriteTransform.localScale *= scaleSpriteBig;
     }
     public void MakeSpriteSmall(Transform spriteTransform)
     {
+        //Debug.Log("MAKE SPRITE SMALL -> " + spriteTransform.name);
         spriteTransform.localScale /= scaleSpriteBig;
     }
 
@@ -783,7 +809,7 @@ public class SelectPlayer
                     {
                         LockTeam();
                     }
-                    else if (myControls.B.WasReleased || (myControls.Device==null && myControls.Start.WasReleased))
+                    else if (myControls.B.WasReleased || (myControls.Device == null && myControls.Start.WasReleased))
                     {
                         ExitTeamSelect();
                     }
@@ -936,15 +962,15 @@ public class SelectPlayer
             {
                 case 0:
                     changeTeamAnimationTargetRot = changeTeamAnimationRealTargetRot + 120;
-                    changeTeamAnimationRealTargetRot = changeTeamAnimationTargetRot >= 360 ? changeTeamAnimationTargetRot - 360: changeTeamAnimationTargetRot;
+                    changeTeamAnimationRealTargetRot = changeTeamAnimationTargetRot >= 360 ? changeTeamAnimationTargetRot - 360 : changeTeamAnimationTargetRot;
                     break;
                 case 1:
                     changeTeamAnimationTargetRot = changeTeamAnimationRealTargetRot - 120;
                     changeTeamAnimationRealTargetRot = changeTeamAnimationTargetRot < 0 ? changeTeamAnimationTargetRot + 360 : changeTeamAnimationTargetRot;
-                    break;         
+                    break;
             }
-           
-            Debug.Log("START CHANGE TEAM ANIMATION: changeTeamAnimationInitialRot = "+ changeTeamAnimationInitialRot + "; changeTeamAnimationTargetRot = " + changeTeamAnimationTargetRot);
+
+            Debug.Log("START CHANGE TEAM ANIMATION: changeTeamAnimationInitialRot = " + changeTeamAnimationInitialRot + "; changeTeamAnimationTargetRot = " + changeTeamAnimationTargetRot);
         }
     }
 
@@ -953,11 +979,11 @@ public class SelectPlayer
         if (changeTeamAnimationStarted)
         {
             changeTeamAnimationTime += Time.deltaTime;
-            float progress =Mathf.Clamp01(changeTeamAnimationTime/changeTeamAnimationMaxTime);
+            float progress = Mathf.Clamp01(changeTeamAnimationTime / changeTeamAnimationMaxTime);
             float yRot = EasingFunction.EaseInOutQuart(changeTeamAnimationInitialRot, changeTeamAnimationTargetRot, progress);
             playerModelsParent.localRotation = Quaternion.Euler(0, yRot, 0);
 
-            if (changeTeamAnimationTime>= changeTeamAnimationMaxTime)
+            if (changeTeamAnimationTime >= changeTeamAnimationMaxTime)
             {
                 StopChangeTeamAnimation();
             }

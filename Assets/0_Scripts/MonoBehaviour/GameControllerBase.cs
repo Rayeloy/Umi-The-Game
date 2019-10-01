@@ -10,6 +10,7 @@ using Photon.Realtime;
 #region ----[ PUBLIC ENUMS ]----
 public enum GameMode
 {
+    None,
     CaptureTheFlag,
     AirPump,
     Tutorial
@@ -28,6 +29,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     // solo se debe usar para testeo, hay que QUITARLO para la build "comercial".
     [Header(" --- Variables generales ---")]
     public GameMode gameMode;
+    public bool slowMoButtonOn = false;
     int slowmo = 0;
     public bool recordMode = false;
 
@@ -1040,7 +1042,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region --- AUXILIAR ---
     void SlowMotion()
     {
-        if (Input.GetKeyDown(KeyCode.Keypad0))
+        if (Input.GetKeyDown(KeyCode.Keypad0) && slowMoButtonOn)
         {
             switch (slowmo)
             {

@@ -16,6 +16,7 @@ public enum UIAnimType
 public class GameInfo : MonoBehaviour
 {
     public static GameInfo instance;
+    public GameMode currentGameMode;
     public GameObject inControlManager;
     public List<PlayerActions> playerActionsList;
     public List<Team> playerTeamList;
@@ -32,6 +33,7 @@ public class GameInfo : MonoBehaviour
     {
         DontDestroyOnLoad(this);
         instance = this;
+        currentGameMode = GameMode.None;
         playerActionsList = new List<PlayerActions>();
         playerTeamList = new List<Team>();
 
