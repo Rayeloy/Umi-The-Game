@@ -190,6 +190,7 @@ public class PlayerHUD : MonoBehaviour
         }
         if (gC.gameMode == GameMode.Tutorial)
         {
+            Debug.Log("Deactivate Score Counter");
             contador.gameObject.SetActive(false);
         }
         Interaction_Message.SetActive(false);
