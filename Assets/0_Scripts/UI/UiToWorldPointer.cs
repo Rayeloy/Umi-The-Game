@@ -5,17 +5,13 @@ using UnityEngine;
 //[ExecuteInEditMode]
 public class UiToWorldPointer : MonoBehaviour
 {
-	[SerializeField]
-	Transform Target;
+	public Transform Target;
 	Vector3 Pointing;
 
-	[SerializeField]
-	float offsetPantalla;
+	public float offsetPantalla;
 
-	[SerializeField]
-	Transform Arrow;
-	[SerializeField]
-	Transform Wale;
+	public Transform Arrow;
+	public Transform Wale;
 	// Update is called once per frame
 	void Update () {
 		Arrows();

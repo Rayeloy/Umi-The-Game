@@ -64,7 +64,7 @@ public class TutorialLane : MonoBehaviour
     public void InflateDummyAndWalls()
     {
         Debug.Log("INFLATE DUMMY AND WALLS");
-        dummy.StartInflatingDummy();
+        //dummy.StartInflatingDummy();
         //Inflate walls animation
         for (int i = 0; i < inflatableWalls.Length; i++)
         {
@@ -74,7 +74,7 @@ public class TutorialLane : MonoBehaviour
 
     public void DeflateDummyAndWalls()
     {
-        dummy.StartDeflateDummy();
+        //dummy.StartDeflateDummy();
         //Inflate walls animation
         for (int i = 0; i < inflatableWalls.Length; i++)
         {

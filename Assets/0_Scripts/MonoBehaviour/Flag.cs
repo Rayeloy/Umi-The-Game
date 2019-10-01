@@ -66,7 +66,7 @@ public class Flag : MonoBehaviour
     float maxHeight, minHeight;
     //Vector3 bodyOriginalLocalPos;
     bool idleAnimStarted = false;
-    bool droppedByPlayer = false;
+    //bool droppedByPlayer = false;
 
     [Header("Flag LightBeam")]
     public GameObject lightBeam;
@@ -360,7 +360,7 @@ public class Flag : MonoBehaviour
         grounded = false;
 
         //IDLE ANIMATION PARAMETERS CHANGE
-        droppedByPlayer = true;
+        //droppedByPlayer = true;
         currentHeightFromFloor = heightFromFloorDropFromPlayer;
         currentIdleAnimVertDist = idleAnimVertDistDropFromPlayer;
         currentIdleAnimFrequency = idleAnimFrequencyDropFromPlayer;
@@ -471,7 +471,7 @@ public class Flag : MonoBehaviour
 
         grounded = false;
 
-        droppedByPlayer = false;
+        //droppedByPlayer = false;
         currentHeightFromFloor = heightFromFloor;
         currentIdleAnimVertDist = idleAnimVertDist;
         currentIdleAnimFrequency = idleAnimFrequency;

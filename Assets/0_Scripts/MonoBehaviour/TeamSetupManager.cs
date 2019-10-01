@@ -97,7 +97,7 @@ public class TeamSetupManager : MonoBehaviour
 		keyboardListener.Destroy();
 	}
 
-	private float contador = 0;
+	//private float contador = 0;
 	void Update()
 	{
         ProgressLoadingScreen();

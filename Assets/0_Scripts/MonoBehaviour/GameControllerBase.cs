@@ -929,7 +929,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     {
         if (!online)
         {
-            //Time.timeScale = 0;
+            Time.timeScale = 0;
             myGameInterface.PauseGame();
             playerActions = p;
             gamePaused = true;

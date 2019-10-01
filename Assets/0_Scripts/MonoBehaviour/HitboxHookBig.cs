@@ -46,6 +46,10 @@ public class HitboxHookBig : MonoBehaviour
                             }
                         }
                         break;
+                    case "Dummy":
+                        Dummy dummy = col.GetComponent<Dummy>();
+                                //myPlayerHook.HookPlayer(dummy);
+                        break;
                     /*case "Stage":
                         StageScript stage = col.GetComponent<StageScript>();
                         if (stage != null)

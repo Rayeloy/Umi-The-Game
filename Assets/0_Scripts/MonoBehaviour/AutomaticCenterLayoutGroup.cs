@@ -17,7 +17,7 @@ public class AutomaticCenterLayoutGroup : MonoBehaviour
 
     public bool executeAutoCenter = false;
     public double updateFreq = 1;
-    private double maxUpdateTime = 0;
+    //private double maxUpdateTime = 0;
       
     private void Awake()
     {

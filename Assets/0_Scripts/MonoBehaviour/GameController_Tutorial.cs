@@ -21,6 +21,22 @@ public class GameController_Tutorial : GameControllerBase
     //Referencias
     public TutorialLane[] tutorialLanes;
     public Transform ringSpawnPoint;
+    public Dummy[] bossDummies;
+    bool allDummiesInWater
+    {
+        get
+        {
+            bool result = true;
+            for(int i=0;i< bossDummies.Length && result; i++)
+            {
+                if (!bossDummies[i].inWater)
+                {
+                    result = false;
+                }
+            }
+            return result;
+        }
+    }
 
     [Header(" --- Ring Battle ---")]
     public Text battleText;
@@ -73,6 +89,11 @@ public class GameController_Tutorial : GameControllerBase
                 ProcessRingTeamBattle();
                 CountdownRingTeamBattle();
                 //---------------------------
+
+                if (allDummiesInWater)
+                {
+                    StartGameOver(allPlayers[0].team);
+                }
             }
         }
     }

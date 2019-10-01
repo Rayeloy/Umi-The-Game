@@ -322,8 +322,8 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector] public bool hookingAndTouchedGroundOnce = false;
 
 
-    //GRAPPLE
-    bool grappling = false;
+    ////GRAPPLE
+    //bool grappling = false;
 
 
     //WATER
@@ -1606,7 +1606,7 @@ public class PlayerMovement : MonoBehaviour
         StartRecieveHit(enemy, resultKnockback, EffectType.softStun, maxStunTime);
     }
 
-    void RecieveKnockback()
+    void ReceiveKnockback()
     {
         if (knockback != Vector3.zero)
         {
@@ -1616,7 +1616,7 @@ public class PlayerMovement : MonoBehaviour
 
     void ProcessSufferingEffect()
     {
-        RecieveKnockback();
+        ReceiveKnockback();
         if (sufferingEffect == EffectType.softStun)//|| sufferingEffect == EffectType.stun || sufferingEffect == EffectType.knockdown
         {
             effectTime += Time.deltaTime;

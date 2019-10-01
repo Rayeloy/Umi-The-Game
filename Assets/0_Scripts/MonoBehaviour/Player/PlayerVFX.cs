@@ -116,7 +116,7 @@ public class PlayerVFX : MonoBehaviour
         {
             case PlayerVFXType.DashTrail:
                 return dashTrail.gameObject;
-                break;
+
             default:
                 for (int i = 0; i < effects.Length; i++)
                 {

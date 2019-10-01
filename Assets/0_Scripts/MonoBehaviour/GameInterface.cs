@@ -24,7 +24,7 @@ public class GameInterface : MonoBehaviour
     public UIAnimation victoryImageReduceAnimation;
     public UIAnimation victoryImageMoveUpAnimation;
     public Text gameOverPressStart;
-    public GameObject gameOverFirstButton;//intento fallido de controlar qué boton se selecciona automáticamente al iniciar el menu de Game Over
+    public RenButton gameOverFirstButton;//intento fallido de controlar qué boton se selecciona automáticamente al iniciar el menu de Game Over
     private string sceneLoadedOnReset;
     bool pressStartToContinueStarted = false;
 
@@ -32,8 +32,9 @@ public class GameInterface : MonoBehaviour
     [Header(" --- Pause --- ")]
     public string menuScene;
     public string teamSelectScene;
-    public GameObject pauseRestartButton;
-    public GameObject pauseMenuButton;
+    public RenButton pauseRestartButton;
+    //public GameObject pauseMenuButton;
+    public GameObject pauseMenu;
 
 
     public void KonoAwake(GameControllerBase _gC)
@@ -45,8 +46,7 @@ public class GameInterface : MonoBehaviour
         gameOverMenu.SetActive(false);
         gameOverPressStart.enabled = false;
         veil.SetActive(false);
-        pauseRestartButton.SetActive(false);
-        pauseMenuButton.SetActive(false);
+        pauseMenu.SetActive(false);
 
         victoryB.gameObject.SetActive(false);
         victoryA.gameObject.SetActive(false);
@@ -128,7 +128,7 @@ public class GameInterface : MonoBehaviour
             gameOverMenu.SetActive(true);
             gameOverPressStart.enabled = false;
             RenController.instance.disabled = false;
-            RenController.instance.SetSelectedButton(gameOverFirstButton.GetComponent<RenButton>());
+            RenController.instance.SetSelectedButton(gameOverFirstButton);
         }
     }
 
@@ -195,11 +195,11 @@ public class GameInterface : MonoBehaviour
         Cursor.visible = true;
 
         veil.SetActive(true);
-        pauseRestartButton.SetActive(true);
-        pauseMenuButton.SetActive(true);
+        pauseMenu.SetActive(true);
+
 
         //EventSystem.current.SetSelectedGameObject(pauseRestartButton);
-        RenController.instance.SetSelectedButton(pauseRestartButton.GetComponent<RenButton>());
+        RenController.instance.SetSelectedButton(pauseRestartButton);
     }
 
     public void UnPauseGame()
@@ -208,8 +208,8 @@ public class GameInterface : MonoBehaviour
         Cursor.visible = false;
 
         veil.SetActive(false);
-        pauseRestartButton.SetActive(false);
-        pauseMenuButton.SetActive(false);
+        pauseMenu.SetActive(false);
+
     }
     #endregion
 }
