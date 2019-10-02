@@ -14,8 +14,8 @@ public class ScoreManager : MonoBehaviour {
 	[HideInInspector]
 	public bool End = false;
 
-    [SerializeField]
-    private int maxScore;
+
+    public int maxScore;
     private int _blueTeamScore;
 	private int _redTeamScore;
 

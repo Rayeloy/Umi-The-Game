@@ -59,6 +59,7 @@ public class PlayerHUD : MonoBehaviour
     [Header("Scoreboard")]
     public Image[] teamAPlayerIcons;
     public Image[] teamBPlayerIcons;
+    public TMPro.TextMeshProUGUI[] maxScorePoints;
 
     //Flag Slider
     [Header("Flag Slider")]
@@ -305,6 +306,8 @@ public class PlayerHUD : MonoBehaviour
             teamBPlayerIcons[i].color = playerNumTeamBCopy > 0 ? Color.white : whiteHalfTransparent;
             if (playerNumTeamBCopy > 0) playerNumTeamBCopy--;
         }
+        maxScorePoints[0].text = "/" + (gC as GameController_FlagMode).myScoreManager.maxScore;
+        maxScorePoints[1].text = "/" + (gC as GameController_FlagMode).myScoreManager.maxScore;
     }
     #endregion
 
