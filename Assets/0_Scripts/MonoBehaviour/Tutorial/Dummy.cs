@@ -136,7 +136,7 @@ public class Dummy : MonoBehaviour
 
     //SALTO
     [HideInInspector]
-    public JumpState jumpSt = JumpState.none;
+    public JumpState jumpSt = JumpState.None;
     //[HideInInspector]
     //public bool wallJumpAnim = false;
 
@@ -514,7 +514,7 @@ public class Dummy : MonoBehaviour
         {
             switch (jumpSt)
             {
-                case JumpState.none:
+                case JumpState.None:
                     currentVel.y += gravity * Time.deltaTime;
                     break;
             }
@@ -750,7 +750,7 @@ public class Dummy : MonoBehaviour
     public void ResetPlayer()
     {
         ExitWater();
-        jumpSt = JumpState.none;
+        jumpSt = JumpState.None;
     }
 
     public float SignedRelativeAngle(Vector3 referenceForward, Vector3 newDirection, Vector3 referenceUp)

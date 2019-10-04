@@ -316,7 +316,6 @@ public class Controller3D : MonoBehaviour
         collisions.below = false;
         collisions.collSt = CollisionState.sliping;
         collisions.slopeAngle = rayCast.slopeAngle;
-        collisions.verWall = collisions.closestVerRaycast.ray.transform.gameObject;
         if (!disableAllRays) Debug.DrawRay(raycastOrigins.Center, vel.normalized * 2, Color.green);
     }
 
@@ -2183,6 +2182,8 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
 
         if (collisions.closestVerRaycast.hit)//si ha habido una collision vertical
         {
+            if(vel.y<0) collisions.floor = collisions.closestVerRaycast.ray.transform.gameObject;// we save the floor gameobject for ChargeJump StageScript checking
+
             if (!disableAllRays && showVerticalRays) Debug.DrawRay(collisions.closestVerRaycast.origin,
                 Vector3.up * directionY * (Mathf.Abs(vel.y) + skinWidth), Color.white);
             CollisionState value = CheckSlopeType(vel, collisions.closestVerRaycast);
@@ -2777,7 +2778,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
         public Vector3 wallNormal;
         public Vector3 oldWallNormal;
         public GameObject horWall;
-        public GameObject verWall;
+        public GameObject floor;
         public SlideState slideSt;
         public SlideState oldSlideSt;
         public SlideState oldSlideSt2;
@@ -2809,7 +2810,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
             closestVerRaycast = new Raycast(new RaycastHit(), Vector3.zero, float.MaxValue, Vector3.zero, Vector3.zero);
             distanceToFloor = float.MaxValue;
             verRaycastsY = new Raycast[0, 0];
-            verWall = null;
+            floor = null;
             oldRoofAngle = roofAngle;
             roofAngle = -600;
             climbJump = false;
@@ -2942,22 +2943,6 @@ public struct Raycast
         rayHeightPercentage = horizontalRows == 0 ? 0 : Mathf.Clamp((row / horizontalRows), 0, 100);
         skinWidth = Mathf.Clamp(_skinWidth, 0, 0.1f);
     }
-
-    //public Raycast()
-    //{
-    //    ray = new RaycastHit();
-    //    distance = float.MaxValue;
-    //    vel = Vector3.zero;
-    //    origin = Vector3.zero;
-    //    hit = false;
-    //    axis = Axis.none;
-    //    slopeAngle = 0;
-    //    wallAngle = 0;
-    //    row = 0;
-    //    column = 0;
-    //    rayHeightPercentage = 0 ;
-    //    skinWidth = Mathf.Clamp(0.1f, 0, 0.1f);
-    //}
 
     public bool IsSame(Raycast _otherRay)
     {

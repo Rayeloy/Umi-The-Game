@@ -5,7 +5,9 @@ using UnityEditor;
 
 public enum PlayerInput
 {
-    Jump,//A
+    Jump,//A Press
+    WallJump,//A Press
+    StartChargingChargeJump,//A Press
     Autocombo//X
 }
 [CreateAssetMenu(fileName = "New buffered input", menuName = "BufferedInput")]
@@ -63,6 +65,7 @@ public class BufferedInput
             {
                 buffering = false;
             }
+            Debug.Log("Buffering input of type "+ input .inputType+ " ; time buffered = " + time);
         }
     }
 }

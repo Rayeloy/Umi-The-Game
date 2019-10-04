@@ -8,9 +8,9 @@ using Photon.Realtime;
 #region ----[ PUBLIC ENUMS ]----
 public enum Team
 {
-    A=1,// Blue - Green
-    B=2,// Red - Pink
-    none=0
+    A = 1,// Blue - Green
+    B = 2,// Red - Pink
+    none = 0
 }
 public enum MoveState
 {
@@ -27,10 +27,13 @@ public enum MoveState
 }
 public enum JumpState
 {
+    None,
     Jumping,
     Breaking,//Emergency stop
-    none,
-    wallJumping
+    Falling,
+    WallJumping,
+    ChargeJumping,
+    BounceJumping
 }
 #endregion
 
@@ -143,6 +146,7 @@ public class PlayerMovement : MonoBehaviour
     //public float breakAccOnHit = -2.0f;
     [HideInInspector]
     public float gravity;
+    float currentGravity;
 
     [Header(" --- JUMP --- ")]
     public float jumpHeight = 4f;
@@ -176,6 +180,60 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Minimum horizontal angle in which the player wall-jumps. This number ranges from 0 to 90. 0 --> parallel to the wall; 90 --> perpendicular to the wall")]
     [Range(0, 89)]
     public float wallJumpMinHorizAngle = 30;
+
+    [Header(" --- CHARGE JUMP ---")]
+    [Range(1, 2)]
+    public float chargeJumpFallenHeightMultiplier = 1.5f;
+    [Range(0, 1)]
+    public float chargeJumpBounceMultiplier = 0.5f;
+    [Range(0, 2)]
+    public float chargeJumpReleaseTimeBeforeLand = 0.5f;
+    [Range(0, 2)]
+    public float chargeJumpReleaseTimeAfterLand = 0.5f;
+    public float chargeJumpMaxJumpHeight = 100;
+    [Range(0, 1)]
+    public float chargeJumpMinPercentageNeeded = 0.3f;
+    float chargeJumpMaxHeight = 80;//clouds height
+    bool chargeJumpChargingJump = false;
+    float chargeJumpLastApexHeight;
+    float chargeJumpCurrentJumpMaxHeight;
+    float chargeJumpCurrentReleaseTime = 0;
+    bool chargeJumpButtonReleased;
+    bool chargeJumpLanded = false;
+    float chargeJumpLandedTime = 0;
+    float chargeJumpChargingStartHeight;
+    bool failedJump = false;
+    bool isChargeJump
+    {
+        get
+        {
+            bool result = false;
+            StageScript stageScript = controller.collisions.floor != null ? controller.collisions.floor.GetComponent<StageScript>() : null;
+            result = controller.collisions.below && chargeJumpChargingJump && stageScript != null && stageScript.chargeJumpable;
+            Debug.LogWarning("isChargeJump = " + result);
+            return result;
+        }
+    }
+
+
+    [Header(" --- BOUNCE JUMP ---")]
+    public float bounceJumpMinHeight = 2.5f;
+    bool isBounceJump
+    {
+        get
+        {
+            bool result = false;
+            StageScript stageScript = controller.collisions.floor != null ? controller.collisions.floor.GetComponent<StageScript>() : null;
+            float totalFallenHeight = chargeJumpLastApexHeight - transform.position.y;
+            float auxBounceJumpCurrentMaxHeight = totalFallenHeight * chargeJumpBounceMultiplier;
+            result = controller.collisions.below && stageScript != null && stageScript.bounceJumpable && auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight;
+            Debug.LogWarning("isBounceJump = " + result + "; controller.collisions.floor = " + controller.collisions.floor+ "; controller.collisions.below = "+ controller.collisions.below);
+            if (stageScript != null)Debug.Log("stageScript = "+ stageScript + "; stageScript.bounceJumpable = " 
+                + stageScript.bounceJumpable+ "; auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight = " +(auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight));
+            return result;
+        }
+    }
+
 
     [Header("TEAM COLORS")]
     public Gradient StinrayGradient;
@@ -248,7 +306,7 @@ public class PlayerMovement : MonoBehaviour
 
     //SALTO
     [HideInInspector]
-    public JumpState jumpSt = JumpState.none;
+    public JumpState jumpSt = JumpState.None;
     [HideInInspector]
     public bool wallJumpAnim = false;
 
@@ -409,6 +467,7 @@ public class PlayerMovement : MonoBehaviour
     public void KonoStart()
     {
         gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
+        currentGravity = gravity;
         jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
         maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
         wallJumpRadius = Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad) * walJumpConeHeight;
@@ -493,7 +552,7 @@ public class PlayerMovement : MonoBehaviour
     {
         myPlayerModel.SwitchTeam(team);
         TrailRenderer dashTR = myPlayerVFX.GetEffectGO(PlayerVFXType.DashTrail).GetComponent<TrailRenderer>();
-        dashTR.colorGradient = team == Team.A? StinrayGradient: OktiromeGradient;
+        dashTR.colorGradient = team == Team.A ? StinrayGradient : OktiromeGradient;
         //dashTR.endColor = team == Team.A ? StinrayColors [1]: OktiromeColors[1];
     }
 
@@ -522,6 +581,18 @@ public class PlayerMovement : MonoBehaviour
                             inputsBuffer[i].StopBuffering();
                         }
                         break;
+                    case PlayerInput.WallJump:
+                        if (StartWallJump(true))
+                        {
+                            inputsBuffer[i].StopBuffering();
+                        }
+                        break;
+                    case PlayerInput.StartChargingChargeJump:
+                        if (StartChargingChargeJump(true))
+                        {
+                            inputsBuffer[i].StopBuffering();
+                        }
+                        break;
                     case PlayerInput.Autocombo:
                         if (!disableAllDebugs) Debug.Log("Trying to input autocombo from buffer... Time left = " + inputsBuffer[i].time);
                         if (myPlayerCombatNew.StartOrContinueAutocombo(true))
@@ -529,6 +600,7 @@ public class PlayerMovement : MonoBehaviour
                             inputsBuffer[i].StopBuffering();
                         }
                         break;
+
                 }
                 inputsBuffer[i].ProcessTime();
             }
@@ -549,6 +621,17 @@ public class PlayerMovement : MonoBehaviour
         if (!found)
         {
             Debug.LogError("Error: Impossible to buffer the input " + _inputType + " because there is no BufferedInput with that type in the inputsBuffered array.");
+        }
+    }
+
+    public void StopBufferedInput(PlayerInput _inputType)
+    {
+        for (int i = 0; i < inputsBuffer.Length; i++)
+        {
+            if (inputsBuffer[i].input.inputType == _inputType)
+            {
+                inputsBuffer[i].StopBuffering();
+            }
         }
     }
 
@@ -785,7 +868,7 @@ public class PlayerMovement : MonoBehaviour
         if (!disableAllDebugs && currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
             "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + controller.collisions.below + "; horVel.magnitude = " + horVel.magnitude);
         //print("CurrentVel 1.3= " + currentVel.ToString("F6")+ "MoveState = " + moveSt);
-        if (jumpSt != JumpState.wallJumping || (jumpSt == JumpState.wallJumping && moveSt == MoveState.Knockback))
+        if (jumpSt != JumpState.WallJumping || (jumpSt == JumpState.WallJumping && moveSt == MoveState.Knockback))
         {
             horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
             switch (moveSt)
@@ -820,10 +903,10 @@ public class PlayerMovement : MonoBehaviour
                     //}
                     //else//BOOST NORMAL
                     //{
-                        //boostDir: dirección normalizada en la que quieres hacer el boost
-                        horizontalVel = new Vector3(boostDir.x, 0, boostDir.z);
-                        horizontalVel = horizontalVel.normalized * boostSpeed;
-                        SetVelocity(new Vector3(horizontalVel.x, 0, horizontalVel.z));
+                    //boostDir: dirección normalizada en la que quieres hacer el boost
+                    horizontalVel = new Vector3(boostDir.x, 0, boostDir.z);
+                    horizontalVel = horizontalVel.normalized * boostSpeed;
+                    SetVelocity(new Vector3(horizontalVel.x, 0, horizontalVel.z));
                     //}
                     break;
                 case MoveState.Knockback:
@@ -966,30 +1049,56 @@ public class PlayerMovement : MonoBehaviour
 
     void VerticalMovement()
     {
-
+        Debug.LogError("CONTROLLER 3D: collisions.below = " + controller.collisions.below + "; floor = " + controller.collisions.floor);
         if (!jumpedOutOfWater && !inWater && controller.collisions.below)
         {
             jumpedOutOfWater = true;
 
             maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
         }
+
         if (lastWallAngle != -500 && controller.collisions.below)//RESET WALL JUMP VARIABLE TO MAKE IT READY
         {
             lastWallAngle = -500;
             lastWall = null;
         }
+
         if (Actions.A.WasPressed)//Input.GetButtonDown(contName + "A"))
         {
-            //print("JUMP");
-            //Debug.Log("pene");
-            StartJump();
+            PressA();
         }
 
         if (moveSt != MoveState.Boost)
         {
+            if (jumpSt == JumpState.None || jumpSt == JumpState.Falling)
+            {
+                ProcessChargingChargeJump();
+            }
+
             switch (jumpSt)
             {
-                case JumpState.none:
+                case JumpState.None:
+                    if (currentVel.y < 0 && !controller.collisions.below)
+                    {
+                        jumpSt = JumpState.Falling;
+                        chargeJumpLastApexHeight = transform.position.y;
+                        Debug.Log("START FALLING");
+                    }
+                    currentVel.y += gravity * Time.deltaTime;
+                    break;
+                case JumpState.Falling:
+
+                    if (!chargeJumpChargingJump && controller.collisions.below)
+                    {
+                        StartBounceJump();
+                    }
+
+                    if (currentVel.y >= 0 || controller.collisions.below)
+                    {
+                        Debug.Log("STOP FALLING");
+                        jumpSt = JumpState.None;
+                    }
+
                     currentVel.y += gravity * Time.deltaTime;
                     break;
                 case JumpState.Jumping:
@@ -1011,11 +1120,25 @@ public class PlayerMovement : MonoBehaviour
                     currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
                     if (currentVel.y <= 0)
                     {
-                        jumpSt = JumpState.none;
+                        jumpSt = JumpState.None;
                     }
                     break;
-                case JumpState.wallJumping:
+                case JumpState.WallJumping:
                     currentVel.y += wallJumpSlidingAcc * Time.deltaTime;
+                    break;
+                case JumpState.ChargeJumping:
+                    currentVel.y += currentGravity * Time.deltaTime;
+                    if (currentVel.y <= 0)
+                    {
+                        jumpSt = JumpState.None;
+                    }
+                    break;
+                case JumpState.BounceJumping:
+                    currentVel.y += currentGravity * Time.deltaTime;
+                    if (currentVel.y <= 0)
+                    {
+                        jumpSt = JumpState.None;
+                    }
                     break;
             }
         }
@@ -1025,20 +1148,46 @@ public class PlayerMovement : MonoBehaviour
             currentVel.y = Mathf.Clamp(currentVel.y, -maxVerticalSpeedInWater, float.MaxValue);
         }
         ProcessJumpInsurance();
-        currentVel.y = Mathf.Clamp(currentVel.y, -maxFallSpeed, maxFallSpeed);
-
+        if (currentVel.y < 0)
+        {
+            currentVel.y = Mathf.Clamp(currentVel.y, -maxFallSpeed, maxFallSpeed);
+        }
     }
     #endregion
 
     #region JUMP ---------------------------------------------------
+    void PressA()
+    {
+        if (!StartJump())
+        {
+            if (!StartWallJump())
+            {
+                StartChargingChargeJump();
+            }
+        }
+        //if (!StartWallJump())
+        //{
+        //    if (jumpSt == JumpState.Falling)
+        //    {
+
+        //        StartChargingChargeJump();
+        //    }
+        //    else
+        //    {
+        //        StartJump();
+        //    }
+        //}  
+    }
+
     bool StartJump(bool calledFromBuffer = false)
     {
         bool result = false;
         if (!noInput && moveSt != MoveState.Boost)
         {
-            if ((controller.collisions.below || jumpInsurance) && (!inWater || (inWater && controller.collisions.around &&
-                ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) ||
-                (gC.gameMode != GameMode.CaptureTheFlag)))))
+
+            if ((controller.collisions.below || jumpInsurance) && !isChargeJump && !isBounceJump &&
+                (!inWater || (inWater && controller.collisions.around &&
+                ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
                 if (!disableAllDebugs) Debug.LogWarning("JUMP!");
                 //PlayerAnimation_01.startJump = true;
@@ -1050,22 +1199,13 @@ public class PlayerMovement : MonoBehaviour
                 //myPlayerAnimation.SetJump(true);
 
             }
-            else
-            {
-                /*Debug.LogWarning("Warning: Can't jump because: controller.collisions.below || jumpInsurance (" + (controller.collisions.below || jumpInsurance) +
-                    ") / !inWater || (inWater && controller.collisions.around && ((gC.gameMode == GameMode.CaptureTheFlag && !ScoreManager.instance.prorroga) || (gC.gameMode != GameController.GameMode.CaptureTheFlag))) (" +
-                    (!inWater || (inWater && controller.collisions.around &&
-                ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) ||
-                (gC.gameMode != GameMode.CaptureTheFlag)))) + ")");*/
-                result = StartWallJump();
-            }
         }
         else
         {
             if (!disableAllDebugs) Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + (moveSt != MoveState.Boost) + ")");
         }
 
-        if (!result && !calledFromBuffer)
+        if (!result && !calledFromBuffer /*&& (jumpSt != JumpState.Falling || (jumpSt == JumpState.Falling) && jumpInsurance)*/)
         {
             BufferInput(PlayerInput.Jump);
         }
@@ -1075,7 +1215,7 @@ public class PlayerMovement : MonoBehaviour
     void StopJump()
     {
         myPlayerAnimation_01.SetJump(false);
-        jumpSt = JumpState.none;
+        jumpSt = JumpState.None;
         timePressingJump = 0;
     }
 
@@ -1083,7 +1223,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!jumpInsurance)
         {
-            if (controller.collisions.lastBelow && !controller.collisions.below && jumpSt == JumpState.none && jumpedOutOfWater)
+            if (controller.collisions.lastBelow && !controller.collisions.below && jumpSt == JumpState.None && jumpedOutOfWater)
             {
                 //print("Jump Insurance");
                 jumpInsurance = true;
@@ -1106,7 +1246,7 @@ public class PlayerMovement : MonoBehaviour
     /// and false if the input was not successful and should be buffered.
     /// </summary>
     /// <returns></returns>
-    bool StartWallJump()
+    bool StartWallJump(bool calledFromBuffer = false)
     {
         if (!disableAllDebugs) Debug.LogWarning("Check Wall jump: wall real normal = " + controller.collisions.closestHorRaycast.slopeAngle);
         bool result = false;
@@ -1121,7 +1261,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (!disableAllDebugs) Debug.Log("Wall jumping start");
                 //PARA ORTU: PlayerAnimation_01.startJump = true;
-                jumpSt = JumpState.wallJumping;
+                jumpSt = JumpState.WallJumping;
                 result = true;
                 //wallJumped = true;
                 stopWallTime = 0;
@@ -1133,6 +1273,11 @@ public class PlayerMovement : MonoBehaviour
                 wallJumpCurrentWallAngle = controller.collisions.wallAngle;
                 wallJumpRaycastAxis = controller.collisions.closestHorRaycast.axis;
                 //Debug.Log("WALL JUMP RAY HEIGHT PERCENTAGE : " + controller.collisions.closestHorRaycast.rayHeightPercentage + "%; wall = " + wallJumpCurrentWall.name);
+
+                //STOP OTHER JUMPS BUFFERINGS AND PROCESSES
+                StopBufferedInput(PlayerInput.Jump);
+                StopBufferedInput(PlayerInput.StartChargingChargeJump);
+                StopChargingChargeJump();
             }
 
         }
@@ -1143,6 +1288,10 @@ public class PlayerMovement : MonoBehaviour
                 "(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != controller.collisions.wallAngle (" + (lastWallAngle != controller.collisions.wallAngle) + ") || " +
                 "(lastWallAngle == controller.collisions.wallAngle (" + (lastWallAngle == controller.collisions.wallAngle) + ")&& " +
                 "lastWall != controller.collisions.horWall(" + (lastWall != controller.collisions.horWall) + ")))");
+        }
+        if (!result && !calledFromBuffer)
+        {
+            BufferInput(PlayerInput.WallJump);
         }
         return result;
     }
@@ -1219,7 +1368,7 @@ public class PlayerMovement : MonoBehaviour
         lastWall = wallJumpCurrentWall;
         wallJumping = false;
         wallJumpAnim = true;
-        jumpSt = JumpState.none;
+        jumpSt = JumpState.None;
         wallJumpRaycastAxis = Axis.none;
         //CALCULATE JUMP DIR
         //LEFT OR RIGHT ORIENTATION?
@@ -1244,8 +1393,165 @@ public class PlayerMovement : MonoBehaviour
         if (!disableAllDebugs) print("STOP WALLJUMP");
         wallJumping = false;
         wallJumpAnim = true;
-        jumpSt = JumpState.none;
+        jumpSt = JumpState.None;
     }
+
+    bool StartChargingChargeJump(bool calledFromBuffer = false)
+    {
+        bool result = false;
+        //Debug.Log("chargeJumpChargingJump = " + chargeJumpChargingJump);
+        if (!chargeJumpChargingJump && !chargeJumpButtonReleased && jumpSt == JumpState.Falling && !inWater && !noInput && !jumpInsurance)
+        {
+            result = true;
+            chargeJumpChargingJump = true;
+            chargeJumpLanded = false;
+            //chargeJumpButtonReleased = false;
+            chargeJumpCurrentReleaseTime = 0;
+            chargeJumpLandedTime = 0;
+            chargeJumpChargingStartHeight = transform.position.y;
+            failedJump = false;
+            //StopBufferedInput(PlayerInput.Jump);
+            Debug.Log("Start Charging Jump");
+        }
+
+        if (!result && !calledFromBuffer)
+        {
+            BufferInput(PlayerInput.StartChargingChargeJump);
+        }
+        return result;
+    }
+
+    void ProcessChargingChargeJump()
+    {
+        if (chargeJumpChargingJump)
+        {
+            if (!chargeJumpButtonReleased && Actions.A.WasReleased)
+            {
+                chargeJumpButtonReleased = true;
+            }
+
+            if (!chargeJumpLanded && controller.collisions.below) chargeJumpLanded = true;
+
+            //Debug.Log("charging jump: button released = " + chargeJumpButtonReleased);
+            if (chargeJumpButtonReleased)
+            {
+                //Debug.Log("charging jump: chargeJumpLanded = " + chargeJumpLanded);
+                if (chargeJumpLanded)
+                {
+                    StopChargingChargeJump();
+                    if (failedJump)
+                    {
+                        StartBounceJump();
+                    }
+                    else
+                    {
+                        StartChargeJump();
+                    }
+                    return;
+                }
+
+                //FAIL?
+                if (chargeJumpCurrentReleaseTime >= chargeJumpReleaseTimeBeforeLand)//FAIL: Released too early
+                {
+                    Debug.LogWarning("Charged Jump-> FAILED JUMP: RELEASED TOO EARLY");
+                    failedJump = true;
+                    return;
+                }
+
+                chargeJumpCurrentReleaseTime += Time.deltaTime;
+            }
+
+            //FAIL?
+            if (chargeJumpLanded && !chargeJumpButtonReleased)
+            {
+                if (chargeJumpLandedTime >= chargeJumpReleaseTimeAfterLand)//FAIL: Released too late
+                {
+                    Debug.LogWarning("Charged Jump-> FAILED JUMP: RELEASED TOO LATE");
+                    StopChargingChargeJump();
+                    StartBounceJump();
+                    return;
+                }
+                Debug.Log("chargeJumpLandedTime  = " + chargeJumpLandedTime);
+                chargeJumpLandedTime += Time.deltaTime;
+            }
+        }
+    }
+
+    void StopChargingChargeJump()
+    {
+        if (chargeJumpChargingJump)
+        {
+            chargeJumpChargingJump = false;
+            chargeJumpLanded = false;
+            chargeJumpButtonReleased = false;
+            chargeJumpCurrentReleaseTime = 0;
+            chargeJumpLandedTime = 0;
+            Debug.Log("Stop Charging Jump");
+        }
+    }
+
+    void StartChargeJump()
+    {
+        StageScript stageScript = controller.collisions.floor != null ? controller.collisions.floor.GetComponent<StageScript>() : null;
+        if (stageScript != null && stageScript.chargeJumpable && !inWater && !noInput)
+        {
+            Debug.Log("DO CHARGE JUMP!");
+            float totalFallenHeight = chargeJumpLastApexHeight - transform.position.y;
+            if (totalFallenHeight == 0) Debug.LogError("Charge Jump Error: totalFallenHeight = 0");
+            float totalChargedHeight = chargeJumpChargingStartHeight - transform.position.y;
+            float percentageCharged = totalChargedHeight / totalFallenHeight;
+            if (percentageCharged >= chargeJumpMinPercentageNeeded)
+            {
+                float auxChargeJumpCurrentJumpMaxHeight = totalFallenHeight + (totalFallenHeight * percentageCharged * chargeJumpFallenHeightMultiplier);
+                float distToCloudHeight = Mathf.Abs(chargeJumpMaxHeight - transform.position.y);
+                float currentMaxHeight = Mathf.Min(chargeJumpMaxJumpHeight, distToCloudHeight);
+                chargeJumpCurrentJumpMaxHeight = Mathf.Clamp(auxChargeJumpCurrentJumpMaxHeight, jumpHeight, currentMaxHeight);
+
+                float chargeJumpApexTime = Mathf.Sqrt((2 * chargeJumpCurrentJumpMaxHeight) / Mathf.Abs(currentGravity));
+                float chargeJumpJumpVelocity = Mathf.Abs(currentGravity * chargeJumpApexTime);
+
+                currentVel.y = chargeJumpJumpVelocity;
+
+                jumpSt = JumpState.ChargeJumping;
+                Debug.Log("percentageCharged = " + percentageCharged + "; totalFallenHeight = " + totalFallenHeight + "; chargeJumpMaxHeight = " + chargeJumpMaxHeight + "; transform.position.y = "
+                    + transform.position.y + "; distToCloudHeight = " + distToCloudHeight + "; currentMaxHeight = " + currentMaxHeight
+                    + "; auxChargeJumpCurrentJumpMaxHeight = " + auxChargeJumpCurrentJumpMaxHeight + "; chargeJumpCurrentJumpMaxHeight = " + chargeJumpCurrentJumpMaxHeight + "; chargeJumpApexTime = "
+                    + chargeJumpApexTime + "; chargeJumpJumpVelocity = " + chargeJumpJumpVelocity);
+            }
+            else
+            {
+                Debug.LogWarning("Charged Jump-> Failed Jump: Charged less than a " + (chargeJumpMinPercentageNeeded * 100) + "% of the fall");
+            }
+        }
+    }
+
+    void StartBounceJump()//WHEN CHARGEJUMP FAILS
+    {
+
+        StageScript stageScript = controller.collisions.floor != null ? controller.collisions.floor.GetComponent<StageScript>() : null;
+
+        if (!inWater && stageScript != null && stageScript.bounceJumpable)
+        {
+            Debug.Log("DO BOUNCE JUMP");
+            float totalFallenHeight = chargeJumpLastApexHeight - transform.position.y;
+            chargeJumpCurrentJumpMaxHeight = totalFallenHeight * chargeJumpBounceMultiplier;
+            if (chargeJumpCurrentJumpMaxHeight >= bounceJumpMinHeight)
+            {
+                float chargeJumpApexTime = Mathf.Sqrt((2 * chargeJumpCurrentJumpMaxHeight) / Mathf.Abs(currentGravity));
+                float chargeJumpJumpVelocity = Mathf.Abs(currentGravity * chargeJumpApexTime);
+                currentVel.y = chargeJumpJumpVelocity;
+
+                jumpSt = JumpState.BounceJumping;
+                StopBufferedInput(PlayerInput.Jump);
+                StopBufferedInput(PlayerInput.WallJump);
+            }
+            else
+            {
+                Debug.LogWarning("Bounce Jump -> bounceJump height was too low (min = "+ bounceJumpMinHeight + ")");
+            }
+        }
+    }
+
     #endregion
 
     #region  DASH ---------------------------------------------
@@ -1712,7 +2018,7 @@ public class PlayerMovement : MonoBehaviour
         {
             noInput = true;
             hooked = true;
-            if (jumpSt == JumpState.wallJumping)
+            if (jumpSt == JumpState.WallJumping)
             {
                 StopWallJump();
             }
@@ -1856,7 +2162,7 @@ public class PlayerMovement : MonoBehaviour
             if (waterTrigger != null)
             {
                 Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;//.y = waterTrigger.bounds.max.y;
-                waterSplashPos.y = waterTrigger.bounds.max.y -0.5f;
+                waterSplashPos.y = waterTrigger.bounds.max.y - 0.5f;
                 myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
             }
             myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
@@ -1999,7 +2305,7 @@ public class PlayerMovement : MonoBehaviour
     public void ResetPlayer()
     {
         ExitWater();
-        jumpSt = JumpState.none;
+        jumpSt = JumpState.None;
         myPlayerHook.ResetHook();
         if (haveFlag)
         {
