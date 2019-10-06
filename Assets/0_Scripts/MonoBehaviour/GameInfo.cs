@@ -45,7 +45,7 @@ public class GameInfo : MonoBehaviour
     {
         //UpdateControls();
         ProcessUIAnimations();
-        if (myControls.L1.WasPressed) Debug.Log("L1 was pressed");
+        //if (myControls.L1.WasPressed) Debug.Log("L1 was pressed");
     }
 
     void OnEnable()

@@ -38,7 +38,7 @@ MonoBehaviour:
     isFoldedInEditor: 0
     attackPhaseType: 3
     phaseCompletionType: 1
-    duration: 0.3
+    duration: 0.5
     rotationSpeedPercentage: 0.5
     movementSpeedPercentage: 0.5
     invulnerability: 0
@@ -48,10 +48,10 @@ MonoBehaviour:
       hitboxPrefab: {fileID: 1106858598728734, guid: 0170b6bc00f63cf4c815c19c4e7103f5,
         type: 3}
       effects:
-      - name: 5
+      - name: parry
         effectType: 3
         knockbackType: 0
-        knockbackMagnitude: 0
+        knockbackMagnitude: 10
         knockbackDir: {x: 0, y: 0, z: 0}
         redirectMaxAngle: 0
         knockbackYAngle: 0
@@ -62,7 +62,7 @@ MonoBehaviour:
     isFoldedInEditor: 0
     attackPhaseType: 4
     phaseCompletionType: 1
-    duration: 1
+    duration: 0.6
     rotationSpeedPercentage: 0.5
     movementSpeedPercentage: 0.5
     invulnerability: 0

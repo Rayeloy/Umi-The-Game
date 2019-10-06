@@ -212,7 +212,7 @@ public class PlayerCombatNew : MonoBehaviour
 
     public void ChangeAttackPhase(AttackPhaseType attackStage)
     {
-        if (!myPlayerMovement.disableAllDebugs) Debug.Log("Change attack phase to " + attackStage);
+        if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " ->Change attack phase to " + attackStage);
         attackStg = attackStage;
 
         //change hitbox
@@ -262,7 +262,7 @@ public class PlayerCombatNew : MonoBehaviour
     void ChangeHitboxes(AttackPhaseType att)//hacer después de cambiar de attack stage, no antes!
     {
         //HideAttackHitBox();
-        if (!myPlayerMovement.disableAllDebugs) Debug.Log("Changing Hitboxes!");
+        if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " ->Changing Hitboxes!");
         switch (attackStg)
         {
             case AttackPhaseType.ready:
@@ -310,7 +310,7 @@ public class PlayerCombatNew : MonoBehaviour
 
     void AddHitbox(AttackHitbox attackHitbox)
     {
-        if (!myPlayerMovement.disableAllDebugs) Debug.Log("Adding hitbox of parent type " + attackHitbox.parentType);
+        if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " ->Adding hitbox of parent type " + attackHitbox.parentType);
         GameObject auxHitbox = null;
         switch (attackHitbox.parentType)
         {
@@ -348,7 +348,7 @@ public class PlayerCombatNew : MonoBehaviour
         }
         //if(attackHitbox.parentType!= HitboxParentType.player_animated)
         //{
-        if (!myPlayerMovement.disableAllDebugs) Debug.Log("CurrentHitboxes ADD -> " + auxHitbox.name);
+        if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " ->CurrentHitboxes ADD -> " + auxHitbox.name);
         currentHitboxes.Add(auxHitbox);
         Hitbox hb = auxHitbox.GetComponent<Hitbox>();
         hb.myAttackHitbox = attackHitbox;
@@ -492,7 +492,7 @@ public class PlayerCombatNew : MonoBehaviour
             if (!myPlayerMovement.disableAllDebugs) Debug.LogWarning("Autocombo Stopped");
             if (attackStg != AttackPhaseType.ready)
             {
-                if (!myPlayerMovement.disableAllDebugs) Debug.LogError("PARAMOS EL ATAQUE PORQUE NOS HAN PEGAO O ALGO");
+                if (!myPlayerMovement.disableAllDebugs) Debug.LogWarning("PARAMOS EL ATAQUE PORQUE NOS HAN PEGAO O ALGO");
                 EndAttack();
             }
             autocomboStarted = false;
@@ -509,7 +509,7 @@ public class PlayerCombatNew : MonoBehaviour
     {
         if (canDoCombat)
         {
-            if (!myPlayerMovement.disableAllDebugs) Debug.Log("Starting Attack " + newAttack.attackName);
+            if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name+" -> Starting Attack " + newAttack.attackName);
             landedSinceAttackStarted = myPlayerMovement.controller.collisions.below ? true : false;
             currentAttack = newAttack;
             //targetsHit.Clear();

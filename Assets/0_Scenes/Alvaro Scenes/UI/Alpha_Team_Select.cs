@@ -137,21 +137,24 @@ public class Alpha_Team_Select : MonoBehaviour
                 break;
             case TeamSelectMenuState.ChoosingTeam:
 
-                if (JoinButtonWasPressedOnListener(joystickListener))
+                if(playersJoined < nPlayers)
                 {
-                    InputDevice inputDevice = InputManager.ActiveDevice;
-
-                    if (ThereIsNoPlayerUsingJoystick(inputDevice))
+                    if (JoinButtonWasPressedOnListener(joystickListener))
                     {
-                        CreatePlayer(inputDevice);
+                        InputDevice inputDevice = InputManager.ActiveDevice;
+
+                        if (ThereIsNoPlayerUsingJoystick(inputDevice))
+                        {
+                            CreatePlayer(inputDevice);
+                        }
                     }
-                }
 
-                if (JoinButtonWasPressedOnListener(keyboardListener))
-                {
-                    if (ThereIsNoPlayerUsingKeyboard())
+                    if (JoinButtonWasPressedOnListener(keyboardListener))
                     {
-                        CreatePlayer(null);
+                        if (ThereIsNoPlayerUsingKeyboard())
+                        {
+                            CreatePlayer(null);
+                        }
                     }
                 }
 

@@ -20,7 +20,7 @@ public class Hitbox : MonoBehaviour
     {
         myPlayerMov = transform.GetComponentsInParent<PlayerMovement>()[0];
         myPlayerCombatNew = transform.GetComponentsInParent<PlayerCombatNew>()[0];
-        if (!myPlayerMov.disableAllDebugs) Debug.Log("I'm hitbox " + name + " and I'm doing Awake");
+        if (!myPlayerMov.disableAllDebugs) Debug.Log(myPlayerMov.gameObject.name + " ->I'm hitbox " + name + " and I'm doing Awake");
         targetsHit = new List<string>();
         dummiesHit = new List<string>();
         targetsHitWait1Frame = new List<string>();
