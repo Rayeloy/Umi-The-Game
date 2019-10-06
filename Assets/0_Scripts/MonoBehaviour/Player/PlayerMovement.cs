@@ -946,7 +946,7 @@ public class PlayerMovement : MonoBehaviour
                     currentSpeed = horizontalVel.magnitude;
                     break;
                 case MoveState.Impulse:
-                    Debug.LogError("DOING IMPULSE");
+                    if(!disableAllDebugs)Debug.LogWarning("DOING IMPULSE");
                     impulseDone = true;
                     Vector3 finalImpulse = new Vector3(currentImpulse.impulseVel.x, 0, currentImpulse.impulseVel.z);
                     float maxMag = finalImpulse.magnitude;
@@ -1892,7 +1892,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void StartRecieveParry(PlayerMovement enemy, AttackEffect effect = null)
     {
-        Debug.Log("PARRY!!!");
+        if(!disableAllDebugs)Debug.Log("PARRY!!!");
         float knockbackMag = effect == null ? 10 : effect.knockbackMagnitude;
         float maxStunTime = effect != null && effect.parryStunTime > 0 ? effect.parryStunTime : 0.5f;
 
@@ -1906,11 +1906,11 @@ public class PlayerMovement : MonoBehaviour
         Vector3 parryColPos = transform.position;
         Vector3 resultKnockback = new Vector3(parryColPos.x - parryMyPos.x, 0, parryColPos.z - parryMyPos.z).normalized;
         //resultKnockback = Quaternion.Euler(0, effect.knockbackYAngle, 0) * resultKnockback;
-        Debug.Log("resultKnockback 1 = " + resultKnockback);
+        if(!disableAllDebugs)Debug.Log("resultKnockback 1 = " + resultKnockback);
         resultKnockback = Hitbox.CalculateYAngle(enemyPos, resultKnockback, 25f);
-        Debug.Log("resultKnockback 2 = " + resultKnockback);
+        if (!disableAllDebugs) Debug.Log("resultKnockback 2 = " + resultKnockback);
         resultKnockback = resultKnockback * knockbackMag;
-        Debug.Log("resultKnockback 3 = " + resultKnockback + "; maxStunTime = " + maxStunTime);
+        if (!disableAllDebugs) Debug.Log("resultKnockback 3 = " + resultKnockback + "; maxStunTime = " + maxStunTime);
         StartRecieveHit(enemy, resultKnockback, EffectType.softStun, maxStunTime);
     }
 
