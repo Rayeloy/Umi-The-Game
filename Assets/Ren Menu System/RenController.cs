@@ -48,8 +48,6 @@ public class RenController : MonoBehaviour
             if (inControlManager == null) Debug.LogError("RenController error: no InControlManager could be found!");
         }
         currentButton = initialButton;
-        if(initialButton!=null)
-        initialButton.HighlightButtonsAndTexts();
     }
 
     private void Start()
@@ -62,6 +60,8 @@ public class RenController : MonoBehaviour
             inControlManager = FindObjectOfType<InControlManager>();
             if (inControlManager == null) Debug.LogError("RenController error: no InControlManager could be found!");
         }
+        if (initialButton != null)
+            initialButton.HighlightButtonsAndTexts();
     }
 
     private void OnEnable()

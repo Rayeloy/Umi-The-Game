@@ -87,14 +87,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b644e1dd5c30a86469a8fda4875847b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disabled: 0
+  transition: 0
   targetImages:
   - {fileID: 6890962232893917037}
-  targetTexts: []
+  targetTexts:
+  - {fileID: 6890962233978843929}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   highlightedColor: {r: 1, g: 0.95554936, b: 0, a: 1}
-  PressedColor: {r: 0.6603774, g: 0.6603774, b: 0.6603774, a: 1}
-  DisabledColor: {r: 0.6981132, g: 0.6981132, b: 0.6981132, a: 0.44705883}
-  disabled: 0
+  pressedColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  disabledColor: {r: 1, g: 1, b: 1, a: 0.25882354}
+  normalSprite: {fileID: 0}
+  highlightedSprite: {fileID: 0}
+  pressedSprite: {fileID: 0}
+  disabledSprite: {fileID: 0}
   navigationMode: 1
   nextUpButton: {fileID: 0}
   nextDownButton: {fileID: 0}
@@ -112,9 +118,23 @@ MonoBehaviour:
   onButtonHighlight:
     m_PersistentCalls:
       m_Calls: []
-  onButtonPressed:
+  onButtonStopHighlight:
     m_PersistentCalls:
       m_Calls: []
+  onButtonPressed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: TestChangeColorImage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6890962233978843927
 GameObject:
   m_ObjectHideFlags: 0

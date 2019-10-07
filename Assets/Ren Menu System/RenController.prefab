@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 880503870005479703}
   - component: {fileID: 880503870005479700}
+  - component: {fileID: 8693383356436219397}
+  - component: {fileID: 2354955481550563897}
   m_Layer: 0
   m_Name: RenController
   m_TagString: Untagged
@@ -43,13 +45,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b25bc8d39754e544da67b24e9d78c672, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disabled: 0
   useMouse: 0
   useControllers: 1
   useKeyboard: 1
   inControlManager: {fileID: 0}
   controlsType: 0
   initialButton: {fileID: 0}
-  automaticButtonFlowOnError: 0
+  automaticButtonFlowOnError: 1
   deadZone: 0.85
   currentButton: {fileID: 0}
   testImage: {fileID: 0}
+--- !u!114 &8693383356436219397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880503870005479701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FirstSelected: {fileID: 0}
+  m_sendNavigationEvents: 1
+  m_DragThreshold: 10
+--- !u!114 &2354955481550563897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880503870005479701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalAxis: Horizontal
+  m_VerticalAxis: Vertical
+  m_SubmitButton: Submit
+  m_CancelButton: Cancel
+  m_InputActionsPerSecond: 10
+  m_RepeatDelay: 0.5
+  m_ForceModuleActive: 0

@@ -212,12 +212,13 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             int playernumber = PhotonNetwork.CurrentRoom.PlayerCount - 1;//ELOY: Para Juan: ESTO NO ESTA PREPARADO PARA CUANDO SE SALE ALGUIEN. Si eran 10 jugadores y se sale el 3
             //no se rellena el 3, sino el 10. Hay que buscar con un for el numero más bajo por rellenar.
             print("Creating player number " + playernumber);
+            Debug.Log("0 - AllCameraBases.Length = " + allCameraBases.Count);
             CreatePlayer(playernumber);
             //PlayerSetupOnline?
             //No hace falta SetUpCanvas creo
             //Haz los awakes, y haz el awake de cada jugador nuevo(esto ultimo hay que buscar donde ponerlo... en el CreatePlayer?
 
-
+            Debug.Log("3 - AllCameraBases.Length = " + allCameraBases.Count);
             allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
             allUICameras[0].rect = new Rect(0, 0, 1, 1);
             //Debug.Log("Nuestro jugador es: "+ GameInfo.instance.myControls);
@@ -526,17 +527,23 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
         if (online)
         {
+            Debug.Log("0.1 - AllCameraBases.Length = " + allCameraBases.Count);
+
             if (playerPrefab == null)
             {
-                Debug.Log("GamerControllerBase: Color=Red><a>Missing playerPrefab Reference in GameController</a></Color>");
+                Debug.LogError("GamerControllerBase: Color=Red><a>Missing playerPrefab Reference in GameController</a></Color>");
             }
             else
             {
+                Debug.Log("0.2 - AllCameraBases.Length = " + allCameraBases.Count);
+
                 Debug.Log("GameControllerBase: Instantiating player over the network");
                 //JUAN: WARNING!!, el objeto que se instancie debe estar siempre en la carpeta de Resources de Photon, o ir al método de instantiate para cambiarlo
                 //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
                 if (PlayerMovement.LocalPlayerInstance == null)
                 {
+                    Debug.Log("0.3 - AllCameraBases.Length = " + allCameraBases.Count);
+
                     Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
                     // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
                     Team newPlayerTeam = SetRandomOnlineTeam(playerNumber);
@@ -566,6 +573,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                     newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
 
                     newPlayer.playerNumber = PhotonNetwork.CurrentRoom.PlayerCount;
+                    Debug.Log("1 - AllCameraBases.Length = " + allCameraBases.Count);
 
                     InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
                     allPlayers[playerNumber].KonoAwake();
@@ -627,6 +635,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             {
                 jugadaGalaxia = false;
                 allCanvas.Add(canvas);
+                Debug.Log("2 - AllCameraBases.Length = " + allCameraBases.Count);
+
                 allCameraBases.Add(cameraBase);
                 allUICameras.Add(UICamera);
             }

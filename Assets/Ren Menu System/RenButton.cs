@@ -100,14 +100,17 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (!disabled && RenController.instance.useMouse)
         {
+            if (RenController.instance.currentButton != null)
+                RenController.instance.currentButton.StopHighlightButtonsAndText();
+            RenController.instance.currentButton = this;
+
             isMouseOver = true;
             Debug.Log("Mouse enter");
             for (int i = 0; i < targetImages.Length; i++)
             {
                 targetImages[i].color = highlightedColor;
             }
-            RenController.instance.currentButton.StopHighlightButtonsAndText();
-            RenController.instance.currentButton = this;
+
             onMouseEnter.Invoke();
         }
     }
@@ -116,13 +119,15 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (!disabled && RenController.instance.useMouse)
         {
+            if (RenController.instance.currentButton != null)
+                RenController.instance.currentButton.HighlightButtonsAndTexts();
+
             isMouseOver = false;
             Debug.Log("Mouse exit");
             for (int i = 0; i < targetImages.Length; i++)
             {
                 targetImages[i].color = normalColor;
             }
-            RenController.instance.currentButton.HighlightButtonsAndTexts();
             onMouseExit.Invoke();
         }
     }
