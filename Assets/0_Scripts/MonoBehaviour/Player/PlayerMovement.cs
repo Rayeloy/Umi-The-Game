@@ -210,7 +210,7 @@ public class PlayerMovement : MonoBehaviour
             bool result = false;
             StageScript stageScript = controller.collisions.floor != null ? controller.collisions.floor.GetComponent<StageScript>() : null;
             result = controller.collisions.below && chargeJumpChargingJump && stageScript != null && stageScript.chargeJumpable;
-            //Debug.LogWarning("isChargeJump = " + result);
+            Debug.LogWarning("isChargeJump = " + result);
             return result;
         }
     }
@@ -227,7 +227,7 @@ public class PlayerMovement : MonoBehaviour
             float totalFallenHeight = chargeJumpLastApexHeight - transform.position.y;
             float auxBounceJumpCurrentMaxHeight = totalFallenHeight * chargeJumpBounceMultiplier;
             result = controller.collisions.below && stageScript != null && stageScript.bounceJumpable && auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight;
-            //Debug.LogWarning("isBounceJump = " + result + "; controller.collisions.floor = " + controller.collisions.floor+ "; controller.collisions.below = "+ controller.collisions.below);
+            Debug.LogWarning("isBounceJump = " + result + "; controller.collisions.floor = " + controller.collisions.floor+ "; controller.collisions.below = "+ controller.collisions.below);
             if (stageScript != null)Debug.Log("stageScript = "+ stageScript + "; stageScript.bounceJumpable = " 
                 + stageScript.bounceJumpable+ "; auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight = " +(auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight));
             return result;
@@ -1149,7 +1149,9 @@ public class PlayerMovement : MonoBehaviour
         {
             currentVel.y = Mathf.Clamp(currentVel.y, -maxVerticalSpeedInWater, float.MaxValue);
         }
+
         ProcessJumpInsurance();
+
         if (currentVel.y < 0)
         {
             currentVel.y = Mathf.Clamp(currentVel.y, -maxFallSpeed, maxFallSpeed);
@@ -1167,18 +1169,6 @@ public class PlayerMovement : MonoBehaviour
                 StartChargingChargeJump();
             }
         }
-        //if (!StartWallJump())
-        //{
-        //    if (jumpSt == JumpState.Falling)
-        //    {
-
-        //        StartChargingChargeJump();
-        //    }
-        //    else
-        //    {
-        //        StartJump();
-        //    }
-        //}  
     }
 
     bool StartJump(bool calledFromBuffer = false)
@@ -1186,7 +1176,7 @@ public class PlayerMovement : MonoBehaviour
         bool result = false;
         if (!noInput && moveSt != MoveState.Boost)
         {
-            //Debug.Log("START JUMP: below = "+ controller.collisions.below + "; jumpInsurance = " + jumpInsurance);
+            Debug.Log("START JUMP: below = "+ controller.collisions.below + "; jumpInsurance = " + jumpInsurance+ "; inWater = "+ inWater);
             if ((controller.collisions.below || jumpInsurance) && !isChargeJump && !isBounceJump &&
                 (!inWater || (inWater && controller.collisions.around &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))))
@@ -1225,9 +1215,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!jumpInsurance)
         {
-            if (controller.collisions.lastBelow && !controller.collisions.below && jumpSt == JumpState.None && jumpedOutOfWater)
+            //Debug.LogWarning(" controller.collisions.lastBelow = "+ (controller.collisions.lastBelow) + "; controller.collisions.below = "+ (controller.collisions.below) +
+            //    "; jumpSt == JumpState.None = "+ (jumpSt == JumpState.Falling ) + "; jumpedOutOfWater = " + (jumpedOutOfWater));
+            if (controller.collisions.lastBelow && !controller.collisions.below && (jumpSt == JumpState.None || jumpSt == JumpState.Falling) && jumpedOutOfWater)
             {
-                //print("Jump Insurance");
+                print("Jump Insurance");
                 jumpInsurance = true;
                 timeJumpInsurance = 0;
             }
