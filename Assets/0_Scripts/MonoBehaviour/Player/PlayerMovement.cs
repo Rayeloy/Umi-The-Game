@@ -183,8 +183,8 @@ public class PlayerMovement : MonoBehaviour
 
 
     [Header(" --- CHARGE JUMP ---")]
-    [Range(1, 2)]
-    public float chargeJumpFallenHeightMultiplier = 1.5f;
+    [Range(0, 4)]
+    public float chargeJumpFallenHeightMultiplier = 1f;
     [Range(0, 2)]
     public float chargeJumpReleaseTimeBeforeLand = 0.5f;
     [Range(0, 2)]

@@ -13,5 +13,5 @@ public class StageScript : MonoBehaviour {
 
     public bool chargeJumpable = false;
 
-    public bool bounceJumpable = false;
+    public bool bounceJumpable = true;
 }
