@@ -31,6 +31,7 @@ public class GameInfo : MonoBehaviour
 
     public void Awake()
     {
+        //Application.targetFrameRate = 60;
         DontDestroyOnLoad(this);
         instance = this;
         currentGameMode = GameMode.None;
