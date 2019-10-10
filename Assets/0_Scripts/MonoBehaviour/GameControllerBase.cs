@@ -576,7 +576,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                     Debug.Log("1 - AllCameraBases.Length = " + allCameraBases.Count);
 
                     InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
-                    allPlayers[playerNumber].KonoAwake();
+                    Debug.Log("final allPlayers.Count = " + allPlayers.Count + "; playerNumber = " + playerNumber);
+                    allPlayers[0].KonoAwake();
                 }
                 else
                 {
@@ -628,7 +629,9 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
         //Añadir a los arrays todos los componentes del jugador
         //guarda jugador
-        allPlayers.Add(player);
+       Debug.Log("1 allPlayers.Count = " + allPlayers.Count);
+       allPlayers.Add(player);
+       Debug.Log("2 allPlayers.Count = " + allPlayers.Count);
         if (online)
         {
             if (jugadaGalaxia)

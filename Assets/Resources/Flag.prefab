@@ -443,6 +443,8 @@ GameObject:
   - component: {fileID: 23754499187705034}
   - component: {fileID: 135415561022386018}
   - component: {fileID: 114249538769718570}
+  - component: {fileID: 4535013674015918115}
+  - component: {fileID: 4716721321810820389}
   m_Layer: 12
   m_Name: Flag
   m_TagString: Flag
@@ -567,6 +569,43 @@ MonoBehaviour:
   idleAnimFrequency: 4
   idleAnimFrequencyDropFromPlayer: 3
   lightBeam: {fileID: 1654061163}
+--- !u!114 &4535013674015918115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1751600940884742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 1
+  OwnershipTransfer: 0
+  ObservedComponents:
+  - {fileID: 4716721321810820389}
+  viewIdField: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &4716721321810820389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1751600940884742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
 --- !u!1 &1930397999046890
 GameObject:
   m_ObjectHideFlags: 0
@@ -915,21 +954,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 14
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &2809938940717010322
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4290820052312299722}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
 --- !u!114 &6866627868232057086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -966,7 +990,6 @@ MonoBehaviour:
   Synchronization: 1
   OwnershipTransfer: 0
   ObservedComponents:
-  - {fileID: 416143384413395982}
   - {fileID: 2485612778412870240}
   viewIdField: 0
   InstantiationId: 0
@@ -1200,6 +1223,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: orcaAnim
       objectReference: {fileID: 0}
+    - target: {fileID: 7157779391444162088, guid: fe2d5c8c61330f5468ec567eb1579a66,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6129068922478191675, guid: fe2d5c8c61330f5468ec567eb1579a66,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1254,6 +1282,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4288781957202331969, guid: fe2d5c8c61330f5468ec567eb1579a66,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fe2d5c8c61330f5468ec567eb1579a66, type: 3}

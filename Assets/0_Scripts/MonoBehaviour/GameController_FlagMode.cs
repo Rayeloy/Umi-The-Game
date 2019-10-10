@@ -25,7 +25,17 @@ public class GameController_FlagMode : GameControllerBase
     }
     protected override void SpecificAwake()
     {
-        CreateFlag();
+        if (online)
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                CreateFlag();
+            }
+        }
+        else
+        {
+            CreateFlag();
+        }
         HideFlagHomeLightBeam(Team.A);
         HideFlagHomeLightBeam(Team.B);
     }

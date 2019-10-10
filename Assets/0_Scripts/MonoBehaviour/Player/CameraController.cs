@@ -178,7 +178,7 @@ public class CameraController : MonoBehaviour
                     break;
                 case cameraMode.Shoulder:
                     followObjRot = cameraFollowObj.rotation;
-                    rotX += finalInputZ * rotSpeed * Time.deltaTime;
+                    rotX += finalInputZ * rotSpeedSho * Time.deltaTime;
                     rotX = Mathf.Clamp(rotX, clampAngleMinSho, clampAngleMaxSho);
 
                     myPlayerMov.RotateCharacter(rotSpeedSho * finalInputX);
