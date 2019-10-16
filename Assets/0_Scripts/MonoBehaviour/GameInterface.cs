@@ -168,7 +168,7 @@ public class GameInterface : MonoBehaviour
         if (GameInfo.instance.inControlManager != null)
         {
             //Eloy: hay que encontrar una mejor manera de resetear/borrar los controles...
-            Destroy(GameInfo.instance.inControlManager);
+            GameInfo.instance.ErasePlayerControls();
         }
         print("LOAD MAIN TEAM SELECT");
         SceneManager.LoadScene(teamSelectScene);
@@ -180,7 +180,7 @@ public class GameInterface : MonoBehaviour
         if (GameInfo.instance.inControlManager != null)
         {
             //Eloy: hay que encontrar una mejor manera de resetear/borrar los controles...
-            Destroy(GameInfo.instance.inControlManager);
+            GameInfo.instance.ErasePlayerControls();
         }
         print("LOAD MAIN MENU");
         SceneManager.LoadScene(menuScene);

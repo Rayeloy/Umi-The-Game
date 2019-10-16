@@ -128,7 +128,7 @@ MonoBehaviour:
   myPlayerMov: {fileID: 0}
   disableAllDebugs: 1
   disableAllRays: 1
-  collideWithOtherPlayers: 0
+  collideWithOtherPlayers: 1
   collisionMask:
     serializedVersion: 2
     m_Bits: 279040
@@ -301,9 +301,19 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.80686
       objectReference: {fileID: 0}
-    - target: {fileID: 6460928550595250849, guid: efe092b346adcfa4393c22915e8d7985,
+    - target: {fileID: -8404806046209650949, guid: efe092b346adcfa4393c22915e8d7985,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e83e650127f4c4a43b3683de6cc0e13d, type: 2}
+    - target: {fileID: -8404806046209650949, guid: efe092b346adcfa4393c22915e8d7985,
+        type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 432c103c2cd79ab40aefafba2d95a902, type: 2}
+    - target: {fileID: -8404806046209650949, guid: efe092b346adcfa4393c22915e8d7985,
+        type: 3}
+      propertyPath: m_Materials.Array.data[2]
       value: 
       objectReference: {fileID: 2100000, guid: db06bc85fff9bac40a448191e3cdd16f, type: 2}
     - target: {fileID: -3956146462530689216, guid: efe092b346adcfa4393c22915e8d7985,
@@ -321,31 +331,21 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[2]
       value: 
       objectReference: {fileID: 2100000, guid: dace5e96201c71d449f639b2ac82e037, type: 2}
-    - target: {fileID: 8340115774741408297, guid: efe092b346adcfa4393c22915e8d7985,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 6781f604b2f67384798e10b186d47c5f, type: 2}
-    - target: {fileID: -8404806046209650949, guid: efe092b346adcfa4393c22915e8d7985,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: e83e650127f4c4a43b3683de6cc0e13d, type: 2}
-    - target: {fileID: -8404806046209650949, guid: efe092b346adcfa4393c22915e8d7985,
-        type: 3}
-      propertyPath: m_Materials.Array.data[1]
-      value: 
-      objectReference: {fileID: 2100000, guid: 432c103c2cd79ab40aefafba2d95a902, type: 2}
-    - target: {fileID: -8404806046209650949, guid: efe092b346adcfa4393c22915e8d7985,
-        type: 3}
-      propertyPath: m_Materials.Array.data[2]
-      value: 
-      objectReference: {fileID: 2100000, guid: db06bc85fff9bac40a448191e3cdd16f, type: 2}
     - target: {fileID: 3890507712662401466, guid: efe092b346adcfa4393c22915e8d7985,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 17595c8f7da0e5f41bf4aa4a6d0eed63, type: 2}
+    - target: {fileID: 6460928550595250849, guid: efe092b346adcfa4393c22915e8d7985,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: db06bc85fff9bac40a448191e3cdd16f, type: 2}
+    - target: {fileID: 8340115774741408297, guid: efe092b346adcfa4393c22915e8d7985,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6781f604b2f67384798e10b186d47c5f, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: efe092b346adcfa4393c22915e8d7985, type: 3}
 --- !u!4 &1574935623419191665 stripped

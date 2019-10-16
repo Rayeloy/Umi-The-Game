@@ -52,7 +52,7 @@ public class PlayerBody : MonoBehaviour {
                 myPlayerWeapons.AddWeaponNearby(col.GetComponent<Weapon>());
                 break;
             case "Player":
-                if (myPlayerMov.controller.collideWithOtherPlayers)
+                if (myPlayerMov.controller.collideWithTriggers)
                 {
                     Debug.LogWarning("Hitting player! checking team");
                     PlayerMovement otherPlayer = col.transform.GetComponentInParent<PlayerMovement>();

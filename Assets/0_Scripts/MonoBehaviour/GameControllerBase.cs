@@ -159,6 +159,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             //Eloy: he cambiado esto porque me he dado cuenta de que es necesario hasta en la build final, no solo en el editor.
             if (GameInfo.instance == null || GameInfo.instance.inControlManager == null)
             {
+                Debug.LogWarning("GameInfo or InControlManager was not found, so we load Team Setup Scene");
                 //string escena = TeamSetupManager.siguienteEscena;
                 //print(escena);
                 TeamSetupManager.siguienteEscena = SceneManager.GetActiveScene().name;

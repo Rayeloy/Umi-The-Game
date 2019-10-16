@@ -216,6 +216,7 @@ public class Dummy : MonoBehaviour
         noInput = false;
         hardSteerAcc = Mathf.Clamp(hardSteerAcc, hardSteerAcc, breakAcc);
         airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airHardSteerAcc, airBreakAcc);
+        jumpSt = JumpState.None;
     }
 
     #endregion
@@ -276,12 +277,12 @@ public class Dummy : MonoBehaviour
         }
     }
 
-                #endregion
+    #endregion
 
-                #region ----[ CLASS FUNCTIONS ]----
+    #region ----[ CLASS FUNCTIONS ]----
 
-                #region MOVEMENT -----------------------------------------------
-                public void SetVelocity(Vector3 vel)
+    #region MOVEMENT -----------------------------------------------
+    public void SetVelocity(Vector3 vel)
     {
         currentVel = vel;
         Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
@@ -510,14 +511,11 @@ public class Dummy : MonoBehaviour
 
     void VerticalMovement()
     {
-        if (moveSt != MoveState.Boost)
+        switch (jumpSt)
         {
-            switch (jumpSt)
-            {
-                case JumpState.None:
-                    currentVel.y += gravity * Time.deltaTime;
-                    break;
-            }
+            case JumpState.None:
+                currentVel.y += gravity * Time.deltaTime;
+                break;
         }
 
         if (inWater)

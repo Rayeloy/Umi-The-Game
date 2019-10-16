@@ -542,23 +542,30 @@ public class PlayerMovement : MonoBehaviour
         ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
 
         //Debug.Log("currentVel = " + currentVel + "; Time.deltaTime = " + Time.deltaTime + "; currentVel * Time.deltaTime = " + (currentVel * Time.deltaTime) + "; Time.fixedDeltaTime = " + Time.fixedDeltaTime);
-
+        ////controller.Move(currentVel * Time.deltaTime);
         //print("CurrentVel 3= " + currentVel.ToString("F6"));
-        controller.Move(currentVel * Time.deltaTime);
-        //GetComponent<Rigidbody>().velocity = currentVel;
+
         myPlayerCombatNew.KonoUpdate();
-        controller.collisions.ResetAround();
+        ////controller.collisions.ResetAround();
 
         //myPlayerAnimation.KonoUpdate();
-        myPlayerAnimation_01.KonoUpdate();
+        ////myPlayerAnimation_01.KonoUpdate();
         myPlayerWeap.KonoUpdate();
         myPlayerHook.KonoUpdate();
-        if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel End = " + currentVel.ToString("F6") + "; currentVel.normalized = " + currentVel.normalized.ToString("F6") +
-               "; currentSpeed =" + currentSpeed.ToString("F4") + "; Player position = " + transform.position.ToString("F6"));
+
     }
 
     public void KonoFixedUpdate()
     {
+    }
+
+    public void LateUpdate()
+    {
+        controller.Move(currentVel * Time.deltaTime);
+        controller.collisions.ResetAround();
+        myPlayerAnimation_01.KonoUpdate();
+        if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel End = " + currentVel.ToString("F6") + "; currentVel.normalized = " + currentVel.normalized.ToString("F6") +
+       "; currentSpeed =" + currentSpeed.ToString("F4") + "; Player position = " + transform.position.ToString("F6"));
     }
     #endregion
 
