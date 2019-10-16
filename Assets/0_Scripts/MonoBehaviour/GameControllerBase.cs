@@ -984,6 +984,11 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         //print("GAME OVER");
         if (!gameOverStarted && !online)
         {
+            for(int i = 0; i < allPlayers.Count; i++)
+            {
+                allPlayers[i].DoGameOver();
+            }
+
             playing = false;
             gamePaused = true;
             gameOverStarted = true;

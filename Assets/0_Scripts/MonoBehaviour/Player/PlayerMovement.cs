@@ -2237,7 +2237,7 @@ public class PlayerMovement : MonoBehaviour
     }
     #endregion
 
-    #region  CHECK WIN ---------------------------------------------
+    #region  CHECK WIN && GAME OVER ---------------------------------------------
     public void CheckScorePoint(FlagHome flagHome)
     {
         if (haveFlag && team == flagHome.team && this.moveSt != MoveState.Hooked)
@@ -2248,6 +2248,13 @@ public class PlayerMovement : MonoBehaviour
                 flag.SetAway(true);
             }
         }
+    }
+
+    public void DoGameOver()
+    {
+        currentSpeed = 0;
+        currentVel = Vector3.zero;
+        controller.Move(currentVel * Time.deltaTime);
     }
     #endregion
 

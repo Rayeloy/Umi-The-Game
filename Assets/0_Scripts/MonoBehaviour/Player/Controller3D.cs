@@ -150,6 +150,8 @@ public class Controller3D : MonoBehaviour
     /// <param name="vel"></param>
     public void Move(Vector3 vel)
     {
+        ChangePositionWithPlatform();
+
         //AdjustColliderSize(vel);
         UpdateRaycastOrigins();
         collisions.ResetVertical();
@@ -195,8 +197,7 @@ public class Controller3D : MonoBehaviour
         if (!disableAllDebugs) Debug.LogWarning("<------------ End Vel = " + vel.ToString("F4") + "; CollisionState = " + collisions.collSt + "; below = " + collisions.below);
         transform.Translate(vel, Space.World);
 
-        ChangePositionWithPlatform();
-
+        SavePlatformPoint();
     }
 
     bool colliderChanged = false;
@@ -2583,6 +2584,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
     {
         get
         {
+            Debug.Log("onMovingPlatform-> below = "+ collisions.below + "; lastBelow = "+ collisions.lastBelow + "; floor = "+ collisions.floor + "; lastFloor = " + collisions.lastFloor);
             return collisions.below && collisions.lastBelow && collisions.lastFloor != null && collisions.floor != null && collisions.lastFloor == collisions.floor;
         }
     }
@@ -2591,20 +2593,28 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
     {
         if (collisions.below && collisions.floor != null)
         {
-            platformOldWorldPoint = platformNewWorldPoint;
+            platformOldWorldPoint = collisions.closestVerRaycast.ray.point;
             platformOldLocalPoint = collisions.floor.transform.InverseTransformPoint(platformOldWorldPoint);
-            //Debug.Log("OnMovingPlatform true && Save Platform Point: Local = " + platformOldLocalPoint.ToString("F4") + "; world = "+ platformOldWorldPoint.ToString("F4"));
+            Debug.Log("OnMovingPlatform true && Save Platform Point: Local = " + platformOldLocalPoint.ToString("F4") + "; world = "+ platformOldWorldPoint.ToString("F4"));
         }
+        //else if(collisions.lastBelow && collisions.lastFloor != null && !collisions.below && collisions.floor== null && platformOldLocalPoint != Vector3.zero)
+        //{
+        //    Vector3 currentWorldPoint = collisions.floor.transform.TransformPoint(platformOldLocalPoint);
+        //    if(platformOldWorldPoint.y != currentWorldPoint.y)
+        //    {
+        //        collisions.below = true;
+        //    }
+        //}
     }
 
     void CalculatePlatformPointMovement()
     {
         if (onMovingPlatform)
         {
-            //Debug.LogWarning("CALCULATE PLATFORM POINT MOVEMENT");
+            Debug.LogWarning("CALCULATE PLATFORM POINT MOVEMENT");
             platformNewWorldPoint = collisions.floor.transform.TransformPoint(platformOldLocalPoint);
             platformMovement = platformNewWorldPoint - platformOldWorldPoint;
-            //Debug.Log("platformOldWorldPoint = " + platformOldWorldPoint.ToString("F4") + "; New Platform Point = "+ platformNewWorldPoint.ToString("F4")+ "; platformMovement = " + platformMovement.ToString("F4"));
+            Debug.Log("platformOldWorldPoint = " + platformOldWorldPoint.ToString("F4") + "; New Platform Point = "+ platformNewWorldPoint.ToString("F4")+ "; platformMovement = " + platformMovement.ToString("F4"));
             Debug.DrawLine(platformOldWorldPoint, platformNewWorldPoint, Color.red, 1f);
         }
     }
@@ -2617,8 +2627,6 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
         //transform.Translate(platformMovement, Space.World);
         if (onMovingPlatform)
             transform.position += platformMovement;
-
-        SavePlatformPoint();
     }
     #endregion
 
