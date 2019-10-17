@@ -16,7 +16,8 @@ public class PlayerWeapons : MonoBehaviour {
     PlayerHUD myPlayerHUD;
     [HideInInspector]
     public PlayerModel myPlayerModel;
-    public WeaponData startingWeapon;
+    public WeaponData startingWeaponTeamA;
+    public WeaponData startingWeaponTeamB;
 
     #endregion
 
@@ -83,7 +84,15 @@ public class PlayerWeapons : MonoBehaviour {
     #region Start
     public void KonoStart()
     {
-        PickupWeapon(startingWeapon);
+        switch (myPlayerMovement.team)
+        {
+            case Team.A:
+                PickupWeapon(startingWeaponTeamA);
+                break;
+            case Team.B:
+                PickupWeapon(startingWeaponTeamB);
+                break;
+        }
     }
     #endregion
 
