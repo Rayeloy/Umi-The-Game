@@ -205,7 +205,7 @@ public class PlayerWeapons : MonoBehaviour {
         currentWeapon = currentWeapObject.GetComponent<Weapon>();
         if (currentWeapon == null)
         {
-            Debug.LogError("this weapons has no Weapon script!");
+            Debug.LogError("This weapons has no Weapon script!");
         }
         else
         {
@@ -266,6 +266,11 @@ public class PlayerWeapons : MonoBehaviour {
         //UpdateNearestWeapon();
     }
 
+    /// <summary>
+    /// Looks for a weapon skin that contains the string skinName and a recolor for that skin that contains the string recolorName
+    /// </summary>
+    /// <param name="skinName"></param>
+    /// <param name="recolorName"></param>
     public void ChangeWeaponSkin(string skinName="", string recolorName="")
     {
         currentWeapon.SetSkin(out currentWeaponSkin, skinName, recolorName);
