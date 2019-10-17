@@ -150,7 +150,7 @@ public class Controller3D : MonoBehaviour
     /// <param name="vel"></param>
     public void Move(Vector3 vel)
     {
-        ChangePositionWithPlatform();
+        SavePlatformPoint();
 
         //AdjustColliderSize(vel);
         UpdateRaycastOrigins();
@@ -197,7 +197,7 @@ public class Controller3D : MonoBehaviour
         if (!disableAllDebugs) Debug.LogWarning("<------------ End Vel = " + vel.ToString("F4") + "; CollisionState = " + collisions.collSt + "; below = " + collisions.below);
         transform.Translate(vel, Space.World);
 
-        SavePlatformPoint();
+        ChangePositionWithPlatform();
     }
 
     bool colliderChanged = false;
@@ -2607,6 +2607,15 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
         //}
     }
 
+    void FirstFrameSavePlatformPoint()
+    {
+        if(collisions.lastBelow && collisions.lastFloor != null && !collisions.below)
+        {
+            collisions.below = true;
+            collisions.floor = collisions.lastFloor;
+        }
+    }
+
     void CalculatePlatformPointMovement()
     {
         if (onMovingPlatform)
@@ -2621,6 +2630,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
 
     void ChangePositionWithPlatform()
     {
+        //FirstFrameSavePlatformPoint();
 
         CalculatePlatformPointMovement();
 
