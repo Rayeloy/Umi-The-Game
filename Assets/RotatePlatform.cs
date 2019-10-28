@@ -30,56 +30,59 @@ public class RotatePlatform : MonoBehaviour
 
     private void Update()
     {
-        float finalRotationX, finalRotationY, finalRotationZ;
-        finalRotationX = finalRotationY = finalRotationZ = 0;
-        if (rotateX)
+        if (!GameInfo.instance.gameIsPaused)
         {
-            xCurrentAmplitude += (rotationSpeedX * Time.deltaTime * xSentido);
-            finalRotationX = xOrigin + xCurrentAmplitude;
-            if (xSentido == 1)
+            float finalRotationX, finalRotationY, finalRotationZ;
+            finalRotationX = finalRotationY = finalRotationZ = 0;
+            if (rotateX)
             {
-                if (xCurrentAmplitude >= xAmplitude)
+                xCurrentAmplitude += (rotationSpeedX * Time.deltaTime * xSentido);
+                finalRotationX = xOrigin + xCurrentAmplitude;
+                if (xSentido == 1)
                 {
-                    xSentido *= -1;
-                    //xCurrentAmplitude = 0;
+                    if (xCurrentAmplitude >= xAmplitude)
+                    {
+                        xSentido *= -1;
+                        //xCurrentAmplitude = 0;
+                    }
                 }
+                else
+                {
+                    if (xCurrentAmplitude <= -xAmplitude)
+                    {
+                        xSentido *= -1;
+                        //xCurrentAmplitude = 0;
+                    }
+                }
+                //Debug.Log("X ROTATION-> xSentido = " + xSentido + "; xCurrentAmplitude = " + xCurrentAmplitude);
             }
-            else
+            if (rotateY)
             {
-                if (xCurrentAmplitude <= -xAmplitude)
-                {
-                    xSentido *= -1;
-                    //xCurrentAmplitude = 0;
-                }
+                finalRotationY = transform.localRotation.eulerAngles.y + (rotationSpeedY * Time.deltaTime);
             }
-            //Debug.Log("X ROTATION-> xSentido = " + xSentido + "; xCurrentAmplitude = " + xCurrentAmplitude);
+            if (rotateZ)
+            {
+                zCurrentAmplitude += (rotationSpeedZ * Time.deltaTime * zSentido);
+                finalRotationZ = zOrigin + zCurrentAmplitude;
+                if (zSentido == 1)
+                {
+                    if (zCurrentAmplitude >= zAmplitude)
+                    {
+                        zSentido *= -1;
+                        //zCurrentAmplitude = 0;
+                    }
+                }
+                else
+                {
+                    if (zCurrentAmplitude <= -zAmplitude)
+                    {
+                        zSentido *= -1;
+                        //zCurrentAmplitude = 0;
+                    }
+                }
+                //Debug.Log("Z ROTATION-> zSentido = "+ zSentido + "; zCurrentAmplitude = "+ zCurrentAmplitude);
+            }
+            transform.localRotation = Quaternion.Euler(finalRotationX, finalRotationY, finalRotationZ);
         }
-        if (rotateY)
-        {
-            finalRotationY = transform.localRotation.eulerAngles.y + (rotationSpeedY * Time.deltaTime);
-        }
-        if (rotateZ)
-        {
-            zCurrentAmplitude += (rotationSpeedZ * Time.deltaTime * zSentido);
-            finalRotationZ = zOrigin + zCurrentAmplitude;
-            if (zSentido == 1)
-            {
-                if (zCurrentAmplitude >= zAmplitude)
-                {
-                    zSentido *= -1;
-                    //zCurrentAmplitude = 0;
-                }
-            }
-            else
-            {
-                if (zCurrentAmplitude <= -zAmplitude)
-                {
-                    zSentido *= -1;
-                    //zCurrentAmplitude = 0;
-                }
-            }
-            //Debug.Log("Z ROTATION-> zSentido = "+ zSentido + "; zCurrentAmplitude = "+ zCurrentAmplitude);
-        }
-        transform.localRotation = Quaternion.Euler(finalRotationX, finalRotationY, finalRotationZ);
     }
 }

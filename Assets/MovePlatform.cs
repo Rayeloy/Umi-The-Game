@@ -30,24 +30,28 @@ public class MovePlatform : MonoBehaviour
 
     private void Update()
     {
-        if (moveVertically)
+        if (!GameInfo.instance.gameIsPaused)
         {
-            currentVertAmp += verticalSpeed * Time.deltaTime * vertSentido;
-            transform.position = originPos + transform.up * currentVertAmp;
-                if ((vertSentido==1 && (currentVertAmp >= verticalAmplitude)) || (vertSentido == -1 && (currentVertAmp <= -verticalAmplitude))) vertSentido *= -1;
-        }
-        if (moveSideways)
-        {
-            currentSideAmp += sidewaysSpeed * Time.deltaTime * sideSentido;
-            transform.position = originPos + transform.right * currentSideAmp;
-            if ((sideSentido == 1 && (currentSideAmp >= sidewaysAmplitude)) || (sideSentido == -1 && (currentSideAmp <= -sidewaysAmplitude))) sideSentido *= -1;
-        }
-        if (moveFowardAndBackwards)
-        {
-            currentFowAndBackAmp += FowardAndBackwardsSpeed * Time.deltaTime * fowAndBackSentido;
-            transform.position = originPos + transform.forward * currentFowAndBackAmp;
-            if ((fowAndBackSentido == 1 && (currentFowAndBackAmp >= fowardAndBackwardsAmplitude)) || (fowAndBackSentido == -1 && (currentFowAndBackAmp <= -fowardAndBackwardsAmplitude))) fowAndBackSentido *= -1;
+            if (moveVertically)
+            {
+                currentVertAmp += verticalSpeed * Time.deltaTime * vertSentido;
+                transform.position = originPos + transform.up * currentVertAmp;
+                if ((vertSentido == 1 && (currentVertAmp >= verticalAmplitude)) || (vertSentido == -1 && (currentVertAmp <= -verticalAmplitude))) vertSentido *= -1;
+            }
+            if (moveSideways)
+            {
+                currentSideAmp += sidewaysSpeed * Time.deltaTime * sideSentido;
+                Vector3 newPos = new Vector3(originPos.x + currentSideAmp, transform.position.y, transform.position.z);
+                transform.position = newPos;
+                if ((sideSentido == 1 && (currentSideAmp >= sidewaysAmplitude)) || (sideSentido == -1 && (currentSideAmp <= -sidewaysAmplitude))) sideSentido *= -1;
+            }
+            if (moveFowardAndBackwards)
+            {
+                currentFowAndBackAmp += FowardAndBackwardsSpeed * Time.deltaTime * fowAndBackSentido;
+                Vector3 newPos = new Vector3(transform.position.x, transform.position.y, originPos.z + currentFowAndBackAmp);
+                transform.position = newPos;
+                if ((fowAndBackSentido == 1 && (currentFowAndBackAmp >= fowardAndBackwardsAmplitude)) || (fowAndBackSentido == -1 && (currentFowAndBackAmp <= -fowardAndBackwardsAmplitude))) fowAndBackSentido *= -1;
+            }
         }
     }
-
 }

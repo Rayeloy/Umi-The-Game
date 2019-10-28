@@ -15,6 +15,7 @@ public class PlayerBody : MonoBehaviour {
     #region  TRIGGER COLLISIONS ---------------------------------------------
     private void OnTriggerStay(Collider col)
     {
+        //Debug.Log("Player Body OnTriggerStay: " + col.name);
         switch (col.tag)
         {
             case "Water":

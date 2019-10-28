@@ -21,6 +21,8 @@ public class GameInfo : MonoBehaviour
     public List<PlayerActions> playerActionsList;
     public List<Team> playerTeamList;
     public int nPlayers;
+    [HideInInspector]
+    public bool gameIsPaused = false;
 
     //1 player & online controls
     //PlayerActions keyboardListener;

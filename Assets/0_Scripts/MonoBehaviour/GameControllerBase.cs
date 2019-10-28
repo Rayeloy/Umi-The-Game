@@ -362,8 +362,15 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         SpecificUpdate();
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
+        if (!gamePaused)
+        {
+            if (playing)
+            {
+                LateUpdatePlayers();
+            }
+        }
     }
 
     void UpdatePlayers()
@@ -371,6 +378,14 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         for (int i = 0; i < playerNum; i++)
         {
             allPlayers[i].KonoUpdate();
+        }
+    }
+
+    void LateUpdatePlayers()
+    {
+        for (int i = 0; i < playerNum; i++)
+        {
+            allPlayers[i].KonoLateUpdate();
         }
     }
 

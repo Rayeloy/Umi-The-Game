@@ -402,6 +402,7 @@ public class PlayerHook : MonoBehaviour
     {
         if (usingHook)
         {
+            Debug.Log("STOP HOOK");
             StartReeling();
             if (somethingHooked)
             {
@@ -424,7 +425,6 @@ public class PlayerHook : MonoBehaviour
                     }
                     hookedObject.SetParent(StoringManager.instance.transform);
                     hookedObject = null;
-
                 }
             }
         }

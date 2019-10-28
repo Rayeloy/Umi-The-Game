@@ -1,5 +1,50 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3699615497872739344
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 933481786458454979}
+  - component: {fileID: 4437405779543187300}
+  m_Layer: 10
+  m_Name: Collider
+  m_TagString: PlayerCollider
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &933481786458454979
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3699615497872739344}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8400359273682044766}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &4437405779543187300
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3699615497872739344}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.4
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &4411677646102105652
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -112,10 +157,21 @@ PrefabInstance:
       propertyPath: showWaterRays
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5199610823971164894, guid: 918071c3edc50d14d8e674cd94a776c5,
+        type: 3}
+      propertyPath: collisionMask.m_Bits
+      value: 20992
+      objectReference: {fileID: 0}
     - target: {fileID: 5214680410792495198, guid: 918071c3edc50d14d8e674cd94a776c5,
         type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 918071c3edc50d14d8e674cd94a776c5, type: 3}
+--- !u!4 &8400359273682044766 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5309039386082969962, guid: 918071c3edc50d14d8e674cd94a776c5,
+    type: 3}
+  m_PrefabInstance: {fileID: 4411677646102105652}
+  m_PrefabAsset: {fileID: 0}
