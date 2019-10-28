@@ -1,6 +1,6 @@
 // Made with Amplify Shader Editor
 // Available at the Unity Asset Store - http://u3d.as/y3X 
-Shader "SimpleCandleShader"
+Shader "RRF_HumanShaders/WaxShaders/SimpleCandleShader"
 {
 	Properties
 	{
@@ -114,6 +114,9 @@ Shader "SimpleCandleShader"
 			float3 surfResult95 = LightingStandard ( s95, viewDir, gi95 ).rgb;
 			surfResult95 += s95.Emission;
 
+			#ifdef UNITY_PASS_FORWARDADD//95
+			surfResult95 -= s95.Emission;
+			#endif//95
 			c.rgb = surfResult95;
 			c.a = 1;
 			return c;
@@ -212,11 +215,11 @@ Shader "SimpleCandleShader"
 		}
 	}
 	Fallback "Diffuse"
-	CustomEditor "ASEMaterialInspector"
+	//CustomEditor "ASEMaterialInspector"
 }
 /*ASEBEGIN
-Version=16100
-779;734;1359;973;-478.8142;973.6594;2.317247;True;False
+Version=16204
+85;270;1272;773;-579.6144;741.9348;2.317247;True;False
 Node;AmplifyShaderEditor.CommentaryNode;77;-938.4332,-1232.552;Float;False;1108.382;385.6998;SimpleSSS;8;2;28;29;30;68;3;69;93;;1,1,1,1;0;0
 Node;AmplifyShaderEditor.PosVertexDataNode;28;-888.4332,-1179.816;Float;False;0;0;5;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.TransformDirectionNode;29;-607.2095,-1182.552;Float;False;Object;World;False;Fast;1;0;FLOAT3;0,0,0;False;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
@@ -283,7 +286,7 @@ Node;AmplifyShaderEditor.CustomStandardSurface;95;2718.4,-400.7144;Float;False;M
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;27;-422.4095,-9.845176;Float;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;96;2400.412,643.2797;Float;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.ClampOpNode;62;-172.4582,-1513.124;Float;False;3;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;2;COLOR;1,1,1,0;False;1;COLOR;0
-Node;AmplifyShaderEditor.StandardSurfaceOutputNode;0;3083.031,-633.2825;Float;False;True;2;Float;ASEMaterialInspector;0;0;CustomLighting;SimpleCandleShader;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;Back;0;False;-1;0;False;-1;False;0;False;-1;0;False;-1;False;0;Custom;0.5;True;True;0;True;TreeOpaque;;Geometry;All;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;0;False;-1;False;0;False;-1;255;False;-1;255;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;False;2;15;10;25;False;0.5;True;0;0;False;-1;0;False;-1;0;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;0;0,0,0,0;VertexOffset;True;False;Cylindrical;False;Relative;0;;15;-1;-1;-1;0;False;0;0;False;-1;-1;0;False;-1;0;0;0;15;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;3;FLOAT3;0,0,0;False;4;FLOAT;0;False;6;FLOAT3;0,0,0;False;7;FLOAT3;0,0,0;False;8;FLOAT;0;False;9;FLOAT;0;False;10;FLOAT;0;False;13;FLOAT3;0,0,0;False;11;FLOAT3;0,0,0;False;12;FLOAT3;0,0,0;False;14;FLOAT4;0,0,0,0;False;15;FLOAT3;0,0,0;False;0
+Node;AmplifyShaderEditor.StandardSurfaceOutputNode;0;3083.031,-633.2825;Float;False;True;2;Float;ASEMaterialInspector;0;0;CustomLighting;RRF_HumanShaders/WaxShaders/SimpleCandleShader;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;Back;0;False;-1;0;False;-1;False;0;False;-1;0;False;-1;False;0;Custom;0.5;True;True;0;True;TreeOpaque;;Geometry;All;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;0;False;-1;False;0;False;-1;255;False;-1;255;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;False;2;15;10;25;False;0.5;True;0;0;False;-1;0;False;-1;0;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;0;0,0,0,0;VertexOffset;True;False;Cylindrical;False;Relative;0;;15;-1;-1;-1;0;False;0;0;False;-1;-1;0;False;-1;0;0;0;False;15;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;3;FLOAT3;0,0,0;False;4;FLOAT;0;False;6;FLOAT3;0,0,0;False;7;FLOAT3;0,0,0;False;8;FLOAT;0;False;9;FLOAT;0;False;10;FLOAT;0;False;13;FLOAT3;0,0,0;False;11;FLOAT3;0,0,0;False;12;FLOAT3;0,0,0;False;14;FLOAT4;0,0,0,0;False;15;FLOAT3;0,0,0;False;0
 WireConnection;29;0;28;0
 WireConnection;30;0;29;0
 WireConnection;3;0;30;0
@@ -349,4 +352,4 @@ WireConnection;27;0;25;4
 WireConnection;62;0;79;0
 WireConnection;0;13;95;0
 ASEEND*/
-//CHKSM=1A4C47E06CC2E333475A7786BEC238676E3AD9B5
+//CHKSM=C021FD8970B2E014D0F94C670D7C14371D3CF850

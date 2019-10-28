@@ -1,0 +1,139 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: SimpleSSS5_SkinDetail_Male
+  m_Shader: {fileID: 4800000, guid: 264a78b4ecca95648b03bc8dcba81078, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 0
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Albedo:
+        m_Texture: {fileID: 2800000, guid: ac4faf4063f480b46af72cd620d04440, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetalGloss:
+        m_Texture: {fileID: 2800000, guid: 71f90091d15d707468a6dbc256f509c2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MicroDetailNormalMap:
+        m_Texture: {fileID: 2800000, guid: 7b97ea4a2cda39341948cd735a02e5d0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MicroDetail_WeightMapGreyscaleR:
+        m_Texture: {fileID: 2800000, guid: 7a3b1f679607db44f87bf2ac8402c1d3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: 203173d0b9b1dae4f94c39ce54c4f7d6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal_Map:
+        m_Texture: {fileID: 2800000, guid: bd734c29baceb63499732f24fbaea45f, type: 3}
+        m_Scale: {x: 5.38, y: 0.99}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SSS_TextureWeightA:
+        m_Texture: {fileID: 2800000, guid: 60d1bb1afb148d9409b39ccf586ba390, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BackScatterPower: 0.425
+    - _Buffer1: 1
+    - _BumpScale: 1
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _EdgeLength: 20.4
+    - _Float0: -0.189
+    - _Float1: -10.52
+    - _Float2: 0.45
+    - _Fuzz: 0.117
+    - _FuzzScale: 3
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _LightScatter: 0.52
+    - _Light_Bias: 0.37
+    - _Light_Scale: 2.6
+    - _MainLightScatter: 1
+    - _Metallic: 0
+    - _MicroDetail_Offset: 0.419
+    - _MicroDetail_Power: 0.6
+    - _MicroDetail_Tiling: 6.29
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _SSS_WeightAmount: 0.47
+    - _Scale: 0.004
+    - _Shininess: 0.096
+    - _Smoothness: 0.432
+    - _SmoothnessDeviate: -0.01
+    - _SmoothnessTextureChannel: 0
+    - _Spec: 0.851
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _UVSec: 0
+    - _ZWrite: 1
+    - __dirty: 0
+    m_Colors:
+    - _Albedo_Color: {r: 0.63235295, g: 0.63235295, b: 0.63235295, a: 0}
+    - _Albedo_ColorOpacity: {r: 0.3602941, g: 0.20433721, b: 0.10331962, a: 0}
+    - _Albedo_Tint: {r: 0.25, g: 0.13786764, b: 0.13786764, a: 0}
+    - _BaseColor: {r: 0.9338235, g: 0.13046065, b: 0.13046065, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FirstColor: {r: 0, g: 0, b: 0, a: 0}
+    - _MainLightTint: {r: 0.6353806, g: 0.711192, b: 0.7647059, a: 0}
+    - _ScatterColor: {r: 0.8455882, g: 0.6777141, b: 0.6777141, a: 0}
+    - _ScatterLightTint: {r: 1, g: 0.10344827, b: 0, a: 0}
+    - _SpecularColor: {r: 0.3921569, g: 0.3921569, b: 0.3921569, a: 1}

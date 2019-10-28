@@ -1,79 +1,59 @@
 Hi and thank you for Purchasing
-Simple Skin Shader for Unity.
+Simple and Advanced Skin Shader for Unity.
+
+Version 1.35
+Added SimpleSSS6 and SimpleSSS7 which takes the best features of the Advanced shaders with more Forward compatibility with other packages. It also supports 2 RGB Makeup Mask slots for making custom Makeup effects. 
+Control Colour and Amount of each Channel, the amount is controlled by the Alpha slider of that particular colour. You can also adjust the gloss for each of these as per the example of the female head.
+SSS7 has the extra Normal Map controls for any detail work you may have on a texture such as a cut or scar that you want to gradually drive in along with the makeup strengths. An example script has been made to get you started
+on manipulating these shader values by code but may needed extended to reflect which shader you decide to use.
+
+Version 1.31 
+Added Advanced Shader version Mar23_A to include better rim scatter control. 
+Often seen when light gets just around the corner of a surface. Control driven by porosity and other additional factors. 
+
+Version 1.25
+Advanced Skin Shader - Versions Feb19 and Mar19
+Mar 19 uses an extra slot to drive make up or any other features via RGB paint that matches your texture, just paint an RGB 
+texture onto a black backgroud that lines up with your faces texture and then control the final colors and glitter
+from their alpha slider when changing colors.
+
+NEWER FUNCTIONS: (March 23rd, 2019)
+
+SSSDirectPower:  How much sub surface texture gets shown from the main light (directional light)
+AlbedoAndSSS Mix: How much of the base texture mixes with the SSS texture at a base level
+Increase SSS: Boost the original SSS Map Tones
+Increase SSS Weightmap: Add more values to the SSS wightmap (found in the alpha channel of the SSS-Weight Texture map)
+Increase BackLitAmount: Will boost the effect of back scattering (based on the SSS-weight map and additonal power added)
+RimScatterAmount: When Light hits the surface, some light can reach around penetrating the surface of the skin but enhancing the redness, use this to control that effect.
+Rim_AffectedByPorosity: Porosity is obtained from the gloss map and the micro scattering internally.
+Porosity Power: the porosity is bossted in the shader
+Porosity Effect: the effect of porosity is enhanced in the shader
+Skin Glow: A base value of the skin tone, even in darkness
+FuzzColor-Amount(A): the color of the fuzz (around the edges), the alpha slider will control the amount.
+SSS-BaseColor: for tiniting the original SSS-Color in the texture. White if you are happy with the texture colors.
+
+Textures:
+SSS-Weight : the color and details seen from sub surface scattering, such as veins, pores, under the skin details. The Alpha channel carries the weight or thickness, White is a thinner area
+so more scattering will happen than darker areas. Typically ears and nose, some other areas too.
+
+Other textures are Standard PBR.
+
+MakeUp-RGB: an RGB mask that lines up with the face to control extr coloring, particularly for make up.
+RED : Mask for color control 1 - Alpha will control the glitter amount
+GREEN : Mask for color control 2 - Alpha will control the glitter amount
+BLUE : Mask for color control 3 - Alpha will control the glitter amount
+Color Power (RGB) Adjusting for each channel respectively R/G/B
+Gloss Adjusting (RGB) for each channel respectively R/G/B
+
+Glitter control:
+Scale and Amount, these are gained from the above RGB masked alpha levels
+
+-------------------------------------------------------------------------------------
+
+OLDER FUNCTIONS:
 
 The material settings for this shader are as follows:
 
-NEW MATERIALS - FEBRUARY 2019
-
-Skin Shader 2
-
-Base SSS Glow - An overall glow based on the main SSS Color-weight Map
-Direct Scatter - Subsurface scatter when lights is directed on the face
-Back Scatter - Typical sub-surface scatter from the back, the ear and thin parts driven from the Alpha of the SSS Color-weight Map
-Fuzz - A general Fresnel effect around the edges
-Fuzz Color - Tint the fuzz
-SSS-BaseColor-Weight - The main texture for SSS , Alpha contains the weight (Thickness map)		-	RGBA	TARGA 32bit
-Albedo - Main colors
-Albedo-Color - Tint and offset the main texture
-Normal Map - The Main normal Map
-Normal Bump Scale - 0 to 2 , 1 is neutral (default), Use this too boost or reduce the normal map
-Curvature - Use this to convey extra porosity or scattering
-Curvature Power - A contraster slider for extra push of the curvature map.
-Metal-Gloss - The Main metal-Gloss Map , Gloss is contained in the Alpha channel.	-	RGBA	TARGA 32bit
-Smoothness Adjust - Typically for making a surface look wetter or drier over an above the Gloss map		
-
-Please note that this shader is highly dependant on a Directional light for it's effect to take place.
-Point lights are difficult to manage in a shader of this kind so had to be overlooked to keep performance as the main focus.
-
-You will need to create various materials depending on your scene or lighting setup as one materials settings may not work well in
-all lighting conditions. Please see the video on Unity Asset Store that covers this pack.
-
-Need more help?
-Contact me@robertramsay.co.uk
-
-Please get in touch with me before submitting a review that may reflect an issue you are having. I am always able to make new shaders
-and adjustments that suit your project.
-
-This shader was created with Amplify Shader in Unity 2017.1.0f3
-
------------
-Simple Candle Shader
-
-Scatter Add - The amount of scatter drived via the SSS_Color-Weight(A) Map, Thickness is stored in the Alpha channel -	RGBA	TARGA 32bit
-Albedo - The main color or AO
-Albedo Color - Tint of the Main Albedo Texture
-Normal Map - Normal Map Texture
-Normal Bump Scale - 0 to 2 , 1 is neutral (default), Use this too boost or reduce the normal map
-Metal-Gloss - The Main metal-Gloss Map , Gloss is contained in the Alpha channel.	-	RGBA	TARGA 32bit
-Smoothness Adjust - Typically for making a surface look wetter or drier over an above the Gloss map		
-CandleLightColor-Power - To simulate the light affecting the candle, the Power is affected by the Alpha Value.
-
-Need more help?
-Contact me@robertramsay.co.uk
-
-Please get in touch with me before submitting a review that may reflect an issue you are having. I am always able to make new shaders
-and adjustments that suit your project.
-
-This shader was created with Amplify Shader in Unity 2017.1.0f3
-
------------
-
-The best way to learn is to adjust sliders, then rotate the directional light.
-Toggle the reflection probe when you can so that it updates any scene reflection data.
-Setting the reflection proble to Real-Time - On awake is a good way to see how things look in game.
-SSS depends on a main directional light, the directional light with the highest intensity will be used.
-
---------------
-
-Thank you for your support.
-Robert Ramsay - RRFreelance
-
-------------
-Previously:
-
-
-OLD MATERIALS
--------------
 [Translucency]
 Strength: How strong the effect is
 Normal Distortion: The Shift off to the edge the effect is
