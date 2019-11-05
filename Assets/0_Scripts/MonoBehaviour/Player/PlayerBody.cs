@@ -15,6 +15,7 @@ public class PlayerBody : MonoBehaviour {
     #region  TRIGGER COLLISIONS ---------------------------------------------
     private void OnTriggerStay(Collider col)
     {
+        //Debug.Log("Player Body OnTriggerStay: " + col.name);
         switch (col.tag)
         {
             case "Water":
@@ -52,7 +53,7 @@ public class PlayerBody : MonoBehaviour {
                 myPlayerWeapons.AddWeaponNearby(col.GetComponent<Weapon>());
                 break;
             case "Player":
-                if (myPlayerMov.controller.collideWithOtherPlayers)
+                if (myPlayerMov.controller.collideWithTriggers)
                 {
                     Debug.LogWarning("Hitting player! checking team");
                     PlayerMovement otherPlayer = col.transform.GetComponentInParent<PlayerMovement>();

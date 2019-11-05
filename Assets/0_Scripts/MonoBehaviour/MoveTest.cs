@@ -16,29 +16,34 @@ public class MoveTest : MonoBehaviour {
         originalX = transform.position.x;
     }
     // Update is called once per frame
-    void Update () {
-        if (goingRight)
+    void Update ()
+    {
+        if (!GameInfo.instance.gameIsPaused)
         {
-            if (transform.position.x >= originalX + maxX)
+            if (goingRight)
             {
-                goingRight = false;
+                if (transform.position.x >= originalX + maxX)
+                {
+                    goingRight = false;
+                }
+                else
+                {
+                    velocity = Vector3.right * speed * Time.deltaTime;
+                    transform.Translate(velocity, Space.World);
+                }
             }
             else
             {
-                velocity = Vector3.right * speed * Time.deltaTime;
-                transform.Translate(velocity, Space.World);
+                if (transform.position.x <= originalX + minX)
+                {
+                    goingRight = true;
+                }
+                else
+                {
+                    velocity = Vector3.left * speed * Time.deltaTime;
+                    transform.Translate(velocity, Space.World);
+                }
             }
         }
-        else {
-            if (transform.position.x <= originalX + minX)
-            {
-                goingRight = true;
-            }
-            else
-            {
-                velocity = Vector3.left * speed * Time.deltaTime;
-                transform.Translate(velocity, Space.World);
-            }
-        }
-	}
+    }   
 }

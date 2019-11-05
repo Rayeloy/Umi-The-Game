@@ -18,8 +18,8 @@ public class Alpha_Team_Select : MonoBehaviour
 {
     public static Alpha_Team_Select instance;
     //Variables
-    public GameObject stockGameInfo;
-    public GameObject stockInControlManager;
+    //public GameObject stockGameInfo;
+    //public GameObject stockInControlManager;
     public GameObject menusCanvas;
 
 
@@ -63,14 +63,14 @@ public class Alpha_Team_Select : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        if (GameInfo.instance == null)
-        {
-            stockInControlManager.SetActive(true);
-            //stockInControlManager.GetComponent<InControlManager>().OnEnable();
-            stockGameInfo.SetActive(true);
-            // stockGameInfo.GetComponent<GameInfo>().Awake();
+        //if (GameInfo.instance == null)
+        //{
+        //    stockInControlManager.SetActive(true);
+        //    //stockInControlManager.GetComponent<InControlManager>().OnEnable();
+        //    stockGameInfo.SetActive(true);
+        //    // stockGameInfo.GetComponent<GameInfo>().Awake();
 
-        }
+        //}
 
         menusCanvas.SetActive(true);
         selectNumberOfPlayersCam.gameObject.SetActive(true);
@@ -87,6 +87,7 @@ public class Alpha_Team_Select : MonoBehaviour
     {
         if (GameInfo.instance != null)
         {
+            if(GameInfo.instance.inControlManager == null)
             GameInfo.instance.inControlManager = GameObject.Find("InControl manager");
         }
         else

@@ -65,7 +65,7 @@ public class BufferedInput
             {
                 buffering = false;
             }
-            Debug.Log("Buffering input of type "+ input .inputType+ " ; time buffered = " + time);
+            //Debug.Log("Buffering input of type "+ input .inputType+ " ; time buffered = " + time);
         }
     }
 }

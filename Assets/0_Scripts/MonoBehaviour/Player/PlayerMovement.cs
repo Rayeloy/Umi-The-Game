@@ -208,7 +208,7 @@ public class PlayerMovement : MonoBehaviour
         {
             bool result = false;
             result = controller.collisions.below && chargeJumpChargingJump && isFloorChargeJumpable && (jumpSt == JumpState.Falling || jumpSt == JumpState.None);
-            Debug.LogWarning("isChargeJump = " + result);
+            if (!disableAllDebugs) Debug.LogWarning("isChargeJump = " + result);
             return result;
         }
     }
@@ -235,7 +235,7 @@ public class PlayerMovement : MonoBehaviour
             float auxBounceJumpCurrentMaxHeight = totalFallenHeight * bounceJumpMultiplier;
             result = controller.collisions.below && isFloorBounceJumpable && auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight 
                 && jumpSt == JumpState.Falling;
-            Debug.LogWarning("isBounceJump = " + result + "; controller.collisions.floor = " + controller.collisions.floor+ "; controller.collisions.below = "+ controller.collisions.below 
+            if (!disableAllDebugs) Debug.LogWarning("isBounceJump = " + result + "; controller.collisions.floor = " + controller.collisions.floor+ "; controller.collisions.below = "+ controller.collisions.below 
                 + "; auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight = " + (auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight));
             return result;
         }
@@ -525,6 +525,7 @@ public class PlayerMovement : MonoBehaviour
         if ((controller.collisions.above || controller.collisions.below) && !hooked)
         {
             currentVel.y = 0;
+            if (controller.collisions.above) StopJump();
         }
         //print("FRAME NUMBER " + frameCounter);
         frameCounter++;
@@ -542,23 +543,31 @@ public class PlayerMovement : MonoBehaviour
         ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
 
         //Debug.Log("currentVel = " + currentVel + "; Time.deltaTime = " + Time.deltaTime + "; currentVel * Time.deltaTime = " + (currentVel * Time.deltaTime) + "; Time.fixedDeltaTime = " + Time.fixedDeltaTime);
-
+        ////controller.Move(currentVel * Time.deltaTime);
         //print("CurrentVel 3= " + currentVel.ToString("F6"));
-        controller.Move(currentVel * Time.deltaTime);
-        //GetComponent<Rigidbody>().velocity = currentVel;
+
         myPlayerCombatNew.KonoUpdate();
-        controller.collisions.ResetAround();
+        ////controller.collisions.ResetAround();
 
         //myPlayerAnimation.KonoUpdate();
-        myPlayerAnimation_01.KonoUpdate();
+        ////myPlayerAnimation_01.KonoUpdate();
         myPlayerWeap.KonoUpdate();
         myPlayerHook.KonoUpdate();
-        if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel End = " + currentVel.ToString("F6") + "; currentVel.normalized = " + currentVel.normalized.ToString("F6") +
-               "; currentSpeed =" + currentSpeed.ToString("F4") + "; Player position = " + transform.position.ToString("F6"));
     }
 
     public void KonoFixedUpdate()
     {
+    }
+
+
+    public void KonoLateUpdate()
+    {
+        if(Time.deltaTime>0)
+        controller.Move(currentVel * Time.deltaTime);
+        controller.collisions.ResetAround();
+        myPlayerAnimation_01.KonoUpdate();
+        if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel End = " + currentVel.ToString("F6") + "; currentVel.normalized = " + currentVel.normalized.ToString("F6") +
+       "; currentSpeed =" + currentSpeed.ToString("F4") + "; Player position = " + transform.position.ToString("F6"));
     }
     #endregion
 
@@ -1099,7 +1108,7 @@ public class PlayerMovement : MonoBehaviour
                 case JumpState.None:
                     if (currentVel.y < 0 && !controller.collisions.below)
                     {
-                        Debug.Log("JumpSt = Falling");
+                        if(!disableAllDebugs) Debug.Log("JumpSt = Falling");
                         jumpSt = JumpState.Falling;
                         chargeJumpLastApexHeight = transform.position.y;
                         //Debug.Log("START FALLING");
@@ -1110,14 +1119,14 @@ public class PlayerMovement : MonoBehaviour
 
                     if (!chargeJumpChargingJump && controller.collisions.below)
                     {
-                        StartBounceJump();
+                        if(StartBounceJump())
                         break;
                     }
 
                     if (currentVel.y >= 0 || controller.collisions.below)
                     {
                         //Debug.Log("STOP FALLING");
-                        Debug.Log("JumpSt = None");
+                        if(!disableAllDebugs)Debug.Log("JumpSt = None");
                         jumpSt = JumpState.None;
                     }
 
@@ -1142,7 +1151,7 @@ public class PlayerMovement : MonoBehaviour
                     currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
                     if (currentVel.y <= 0)
                     {
-                        Debug.Log("JumpSt = None");
+                        if(!disableAllDebugs)Debug.Log("JumpSt = None");
                         jumpSt = JumpState.None;
                     }
                     break;
@@ -1152,7 +1161,7 @@ public class PlayerMovement : MonoBehaviour
                 case JumpState.ChargeJumping:
                     if (currentVel.y <= 0)
                     {
-                        Debug.Log("JumpSt = None");
+                        if (!disableAllDebugs) Debug.Log("JumpSt = None");
                         jumpSt = JumpState.None;
                     }
                     currentVel.y += currentGravity * Time.deltaTime;
@@ -1160,7 +1169,7 @@ public class PlayerMovement : MonoBehaviour
                 case JumpState.BounceJumping:
                     if (currentVel.y <= 0)
                     {
-                        Debug.Log("JumpSt = None");
+                        if (!disableAllDebugs) Debug.Log("JumpSt = None");
                         jumpSt = JumpState.None;
                     }
                     currentVel.y += currentGravity * Time.deltaTime;
@@ -1199,7 +1208,7 @@ public class PlayerMovement : MonoBehaviour
         bool result = false;
         if (!noInput && moveSt != MoveState.Boost)
         {
-            Debug.Log("START JUMP: below = "+ controller.collisions.below + "; jumpInsurance = " + jumpInsurance+ "; inWater = "+ inWater);
+            if (!disableAllDebugs) Debug.Log("START JUMP: below = "+ controller.collisions.below + "; jumpInsurance = " + jumpInsurance+ "; inWater = "+ inWater);
             if ((controller.collisions.below || jumpInsurance) && !isChargeJump && !isBounceJump &&
                 (!inWater || (inWater && controller.collisions.around &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))))
@@ -1230,7 +1239,7 @@ public class PlayerMovement : MonoBehaviour
     void StopJump()
     {
         myPlayerAnimation_01.SetJump(false);
-        Debug.Log("JumpSt = None");
+        if (!disableAllDebugs) Debug.Log("JumpSt = None");
         jumpSt = JumpState.None;
         timePressingJump = 0;
     }
@@ -1244,7 +1253,7 @@ public class PlayerMovement : MonoBehaviour
             if (controller.collisions.lastBelow && !controller.collisions.below && (jumpSt == JumpState.None || jumpSt == JumpState.Falling) &&
                 (jumpSt != JumpState.BounceJumping && jumpSt != JumpState.ChargeJumping) && jumpedOutOfWater)
             {
-                print("Jump Insurance");
+                //print("Jump Insurance");
                 jumpInsurance = true;
                 timeJumpInsurance = 0;
             }
@@ -1553,13 +1562,13 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void StartBounceJump()//WHEN CHARGEJUMP FAILS
+    bool StartBounceJump()//WHEN CHARGEJUMP FAILS
     {
-
+        bool result = false;
 
         if (!inWater && isFloorBounceJumpable)
         {
-            Debug.Log("DO BOUNCE JUMP");
+            if (!disableAllDebugs) Debug.Log("DO BOUNCE JUMP");
             float totalFallenHeight = chargeJumpLastApexHeight - transform.position.y;
             chargeJumpCurrentJumpMaxHeight = totalFallenHeight * bounceJumpMultiplier;
             if (chargeJumpCurrentJumpMaxHeight >= bounceJumpMinHeight)
@@ -1572,12 +1581,14 @@ public class PlayerMovement : MonoBehaviour
                 jumpSt = JumpState.BounceJumping;
                 StopBufferedInput(PlayerInput.Jump);
                 StopBufferedInput(PlayerInput.WallJump);
+                result = true;
             }
             else
             {
-                Debug.LogWarning("Bounce Jump -> bounceJump height was too low (min = "+ bounceJumpMinHeight + ")");
+                if (!disableAllDebugs) Debug.LogWarning("Bounce Jump -> bounceJump height was too low (min = "+ bounceJumpMinHeight + ")");
             }
         }
+        return result;
     }
 
     #endregion
@@ -1852,8 +1863,10 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region RECIEVE HIT AND EFFECTS ---------------------------------------------
-
-    public bool StartRecieveHit(PlayerMovement attacker, Vector3 _knockback, EffectType efecto, float _maxTime = 0)
+    PlayerMovement lastAttacker = null;
+    int lastAutocomboIndex = -1;
+    bool stunProtectionOn = false;
+    public bool StartRecieveHit(PlayerMovement attacker, Vector3 _knockback, EffectType efecto, float _maxTime = 0, int autocomboIndex=-1)
     {
         if (!myPlayerCombatNew.invulnerable)
         {
@@ -1873,6 +1886,26 @@ public class PlayerMovement : MonoBehaviour
             //    efecto = EffectType.knockdown;
             //    _maxTime = AttackEffect.knockdownTime;
             //}
+            #region STUN PROTECTION
+
+            if(sufferingEffect == EffectType.softStun && (lastAttacker != attacker ||(lastAttacker == attacker && autocomboIndex == 0)))
+            {
+                Debug.Log("Stun protection ON");
+                stunProtectionOn = true;
+            }
+
+            if (!stunProtectionOn)
+            {
+                Debug.Log("FULL EFFECT TIME");
+                effectMaxTime = _maxTime;
+            }
+            else
+            {
+                Debug.Log("THIRD EFFECT TIME");
+                effectMaxTime = _maxTime / 3;
+            }
+            #endregion
+
             sufferingEffect = efecto;
             switch (efecto)
             {
@@ -1895,7 +1928,7 @@ public class PlayerMovement : MonoBehaviour
                     break;
             }
 
-            effectMaxTime = _maxTime;
+            //Debug.Log("_maxTime = " + _maxTime + "; effectMaxTime = " + effectMaxTime);
             effectTime = 0;
             if (_knockback != Vector3.zero)
             {
@@ -1909,7 +1942,8 @@ public class PlayerMovement : MonoBehaviour
             {
                 flag.DropFlag();
             }
-
+            lastAttacker = attacker;
+            lastAutocomboIndex = autocomboIndex;
             if (!disableAllDebugs) print("Player " + playerNumber + " RECIEVED HIT");
             return true;
         }
@@ -1970,6 +2004,8 @@ public class PlayerMovement : MonoBehaviour
                 noInput = false;
                 sufferingEffect = EffectType.none;
                 effectTime = 0;
+                stunProtectionOn = false;
+                Debug.Log("Stun protection OFF");
                 break;
             //case EffectType.stun:
             //    noInput = false;
@@ -2230,7 +2266,7 @@ public class PlayerMovement : MonoBehaviour
     }
     #endregion
 
-    #region  CHECK WIN ---------------------------------------------
+    #region  CHECK WIN && GAME OVER ---------------------------------------------
     public void CheckScorePoint(FlagHome flagHome)
     {
         if (haveFlag && team == flagHome.team && this.moveSt != MoveState.Hooked)
@@ -2241,6 +2277,14 @@ public class PlayerMovement : MonoBehaviour
                 flag.SetAway(true);
             }
         }
+    }
+
+    public void DoGameOver()
+    {
+        Debug.Log("GAME OVER");
+        currentSpeed = 0;
+        currentVel = Vector3.zero;
+        controller.Move(currentVel * Time.deltaTime);
     }
     #endregion
 

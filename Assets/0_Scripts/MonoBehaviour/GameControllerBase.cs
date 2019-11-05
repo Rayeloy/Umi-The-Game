@@ -159,6 +159,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             //Eloy: he cambiado esto porque me he dado cuenta de que es necesario hasta en la build final, no solo en el editor.
             if (GameInfo.instance == null || GameInfo.instance.inControlManager == null)
             {
+                Debug.LogWarning("GameInfo or InControlManager was not found, so we load Team Setup Scene");
                 //string escena = TeamSetupManager.siguienteEscena;
                 //print(escena);
                 TeamSetupManager.siguienteEscena = SceneManager.GetActiveScene().name;
@@ -361,8 +362,15 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         SpecificUpdate();
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
+        if (!gamePaused)
+        {
+            if (playing)
+            {
+                LateUpdatePlayers();
+            }
+        }
     }
 
     void UpdatePlayers()
@@ -370,6 +378,14 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         for (int i = 0; i < playerNum; i++)
         {
             allPlayers[i].KonoUpdate();
+        }
+    }
+
+    void LateUpdatePlayers()
+    {
+        for (int i = 0; i < playerNum; i++)
+        {
+            allPlayers[i].KonoLateUpdate();
         }
     }
 
@@ -983,6 +999,11 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         //print("GAME OVER");
         if (!gameOverStarted && !online)
         {
+            for(int i = 0; i < allPlayers.Count; i++)
+            {
+                allPlayers[i].DoGameOver();
+            }
+
             playing = false;
             gamePaused = true;
             gameOverStarted = true;

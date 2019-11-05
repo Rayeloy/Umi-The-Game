@@ -16,10 +16,10 @@ public class HitboxHookBig : MonoBehaviour
     }
     private void OnTriggerEnter(Collider col)
     {
-        //print("Hook: Collision with " + col.name);
+        print("Hook: Collision with " + col.name);
         if (col.gameObject != myPlayerMov.gameObject)
         {
-            if(!myPlayerMov.disableAllDebugs) Debug.Log("HOOK has hit "+ col.tag);
+            /*if(!myPlayerMov.disableAllDebugs)*/ Debug.Log("HOOK has hit "+ col.tag);
             if (myPlayerHook.canHookSomething)
             {
                 switch (col.tag)

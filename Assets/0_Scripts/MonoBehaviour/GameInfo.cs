@@ -21,6 +21,8 @@ public class GameInfo : MonoBehaviour
     public List<PlayerActions> playerActionsList;
     public List<Team> playerTeamList;
     public int nPlayers;
+    [HideInInspector]
+    public bool gameIsPaused = false;
 
     //1 player & online controls
     //PlayerActions keyboardListener;
@@ -29,8 +31,17 @@ public class GameInfo : MonoBehaviour
 
     List<UIAnimation> uIAnimations;
 
+    GameObject[] goList;
+
     public void Awake()
     {
+        goList = GameObject.FindGameObjectsWithTag(tag);
+        if (goList.Length > 1)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         //Application.targetFrameRate = 60;
         DontDestroyOnLoad(this);
         instance = this;
@@ -40,6 +51,7 @@ public class GameInfo : MonoBehaviour
 
         uIAnimations = new List<UIAnimation>();
         myControls = PlayerActions.CreateDefaultBindings();
+        inControlManager = FindObjectOfType<InControlManager>().gameObject;
     }
 
     private void Update()
@@ -107,6 +119,15 @@ public class GameInfo : MonoBehaviour
         //    Debug.Log("Input Device = " + InputManager.ActiveDevice.Name);
         //    SetMyControls(null);
         //}
+    }
+
+    public void ErasePlayerControls()
+    {
+        while(playerActionsList.Count>0)
+        {
+            playerActionsList[playerActionsList.Count-1].Destroy();
+            playerActionsList.RemoveAt(playerActionsList.Count - 1);
+        }
     }
 
     //NO SE USA

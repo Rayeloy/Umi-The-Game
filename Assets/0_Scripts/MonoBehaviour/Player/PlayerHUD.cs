@@ -24,7 +24,7 @@ public enum FlagArrowState
 }
 #endregion
 
-public class PlayerHUD : MonoBehaviour
+public class PlayerHUD : MonoBehaviourPunCallbacks
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     //Referencias
@@ -191,7 +191,8 @@ public class PlayerHUD : MonoBehaviour
         {
             if (gC.online)
             {
-                flag = GameObject.FindObjectOfType<Flag>();
+                flag = GameObject.FindGameObjectWithTag("Flag").GetComponent<Flag>();
+                Debug.Log("FLAG POS = "+FindObjectOfType<Flag>().transform.position);
                 Debug.Log("flag = " + flag);
             }
             else
@@ -199,21 +200,16 @@ public class PlayerHUD : MonoBehaviour
                 flag = (gC as GameController_FlagMode).flags[0];
             }
         }
-        if (gC.gameMode == GameMode.Tutorial)
-        {
-            Debug.Log("Deactivate Score Counter");
-            contador.gameObject.SetActive(false);
-        }
+
         Interaction_Message.SetActive(false);
         crosshair.enabled = false;
         crosshairReduced.enabled = false;
-        if (gC.gameMode == GameMode.CaptureTheFlag)// && !PhotonNetwork.IsConnected)
-        {
-            SetupFlagSlider();
-            SetupArrowToFlag();
-            SetUpFlagHomeArrow();
-            SetUpScoreBoard();
-        }
+
+        //SETUP HUDS
+        SetupFlagSlider();
+        SetUpScoreBoard();
+        SetUpFlagHomeArrow();
+        SetupArrowToFlag();
         pressButtonToGrappleMessage.SetActive(false);
         SetUpCameraCenter();
         SetupDashHUD();
@@ -304,21 +300,29 @@ public class PlayerHUD : MonoBehaviour
     #region --- SCOREBOARD ---
     void SetUpScoreBoard()
     {
-        Color whiteHalfTransparent = new Color(1, 1, 1, 0.35f);
-        int playerNumTeamACopy = gC.playerNumTeamA;
-        for (int i=0; i < teamAPlayerIcons.Length; i++)
+        if(gC.gameMode == GameMode.CaptureTheFlag)
         {
-            teamAPlayerIcons[i].color = playerNumTeamACopy>0?Color.white:whiteHalfTransparent;
-            if(playerNumTeamACopy>0)playerNumTeamACopy--;
+            Color whiteHalfTransparent = new Color(1, 1, 1, 0.35f);
+            int playerNumTeamACopy = gC.playerNumTeamA;
+            for (int i = 0; i < teamAPlayerIcons.Length; i++)
+            {
+                teamAPlayerIcons[i].color = playerNumTeamACopy > 0 ? Color.white : whiteHalfTransparent;
+                if (playerNumTeamACopy > 0) playerNumTeamACopy--;
+            }
+            int playerNumTeamBCopy = gC.playerNumTeamB;
+            for (int i = 0; i < teamBPlayerIcons.Length; i++)
+            {
+                teamBPlayerIcons[i].color = playerNumTeamBCopy > 0 ? Color.white : whiteHalfTransparent;
+                if (playerNumTeamBCopy > 0) playerNumTeamBCopy--;
+            }
+            maxScorePoints[0].text = "/" + (gC as GameController_FlagMode).myScoreManager.maxScore;
+            maxScorePoints[1].text = "/" + (gC as GameController_FlagMode).myScoreManager.maxScore;
         }
-        int playerNumTeamBCopy = gC.playerNumTeamB;
-        for (int i = 0; i < teamBPlayerIcons.Length; i++)
+        else
         {
-            teamBPlayerIcons[i].color = playerNumTeamBCopy > 0 ? Color.white : whiteHalfTransparent;
-            if (playerNumTeamBCopy > 0) playerNumTeamBCopy--;
+            contador.gameObject.SetActive(false);
         }
-        maxScorePoints[0].text = "/" + (gC as GameController_FlagMode).myScoreManager.maxScore;
-        maxScorePoints[1].text = "/" + (gC as GameController_FlagMode).myScoreManager.maxScore;
+
     }
     #endregion
 
@@ -326,26 +330,31 @@ public class PlayerHUD : MonoBehaviour
 
     void SetupFlagSlider()
     {
-        if (gC.online)
+        if (gC.gameMode == GameMode.CaptureTheFlag)
         {
-            flagTransform = flag.transform;
-        }
-        else
-        {
-            flagTransform = (gC as GameController_FlagMode).flags[0].transform;
-        }
-        blueFlagHomePos = (gC as GameController_FlagMode).FlagHome_TeamA.position;
-        redFlagHomePos = (gC as GameController_FlagMode).FlagHome_TeamB.position;
-        blueFlagHomePos.y = 0;
-        redFlagHomePos.y = 0;
-        flagSliderStartX = flagSliderStart.localPosition.x;
-        flagSliderEndX = flagSliderEnd.localPosition.x;
-        sliderTotalDist = (flagSliderStart.localPosition - flagSliderEnd.localPosition).magnitude;
-        flagSlider.localPosition = (flagSliderStart.localPosition - flagSliderEnd.localPosition) / 2;
+            if (gC.online)
+            {
+                if(flag == null) flag = GameObject.FindObjectOfType<Flag>();
+                Debug.Log("Estoy pasando por aquí");
+                flagTransform = flag.transform;
+            }
+            else
+            {
+                flagTransform = (gC as GameController_FlagMode).flags[0].transform;
+            }
+            blueFlagHomePos = (gC as GameController_FlagMode).FlagHome_TeamA.position;
+            redFlagHomePos = (gC as GameController_FlagMode).FlagHome_TeamB.position;
+            blueFlagHomePos.y = 0;
+            redFlagHomePos.y = 0;
+            flagSliderStartX = flagSliderStart.localPosition.x;
+            flagSliderEndX = flagSliderEnd.localPosition.x;
+            sliderTotalDist = (flagSliderStart.localPosition - flagSliderEnd.localPosition).magnitude;
+            flagSlider.localPosition = (flagSliderStart.localPosition - flagSliderEnd.localPosition) / 2;
 
-        //Flecha bola
-        flagArrowArrow.gameObject.SetActive(false);
-        flagArrowWhale.gameObject.SetActive(false);
+            //Flecha bola
+            flagArrowArrow.gameObject.SetActive(false);
+            flagArrowWhale.gameObject.SetActive(false);
+        }
     }
 
     void UpdateFlagSlider()
@@ -1340,6 +1349,7 @@ arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
     #endregion
 
     #region ----[ RPC ]----
+
     #endregion
 
     #region ----[ NETWORK FUNCTIONS ]----
