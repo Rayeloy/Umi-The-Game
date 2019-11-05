@@ -58372,7 +58372,7 @@ GameObject:
   - component: {fileID: 2464119189059614162}
   - component: {fileID: 7267034191434234770}
   m_Layer: 10
-  m_Name: PlayerPref_Actual
+  m_Name: PlayerPref_actual
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58426,7 +58426,7 @@ MonoBehaviour:
   myPlayerMov: {fileID: 5199659854023634724}
   disableAllDebugs: 1
   disableAllRays: 1
-  collideWithOtherPlayers: 0
+  collideWithTriggers: 0
   collisionMask:
     serializedVersion: 2
     m_Bits: 17920
@@ -58659,6 +58659,7 @@ MonoBehaviour:
   currentAttack: {fileID: 0}
   landedSinceAttackStarted: 0
   autocomboStarted: 0
+  autocomboIndex: -1
   currentHitboxes: []
   parryStarted: 0
   aiming: 0

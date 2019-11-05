@@ -196,7 +196,7 @@ public class Hitbox : MonoBehaviour
                                     }
                                     if(!myPlayerMov.disableAllDebugs)Debug.Log("Soy " + myPlayerMov.name + " y añado al jugador " + otherPlayer.name + " a la lista de jugadores ya pegados");
                                     targetsHit.Add(otherPlayer.name);
-                                    otherPlayer.StartRecieveHit(myPlayerMov, resultKnockback, stunLikeEffect, maxStunTime);
+                                    otherPlayer.StartRecieveHit(myPlayerMov, resultKnockback, stunLikeEffect, maxStunTime, myPlayerCombatNew.autocomboIndex);
                                     //print("I'm " + myPlayerMov.gameObject.name + " and I Hit against " + col.gameObject);
                                 }
                             }

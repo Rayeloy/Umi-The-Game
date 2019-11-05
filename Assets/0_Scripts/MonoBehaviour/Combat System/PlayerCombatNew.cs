@@ -60,9 +60,8 @@ public class PlayerCombatNew : MonoBehaviour
 
     //Autocombo
     AutocomboData autocombo;
-    [HideInInspector]
-    public bool autocomboStarted;
-    int autocomboIndex = -1;
+    [HideInInspector] public bool autocomboStarted;
+    [HideInInspector] public int autocomboIndex = -1;
     bool lastAutocomboAttackFinished = false;
     float autocomboTime = 0;
     [HideInInspector] public List<GameObject> currentHitboxes;

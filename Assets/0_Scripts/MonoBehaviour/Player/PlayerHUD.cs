@@ -24,7 +24,7 @@ public enum FlagArrowState
 }
 #endregion
 
-public class PlayerHUD : MonoBehaviour
+public class PlayerHUD : MonoBehaviourPunCallbacks
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     //Referencias
@@ -191,7 +191,8 @@ public class PlayerHUD : MonoBehaviour
         {
             if (gC.online)
             {
-                flag = GameObject.FindObjectOfType<Flag>();
+                flag = GameObject.FindGameObjectWithTag("Flag").GetComponent<Flag>();
+                Debug.Log("FLAG POS = "+FindObjectOfType<Flag>().transform.position);
                 Debug.Log("flag = " + flag);
             }
             else
@@ -333,6 +334,8 @@ public class PlayerHUD : MonoBehaviour
         {
             if (gC.online)
             {
+                if(flag == null) flag = GameObject.FindObjectOfType<Flag>();
+                Debug.Log("Estoy pasando por aquí");
                 flagTransform = flag.transform;
             }
             else
@@ -1346,6 +1349,7 @@ arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
     #endregion
 
     #region ----[ RPC ]----
+
     #endregion
 
     #region ----[ NETWORK FUNCTIONS ]----

@@ -1863,8 +1863,10 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region RECIEVE HIT AND EFFECTS ---------------------------------------------
-
-    public bool StartRecieveHit(PlayerMovement attacker, Vector3 _knockback, EffectType efecto, float _maxTime = 0)
+    PlayerMovement lastAttacker = null;
+    int lastAutocomboIndex = -1;
+    bool stunProtectionOn = false;
+    public bool StartRecieveHit(PlayerMovement attacker, Vector3 _knockback, EffectType efecto, float _maxTime = 0, int autocomboIndex=-1)
     {
         if (!myPlayerCombatNew.invulnerable)
         {
@@ -1884,6 +1886,26 @@ public class PlayerMovement : MonoBehaviour
             //    efecto = EffectType.knockdown;
             //    _maxTime = AttackEffect.knockdownTime;
             //}
+            #region STUN PROTECTION
+
+            if(sufferingEffect == EffectType.softStun && (lastAttacker != attacker ||(lastAttacker == attacker && autocomboIndex == 0)))
+            {
+                Debug.Log("Stun protection ON");
+                stunProtectionOn = true;
+            }
+
+            if (!stunProtectionOn)
+            {
+                Debug.Log("FULL EFFECT TIME");
+                effectMaxTime = _maxTime;
+            }
+            else
+            {
+                Debug.Log("THIRD EFFECT TIME");
+                effectMaxTime = _maxTime / 3;
+            }
+            #endregion
+
             sufferingEffect = efecto;
             switch (efecto)
             {
@@ -1906,7 +1928,7 @@ public class PlayerMovement : MonoBehaviour
                     break;
             }
 
-            effectMaxTime = _maxTime;
+            //Debug.Log("_maxTime = " + _maxTime + "; effectMaxTime = " + effectMaxTime);
             effectTime = 0;
             if (_knockback != Vector3.zero)
             {
@@ -1920,7 +1942,8 @@ public class PlayerMovement : MonoBehaviour
             {
                 flag.DropFlag();
             }
-
+            lastAttacker = attacker;
+            lastAutocomboIndex = autocomboIndex;
             if (!disableAllDebugs) print("Player " + playerNumber + " RECIEVED HIT");
             return true;
         }
@@ -1981,6 +2004,8 @@ public class PlayerMovement : MonoBehaviour
                 noInput = false;
                 sufferingEffect = EffectType.none;
                 effectTime = 0;
+                stunProtectionOn = false;
+                Debug.Log("Stun protection OFF");
                 break;
             //case EffectType.stun:
             //    noInput = false;
