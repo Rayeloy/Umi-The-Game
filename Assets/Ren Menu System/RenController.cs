@@ -42,8 +42,8 @@ public class RenController : MonoBehaviour
         instance = this;
         if (inControlManager == null)
         {
-            Debug.LogWarning("RenController warning: RenController needs a GameObject with InControlManager script on it to control buttons," +
-                " for now the variable is empty, trying to find a InControlManager in the scene...");
+            //Debug.LogWarning("RenController warning: RenController needs a GameObject with InControlManager script on it to control buttons," +
+            //    " for now the variable is empty, trying to find a InControlManager in the scene...");
             inControlManager = FindObjectOfType<InControlManager>();
             if (inControlManager == null) Debug.LogError("RenController error: no InControlManager could be found!");
         }

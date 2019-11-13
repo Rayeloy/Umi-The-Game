@@ -556,7 +556,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 Debug.Log("GameControllerBase: Instantiating player over the network");
                 //JUAN: WARNING!!, el objeto que se instancie debe estar siempre en la carpeta de Resources de Photon, o ir al método de instantiate para cambiarlo
                 //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
-                if (PlayerMovement.LocalPlayerInstance == null)
+                if (PlayerMovement.LocalPlayerInstance == null)//Esta linea no sirve para nada y no está bien hecha la comprobación. To be erased
                 {
                     Debug.Log("0.3 - AllCameraBases.Length = " + allCameraBases.Count);
 
@@ -573,7 +573,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                     ////    respawn = teamBSpawns[0].position;
                     ////}
                     PlayerSpawnInfo auxSpawnInfo = GetSpawnPosition(playerNumber);
-                    newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, auxSpawnInfo.position, Quaternion.identity, 0).GetComponent<PlayerMovement>();
+                    newPlayer = MasterManager.NetworkInstantiate(playerPrefab, auxSpawnInfo.position, Quaternion.identity).GetComponent<PlayerMovement>();// PhotonNetwork.Instantiate(this.playerPrefab.name, auxSpawnInfo.position, Quaternion.identity, 0).GetComponent<PlayerMovement>();
                     newPlayer.team = newPlayerTeam;
                     newPlayer.mySpawnInfo = auxSpawnInfo;
                     //newPlayer.rotateObj.transform.rotation = newPlayer.mySpawnInfo.rotation;

@@ -18,7 +18,7 @@ public enum GrappleState
     grappling,
     cd
 }
-[RequireComponent(typeof(PlayerMovement))]
+
 public class PlayerHook : MonoBehaviour
 {
     [Header("Referencias")]

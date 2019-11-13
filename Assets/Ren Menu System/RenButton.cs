@@ -105,7 +105,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             RenController.instance.currentButton = this;
 
             isMouseOver = true;
-            Debug.Log("Mouse enter");
+            //Debug.Log("Mouse enter");
             for (int i = 0; i < targetImages.Length; i++)
             {
                 targetImages[i].color = highlightedColor;
@@ -123,7 +123,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                 RenController.instance.currentButton.HighlightButtonsAndTexts();
 
             isMouseOver = false;
-            Debug.Log("Mouse exit");
+            //Debug.Log("Mouse exit");
             for (int i = 0; i < targetImages.Length; i++)
             {
                 targetImages[i].color = normalColor;

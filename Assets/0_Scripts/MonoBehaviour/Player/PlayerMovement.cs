@@ -38,7 +38,6 @@ public enum JumpState
 #endregion
 
 #region ----[ REQUIRECOMPONENT ]----
-[RequireComponent(typeof(Controller3D))]
 [RequireComponent(typeof(PlayerCombatNew))]
 [RequireComponent(typeof(PlayerAnimation_01))]
 [RequireComponent(typeof(PlayerWeapons))]
@@ -61,6 +60,7 @@ public class PlayerMovement : MonoBehaviour
     public PlayerObjectDetection myPlayerObjectDetection;
     public PlayerModel myPlayerModel;
     public PlayerVFX myPlayerVFX;
+    public PassiveCollisions myPassiveCollisions;
 
     public bool startBeingHitAnimation = false;
 
@@ -564,6 +564,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if(Time.deltaTime>0)
         controller.Move(currentVel * Time.deltaTime);
+        myPassiveCollisions.PassiveMove();
         controller.collisions.ResetAround();
         myPlayerAnimation_01.KonoUpdate();
         if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel End = " + currentVel.ToString("F6") + "; currentVel.normalized = " + currentVel.normalized.ToString("F6") +

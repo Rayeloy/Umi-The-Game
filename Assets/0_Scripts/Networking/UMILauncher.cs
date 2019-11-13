@@ -23,22 +23,13 @@ public class UMILauncher: MonoBehaviourPunCallbacks
     [SerializeField]
     private GameObject LoadingPanel;
 
-    [Tooltip("The maximum number of players per room default 4")]
-    [SerializeField]
-    private byte maxPlayersPerRoom = 4;
-
-
-    [Tooltip("Nombre de la escena que debe cargar después de la conexión, esto en la iteración final debe ser el HUB. Default: Capture The Whale")]
-    [SerializeField]
-    private string hub_Name= "Capture The Whale";
-
 
     /// <summary>
     /// This client's version number. Users are separated from each other by gameVersion (which allows you to make breaking changes).
     /// </summary>
-    [Tooltip("NO TOCAR SI NO SABEH HULIO: Esto sirve para aislar builds en la misma cloud")]
-    [SerializeField]
-    string gameVersion = "1";
+    //[Tooltip("NO TOCAR SI NO SABEH HULIO: Esto sirve para aislar builds en la misma cloud")]
+    //[SerializeField]
+    //string gameVersion = "1";
     #endregion
 
     #region ----[ PROPERTIES ]----
@@ -48,7 +39,7 @@ public class UMILauncher: MonoBehaviourPunCallbacks
     /// Typically this is used for the OnConnectedToMaster() callback.
     /// </summary>
     [HideInInspector]
-    bool isConnecting;
+    bool isConnectingToRoom;
     #endregion
 
     #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
@@ -58,8 +49,12 @@ public class UMILauncher: MonoBehaviourPunCallbacks
     {
         // #Critical
         // this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
-        Debug.Log("UMILAUNCHER: Vamos a probar a sincronizar la escena.");
+        Debug.Log("Setting up Photon Settings...");
+        PhotonNetwork.SendRate = 20;//20
+        PhotonNetwork.SerializationRate = 10;//10
         PhotonNetwork.AutomaticallySyncScene = true;
+        PhotonNetwork.NickName = MasterManager.GameSettings.NickName;
+        PhotonNetwork.GameVersion = MasterManager.GameSettings.GameVersion;
     }
     #endregion
 
@@ -71,28 +66,27 @@ public class UMILauncher: MonoBehaviourPunCallbacks
     /// - If already connected, we attempt joining a random room
     /// - if not yet connected, Connect this application instance to Photon Cloud Network
     /// </summary>
-    public void Connect()
+    public void ConnectToServer()
     {
         // keep track of the will to join a room, because when we come back from the game we will get a callback that we are connected, so we need to know what to do then
-        isConnecting = true;
+        isConnectingToRoom = true;
 
         // hide the Play button for visual consistency
         controlPanel.SetActive(false);
         LoadingPanel.SetActive(true);
         
 
-        // we check if we are connected or not, we join if we are , else we initiate the connection to the server.
-        if (PhotonNetwork.IsConnected)
-        {
-            // #Critical we need at this point to attempt joining a Random Room. If it fails, we'll get notified in OnJoinRandomFailed() and we'll create one.
-            PhotonNetwork.JoinRandomRoom();
-        }
-        else
-        {
+        //// we check if we are connected or not, we join if we are , else we initiate the connection to the server.
+        //if (PhotonNetwork.IsConnected)
+        //{
+        //    // #Critical we need at this point to attempt joining a Random Room. If it fails, we'll get notified in OnJoinRandomFailed() and we'll create one.
+        //    PhotonNetwork.JoinRandomRoom();
+        //}
+        //else
+        //{
             // #Critical, we must first and foremost connect to Photon Online Server.
-            PhotonNetwork.GameVersion = this.gameVersion;
             PhotonNetwork.ConnectUsingSettings();
-        }
+        //}
     }
     #endregion
 
@@ -109,7 +103,7 @@ public class UMILauncher: MonoBehaviourPunCallbacks
         // we don't want to do anything if we are not attempting to join a room. 
         // this case where isConnecting is false is typically when you lost or quit the game, when this level is loaded, OnConnectedToMaster will be called, in that case
         // we don't want to do anything.
-        if (isConnecting)
+        if (isConnectingToRoom)
         {
             Debug.Log("UMILauncher: OnConnectedToMaster(). El cliente está conectado al servidor Master.\n Realizando llamada a: PhotonNetwork.JoinRandomRoom(); Operation will fail if no room found");
 
@@ -126,10 +120,10 @@ public class UMILauncher: MonoBehaviourPunCallbacks
     /// </remarks>
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-        Debug.Log("UMILauncher:OnJoinRandomFailed(). No hemos encontrado ninguna room vacía o no existía ninguna en el servidor previamente por ello crearemos una.\nLlamando a: PhotonNetwork.CreateRoom");
+        Debug.Log("UMILauncher:OnJoinRandomFailed(). We could not find any empty room, or the was none in the server, so we create one. \nCalling: PhotonNetwork.CreateRoom");
 
         // #Critical: we failed to join a random room, maybe none exists or they are all full. No worries, we create a new room.
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = this.maxPlayersPerRoom });
+        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = MasterManager.GameSettings.MaxPlayersPerGameRoom });
     }
 
 
@@ -138,10 +132,10 @@ public class UMILauncher: MonoBehaviourPunCallbacks
     /// </summary>
     public override void OnDisconnected(DisconnectCause cause)
     {
-        Debug.LogError("UMILauncher: Desconectando");
+        Debug.LogError("UMILauncher: Disconnected from server for reason "+ cause);
 
         // #Critical: we failed to connect or got disconnected. There is not much we can do. Typically, a UI system should be in place to let the user attemp to connect again.
-        isConnecting = false;
+        isConnectingToRoom = false;
         controlPanel.SetActive(true);
 
     }
@@ -159,7 +153,7 @@ public class UMILauncher: MonoBehaviourPunCallbacks
     /// </remarks>
     public override void OnJoinedRoom()
     {
-        Debug.Log("UMILauncher: OnJoinedRoom(). Ahora el cliente está en la nueva sala creada.\nDe aquí en adelante el juego se ejecutará.");
+        Debug.Log("UMILauncher: OnJoinedRoom().The client is in the new room. The game scene will load.");
 
         // #Critical: We only load if we are the first player, else we rely on  PhotonNetwork.AutomaticallySyncScene to sync our instance scene.
         if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
@@ -171,8 +165,7 @@ public class UMILauncher: MonoBehaviourPunCallbacks
 
             // #Critical
             // Load the Room Level. 
-            PhotonNetwork.LoadLevel(hub_Name);
-
+            PhotonNetwork.LoadLevel(MasterManager.GameSettings.HubName);
         }
     }
 

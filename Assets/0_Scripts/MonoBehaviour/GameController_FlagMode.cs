@@ -98,13 +98,15 @@ public class GameController_FlagMode : GameControllerBase
     }
 
     #region FLAG FUNCTIONS
-
+    /// <summary>
+    /// Spawn flag at the beggining. Only once
+    /// </summary>
     public void CreateFlag()
     {
         Flag newFlag;
         if (online && PhotonNetwork.IsMasterClient)
         {
-            newFlag = PhotonNetwork.Instantiate(this.flagPrefab.name, flagsParent.position, Quaternion.identity, 0).GetComponent<Flag>();
+            newFlag = MasterManager.NetworkInstantiate(flagPrefab, flagsParent.position, Quaternion.identity).GetComponent<Flag>();
         }
         else
         {
