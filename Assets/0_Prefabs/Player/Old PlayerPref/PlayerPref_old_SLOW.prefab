@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &8050567242645902132
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2852978573330665781, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: m_Name
+      value: PlayerPref_actual_SLOW
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847353080688889697, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847353080688889697, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847353080688889697, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847353080688889697, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847353080688889697, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847353080688889697, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847353080688889697, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847353080688889697, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847353080688889697, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847353080688889697, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847353080688889697, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2740017724817165817, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: initialAcc
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2740017724817165817, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: airInitialAcc
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2740017724817165817, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: breakAcc
+      value: -15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2740017724817165817, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: airBreakAcc
+      value: -2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2740017724817165817, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: hardSteerAcc
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2740017724817165817, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: airHardSteerAcc
+      value: -5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2740017724817165817, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: movingAcc
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2740017724817165817, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: airMovingAcc
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2740017724817165817, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: hardBreakAcc
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2740017724817165817, guid: 359ea8a2f0d0c12429faf38f313e88e4,
+        type: 3}
+      propertyPath: knockbackBreakAcc
+      value: -30
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 359ea8a2f0d0c12429faf38f313e88e4, type: 3}

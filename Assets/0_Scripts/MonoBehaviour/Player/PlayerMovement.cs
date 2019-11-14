@@ -43,7 +43,7 @@ public enum JumpState
 [RequireComponent(typeof(PlayerWeapons))]
 [RequireComponent(typeof(PlayerHook))]
 #endregion
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     [Header(" --- Referencias --- ")]
@@ -68,7 +68,6 @@ public class PlayerMovement : MonoBehaviour
     public CameraController myCamera;
     public Transform cameraFollow;
     public Transform rotateObj;
-
 
 
     //CONTROLES
@@ -505,6 +504,7 @@ public class PlayerMovement : MonoBehaviour
         myPlayerCombatNew.KonoStart();
         myPlayerHUD.KonoStart();
         myPlayerWeap.KonoStart();
+        myPlayerVFX.KonoStart();
     }
 
     #endregion
@@ -512,6 +512,10 @@ public class PlayerMovement : MonoBehaviour
     #region UPDATE
     public void KonoUpdate()
     {
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            Debug.Log("I'm the owner of " + this.name + " ? " + base.photonView.IsMine);
+        }
         ResetMovementVariables();
         //Debug.LogError("CONTROLLER 3D: collisions.below = " + controller.collisions.below + "; lastBelow = " + controller.collisions.lastBelow+ "; jumpSt = " + jumpSt);
         //if (controller.collisions.below && !controller.collisions.lastBelow)
@@ -564,7 +568,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if(Time.deltaTime>0)
         controller.Move(currentVel * Time.deltaTime);
-        myPassiveCollisions.PassiveMove();
+        //myPassiveCollisions.PassiveMove();
         controller.collisions.ResetAround();
         myPlayerAnimation_01.KonoUpdate();
         if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel End = " + currentVel.ToString("F6") + "; currentVel.normalized = " + currentVel.normalized.ToString("F6") +
@@ -1491,7 +1495,7 @@ public class PlayerMovement : MonoBehaviour
                 //FAIL?
                 if (chargeJumpCurrentReleaseTime >= chargeJumpReleaseTimeBeforeLand)//FAIL: Released too early
                 {
-                    Debug.LogWarning("Charged Jump-> FAILED JUMP: RELEASED TOO EARLY");
+                    //Debug.LogWarning("Charged Jump-> FAILED JUMP: RELEASED TOO EARLY");
                     failedJump = true;
                     return;
                 }
@@ -2293,7 +2297,13 @@ public class PlayerMovement : MonoBehaviour
     float distanceToFlag;
     void UpdateDistanceToFlag()
     {
-        distanceToFlag = ((gC as GameController_FlagMode).flags[0].transform.position - transform.position).magnitude;
+        if (gC.online)
+        {
+        }
+        else
+        {
+            distanceToFlag = ((gC as GameController_FlagMode).flags[0].transform.position - transform.position).magnitude;
+        }
     }
 
     void UpdateFlagLightBeam()
@@ -2489,12 +2499,34 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region ----[ PUN CALLBACKS ]----
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        online = false;
+    }
+
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        if (!base.photonView.IsMine)
+        {
+            gC = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerBase>();
+            team = gC.SetRandomOnlineTeam(PhotonNetwork.CurrentRoom.PlayerCount - 1);
+            SwitchTeam(team);
+            myPlayerWeap.SetTeamWeapon(team);
+            Debug.Log("I'm player " + gameObject.name + " and my team is " + team);
+        }
+    }
     #endregion
 
     #region ----[ RPC ]----
+    [PunRPC]
+    void OnlineSetUpPlayer(byte _team)
+    {
+        team = (Team)_team;
+    }
     #endregion
 
     #region ----[ NETWORK FUNCTIONS ]----
+
     #endregion
 
     #region ----[ IPUNOBSERVABLE ]----

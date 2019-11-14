@@ -14,7 +14,6 @@ public class PlayerWeapons : MonoBehaviour {
     public PlayerMovement myPlayerMovement;
     public PlayerCombatNew myPlayerCombatNew;
     PlayerHUD myPlayerHUD;
-    [HideInInspector]
     public PlayerModel myPlayerModel;
     public WeaponData startingWeaponTeamA;
     public WeaponData startingWeaponTeamB;
@@ -72,11 +71,11 @@ public class PlayerWeapons : MonoBehaviour {
         currentWeaponData = null;
         currentWeapon = null;
         currentWeapObject = null;
-        myPlayerMovement = GetComponent<PlayerMovement>();
-        myPlayerAnim = myPlayerMovement.myPlayerAnimation_01;
-        myPlayerCombatNew = myPlayerMovement.myPlayerCombatNew;
+        //myPlayerMovement = GetComponent<PlayerMovement>();
+        //myPlayerAnim = myPlayerMovement.myPlayerAnimation_01;
+        //myPlayerCombatNew = myPlayerMovement.myPlayerCombatNew;
         myPlayerHUD = myPlayerMovement.myPlayerHUD;
-        myPlayerModel = myPlayerMovement.myPlayerModel;
+        //myPlayerModel = myPlayerMovement.myPlayerModel;
         weaponsNearby = new List<Weapon>();
     }
     #endregion
@@ -84,15 +83,7 @@ public class PlayerWeapons : MonoBehaviour {
     #region Start
     public void KonoStart()
     {
-        switch (myPlayerMovement.team)
-        {
-            case Team.A:
-                PickupWeapon(startingWeaponTeamA);
-                break;
-            case Team.B:
-                PickupWeapon(startingWeaponTeamB);
-                break;
-        }
+        SetTeamWeapon(myPlayerMovement.team);
     }
     #endregion
 
@@ -175,7 +166,7 @@ public class PlayerWeapons : MonoBehaviour {
         myPlayerMovement.bodyMass = weaponData.playerWeight;
         AttatchWeapon(weaponData);
         //myPlayerCombat.FillMyAttacks(currentWeapon.weaponData);
-        myPlayerCombatNew.InitializeCombatSystem(weaponData);
+        if(!myPlayerMovement.online) myPlayerCombatNew.InitializeCombatSystem(weaponData);
     }
 
     public void DropWeapon()
@@ -232,6 +223,19 @@ public class PlayerWeapons : MonoBehaviour {
             currentWeapObject.localRotation = Quaternion.Euler(currentWeaponData.backRotation.x, currentWeaponData.backRotation.y, currentWeaponData.backRotation.z);
             currentWeapObject.localScale = currentWeaponData.backScale;
         //}
+    }
+
+    public void SetTeamWeapon(Team team)
+    {
+        switch (team)
+        {
+            case Team.A:
+                PickupWeapon(startingWeaponTeamA);
+                break;
+            case Team.B:
+                PickupWeapon(startingWeaponTeamB);
+                break;
+        }
     }
 
     public void AddWeaponNearby(Weapon weapPickup)

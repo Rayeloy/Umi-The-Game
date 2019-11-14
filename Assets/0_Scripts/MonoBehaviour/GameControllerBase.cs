@@ -325,6 +325,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         //}
         //if (scoreManager.End) return;
         SlowMotion();
+        SwitchLockMouse();
 
         if (!gamePaused)
         {
@@ -543,8 +544,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
         if (online)
         {
-            Debug.Log("0.1 - AllCameraBases.Length = " + allCameraBases.Count);
-
+            //Debug.Log("0.1 - AllCameraBases.Length = " + allCameraBases.Count);
             if (playerPrefab == null)
             {
                 Debug.LogError("GamerControllerBase: Color=Red><a>Missing playerPrefab Reference in GameController</a></Color>");
@@ -1099,6 +1099,23 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             }
         }
     }
+
+    private void SwitchLockMouse()
+    {
+        if (Input.GetKeyDown(KeyCode.Keypad7))
+        {
+            if (!Cursor.visible)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+        }
+    }
     #endregion
 
     #endregion
@@ -1107,6 +1124,16 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newplayer)
     {
         Debug.Log("El jugador " + newplayer.NickName + " acaba de entrar en la sala");
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.Log("Disconnected from Photon server for cause " + cause);
+        if (online)
+        {
+            online = false;
+            SceneManager.LoadScene(MasterManager.GameSettings.MainMenuScene);
+        }
     }
     #endregion
 

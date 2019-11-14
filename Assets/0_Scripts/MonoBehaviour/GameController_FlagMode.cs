@@ -66,7 +66,7 @@ public class GameController_FlagMode : GameControllerBase
         }
         else
         {
-            Debug.LogError("Error: aquí falta código por escribir. En online habrá que solamente referenciar en el score manager a su player, no los de todos.");
+            Debug.LogWarning("Warning: aquí falta código por escribir. En online habrá que solamente referenciar en el score manager a su player, no los de todos.");
         }
     }
 

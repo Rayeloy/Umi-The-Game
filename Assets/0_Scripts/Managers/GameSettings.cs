@@ -5,17 +5,14 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Manager/GameSettings")]
 public class GameSettings : ScriptableObject
 {
+    [SerializeField]
+    private string _mainMenuScene = "Demo_MainMenu1";
+    public string MainMenuScene { get { return _mainMenuScene; } }
 
     [SerializeField]
     private string _gameVersion = "0.0.0";
 
-    public string GameVersion
-    {
-        get
-        {
-            return _gameVersion;
-        }
-    }
+    public string GameVersion { get { return _gameVersion; } }
 
     [SerializeField] private string _nickName = "Punfish";
 
@@ -32,25 +29,13 @@ public class GameSettings : ScriptableObject
     [SerializeField]
     private string _hubName = "Capture The Whale";
 
-    public string HubName
-    {
-        get
-        {
-            return _hubName;
-        }
-    }
+    public string HubName { get { return _hubName; } }
 
     [Tooltip("The maximum number of players per room default 4")]
     [SerializeField]
     private byte _maxPlayersPerGameRoom = 4;
 
-    public byte MaxPlayersPerGameRoom
-    {
-        get
-        {
-            return _maxPlayersPerGameRoom;
-        }
-    }
+    public byte MaxPlayersPerGameRoom { get { return _maxPlayersPerGameRoom; } }
 
 }
 

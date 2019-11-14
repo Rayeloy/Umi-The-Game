@@ -187,33 +187,51 @@ public class PlayerHUD : MonoBehaviourPunCallbacks
     #region Start
     public void KonoStart()
     {
-        if (gC.gameMode == GameMode.CaptureTheFlag)
+        if (gC.online)
         {
-            if (gC.online)
+            if (gC.gameMode == GameMode.CaptureTheFlag)
             {
-                flag = GameObject.FindGameObjectWithTag("Flag").GetComponent<Flag>();
-                Debug.Log("FLAG POS = "+FindObjectOfType<Flag>().transform.position);
-                Debug.Log("flag = " + flag);
+                    //flag = GameObject.FindGameObjectWithTag("Flag").GetComponent<Flag>();
+                    //Debug.Log("FLAG POS = "+FindObjectOfType<Flag>().transform.position);
+                    //Debug.Log("flag = " + flag);
             }
-            else
-            {
-                flag = (gC as GameController_FlagMode).flags[0];
-            }
+
+            Interaction_Message.SetActive(false);
+            crosshair.enabled = false;
+            crosshairReduced.enabled = false;
+
+            //SETUP HUDS
+            //SetupFlagSlider();
+            SetUpScoreBoard();
+            SetUpFlagHomeArrow();
+            SetupArrowToFlag();
+            pressButtonToGrappleMessage.SetActive(false);
+            SetUpCameraCenter();
+            SetupDashHUD();
+            SetUpHookUI();
         }
+        else
+        {
+            if (gC.gameMode == GameMode.CaptureTheFlag)
+            {
+                    flag = (gC as GameController_FlagMode).flags[0];
+            }
 
-        Interaction_Message.SetActive(false);
-        crosshair.enabled = false;
-        crosshairReduced.enabled = false;
+            Interaction_Message.SetActive(false);
+            crosshair.enabled = false;
+            crosshairReduced.enabled = false;
 
-        //SETUP HUDS
-        SetupFlagSlider();
-        SetUpScoreBoard();
-        SetUpFlagHomeArrow();
-        SetupArrowToFlag();
-        pressButtonToGrappleMessage.SetActive(false);
-        SetUpCameraCenter();
-        SetupDashHUD();
-        SetUpHookUI();
+            //SETUP HUDS
+            SetupFlagSlider();
+            SetUpScoreBoard();
+            SetUpFlagHomeArrow();
+            SetupArrowToFlag();
+            pressButtonToGrappleMessage.SetActive(false);
+            SetUpCameraCenter();
+            SetupDashHUD();
+            SetUpHookUI();
+
+        }
 
     }
     #endregion
@@ -221,18 +239,36 @@ public class PlayerHUD : MonoBehaviourPunCallbacks
     #region Update
     private void Update()
     {
-        if (gC.gameMode == GameMode.CaptureTheFlag)// && !PhotonNetwork.IsConnected)
+        if (gC.online)
         {
-            UpdateFlagSlider();
-            // Flecha a Bola
-            ArrowToFlagUpdate();
-            UpdateFlagHomeArrow();
+            if (gC.gameMode == GameMode.CaptureTheFlag)// && !PhotonNetwork.IsConnected)
+            {
+                //UpdateFlagSlider();
+                // Flecha a Bola
+                //ArrowToFlagUpdate();
+                //UpdateFlagHomeArrow();
+            }
+            UpdateAllHookPointHUDs();
+            UpdateDashHUDFuel();
+            ProcessSkillsCD();
+            ProcessDashHUDCantDoAnimation();
+            ProcessSkillCantDoAnim();
         }
-        UpdateAllHookPointHUDs();
-        UpdateDashHUDFuel();
-        ProcessSkillsCD();
-        ProcessDashHUDCantDoAnimation();
-        ProcessSkillCantDoAnim();
+        else
+        {
+            if (gC.gameMode == GameMode.CaptureTheFlag)// && !PhotonNetwork.IsConnected)
+            {
+                UpdateFlagSlider();
+                // Flecha a Bola
+                ArrowToFlagUpdate();
+                UpdateFlagHomeArrow();
+            }
+            UpdateAllHookPointHUDs();
+            UpdateDashHUDFuel();
+            ProcessSkillsCD();
+            ProcessDashHUDCantDoAnimation();
+            ProcessSkillCantDoAnim();
+        }
     }
     #endregion
 

@@ -44,9 +44,10 @@ public class PlayerVFX : MonoBehaviour
     #endregion
 
     #region Start
-    private void Start()
+    public void KonoStart()
     {
         dashTrail.emitting = false;
+        Debug.Log("My weapon skin go = " + myPlayerMovement.myPlayerWeap.currentWeaponSkin.gameObject);
         weaponTrailRenderers = myPlayerMovement.myPlayerWeap.currentWeaponSkin.trailRenderers;
         for (int i = 0; i < weaponTrailRenderers.Length; i++)
         {
