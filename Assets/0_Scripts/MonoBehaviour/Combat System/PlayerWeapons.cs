@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 
 #region ----[ PUBLIC ENUMS ]----
 #endregion
-public class PlayerWeapons : MonoBehaviour {
+public class PlayerWeapons : MonoBehaviourPun {
 
     #region ----[ VARIABLES FOR DESIGNERS ]----
     //Referencias
@@ -166,7 +167,7 @@ public class PlayerWeapons : MonoBehaviour {
         myPlayerMovement.bodyMass = weaponData.playerWeight;
         AttatchWeapon(weaponData);
         //myPlayerCombat.FillMyAttacks(currentWeapon.weaponData);
-        if(!myPlayerMovement.online) myPlayerCombatNew.InitializeCombatSystem(weaponData);
+        if(!myPlayerMovement.online || (myPlayerMovement.online && base.photonView.IsMine)) myPlayerCombatNew.InitializeCombatSystem(weaponData);
     }
 
     public void DropWeapon()

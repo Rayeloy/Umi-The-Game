@@ -50,8 +50,8 @@ public class UMILauncher: MonoBehaviourPunCallbacks
         // #Critical
         // this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
         Debug.Log("Setting up Photon Settings...");
-        PhotonNetwork.SendRate = 20;//20
-        PhotonNetwork.SerializationRate = 10;//10
+        PhotonNetwork.SendRate = 40;//20
+        PhotonNetwork.SerializationRate = 20;//10
         PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.NickName = MasterManager.GameSettings.NickName;
         PhotonNetwork.GameVersion = MasterManager.GameSettings.GameVersion;

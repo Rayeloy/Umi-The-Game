@@ -1871,14 +1871,14 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
     PlayerMovement lastAttacker = null;
     int lastAutocomboIndex = -1;
     bool stunProtectionOn = false;
-    public bool StartRecieveHit(PlayerMovement attacker, Vector3 _knockback, EffectType efecto, float _maxTime = 0, int autocomboIndex=-1)
+    public bool StartReceiveHit(PlayerMovement attacker, Vector3 _knockback, EffectType effect, float _maxTime = 0, byte autocomboIndex=255)
     {
         if (!myPlayerCombatNew.invulnerable)
         {
             //Variable para Ortu
             startBeingHitAnimation = true;
 
-            if (!disableAllDebugs) print("Recieve hit with knockback= " + _knockback + "; effect = " + efecto + "; maxtime = " + _maxTime);
+            if (!disableAllDebugs) print("Recieve hit with knockback= " + _knockback + "; effect = " + effect + "; maxtime = " + _maxTime);
             myPlayerHook.FinishAutoGrapple();
             myPlayerHook.StopHook();
             StopWallJump();
@@ -1911,8 +1911,8 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
             }
             #endregion
 
-            sufferingEffect = efecto;
-            switch (efecto)
+            sufferingEffect = effect;
+            switch (effect)
             {
                 case EffectType.softStun:
                     noInput = true;
@@ -1976,7 +1976,7 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
         if (!disableAllDebugs) Debug.Log("resultKnockback 2 = " + resultKnockback);
         resultKnockback = resultKnockback * knockbackMag;
         if (!disableAllDebugs) Debug.Log("resultKnockback 3 = " + resultKnockback + "; maxStunTime = " + maxStunTime);
-        StartRecieveHit(enemy, resultKnockback, EffectType.softStun, maxStunTime);
+        StartReceiveHit(enemy, resultKnockback, EffectType.softStun, maxStunTime);
     }
 
     void ReceiveKnockback()
@@ -2522,6 +2522,101 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
     void OnlineSetUpPlayer(byte _team)
     {
         team = (Team)_team;
+    }
+
+    Player lastAttacker_Online;
+    [PunRPC]
+    public void RPC_StartReceiveHit(Vector3 _knockback, byte effect, float _maxTime, byte autocomboIndex, PhotonMessageInfo info)
+    {
+        //PhotonView phV = PhotonView.Get(this);
+        Debug.Log("RPC: I RECEIVED A HIT");
+        if (base.photonView.IsMine)
+        {
+            if (!myPlayerCombatNew.invulnerable)
+            {
+                //Variable para Ortu
+                startBeingHitAnimation = true;
+
+                if (!disableAllDebugs) print("Receive hit with knockback= " + _knockback + "; effect = " + (EffectType)effect + "; maxtime = " + _maxTime);
+                myPlayerHook.FinishAutoGrapple();
+                myPlayerHook.StopHook();
+                StopWallJump();
+                StopBoost();
+                myPlayerCombatNew.StopDoingCombat();
+                StopImpulse();
+
+                //if (sufferingEffect == EffectType.stun)
+                //{
+                //    efecto = EffectType.knockdown;
+                //    _maxTime = AttackEffect.knockdownTime;
+                //}
+                #region STUN PROTECTION
+
+                if (sufferingEffect == EffectType.softStun && (!lastAttacker_Online.Equals(info.Sender) || (lastAttacker_Online.Equals(info.Sender) && autocomboIndex == 0)))
+                {
+                    Debug.Log("Stun protection ON");
+                    stunProtectionOn = true;
+                }
+
+                if (!stunProtectionOn)
+                {
+                    Debug.Log("FULL EFFECT TIME");
+                    effectMaxTime = _maxTime;
+                }
+                else
+                {
+                    Debug.Log("THIRD EFFECT TIME");
+                    effectMaxTime = _maxTime / 3;
+                }
+                #endregion
+
+                sufferingEffect = (EffectType)effect;
+                switch ((EffectType)effect)
+                {
+                    case EffectType.softStun:
+                        noInput = true;
+                        break;
+                    //case EffectType.stun:
+                    //    if (disableAllDebugs) Debug.LogError("STUN !!!!!!!!");
+                    //    noInput = true;
+                    //    break;
+                    //case EffectType.knockdown:
+                    //    if (disableAllDebugs) Debug.LogError("KNOCKDOWN !!!!!!!!");
+                    //    noInput = true;
+                    //    //myPlayerCombatNew.StartInvulnerabilty(_maxTime);
+                    //    break;
+                    case EffectType.none:
+                        break;
+                    default:
+                        Debug.LogError("Error: cannot have a 'sufferingEffect' of type " + sufferingEffect);
+                        break;
+                }
+
+                //Debug.Log("_maxTime = " + _maxTime + "; effectMaxTime = " + effectMaxTime);
+                effectTime = 0;
+                if (_knockback != Vector3.zero)
+                {
+                    knockbackDone = false;
+                    _knockback = _knockback / bodyMass;
+                    knockback = _knockback;
+                }
+
+                //Give FLAG
+                if (haveFlag)
+                {
+                    flag.DropFlag();
+                }
+                lastAttacker_Online = info.Sender;
+                lastAutocomboIndex = autocomboIndex;
+                if (!disableAllDebugs) print("Player " + playerNumber + " RECIEVED HIT");
+                //return true;
+            }
+            //else return false;
+        }
+        else
+        {
+            Debug.Log("I'm not the owner of this player, but he received a hit. Missing code here? VFX? Invulnerabilty?");
+        }
     }
     #endregion
 

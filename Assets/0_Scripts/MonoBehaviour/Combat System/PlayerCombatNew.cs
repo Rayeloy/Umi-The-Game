@@ -61,7 +61,7 @@ public class PlayerCombatNew : MonoBehaviour
     //Autocombo
     AutocomboData autocombo;
     [HideInInspector] public bool autocomboStarted;
-    [HideInInspector] public int autocomboIndex = -1;
+    [HideInInspector] public byte autocomboIndex = 255;
     bool lastAutocomboAttackFinished = false;
     float autocomboTime = 0;
     [HideInInspector] public List<GameObject> currentHitboxes;
@@ -422,7 +422,7 @@ public class PlayerCombatNew : MonoBehaviour
             autocomboStarted = true;
             lastAutocomboAttackFinished = true;
             autocomboTime = 0;
-            autocomboIndex = -1;
+            autocomboIndex = 255;
             StartNextAttackAutocombo();
         }
         return exito;
@@ -497,7 +497,7 @@ public class PlayerCombatNew : MonoBehaviour
             autocomboStarted = false;
             lastAutocomboAttackFinished = false;
             autocomboTime = 0;
-            autocomboIndex = -1;
+            autocomboIndex = 255;
         }
     }
 
@@ -726,6 +726,7 @@ public class PlayerCombatNew : MonoBehaviour
             {
                 skillCurrentTime += Time.deltaTime;
             }
+            //Debug.Log("PROCESS WEAPON SKILL: length = " + equipedWeaponSkills.Length + "; i = " + i);
             if (equipedWeaponSkills[i].weaponSkillSt != WeaponSkillState.ready)
             {
                 equipedWeaponSkills[i].KonoUpdate();
