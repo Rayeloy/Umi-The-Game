@@ -1955,6 +1955,55 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
         else return false;
     }
 
+    public bool StartReceiveHit(Vector3 _knockback, EffectType effect, float _maxTime = 0)
+    {
+        if (!myPlayerCombatNew.invulnerable)
+        {
+            //Variable para Ortu
+            startBeingHitAnimation = true;
+
+            if (!disableAllDebugs) print("Recieve hit with knockback= " + _knockback + "; effect = " + effect + "; maxtime = " + _maxTime);
+            myPlayerHook.FinishAutoGrapple();
+            myPlayerHook.StopHook();
+            StopWallJump();
+            StopBoost();
+            myPlayerCombatNew.StopDoingCombat();
+            StopImpulse();
+
+            sufferingEffect = effect;
+            switch (effect)
+            {
+                case EffectType.softStun:
+                    noInput = true;
+                    break;
+                case EffectType.none:
+                    break;
+                default:
+                    Debug.LogError("Error: cannot have a 'sufferingEffect' of type " + sufferingEffect);
+                    break;
+            }
+
+            //Debug.Log("_maxTime = " + _maxTime + "; effectMaxTime = " + effectMaxTime);
+            effectTime = 0;
+            if (_knockback != Vector3.zero)
+            {
+                knockbackDone = false;
+                _knockback = _knockback / bodyMass;
+                knockback = _knockback;
+            }
+
+            //Give FLAG
+            if (haveFlag)
+            {
+                flag.DropFlag();
+            }
+            if (!disableAllDebugs) print("Player " + playerNumber + " RECIEVED HIT");
+            return true;
+        }
+        else return false;
+    }
+
+    //ES RECEIVE
     public void StartRecieveParry(PlayerMovement enemy, AttackEffect effect = null)
     {
         if(!disableAllDebugs)Debug.Log("PARRY!!!");
