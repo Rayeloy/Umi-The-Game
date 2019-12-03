@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
 
 public class GameController_FlagMode : GameControllerBase
 {
@@ -25,17 +24,7 @@ public class GameController_FlagMode : GameControllerBase
     }
     protected override void SpecificAwake()
     {
-        if (online)
-        {
-            if (PhotonNetwork.IsMasterClient)
-            {
-                CreateFlag();
-            }
-        }
-        else
-        {
-            CreateFlag();
-        }
+        CreateFlag();
         HideFlagHomeLightBeam(Team.A);
         HideFlagHomeLightBeam(Team.B);
     }
@@ -58,28 +47,28 @@ public class GameController_FlagMode : GameControllerBase
     public override void CreatePlayer(int playerNumber)
     {
         base.CreatePlayer(playerNumber);
-        if (!online)//Eloy: para Juan: en online habrá que solamente referenciar en el score manager a su player, no los de todos.
-        {
+        //if (!online)//Eloy: para Juan: en online habrá que solamente referenciar en el score manager a su player, no los de todos.
+        //{
             myScoreManager.blueTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().blueTeamScoreText);
             myScoreManager.redTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().redTeamScoreText);
             myScoreManager.time_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().timeText);
-        }
-        else
-        {
-            Debug.LogWarning("Warning: aquí falta código por escribir. En online habrá que solamente referenciar en el score manager a su player, no los de todos.");
-        }
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("Warning: aquí falta código por escribir. En online habrá que solamente referenciar en el score manager a su player, no los de todos.");
+        //}
     }
 
     public override void RemovePlayer(PlayerMovement _pM)
     {
         int index = allPlayers.IndexOf(_pM);
         base.RemovePlayer(_pM);
-        if (!online)//Eloy: para Juan: como solo se referencia el nuestro propio, no hace falta borrar cosas del score manager cuando se borra a otro player. Solo borramos cuando nos borramos a nosotros.
-        {
+        //if (!online)//Eloy: para Juan: como solo se referencia el nuestro propio, no hace falta borrar cosas del score manager cuando se borra a otro player. Solo borramos cuando nos borramos a nosotros.
+        //{
             myScoreManager.blueTeamScore_Text.RemoveAt(index);
             myScoreManager.redTeamScore_Text.RemoveAt(index);
             myScoreManager.time_Text.RemoveAt(index);
-        }
+        //}
     }
 
     public override void StartGameOver(Team _winnerTeam)
@@ -104,14 +93,7 @@ public class GameController_FlagMode : GameControllerBase
     public void CreateFlag()
     {
         Flag newFlag;
-        if (online && PhotonNetwork.IsMasterClient)
-        {
-            newFlag = MasterManager.NetworkInstantiate(flagPrefab, flagsParent.position, Quaternion.identity).GetComponent<Flag>();
-        }
-        else
-        {
-            newFlag = Instantiate(flagPrefab, flagsParent).GetComponent<Flag>();
-        }
+        newFlag = Instantiate(flagPrefab, flagsParent).GetComponent<Flag>();
         newFlag.gC = this;
         flags.Add(newFlag);
     }

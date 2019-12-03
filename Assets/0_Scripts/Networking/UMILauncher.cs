@@ -10,10 +10,9 @@
 
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Realtime;
-using Photon.Pun;
 
-public class UMILauncher: MonoBehaviourPunCallbacks
+
+public class UMILauncher: MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]---- 
     [Tooltip("Panel que controla el nombre de usuario y el botón de login")]
@@ -49,12 +48,12 @@ public class UMILauncher: MonoBehaviourPunCallbacks
     {
         // #Critical
         // this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
-        Debug.Log("Setting up Photon Settings...");
-        PhotonNetwork.SendRate = 40;//20
-        PhotonNetwork.SerializationRate = 20;//10
-        PhotonNetwork.AutomaticallySyncScene = true;
-        PhotonNetwork.NickName = MasterManager.GameSettings.NickName;
-        PhotonNetwork.GameVersion = MasterManager.GameSettings.GameVersion;
+        //Debug.Log("Setting up Photon Settings...");
+        //PhotonNetwork.SendRate = 40;//20
+        //PhotonNetwork.SerializationRate = 20;//10
+        //PhotonNetwork.AutomaticallySyncScene = true;
+        //PhotonNetwork.NickName = MasterManager.GameSettings.NickName;
+        //PhotonNetwork.GameVersion = MasterManager.GameSettings.GameVersion;
 
     }
     #endregion
@@ -86,89 +85,89 @@ public class UMILauncher: MonoBehaviourPunCallbacks
         //else
         //{
             // #Critical, we must first and foremost connect to Photon Online Server.
-            PhotonNetwork.ConnectUsingSettings();
+            //PhotonNetwork.ConnectUsingSettings();
         //}
     }
     #endregion
 
     #region ----[ PUN CALLBACKS ]----
-    // below, we implement some callbacks of PUN
-    // you can find PUN's callbacks in the class MonoBehaviourPunCallbacks
+    //// below, we implement some callbacks of PUN
+    //// you can find PUN's callbacks in the class MonoBehaviourPunCallbacks
 
 
-    /// <summary>
-    /// Called after the connection to the master is established and authenticated
-    /// </summary>
-    public override void OnConnectedToMaster()
-    {
-        // we don't want to do anything if we are not attempting to join a room. 
-        // this case where isConnecting is false is typically when you lost or quit the game, when this level is loaded, OnConnectedToMaster will be called, in that case
-        // we don't want to do anything.
-        if (isConnectingToRoom)
-        {
-            Debug.Log("UMILauncher: OnConnectedToMaster(). El cliente está conectado al servidor Master.\n Realizando llamada a: PhotonNetwork.JoinRandomRoom(); Operation will fail if no room found");
+    ///// <summary>
+    ///// Called after the connection to the master is established and authenticated
+    ///// </summary>
+    //public override void OnConnectedToMaster()
+    //{
+    //    // we don't want to do anything if we are not attempting to join a room. 
+    //    // this case where isConnecting is false is typically when you lost or quit the game, when this level is loaded, OnConnectedToMaster will be called, in that case
+    //    // we don't want to do anything.
+    //    if (isConnectingToRoom)
+    //    {
+    //        Debug.Log("UMILauncher: OnConnectedToMaster(). El cliente está conectado al servidor Master.\n Realizando llamada a: PhotonNetwork.JoinRandomRoom(); Operation will fail if no room found");
 
-            // #Critical: The first we try to do is to join a potential existing room. If there is, good, else, we'll be called back with OnJoinRandomFailed()
-            PhotonNetwork.JoinRandomRoom();
-        }
-    }
+    //        // #Critical: The first we try to do is to join a potential existing room. If there is, good, else, we'll be called back with OnJoinRandomFailed()
+    //        PhotonNetwork.JoinRandomRoom();
+    //    }
+    //}
 
-    /// <summary>
-    /// Called when a JoinRandom() call failed. The parameter provides ErrorCode and message.
-    /// </summary>
-    /// <remarks>
-    /// Most likely all rooms are full or no rooms are available. <br/>
-    /// </remarks>
-    public override void OnJoinRandomFailed(short returnCode, string message)
-    {
-        Debug.Log("UMILauncher:OnJoinRandomFailed(). We could not find any empty room, or the was none in the server, so we create one. \nCalling: PhotonNetwork.CreateRoom");
+    ///// <summary>
+    ///// Called when a JoinRandom() call failed. The parameter provides ErrorCode and message.
+    ///// </summary>
+    ///// <remarks>
+    ///// Most likely all rooms are full or no rooms are available. <br/>
+    ///// </remarks>
+    //public override void OnJoinRandomFailed(short returnCode, string message)
+    //{
+    //    Debug.Log("UMILauncher:OnJoinRandomFailed(). We could not find any empty room, or the was none in the server, so we create one. \nCalling: PhotonNetwork.CreateRoom");
 
-        // #Critical: we failed to join a random room, maybe none exists or they are all full. No worries, we create a new room.
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = MasterManager.GameSettings.MaxPlayersPerGameRoom });
-    }
+    //    // #Critical: we failed to join a random room, maybe none exists or they are all full. No worries, we create a new room.
+    //    PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = MasterManager.GameSettings.MaxPlayersPerGameRoom });
+    //}
 
 
-    /// <summary>
-    /// Called after disconnecting from the Photon server.
-    /// </summary>
-    public override void OnDisconnected(DisconnectCause cause)
-    {
-        Debug.LogError("UMILauncher: Disconnected from server for reason "+ cause);
+    ///// <summary>
+    ///// Called after disconnecting from the Photon server.
+    ///// </summary>
+    //public override void OnDisconnected(DisconnectCause cause)
+    //{
+    //    Debug.LogError("UMILauncher: Disconnected from server for reason "+ cause);
 
-        // #Critical: we failed to connect or got disconnected. There is not much we can do. Typically, a UI system should be in place to let the user attemp to connect again.
-        isConnectingToRoom = false;
-        controlPanel.SetActive(true);
+    //    // #Critical: we failed to connect or got disconnected. There is not much we can do. Typically, a UI system should be in place to let the user attemp to connect again.
+    //    isConnectingToRoom = false;
+    //    controlPanel.SetActive(true);
 
-    }
+    //}
 
-    /// <summary>
-    /// Called when entering a room (by creating or joining it). Called on all clients (including the Master Client).
-    /// </summary>
-    /// <remarks>
-    /// This method is commonly used to instantiate player characters.
-    /// If a match has to be started "actively", you can call an [PunRPC](@ref PhotonView.RPC) triggered by a user's button-press or a timer.
-    ///
-    /// When this is called, you can usually already access the existing players in the room via PhotonNetwork.PlayerList.
-    /// Also, all custom properties should be already available as Room.customProperties. Check Room..PlayerCount to find out if
-    /// enough players are in the room to start playing.
-    /// </remarks>
-    public override void OnJoinedRoom()
-    {
-        Debug.Log("UMILauncher: OnJoinedRoom().The client is in the new room. The game scene will load.");
+    ///// <summary>
+    ///// Called when entering a room (by creating or joining it). Called on all clients (including the Master Client).
+    ///// </summary>
+    ///// <remarks>
+    ///// This method is commonly used to instantiate player characters.
+    ///// If a match has to be started "actively", you can call an [PunRPC](@ref PhotonView.RPC) triggered by a user's button-press or a timer.
+    /////
+    ///// When this is called, you can usually already access the existing players in the room via PhotonNetwork.PlayerList.
+    ///// Also, all custom properties should be already available as Room.customProperties. Check Room..PlayerCount to find out if
+    ///// enough players are in the room to start playing.
+    ///// </remarks>
+    //public override void OnJoinedRoom()
+    //{
+    //    Debug.Log("UMILauncher: OnJoinedRoom().The client is in the new room. The game scene will load.");
 
-        // #Critical: We only load if we are the first player, else we rely on  PhotonNetwork.AutomaticallySyncScene to sync our instance scene.
-        if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
-        {
-            Debug.Log("UMILAUNCHER: Cargaremos el hub");
+    //    // #Critical: We only load if we are the first player, else we rely on  PhotonNetwork.AutomaticallySyncScene to sync our instance scene.
+    //    if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+    //    {
+    //        Debug.Log("UMILAUNCHER: Cargaremos el hub");
 
-            //desactivamos el panel de connecting
-            LoadingPanel.SetActive(false);
+    //        //desactivamos el panel de connecting
+    //        LoadingPanel.SetActive(false);
 
-            // #Critical
-            // Load the Room Level. 
-            PhotonNetwork.LoadLevel(MasterManager.GameSettings.HubName);
-        }
-    }
+    //        // #Critical
+    //        // Load the Room Level. 
+    //        PhotonNetwork.LoadLevel(MasterManager.GameSettings.HubName);
+    //    }
+    //}
 
     #endregion
 }
