@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;
-using Photon.Realtime;
 
 #region ----[ PUBLIC ENUMS ]----
 public enum Team
@@ -43,7 +41,7 @@ public enum JumpState
 [RequireComponent(typeof(PlayerWeapons))]
 [RequireComponent(typeof(PlayerHook))]
 #endregion
-public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
+public class PlayerMovement : MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     [Header(" --- Referencias --- ")]
@@ -267,9 +265,9 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
     [HideInInspector]
     public PlayerHUD myPlayerHUD;
 
-    //ONLINE
-    [HideInInspector]
-    public bool online = false;
+    ////ONLINE
+    //[HideInInspector]
+    //public bool online = false;
 
     //Eloy: FOR ONLINE
     [HideInInspector]
@@ -411,15 +409,15 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
 
     #region AWAKE
 
-    public void Awake()
-    {
-        online = PhotonNetwork.IsConnected;
-    }
+    //public void Awake()
+    //{
+    //    online = PhotonNetwork.IsConnected;
+    //}
 
     public void KonoAwake(bool isMyCharacter = false)
     {
-        if (!online || (online && isMyCharacter))
-        {
+        //if (!online || (online && isMyCharacter))
+        //{
             if (breakAcc != knockbackBreakAcc) Debug.LogError("The breakAcceleration and the KnockbackAcceleration should be the same!");
             maxMoveSpeed = 10;
             currentSpeed = 0;
@@ -455,12 +453,12 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
             //DontDestroyOnLoad(this.gameObject);
-        }
-        else
-        {
-            //PLAYER MODEL
-            SwitchTeam(team);
-        }
+        //}
+        //else
+        //{
+        //    //PLAYER MODEL
+        //    SwitchTeam(team);
+        //}
 
 
     }
@@ -512,10 +510,10 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
     #region UPDATE
     public void KonoUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            Debug.Log("I'm the owner of " + this.name + " ? " + base.photonView.IsMine);
-        }
+        //if (Input.GetKeyDown(KeyCode.O))
+        //{
+        //    Debug.Log("I'm the owner of " + this.name + " ? " + base.photonView.IsMine);
+        //}
         ResetMovementVariables();
         //Debug.LogError("CONTROLLER 3D: collisions.below = " + controller.collisions.below + "; lastBelow = " + controller.collisions.lastBelow+ "; jumpSt = " + jumpSt);
         //if (controller.collisions.below && !controller.collisions.lastBelow)
@@ -562,7 +560,6 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
     public void KonoFixedUpdate()
     {
     }
-
 
     public void KonoLateUpdate()
     {
@@ -2346,13 +2343,13 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
     float distanceToFlag;
     void UpdateDistanceToFlag()
     {
-        if (gC.online)
-        {
-        }
-        else
-        {
+        //if (gC.online)
+        //{
+        //}
+        //else
+        //{
             distanceToFlag = ((gC as GameController_FlagMode).flags[0].transform.position - transform.position).magnitude;
-        }
+        //}
     }
 
     void UpdateFlagLightBeam()
@@ -2548,125 +2545,125 @@ public class PlayerMovement : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
     #endregion
 
     #region ----[ PUN CALLBACKS ]----
-    public override void OnDisconnected(DisconnectCause cause)
-    {
-        online = false;
-    }
+    //public override void OnDisconnected(DisconnectCause cause)
+    //{
+    //    online = false;
+    //}
 
-    public void OnPhotonInstantiate(PhotonMessageInfo info)
-    {
-        if (!base.photonView.IsMine)
-        {
-            gC = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerBase>();
-            team = gC.SetRandomOnlineTeam(PhotonNetwork.CurrentRoom.PlayerCount - 1);
-            SwitchTeam(team);
-            myPlayerWeap.SetTeamWeapon(team);
-            Debug.Log("I'm player " + gameObject.name + " and my team is " + team);
-        }
-    }
+    //public void OnPhotonInstantiate(PhotonMessageInfo info)
+    //{
+    //    if (!base.photonView.IsMine)
+    //    {
+    //        gC = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerBase>();
+    //        team = gC.SetRandomOnlineTeam(PhotonNetwork.CurrentRoom.PlayerCount - 1);
+    //        SwitchTeam(team);
+    //        myPlayerWeap.SetTeamWeapon(team);
+    //        Debug.Log("I'm player " + gameObject.name + " and my team is " + team);
+    //    }
+    //}
     #endregion
 
     #region ----[ RPC ]----
-    [PunRPC]
-    void OnlineSetUpPlayer(byte _team)
-    {
-        team = (Team)_team;
-    }
+    //[PunRPC]
+    //void OnlineSetUpPlayer(byte _team)
+    //{
+    //    team = (Team)_team;
+    //}
 
-    Player lastAttacker_Online;
-    [PunRPC]
-    public void RPC_StartReceiveHit(Vector3 _knockback, byte effect, float _maxTime, byte autocomboIndex, PhotonMessageInfo info)
-    {
-        //PhotonView phV = PhotonView.Get(this);
-        Debug.Log("RPC: I RECEIVED A HIT");
-        if (base.photonView.IsMine)
-        {
-            if (!myPlayerCombatNew.invulnerable)
-            {
-                //Variable para Ortu
-                startBeingHitAnimation = true;
+    //Player lastAttacker_Online;
+    //[PunRPC]
+    //public void RPC_StartReceiveHit(Vector3 _knockback, byte effect, float _maxTime, byte autocomboIndex, PhotonMessageInfo info)
+    //{
+    //    //PhotonView phV = PhotonView.Get(this);
+    //    Debug.Log("RPC: I RECEIVED A HIT");
+    //    if (base.photonView.IsMine)
+    //    {
+    //        if (!myPlayerCombatNew.invulnerable)
+    //        {
+    //            //Variable para Ortu
+    //            startBeingHitAnimation = true;
 
-                if (!disableAllDebugs) print("Receive hit with knockback= " + _knockback + "; effect = " + (EffectType)effect + "; maxtime = " + _maxTime);
-                myPlayerHook.FinishAutoGrapple();
-                myPlayerHook.StopHook();
-                StopWallJump();
-                StopBoost();
-                myPlayerCombatNew.StopDoingCombat();
-                StopImpulse();
+    //            if (!disableAllDebugs) print("Receive hit with knockback= " + _knockback + "; effect = " + (EffectType)effect + "; maxtime = " + _maxTime);
+    //            myPlayerHook.FinishAutoGrapple();
+    //            myPlayerHook.StopHook();
+    //            StopWallJump();
+    //            StopBoost();
+    //            myPlayerCombatNew.StopDoingCombat();
+    //            StopImpulse();
 
-                //if (sufferingEffect == EffectType.stun)
-                //{
-                //    efecto = EffectType.knockdown;
-                //    _maxTime = AttackEffect.knockdownTime;
-                //}
-                #region STUN PROTECTION
+    //            //if (sufferingEffect == EffectType.stun)
+    //            //{
+    //            //    efecto = EffectType.knockdown;
+    //            //    _maxTime = AttackEffect.knockdownTime;
+    //            //}
+    //            #region STUN PROTECTION
 
-                if (sufferingEffect == EffectType.softStun && (!lastAttacker_Online.Equals(info.Sender) || (lastAttacker_Online.Equals(info.Sender) && autocomboIndex == 0)))
-                {
-                    Debug.Log("Stun protection ON");
-                    stunProtectionOn = true;
-                }
+    //            if (sufferingEffect == EffectType.softStun && (!lastAttacker_Online.Equals(info.Sender) || (lastAttacker_Online.Equals(info.Sender) && autocomboIndex == 0)))
+    //            {
+    //                Debug.Log("Stun protection ON");
+    //                stunProtectionOn = true;
+    //            }
 
-                if (!stunProtectionOn)
-                {
-                    Debug.Log("FULL EFFECT TIME");
-                    effectMaxTime = _maxTime;
-                }
-                else
-                {
-                    Debug.Log("THIRD EFFECT TIME");
-                    effectMaxTime = _maxTime / 3;
-                }
-                #endregion
+    //            if (!stunProtectionOn)
+    //            {
+    //                Debug.Log("FULL EFFECT TIME");
+    //                effectMaxTime = _maxTime;
+    //            }
+    //            else
+    //            {
+    //                Debug.Log("THIRD EFFECT TIME");
+    //                effectMaxTime = _maxTime / 3;
+    //            }
+    //            #endregion
 
-                sufferingEffect = (EffectType)effect;
-                switch ((EffectType)effect)
-                {
-                    case EffectType.softStun:
-                        noInput = true;
-                        break;
-                    //case EffectType.stun:
-                    //    if (disableAllDebugs) Debug.LogError("STUN !!!!!!!!");
-                    //    noInput = true;
-                    //    break;
-                    //case EffectType.knockdown:
-                    //    if (disableAllDebugs) Debug.LogError("KNOCKDOWN !!!!!!!!");
-                    //    noInput = true;
-                    //    //myPlayerCombatNew.StartInvulnerabilty(_maxTime);
-                    //    break;
-                    case EffectType.none:
-                        break;
-                    default:
-                        Debug.LogError("Error: cannot have a 'sufferingEffect' of type " + sufferingEffect);
-                        break;
-                }
+    //            sufferingEffect = (EffectType)effect;
+    //            switch ((EffectType)effect)
+    //            {
+    //                case EffectType.softStun:
+    //                    noInput = true;
+    //                    break;
+    //                //case EffectType.stun:
+    //                //    if (disableAllDebugs) Debug.LogError("STUN !!!!!!!!");
+    //                //    noInput = true;
+    //                //    break;
+    //                //case EffectType.knockdown:
+    //                //    if (disableAllDebugs) Debug.LogError("KNOCKDOWN !!!!!!!!");
+    //                //    noInput = true;
+    //                //    //myPlayerCombatNew.StartInvulnerabilty(_maxTime);
+    //                //    break;
+    //                case EffectType.none:
+    //                    break;
+    //                default:
+    //                    Debug.LogError("Error: cannot have a 'sufferingEffect' of type " + sufferingEffect);
+    //                    break;
+    //            }
 
-                //Debug.Log("_maxTime = " + _maxTime + "; effectMaxTime = " + effectMaxTime);
-                effectTime = 0;
-                if (_knockback != Vector3.zero)
-                {
-                    knockbackDone = false;
-                    _knockback = _knockback / bodyMass;
-                    knockback = _knockback;
-                }
+    //            //Debug.Log("_maxTime = " + _maxTime + "; effectMaxTime = " + effectMaxTime);
+    //            effectTime = 0;
+    //            if (_knockback != Vector3.zero)
+    //            {
+    //                knockbackDone = false;
+    //                _knockback = _knockback / bodyMass;
+    //                knockback = _knockback;
+    //            }
 
-                //Give FLAG
-                if (haveFlag)
-                {
-                    flag.DropFlag();
-                }
-                lastAttacker_Online = info.Sender;
-                lastAutocomboIndex = autocomboIndex;
-                if (!disableAllDebugs) print("Player " + playerNumber + " RECIEVED HIT");
-                //return true;
-            }
-            //else return false;
-        }
-        else
-        {
-            Debug.Log("I'm not the owner of this player, but he received a hit. Missing code here? VFX? Invulnerabilty?");
-        }
-    }
+    //            //Give FLAG
+    //            if (haveFlag)
+    //            {
+    //                flag.DropFlag();
+    //            }
+    //            lastAttacker_Online = info.Sender;
+    //            lastAutocomboIndex = autocomboIndex;
+    //            if (!disableAllDebugs) print("Player " + playerNumber + " RECIEVED HIT");
+    //            //return true;
+    //        }
+    //        //else return false;
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("I'm not the owner of this player, but he received a hit. Missing code here? VFX? Invulnerabilty?");
+    //    }
+    //}
     #endregion
 
     #region ----[ NETWORK FUNCTIONS ]----

@@ -78,7 +78,7 @@ public class Hitbox : MonoBehaviour
                             }
 
                             if (otherPlayer.myPlayerCombatNew.attackStg == AttackPhaseType.active && otherPlayer.myPlayerCombatNew.currentAttack.HasEffect(EffectType.parry) &&
-                                !targetsHitWait1Frame.Contains(otherPlayer.name) && !myPlayerMov.online)
+                                !targetsHitWait1Frame.Contains(otherPlayer.name) /*&& !myPlayerMov.online*/)
                             {
                                 targetsHitWait1Frame.Add(otherPlayer.name);
                             }
@@ -199,16 +199,16 @@ public class Hitbox : MonoBehaviour
                                     targetsHitWait1Frame.Remove(otherPlayer.name);
                                 }
                                 if (!myPlayerMov.disableAllDebugs) Debug.Log("Soy " + myPlayerMov.name + " y añado al jugador " + otherPlayer.name + " a la lista de jugadores ya pegados");
-                                targetsHit.Add(otherPlayer.name);
-                                if (myPlayerMov.online)
-                                {
-                                    Debug.Log("SEND HIT RPC");
-                                    otherPlayer.photonView.RPC("RPC_StartReceiveHit", Photon.Pun.RpcTarget.All, resultKnockback, (byte)stunLikeEffect, maxStunTime, myPlayerCombatNew.autocomboIndex);
-                                }
-                                else
-                                {
+                                //targetsHit.Add(otherPlayer.name);
+                                //if (myPlayerMov.online)
+                                //{
+                                //    Debug.Log("SEND HIT RPC");
+                                //    otherPlayer.photonView.RPC("RPC_StartReceiveHit", Photon.Pun.RpcTarget.All, resultKnockback, (byte)stunLikeEffect, maxStunTime, myPlayerCombatNew.autocomboIndex);
+                                //}
+                                //else
+                                //{
                                     otherPlayer.StartReceiveHit(myPlayerMov, resultKnockback, stunLikeEffect, maxStunTime, myPlayerCombatNew.autocomboIndex);
-                                }
+                                //}
                                 //print("I'm " + myPlayerMov.gameObject.name + " and I Hit against " + col.gameObject);
                             }
                         }

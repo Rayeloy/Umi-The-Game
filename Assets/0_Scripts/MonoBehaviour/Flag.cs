@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Photon.Pun;
 
-public class Flag : MonoBehaviourPunCallbacks
+public class Flag : MonoBehaviour
 {
     [Header("Referencias")]
     public Transform flagCamera;
@@ -71,11 +70,6 @@ public class Flag : MonoBehaviourPunCallbacks
 
     [Header("Flag LightBeam")]
     public GameObject lightBeam;
-
-    void OnPhotonInstantiate(PhotonMessageInfo info)
-    {
-        info.Sender.TagObject = this.gameObject;
-    }
 
     private void Awake()
     {

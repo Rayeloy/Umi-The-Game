@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
-using Photon.Pun;
-using Photon.Realtime;
 
 #region ----[ PUBLIC ENUMS ]----
 public enum GameMode
@@ -17,7 +15,7 @@ public enum GameMode
 }
 #endregion
 
-public class GameControllerBase : MonoBehaviourPunCallbacks
+public class GameControllerBase : MonoBehaviour
 {
 
     #region ----[ VARIABLES FOR DESIGNERS ]----
@@ -100,8 +98,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     //variables globales de la partida
     [HideInInspector]
     public bool playing = false;
-    [HideInInspector]
-    public bool online; //= PhotonNetwork.IsConnected; JUAN: No se puede inicializar el valor porque tira un error chungo, THX UNITY, está inicializado en el Awake
+    //[HideInInspector]
+    //public bool online; //= PhotonNetwork.IsConnected; JUAN: No se puede inicializar el valor porque tira un error chungo, THX UNITY, está inicializado en el Awake
 
     // variables para nuestro jugador online
     [HideInInspector]
@@ -148,13 +146,13 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region Awake
     protected virtual void Awake()
     {
-        online = PhotonNetwork.IsConnected;
-        if (online)
-        {
-            Debug.Log("GameControllerBase: estamos conectados y la base del game controller está funcionando correctamente");
-        }
-        else
-        {
+        //online = PhotonNetwork.IsConnected;
+        //if (online)
+        //{
+        //    Debug.Log("GameControllerBase: estamos conectados y la base del game controller está funcionando correctamente");
+        //}
+        //else
+        //{
             //Esto es para no entrar en escenas cuando no tenemos los controles. Te devuelve a seleccion de equipo
             //Eloy: he cambiado esto porque me he dado cuenta de que es necesario hasta en la build final, no solo en el editor.
             if (GameInfo.instance == null || GameInfo.instance.inControlManager == null)
@@ -170,7 +168,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 SceneManager.LoadScene("Demo_TeamSetUp");
                 return;
             }
-        }
+        //}
 
         //Deactivate test player components. DO NOT MOVE!
         DeactivatePlayerComponents();
@@ -191,8 +189,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         //Set stuff active
         myGameInterface.gameObject.SetActive(true);
 
-        if (!online)
-        {
+        //if (!online)
+        //{
             playerNum = GameInfo.instance.nPlayers;
             playerNum = Mathf.Clamp(playerNum, 1, 4);
             for (int i = 0; i < playerNum; i++)
@@ -204,41 +202,41 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             PlayersSetup();
             SetUpCanvases();
             AllAwakes();
-        }
-        else //ONLINE //Eloy: para Juan: aqui inicia al host! playerNum deberia estar a 0 y luego ponerse a 1 cuando se crea el jugador
-        {
-            //Calculate spawns
-            SetSpawnPositions();
-            //CreatePlayer
-            int playernumber = PhotonNetwork.CurrentRoom.PlayerCount - 1;//ELOY: Para Juan: ESTO NO ESTA PREPARADO PARA CUANDO SE SALE ALGUIEN. Si eran 10 jugadores y se sale el 3
-            //no se rellena el 3, sino el 10. Hay que buscar con un for el numero más bajo por rellenar.
-            print("Creating player number " + playernumber);
-            Debug.Log("0 - AllCameraBases.Length = " + allCameraBases.Count);
-            CreatePlayer(playernumber);
-            //PlayerSetupOnline?
-            //No hace falta SetUpCanvas creo
-            //Haz los awakes, y haz el awake de cada jugador nuevo(esto ultimo hay que buscar donde ponerlo... en el CreatePlayer?
+        //}
+        //else //ONLINE //Eloy: para Juan: aqui inicia al host! playerNum deberia estar a 0 y luego ponerse a 1 cuando se crea el jugador
+        //{
+        //    //Calculate spawns
+        //    SetSpawnPositions();
+        //    //CreatePlayer
+        //    int playernumber = PhotonNetwork.CurrentRoom.PlayerCount - 1;//ELOY: Para Juan: ESTO NO ESTA PREPARADO PARA CUANDO SE SALE ALGUIEN. Si eran 10 jugadores y se sale el 3
+        //    //no se rellena el 3, sino el 10. Hay que buscar con un for el numero más bajo por rellenar.
+        //    print("Creating player number " + playernumber);
+        //    Debug.Log("0 - AllCameraBases.Length = " + allCameraBases.Count);
+        //    CreatePlayer(playernumber);
+        //    //PlayerSetupOnline?
+        //    //No hace falta SetUpCanvas creo
+        //    //Haz los awakes, y haz el awake de cada jugador nuevo(esto ultimo hay que buscar donde ponerlo... en el CreatePlayer?
 
-            Debug.Log("3 - AllCameraBases.Length = " + allCameraBases.Count);
-            allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-            allUICameras[0].rect = new Rect(0, 0, 1, 1);
-            //Debug.Log("Nuestro jugador es: "+ GameInfo.instance.myControls);
-            allPlayers[0].Actions = GameInfo.instance.myControls == null ? PlayerActions.CreateWithKeyboardBindings() : GameInfo.instance.myControls;
+        //    Debug.Log("3 - AllCameraBases.Length = " + allCameraBases.Count);
+        //    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+        //    allUICameras[0].rect = new Rect(0, 0, 1, 1);
+        //    //Debug.Log("Nuestro jugador es: "+ GameInfo.instance.myControls);
+        //    allPlayers[0].Actions = GameInfo.instance.myControls == null ? PlayerActions.CreateWithKeyboardBindings() : GameInfo.instance.myControls;
 
 
-            allCanvas[0].GetComponent<PlayerHUD>().AdaptCanvasHeightScale();
-            myGameInterface.KonoAwake(this);
-            allPlayers[0].KonoAwake(true);
-            allCameraBases[0].KonoAwake();
+        //    allCanvas[0].GetComponent<PlayerHUD>().AdaptCanvasHeightScale();
+        //    myGameInterface.KonoAwake(this);
+        //    allPlayers[0].KonoAwake(true);
+        //    allCameraBases[0].KonoAwake();
 
-            gameOverStarted = false;
-            contador[0].anchoredPosition = new Vector3(contador[0].anchoredPosition.x, 100, contador[0].anchoredPosition.y);
+        //    gameOverStarted = false;
+        //    contador[0].anchoredPosition = new Vector3(contador[0].anchoredPosition.x, 100, contador[0].anchoredPosition.y);
 
-            //OnlinePlayerSetup();
-            //OnlineCanvasSetUp();
-            //OnlineAwakePlayer();
+        //    //OnlinePlayerSetup();
+        //    //OnlineCanvasSetUp();
+        //    //OnlineAwakePlayer();
 
-        }
+        //}
         SpecificAwake();
     }
 
@@ -252,40 +250,40 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #region Start
     protected virtual void Start()
     {
-        if (!online)
-        {
+        //if (!online)
+        //{
             StartPlayers();
             StartGame();
-        }
-        else
-        {
-            allPlayers[0].KonoStart();
-            //StartPlayer(0);
-            //playing = true;
-            //gamePaused = false;
+        //}
+        //else
+        //{
+        //    allPlayers[0].KonoStart();
+        //    //StartPlayer(0);
+        //    //playing = true;
+        //    //gamePaused = false;
 
-            allPlayers[0].SetVelocity(Vector3.zero);
-            //allPlayers[0].myCamera.InstantPositioning();
-            //allPlayers[0].myCamera.InstantRotation();
-            //allPlayers[0].ResetPlayer();
-            //allPlayers[0].myPlayerAnimation.RestartAnimation();
+        //    allPlayers[0].SetVelocity(Vector3.zero);
+        //    //allPlayers[0].myCamera.InstantPositioning();
+        //    //allPlayers[0].myCamera.InstantRotation();
+        //    //allPlayers[0].ResetPlayer();
+        //    //allPlayers[0].myPlayerAnimation.RestartAnimation();
 
-            Debug.Log("PhotonNetwork.IsMasterClient = " + PhotonNetwork.IsMasterClient + "; PhotonNetwork.CurrentRoom.PlayerCount = " + PhotonNetwork.CurrentRoom.PlayerCount);
-            if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount >= 1)
-            {
-                StartGame();
-            }
-            else
-            {
-                StartGame();
-            }
+        //    Debug.Log("PhotonNetwork.IsMasterClient = " + PhotonNetwork.IsMasterClient + "; PhotonNetwork.CurrentRoom.PlayerCount = " + PhotonNetwork.CurrentRoom.PlayerCount);
+        //    if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount >= 1)
+        //    {
+        //        StartGame();
+        //    }
+        //    else
+        //    {
+        //        StartGame();
+        //    }
 
-            //if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
-            //{
-            //    Debug.Log("GameControllerBase: Empezamos el juego pues se han unido todos los jugadores");
-            //}
-        }
-        Debug.Log("GameController Start terminado");
+        //    //if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
+        //    //{
+        //    //    Debug.Log("GameControllerBase: Empezamos el juego pues se han unido todos los jugadores");
+        //    //}
+        //}
+        Debug.Log("GameController Start finished");
     }
 
     //Funcion que llama al Start de los jugadores. Eloy: Juan, ¿solo pantalla dividida?, JUAN: Sí Eloy, sólo pantalla dividida.
@@ -411,8 +409,8 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     /// </summary>
     void PlayersSetup()
     {
-        if (!online)
-        {
+        //if (!online)
+        //{
             for (int i = 0; i < allPlayers.Count; i++)
             {
                 if (i < playerNum)
@@ -507,7 +505,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                         allUICameras[3].rect = new Rect(0.5f, 0, 0.5f, 0.5f);
                         break;
                 }
-            }
+            //}
             SetSpawnPositions();
         }
 
@@ -542,67 +540,67 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         CameraController newPlayerCamera;
         Camera newPlayerUICamera;
 
-        if (online)
-        {
-            //Debug.Log("0.1 - AllCameraBases.Length = " + allCameraBases.Count);
-            if (playerPrefab == null)
-            {
-                Debug.LogError("GamerControllerBase: Color=Red><a>Missing playerPrefab Reference in GameController</a></Color>");
-            }
-            else
-            {
-                Debug.Log("0.2 - AllCameraBases.Length = " + allCameraBases.Count);
+        //if (online)
+        //{
+        //    //Debug.Log("0.1 - AllCameraBases.Length = " + allCameraBases.Count);
+        //    if (playerPrefab == null)
+        //    {
+        //        Debug.LogError("GamerControllerBase: Color=Red><a>Missing playerPrefab Reference in GameController</a></Color>");
+        //    }
+        //    else
+        //    {
+        //        Debug.Log("0.2 - AllCameraBases.Length = " + allCameraBases.Count);
 
-                Debug.Log("GameControllerBase: Instantiating player over the network");
-                //JUAN: WARNING!!, el objeto que se instancie debe estar siempre en la carpeta de Resources de Photon, o ir al método de instantiate para cambiarlo
-                //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
-                if (PlayerMovement.LocalPlayerInstance == null)//Esta linea no sirve para nada y no está bien hecha la comprobación. To be erased
-                {
-                    Debug.Log("0.3 - AllCameraBases.Length = " + allCameraBases.Count);
+        //        Debug.Log("GameControllerBase: Instantiating player over the network");
+        //        //JUAN: WARNING!!, el objeto que se instancie debe estar siempre en la carpeta de Resources de Photon, o ir al método de instantiate para cambiarlo
+        //        //JUAN: Eloy, donde dice Vector3 y Quartenion debe ser para establecer la posición del spawn del jugador, para hacer las pruebas lo dejo to random pero hay que mirarlo
+        //        if (PlayerMovement.LocalPlayerInstance == null)//Esta linea no sirve para nada y no está bien hecha la comprobación. To be erased
+        //        {
+        //            Debug.Log("0.3 - AllCameraBases.Length = " + allCameraBases.Count);
 
-                    Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
-                    // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-                    Team newPlayerTeam = SetRandomOnlineTeam(playerNumber);
-                    ////Vector3 respawn = new Vector3(-200, -200, -200);
-                    ////if (newPlayerTeam == Team.A)
-                    ////{
-                    ////    respawn = teamASpawns[0].position;
-                    ////}
-                    ////else if (newPlayerTeam == Team.B)
-                    ////{
-                    ////    respawn = teamBSpawns[0].position;
-                    ////}
-                    PlayerSpawnInfo auxSpawnInfo = GetSpawnPosition(playerNumber);
-                    newPlayer = MasterManager.NetworkInstantiate(playerPrefab, auxSpawnInfo.position, Quaternion.identity).GetComponent<PlayerMovement>();// PhotonNetwork.Instantiate(this.playerPrefab.name, auxSpawnInfo.position, Quaternion.identity, 0).GetComponent<PlayerMovement>();
-                    newPlayer.team = newPlayerTeam;
-                    newPlayer.mySpawnInfo = auxSpawnInfo;
-                    //newPlayer.rotateObj.transform.rotation = newPlayer.mySpawnInfo.rotation;
+        //            Debug.LogFormat("GameControllerBase: We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
+        //            // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
+        //            Team newPlayerTeam = SetRandomOnlineTeam(playerNumber);
+        //            ////Vector3 respawn = new Vector3(-200, -200, -200);
+        //            ////if (newPlayerTeam == Team.A)
+        //            ////{
+        //            ////    respawn = teamASpawns[0].position;
+        //            ////}
+        //            ////else if (newPlayerTeam == Team.B)
+        //            ////{
+        //            ////    respawn = teamBSpawns[0].position;
+        //            ////}
+        //            PlayerSpawnInfo auxSpawnInfo = GetSpawnPosition(playerNumber);
+        //            newPlayer = MasterManager.NetworkInstantiate(playerPrefab, auxSpawnInfo.position, Quaternion.identity).GetComponent<PlayerMovement>();// PhotonNetwork.Instantiate(this.playerPrefab.name, auxSpawnInfo.position, Quaternion.identity, 0).GetComponent<PlayerMovement>();
+        //            newPlayer.team = newPlayerTeam;
+        //            newPlayer.mySpawnInfo = auxSpawnInfo;
+        //            //newPlayer.rotateObj.transform.rotation = newPlayer.mySpawnInfo.rotation;
 
-                    newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
-                    newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
-                    newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
+        //            newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
+        //            newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
+        //            newPlayerUICamera = Instantiate(playerUICameraPrefab, playersUICamerasParent).GetComponent<Camera>();
 
-                    //nombrado de objetos nuevos
-                    newPlayer.gameObject.name = "Player " + playerNumber;
-                    newPlayerCanvas.gameObject.name = "Canvas " + playerNumber;
-                    newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
-                    newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
+        //            //nombrado de objetos nuevos
+        //            newPlayer.gameObject.name = "Player " + playerNumber;
+        //            newPlayerCanvas.gameObject.name = "Canvas " + playerNumber;
+        //            newPlayerCamera.gameObject.name = "CameraBase " + playerNumber;
+        //            newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
 
-                    newPlayer.playerNumber = PhotonNetwork.CurrentRoom.PlayerCount;
-                    Debug.Log("1 - AllCameraBases.Length = " + allCameraBases.Count);
+        //            newPlayer.playerNumber = PhotonNetwork.CurrentRoom.PlayerCount;
+        //            Debug.Log("1 - AllCameraBases.Length = " + allCameraBases.Count);
 
-                    InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
-                    Debug.Log("final allPlayers.Count = " + allPlayers.Count + "; playerNumber = " + playerNumber);
-                    allPlayers[0].KonoAwake();
-                }
-                else
-                {
-                    Debug.Log("GameControllerBase: Ignoring CreatePlayer() call because we already exist");
-                }
-            }
-        }
-        else//offline
-        {
+        //            InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
+        //            Debug.Log("final allPlayers.Count = " + allPlayers.Count + "; playerNumber = " + playerNumber);
+        //            allPlayers[0].KonoAwake();
+        //        }
+        //        else
+        //        {
+        //            Debug.Log("GameControllerBase: Ignoring CreatePlayer() call because we already exist");
+        //        }
+        //    }
+        //}
+        //else//offline
+        //{
             newPlayer = Instantiate(playerPrefab, playersParent).GetComponent<PlayerMovement>();
             newPlayer.mySpawnInfo = new PlayerSpawnInfo();
 
@@ -617,7 +615,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             newPlayerUICamera.gameObject.name = "UICamera " + playerNumber;
 
             InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
-        }
+        //}
     }
 
     //Eloy: Juan, he creado este método porque copiar y pegar lo mismo en ambos lados del if(online/offline) era un horror para mi cerebro. cada nueva referencia sería un lío, así mejor.
@@ -648,24 +646,24 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
        Debug.Log("1 allPlayers.Count = " + allPlayers.Count);
        allPlayers.Add(player);
        Debug.Log("2 allPlayers.Count = " + allPlayers.Count);
-        if (online)
-        {
-            if (jugadaGalaxia)
-            {
-                jugadaGalaxia = false;
-                allCanvas.Add(canvas);
-                Debug.Log("2 - AllCameraBases.Length = " + allCameraBases.Count);
+        //if (online)
+        //{
+        //    if (jugadaGalaxia)
+        //    {
+        //        jugadaGalaxia = false;
+        //        allCanvas.Add(canvas);
+        //        Debug.Log("2 - AllCameraBases.Length = " + allCameraBases.Count);
 
-                allCameraBases.Add(cameraBase);
-                allUICameras.Add(UICamera);
-            }
-        }
-        else
-        {
+        //        allCameraBases.Add(cameraBase);
+        //        allUICameras.Add(UICamera);
+        //    }
+        //}
+        //else
+        //{
             allCanvas.Add(canvas);
             allCameraBases.Add(cameraBase);
             allUICameras.Add(UICamera);
-        }
+        //}
 
         //ignore this
         contador.Add(playerHUD.contador);
@@ -703,23 +701,23 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     /// </summary>
     void SetSpawnPositions()
     {
-        int maxPlayers = online ? PhotonNetwork.CurrentRoom.MaxPlayers : allPlayers.Count;
+        int maxPlayers = /*online ? PhotonNetwork.CurrentRoom.MaxPlayers :*/ allPlayers.Count;
         int playerNumACopy, playerNumBCopy;
         List<PlayerMovement> teamBPlayers = new List<PlayerMovement>();
         List<PlayerMovement> teamAPlayers = new List<PlayerMovement>();
-        if (online)
-        {
-            if (teamASpawns.Length == 0) Debug.LogError("Error: there must be at least one spawn for team A in online mode");
-            if (teamBSpawns.Length == 0) Debug.LogError("Error: there must be at least one spawn for team B in online mode");
-            playerSpawnInfoList = new PlayerSpawnInfo[maxPlayers];
-            for (int i = 0; i < playerSpawnInfoList.Length; i++)
-            {
-                playerSpawnInfoList[i] = new PlayerSpawnInfo();
-            }
-            playerNumACopy = playerNumBCopy = playerNumACopy = playerNumTeamA = playerNumTeamB = maxPlayers / 2;
-        }
-        else
-        {
+        //if (online)
+        //{
+        //    if (teamASpawns.Length == 0) Debug.LogError("Error: there must be at least one spawn for team A in online mode");
+        //    if (teamBSpawns.Length == 0) Debug.LogError("Error: there must be at least one spawn for team B in online mode");
+        //    playerSpawnInfoList = new PlayerSpawnInfo[maxPlayers];
+        //    for (int i = 0; i < playerSpawnInfoList.Length; i++)
+        //    {
+        //        playerSpawnInfoList[i] = new PlayerSpawnInfo();
+        //    }
+        //    playerNumACopy = playerNumBCopy = playerNumACopy = playerNumTeamA = playerNumTeamB = maxPlayers / 2;
+        //}
+        //else
+        //{
             for (int i = 0; i < maxPlayers; i++)
             {
                 if (allPlayers[i].team == Team.A)
@@ -733,7 +731,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
             }
             playerNumACopy = playerNumTeamA = teamAPlayers.Count;
             playerNumBCopy = playerNumTeamB = teamBPlayers.Count;
-        }
+        //}
         print("Blue players: " + playerNumACopy + "; Red Players: " + playerNumBCopy);
 
         //Divide number of players in a team by number of spawns in that team && set spawnRotation of players (because is more efficient to do it here)
@@ -757,27 +755,27 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 teamASpawnsNumPlayers[i] = Mathf.Clamp(playerNumACopy, 0, playersPerSpawn);
                 playerNumACopy -= teamASpawnsNumPlayers[i];
                 //print("Respawn "+ i + ": " + blueSpawnsNumPlayers[i] + " players");
-                if (online)
-                {
-                    int auxTeamASpawnNumPlayers = teamASpawnsNumPlayers[i];
-                    for (int j = 0; j < playerSpawnInfoList.Length && auxTeamASpawnNumPlayers > 0; j++)
-                    {
-                        if (j % 2 == 0)//Team A
-                        {
-                            auxTeamASpawnNumPlayers--;
-                            playerSpawnInfoList[j].rotation = Quaternion.Euler(0, teamASpawns[i].rotation.eulerAngles.y, 0);
-                        }
-                    }
-                }
-                else
-                {
+                //if (online)
+                //{
+                //    int auxTeamASpawnNumPlayers = teamASpawnsNumPlayers[i];
+                //    for (int j = 0; j < playerSpawnInfoList.Length && auxTeamASpawnNumPlayers > 0; j++)
+                //    {
+                //        if (j % 2 == 0)//Team A
+                //        {
+                //            auxTeamASpawnNumPlayers--;
+                //            playerSpawnInfoList[j].rotation = Quaternion.Euler(0, teamASpawns[i].rotation.eulerAngles.y, 0);
+                //        }
+                //    }
+                //}
+                //else
+                //{
                     for (int j = 0; j < teamASpawnsNumPlayers[i]; j++)
                     {
                         teamAPlayers[0].mySpawnInfo.rotation = Quaternion.Euler(0, teamASpawns[i].rotation.eulerAngles.y, 0);
                         //print("SpawnRotation " + bluePlayers[0].gameObject.name + " = " + bluePlayers[0].spawnRotation.eulerAngles);
                         teamAPlayers.RemoveAt(0);
                     }
-                }
+                //}
             }
         }
 
@@ -795,26 +793,26 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                 teamBSpawnsNumPlayers[i] = Mathf.Clamp(playerNumBCopy, 0, playersPerSpawn);
                 playerNumBCopy -= teamBSpawnsNumPlayers[i];
                 //print(i + ": " + redSpawnsNumPlayers[i] + " players");
-                if (online)
-                {
-                    int auxTeamBSpawnNumPlayers = teamBSpawnsNumPlayers[i];
-                    for (int j = 0; j < playerSpawnInfoList.Length && auxTeamBSpawnNumPlayers > 0; j++)
-                    {
-                        if (j % 2 != 0)//Team B
-                        {
-                            auxTeamBSpawnNumPlayers--;
-                            playerSpawnInfoList[j].rotation = Quaternion.Euler(0, teamBSpawns[i].rotation.eulerAngles.y, 0);
-                        }
-                    }
-                }
-                else
-                {
+                //if (online)
+                //{
+                //    int auxTeamBSpawnNumPlayers = teamBSpawnsNumPlayers[i];
+                //    for (int j = 0; j < playerSpawnInfoList.Length && auxTeamBSpawnNumPlayers > 0; j++)
+                //    {
+                //        if (j % 2 != 0)//Team B
+                //        {
+                //            auxTeamBSpawnNumPlayers--;
+                //            playerSpawnInfoList[j].rotation = Quaternion.Euler(0, teamBSpawns[i].rotation.eulerAngles.y, 0);
+                //        }
+                //    }
+                //}
+                //else
+                //{
                     for (int j = 0; j < teamBSpawnsNumPlayers[i]; j++)
                     {
                         teamBPlayers[0].mySpawnInfo.rotation = Quaternion.Euler(0, teamBSpawns[i].rotation.eulerAngles.y, 0);
                         teamBPlayers.RemoveAt(0);
                     }
-                }
+                //}
             }
         }
 
@@ -834,26 +832,26 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
         }
         if (spawnPosTeamA.Count != playerNumTeamA) Debug.LogError("Error: Spawn positions (" + spawnPosTeamA.Count + ") for blue team are not equal to number of blue team players(" + playerNumTeamA + ").");
         if (spawnPosTeamB.Count != playerNumTeamB) Debug.LogError("Error: Spawn positions (" + spawnPosTeamB.Count + ") for red team are not equal to number of red team players(" + playerNumTeamB + ").");
-        if (online)
-        {
-            for (int i = 0; i < playerSpawnInfoList.Length; i++)
-            {
-                Vector3 pos;
-                if (i % 2 == 0)
-                {
-                    pos = spawnPosTeamA[0];
-                    spawnPosTeamA.RemoveAt(0);
-                }
-                else
-                {
-                    pos = spawnPosTeamB[0];
-                    spawnPosTeamB.RemoveAt(0);
-                }
-                playerSpawnInfoList[i].position = pos;
-            }
-        }
-        else
-        {
+        //if (online)
+        //{
+        //    for (int i = 0; i < playerSpawnInfoList.Length; i++)
+        //    {
+        //        Vector3 pos;
+        //        if (i % 2 == 0)
+        //        {
+        //            pos = spawnPosTeamA[0];
+        //            spawnPosTeamA.RemoveAt(0);
+        //        }
+        //        else
+        //        {
+        //            pos = spawnPosTeamB[0];
+        //            spawnPosTeamB.RemoveAt(0);
+        //        }
+        //        playerSpawnInfoList[i].position = pos;
+        //    }
+        //}
+        //else
+        //{
             for (int i = 0; i < allPlayers.Count; i++)
             {
                 if (allPlayers[i].team == Team.A)
@@ -867,7 +865,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
                     spawnPosTeamB.RemoveAt(0);
                 }
             }
-        }
+        //}
     }
 
     /// <summary>
@@ -958,14 +956,14 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
 
     public void PauseGame(PlayerActions p)
     {
-        if (!online)
-        {
+        //if (!online)
+        //{
             Time.timeScale = 0;
             myGameInterface.PauseGame();
             playerActions = p;
             gamePaused = true;
             RenController.instance.disabled = false;
-        }
+        //}
     }
 
     public void UnPauseGame()
@@ -997,7 +995,7 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     public virtual void StartGameOver(Team _winnerTeam)
     {
         //print("GAME OVER");
-        if (!gameOverStarted && !online)
+        if (!gameOverStarted /*&& !online*/)
         {
             for(int i = 0; i < allPlayers.Count; i++)
             {
@@ -1121,20 +1119,20 @@ public class GameControllerBase : MonoBehaviourPunCallbacks
     #endregion
 
     #region ----[ PUN CALLBACKS ]----
-    public override void OnPlayerEnteredRoom(Player newplayer)
-    {
-        Debug.Log("El jugador " + newplayer.NickName + " acaba de entrar en la sala");
-    }
+    //public override void OnPlayerEnteredRoom(Player newplayer)
+    //{
+    //    Debug.Log("El jugador " + newplayer.NickName + " acaba de entrar en la sala");
+    //}
 
-    public override void OnDisconnected(DisconnectCause cause)
-    {
-        Debug.Log("Disconnected from Photon server for cause " + cause);
-        if (online)
-        {
-            online = false;
-            SceneManager.LoadScene(MasterManager.GameSettings.MainMenuScene);
-        }
-    }
+    //public override void OnDisconnected(DisconnectCause cause)
+    //{
+    //    Debug.Log("Disconnected from Photon server for cause " + cause);
+    //    if (online)
+    //    {
+    //        online = false;
+    //        SceneManager.LoadScene(MasterManager.GameSettings.MainMenuScene);
+    //    }
+    //}
     #endregion
 
     #region ----[ RPC ]----
