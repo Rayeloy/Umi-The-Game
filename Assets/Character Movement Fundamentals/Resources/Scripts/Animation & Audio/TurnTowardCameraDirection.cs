@@ -5,7 +5,7 @@ using UnityEngine;
 //This script turns a gameobject toward the look direction of a chosen 'CameraController' component;
 public class TurnTowardCameraDirection : MonoBehaviour {
 
-	public CameraController cameraController;
+	public CameraControllerCMF cameraController;
 	Transform tr;
 
 	//Setup;

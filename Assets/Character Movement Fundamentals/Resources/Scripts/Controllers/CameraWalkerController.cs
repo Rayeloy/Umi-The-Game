@@ -8,12 +8,12 @@ using UnityEngine;
 public class CameraWalkerController : BasicWalkerController {
 
 	//Reference to camera controls;
-	CameraController cameraControls;
+	CameraControllerCMF cameraControls;
 
 	protected override void Setup()
 	{
 		//Search for camera controller reference in this gameobjects' children;
-		cameraControls = GetComponentInChildren<CameraController>();
+		cameraControls = GetComponentInChildren<CameraControllerCMF>();
 	}
 
 	//Calculate movement direction based on camera controller orientation;
@@ -45,7 +45,7 @@ public class CameraWalkerController : BasicWalkerController {
 	}
 
 	//Returns reference to camera controller;
-	public CameraController GetCameraController()
+	public CameraControllerCMF GetCameraController()
 	{
 		return cameraControls;
 	}

@@ -4,7 +4,7 @@ using UnityEngine;
 
 //This script rotates a gameobject based on user input.
 //Rotation around the x-axis (vertical) can be clamped/limited by setting 'upperVerticalLimit' and 'lowerVerticalLimit'.
-public class CameraController : MonoBehaviour {
+public class CameraControllerCMF : MonoBehaviour {
 
 	//Names of input axes;
 	public string horizontalInputAxis = "Mouse X";

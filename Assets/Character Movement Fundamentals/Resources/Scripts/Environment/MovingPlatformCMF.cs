@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 //This script moves a rigidbody along a set of waypoints;
 //It also moves any controllers on top along with it;
-public class MovingPlatform : MonoBehaviour {
+public class MovingPlatformCMF : MonoBehaviour {
 
 	//Movement speed;
 	public float movementSpeed = 10f;
