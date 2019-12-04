@@ -561,7 +561,6 @@ public class PlayerMovement : MonoBehaviour
     {
     }
 
-
     public void KonoLateUpdate()
     {
         if(Time.deltaTime>0)
