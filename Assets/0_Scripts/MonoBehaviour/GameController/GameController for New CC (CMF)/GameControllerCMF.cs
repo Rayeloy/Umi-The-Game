@@ -6,13 +6,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
 #region ----[ PUBLIC ENUMS ]----
-public enum GameMode
-{
-    None,
-    CaptureTheFlag,
-    AirPump,
-    Tutorial
-}
 #endregion
 
 public class GameControllerCMF : MonoBehaviour
@@ -22,7 +15,7 @@ public class GameControllerCMF : MonoBehaviour
 
     //referencias
     [Header(" --- Referencias --- ")]
-    public GameInterface myGameInterface;
+    public GameInterfaceCMF myGameInterface;
     //este parámetro es para poner slowmotion al juego (como estados: 0=normal,1=slowmo,2=slowestmo),
     // solo se debe usar para testeo, hay que QUITARLO para la build "comercial".
     [Header(" --- Variables generales ---")]
@@ -84,7 +77,7 @@ public class GameControllerCMF : MonoBehaviour
 
     //Player components lists
     protected List<PlayerMovementCMF> allPlayers;//Array que contiene a los PlayerMovementCMF
-    protected List<CameraControllerUmi> allCameraBases;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
+    protected List<CameraControllerCMF> allCameraBases;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
     protected List<GameObject> allCanvas;//Array que contiene los objetos de los canvas de cada jugador, solo util en Pantalla Dividida
     protected List<Camera> allUICameras;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
 
@@ -104,8 +97,6 @@ public class GameControllerCMF : MonoBehaviour
     // variables para nuestro jugador online
     [HideInInspector]
     public PlayerActions BaseGameActions { get; set; }
-    [HideInInspector]
-    bool jugadaGalaxia = true;//esto es pura caca porque no sabemos usar photonview, revisar plis
 
     [HideInInspector]
     public bool HasPlayerFlatCamera(PlayerMovementCMF pM)
@@ -176,7 +167,7 @@ public class GameControllerCMF : MonoBehaviour
 
         //initialize lists
         allPlayers = new List<PlayerMovementCMF>();
-        allCameraBases = new List<CameraControllerUmi>();
+        allCameraBases = new List<CameraControllerCMF>();
         allCanvas = new List<GameObject>();
         allUICameras = new List<Camera>();
 
@@ -420,11 +411,11 @@ public class GameControllerCMF : MonoBehaviour
                 {
                     GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
                     Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
-                    allPlayers[0].Actions = GameInfo.instance.myControls;
+                    allPlayers[0].actions = GameInfo.instance.myControls;
                 }
                 else
                 {
-                    allPlayers[i].Actions = GameInfo.instance.playerActionsList[i];
+                    allPlayers[i].actions = GameInfo.instance.playerActionsList[i];
                 }
 
                 if (GameInfo.instance.playerTeamList[i] == Team.none)

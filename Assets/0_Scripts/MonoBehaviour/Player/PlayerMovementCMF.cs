@@ -483,7 +483,7 @@ public class PlayerMovementCMF : MonoBehaviour
     #endregion
 
     #region UPDATE
-    public void Update()
+    public void KonoUpdate()
     {
         if (actions.Start.WasPressed) gC.PauseGame(actions);
 
@@ -494,7 +494,7 @@ public class PlayerMovementCMF : MonoBehaviour
         myPlayerHook.KonoUpdate();
     }
 
-    public void FixedUpdate()
+    public void KonoFixedUpdate()
     {
         ResetMovementVariables();
 
@@ -520,7 +520,7 @@ public class PlayerMovementCMF : MonoBehaviour
         myPlayerCombatNew.KonoUpdate();
     }
 
-    public void LateUpdate()
+    public void KonoLateUpdate()
     {
         myPlayerAnimation_01.KonoUpdate();
     }

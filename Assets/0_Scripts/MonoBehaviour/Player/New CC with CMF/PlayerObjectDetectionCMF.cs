@@ -9,7 +9,7 @@ public class PlayerObjectDetectionCMF : MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     //Referencias
-    public PlayerMovement myPlayerMovement;
+    public PlayerMovementCMF myPlayerMovement;
     #endregion
 
     #region ----[ PROPERTIES ]----
