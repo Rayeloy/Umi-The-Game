@@ -36,10 +36,6 @@ using UnityEngine.UI;
 #endregion
 
 #region ----[ REQUIRECOMPONENT ]----
-[RequireComponent(typeof(PlayerCombatNew))]
-[RequireComponent(typeof(PlayerAnimation_01))]
-[RequireComponent(typeof(PlayerWeapons))]
-[RequireComponent(typeof(PlayerHook))]
 #endregion
 public class PlayerMovementCMF : MonoBehaviour
 {
@@ -48,14 +44,13 @@ public class PlayerMovementCMF : MonoBehaviour
     public bool disableAllDebugs;
     //public PlayerCombat myPlayerCombat;
     public Mover mover;
-    public PlayerCombatNew myPlayerCombatNew;
-    public PlayerWeapons myPlayerWeap;
-    public PlayerPickups myPlayerPickups;
+    public PlayerCombatCMF myPlayerCombatNew;
+    public PlayerWeaponsCMF myPlayerWeap;
     //public PlayerAnimation myPlayerAnimation;
     public PlayerAnimation_01 myPlayerAnimation_01;
-    public PlayerHook myPlayerHook;
+    public PlayerHookCMF myPlayerHook;
     //public Controller3D controller;
-    public PlayerBody myPlayerBody;
+    public PlayerBodyCMF myPlayerBody;
     public PlayerObjectDetection myPlayerObjectDetection;
     public PlayerModel myPlayerModel;
     public PlayerVFX myPlayerVFX;

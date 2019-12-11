@@ -19,7 +19,7 @@ public class HitboxCMF : MonoBehaviour
     private void Awake()
     {
         myPlayerMov = transform.GetComponentsInParent<PlayerMovementCMF>()[0];
-        myPlayerCombatNew = transform.GetComponentsInParent<PlayerCombatNew>()[0];
+        myPlayerCombatNew = transform.GetComponentsInParent<PlayerCombatCMF>()[0];
         if (!myPlayerMov.disableAllDebugs) Debug.Log(myPlayerMov.gameObject.name + " ->I'm hitbox " + name + " and I'm doing Awake");
         targetsHit = new List<string>();
         dummiesHit = new List<string>();
@@ -60,7 +60,7 @@ public class HitboxCMF : MonoBehaviour
                 {
                     #region --- PLAYER ---
                     case "Player":
-                        PlayerMovementCMF otherPlayer = col.GetComponent<PlayerBody>().myPlayerMov;
+                        PlayerMovementCMF otherPlayer = col.GetComponent<PlayerBodyCMF>().myPlayerMov;
                         if (myPlayerMov.team != otherPlayer.team && !myPlayerCombatNew.parryStarted)
                         {
                             encontrado = false;
@@ -418,7 +418,7 @@ public class HitboxCMF : MonoBehaviour
                 switch (col.tag)
                 {
                     case "Player":
-                        PlayerMovementCMF otherPlayer = col.GetComponent<PlayerBody>().myPlayerMov;
+                        PlayerMovementCMF otherPlayer = col.GetComponent<PlayerBodyCMF>().myPlayerMov;
                         if (myPlayerMov.team != otherPlayer.team)
                         {
                             bool encontrado = false;
