@@ -2193,7 +2193,7 @@ public class PlayerMovementCMF : MonoBehaviour
         haveFlag = false;
         flag = null;
         ShowFlagFlow();
-        (gC as GameController_FlagMode).HideFlagHomeLightBeam(team);
+        (gC as GameControllerCMF_FlagMode).HideFlagHomeLightBeam(team);
     }
 
     //En desuso
@@ -2226,7 +2226,7 @@ public class PlayerMovementCMF : MonoBehaviour
             //Desactivar al jugadro si se esta en la prorroga.
             if (gC.gameMode == GameMode.CaptureTheFlag)
             {
-                (gC as GameController_FlagMode).myScoreManager.PlayerEliminado();
+                (gC as GameControllerCMF_FlagMode).myScoreManager.PlayerEliminado();
             }
             myPlayerVFX.ActivateEffect(PlayerVFXType.SwimmingEffect);
             if (waterTrigger != null)
@@ -2278,7 +2278,7 @@ public class PlayerMovementCMF : MonoBehaviour
     {
         if (haveFlag && team == flagHome.team && this.moveSt != MoveState.Hooked)
         {
-            (gC as GameController_FlagMode).ScorePoint(team);
+            (gC as GameControllerCMF_FlagMode).ScorePoint(team);
             if (flag != null)
             {
                 flag.SetAway(true);
@@ -2305,7 +2305,7 @@ public class PlayerMovementCMF : MonoBehaviour
         //}
         //else
         //{
-        distanceToFlag = ((gC as GameController_FlagMode).flags[0].transform.position - transform.position).magnitude;
+        distanceToFlag = ((gC as GameControllerCMF_FlagMode).flags[0].transform.position - transform.position).magnitude;
         //}
     }
 
@@ -2317,7 +2317,7 @@ public class PlayerMovementCMF : MonoBehaviour
             {
                 UpdateDistanceToFlag();
                 //print("distanceToFlag = " + distanceToFlag);
-                if (distanceToFlag >= (gC as GameController_FlagMode).minDistToSeeBeam)
+                if (distanceToFlag >= (gC as GameControllerCMF_FlagMode).minDistToSeeBeam)
                 {
                     ShowFlagLightBeam();
                 }

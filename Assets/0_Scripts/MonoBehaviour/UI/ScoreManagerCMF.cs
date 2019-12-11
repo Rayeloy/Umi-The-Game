@@ -44,7 +44,7 @@ public class ScoreManagerCMF : MonoBehaviour
     //public RectTransform[] contador;
 
 
-    public void KonoAwake(GameController_FlagMode _gC)
+    public void KonoAwake(GameControllerCMF_FlagMode _gC)
     {
         gC = _gC;
         blueTeamScore_Text = new List<TextMeshProUGUI>();
