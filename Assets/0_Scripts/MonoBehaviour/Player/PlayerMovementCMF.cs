@@ -41,7 +41,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(PlayerWeapons))]
 [RequireComponent(typeof(PlayerHook))]
 #endregion
-public class PlayerMovementNew : MonoBehaviour
+public class PlayerMovementCMF : MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     [Header(" --- Referencias --- ")]

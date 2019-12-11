@@ -35,16 +35,10 @@ public class RegionClassModel
     #region ----[ PUBLIC FUNCTIONS ]----
     #endregion
 
-    #region ----[ PUN CALLBACKS ]----
-    #endregion
-
-    #region ----[ RPC ]----
+    #region ----[ BOLT CALLBACKS ]----
     #endregion
 
     #region ----[ NETWORK FUNCTIONS ]----
-    #endregion
-
-    #region ----[ IPUNOBSERVABLE ]----
     #endregion
 }
 
