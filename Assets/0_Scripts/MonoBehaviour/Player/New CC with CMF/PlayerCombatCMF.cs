@@ -122,7 +122,7 @@ public class PlayerCombatCMF : MonoBehaviour
     #region Awake
     public void KonoAwake()
     {
-        myPlayerMovement = GetComponent<PlayerMovement>();
+        myPlayerMovement = GetComponent<PlayerMovementCMF>();
         myPlayerWeap = myPlayerMovement.myPlayerWeap;
         myHook = myPlayerMovement.myPlayerHook;
         myPlayerHUD = myPlayerMovement.myPlayerHUD;

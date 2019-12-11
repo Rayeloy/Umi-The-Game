@@ -8,7 +8,7 @@ public class FlagCMF : MonoBehaviour
     [Header("Referencias")]
     public Transform flagCamera;
     public Transform flagCameraLocalParent;
-    public GameController_FlagModeCMF gC;
+    public GameControllerCMF_FlagMode gC;
     [HideInInspector]
     public Vector3 respawnPos;
     [Tooltip("Not used yet. Can be used to differentiate flags")]
