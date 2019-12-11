@@ -169,7 +169,7 @@ public class PlayerAnimationCMF : MonoBehaviour
         //animator.SetFloat("HorizontalSpeed", myPlayerMovement.currentSpeed);//new Vector2 (playerMovement.currentVel.x, playerMovement.currentVel.z).magnitude);
         //animator.SetFloat("VerticalSpeed", myPlayerMovement.currentVel.y);              
 
-        animator.SetBool("Air", !myPlayerMovement.controller.collisions.below);
+        animator.SetBool("Air", !myPlayerMovement.collInfo.isGrounded);
 
         animator.SetBool("Water", myPlayerMovement.inWater);
 
@@ -236,7 +236,7 @@ public class PlayerAnimationCMF : MonoBehaviour
             jumpout = false;
             animator.SetBool(jumpOutHash, jumpout);
 
-            if (!myPlayerMovement.controller.collisions.below)
+            if (!myPlayerMovement.collInfo.isGrounded)
             {
                 ground = false;
                 animator.SetBool(groundHash, ground);
@@ -264,7 +264,7 @@ public class PlayerAnimationCMF : MonoBehaviour
             swimming = false;
             animator.SetBool(swimmingHash, swimming);
         }
-        if (myPlayerMovement.currentSpeed > 0 || startJump || !myPlayerMovement.controller.collisions.below)
+        if (myPlayerMovement.currentSpeed > 0 || startJump || !myPlayerMovement.collInfo.isGrounded)
         {
             idle_01 = false;
             animator.SetBool(idleHash, idle_01);
@@ -274,7 +274,7 @@ public class PlayerAnimationCMF : MonoBehaviour
             idleW = false;
             animator.SetBool(idleWHash, idleW);
         }
-        if (run && !(myPlayerMovement.currentSpeed != 0 && myPlayerMovement.controller.collisions.below))
+        if (run && !(myPlayerMovement.currentSpeed != 0 && myPlayerMovement.collInfo.isGrounded))
         {
             run = false;
             animator.SetBool(runHash, run);
@@ -296,13 +296,13 @@ public class PlayerAnimationCMF : MonoBehaviour
     {
         stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
-        if (!ground && myPlayerMovement.controller.collisions.below && !myPlayerMovement.inWater && !noControl)
+        if (!ground && myPlayerMovement.collInfo.isGrounded && !myPlayerMovement.inWater && !noControl)
         {
             ground = true;
             animator.SetBool(groundHash, ground);
         }
 
-        if (ground && myPlayerMovement.controller.collisions.below && myPlayerMovement.inWater && !noControl)
+        if (ground && myPlayerMovement.collInfo.isGrounded && myPlayerMovement.inWater && !noControl)
         {
 
             ground = false;
@@ -495,19 +495,19 @@ public class PlayerAnimationCMF : MonoBehaviour
             exitWater = false;
         }
 
-        if (myPlayerMovement.controller.collisions.below && myPlayerMovement.currentSpeed == 0 && !myPlayerMovement.inWater)
+        if (myPlayerMovement.collInfo.isGrounded && myPlayerMovement.currentSpeed == 0 && !myPlayerMovement.inWater)
         {
             idle_01 = true;
             animator.SetBool(idleHash, idle_01);
         }
 
-        if (myPlayerMovement.currentSpeed != 0 && myPlayerMovement.controller.collisions.below && !noControl)
+        if (myPlayerMovement.currentSpeed != 0 && myPlayerMovement.collInfo.isGrounded && !noControl)
         {
             run = true;
             animator.SetBool(runHash, run);
         }
 
-        if (/*startJump || */!myPlayerMovement.controller.collisions.below && myPlayerMovement.currentVel.y < 0 && !noControl) //Si ya ha empezado el salto ó No hay colisoines abajo y además en el frame anterior si que habían
+        if (/*startJump || */!myPlayerMovement.collInfo.isGrounded && myPlayerMovement.currentVel.y < 0 && !noControl) //Si ya ha empezado el salto ó No hay colisoines abajo y además en el frame anterior si que habían
         {
 
             if (!falling)
@@ -536,15 +536,15 @@ public class PlayerAnimationCMF : MonoBehaviour
 
         float timeToLand = myPlayerMovement.controller.collisions.distanceToFloor / Mathf.Abs(myPlayerMovement.currentVel.y);
 
-        //Debug.Log("vel.y = " + myPlayerMovement.currentVel.y + "; below = " + myPlayerMovement.controller.collisions.below + "; distance to floor = "
+        //Debug.Log("vel.y = " + myPlayerMovement.currentVel.y + "; below = " + myPlayerMovement.collInfo.isGrounded + "; distance to floor = "
         //    + myPlayerMovement.controller.collisions.distanceToFloor + "; timeToLand = " + timeToLand + "; falling = " + falling + "; below = "
-        //    + myPlayerMovement.controller.collisions.below);
+        //    + myPlayerMovement.collInfo.isGrounded);
 
 
-        if (myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.controller.collisions.below && timeToLand <= maxTimeToLand && !toGround)
+        if (myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.collInfo.isGrounded && timeToLand <= maxTimeToLand && !toGround)
         {
-            //Debug.Log("vel.y = " + myPlayerMovement.currentVel.y + "; below = " + myPlayerMovement.controller.collisions.below
-            //+ "; timeToLand = " + timeToLand + "; falling = " + falling + "; below = " + myPlayerMovement.controller.collisions.below);
+            //Debug.Log("vel.y = " + myPlayerMovement.currentVel.y + "; below = " + myPlayerMovement.collInfo.isGrounded
+            //+ "; timeToLand = " + timeToLand + "; falling = " + falling + "; below = " + myPlayerMovement.collInfo.isGrounded);
 
             startJump = false;
             animator.SetBool(startJumpHash, startJump);
@@ -555,8 +555,8 @@ public class PlayerAnimationCMF : MonoBehaviour
 
         }
 
-        if ((myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.controller.collisions.below && timeToLand <= maxTimeToLand)
-    || (falling && myPlayerMovement.controller.collisions.below))
+        if ((myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.collInfo.isGrounded && timeToLand <= maxTimeToLand)
+    || (falling && myPlayerMovement.collInfo.isGrounded))
 
             if (myPlayerMovement.inWater && myPlayerMovement.currentSpeed > 0)
             {

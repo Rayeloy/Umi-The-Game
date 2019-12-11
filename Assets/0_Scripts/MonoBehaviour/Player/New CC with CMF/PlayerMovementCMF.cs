@@ -69,7 +69,8 @@ public class PlayerMovementCMF : MonoBehaviour
 
 
     //GROUND VARIABLES
-    CollisionInfo collInfo;
+    [HideInInspector]
+    public CollisionInfo collInfo;
 
     //VARIABLES DE MOVIMIENTO
 
@@ -2178,7 +2179,7 @@ public class PlayerMovementCMF : MonoBehaviour
 
     #region PICKUP / FLAG / DEATH ---------------------------------------------
 
-    public void PutOnFlag(Flag _flag)
+    public void PutOnFlag(FlagCMF _flag)
     {
         flag = _flag;
         flag.transform.SetParent(rotateObj);
