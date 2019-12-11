@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &214530146000281683
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 38931708321270835}
+  - component: {fileID: 7459265799143252258}
+  m_Layer: 0
+  m_Name: GameController_Test
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &38931708321270835
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 214530146000281683}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.6029046, y: 35.785515, z: 25.734915}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7459265799143252258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 214530146000281683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d28c46259d97c194e8733303f68bbd73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myGameInterface: {fileID: 0}
+  gameMode: 0
+  slowMoButtonOn: 1
+  recordMode: 0
+  playerPrefab: {fileID: 8276747934832493519, guid: c33cdfc9d1f41c24387b9bc14b525ea1,
+    type: 3}
+  playerCanvasPrefab: {fileID: 8126600660023991336, guid: 245c642f06b554a4aab32003bd688751,
+    type: 3}
+  playerCameraPrefab: {fileID: 6165449936073115997, guid: 13fb97baba0a90f4f9696951d88794ea,
+    type: 3}
+  playerUICameraPrefab: {fileID: 3759195869619577861, guid: 146b447ecc8851946a27058b8e17d0ad,
+    type: 3}
+  playersParent: {fileID: 0}
+  playersCanvasParent: {fileID: 0}
+  playersCamerasParent: {fileID: 0}
+  playersUICamerasParent: {fileID: 0}
+  allBufferedInputs: []
+  teamASpawns:
+  - {fileID: 0}
+  teamBSpawns:
+  - {fileID: 0}
+  scaleDos: 1.25
+  scaleCuatro: 1.25
+  playerNumTeamA: 0
+  playerNumTeamB: 0
+  gameOverStarted: 0
+  playerNum: 1
+  gamePaused: 0
+  playing: 0

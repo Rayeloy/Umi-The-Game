@@ -5,7 +5,7 @@ using UnityEngine;
 //This script is a slightly more specialized version of the regular 'CameraController' script, intended for games using a third-person camera.
 //By enabling 'turnCameraTowardMovementDirection', the camera will gradually rotate toward the current movement direction of the gameobject it is attached to;
 //The rate and speed of this rotation can be controlled using 'maximumMovementSpeed' and 'cameraTurnSpeed';
-public class ThirdPersonCameraController : CameraControllerCMF {
+public class ThirdPersonCameraController : CameraController {
 
 	//Whether or not the camera turns towards the player's movement direction;
 	public bool turnCameraTowardMovementDirection = true;

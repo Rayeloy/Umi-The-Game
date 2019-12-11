@@ -68,7 +68,7 @@ public class GravityTunnel : MonoBehaviour {
 		if(Vector3.Dot(_transform.up, _targetDirection) < -0.001f)
 		{
 			//Get facing direction of camera;
-			Vector3 _facingDirection = _transform.GetComponentInChildren<CameraControllerCMF>().GetFacingDirection();
+			Vector3 _facingDirection = _transform.GetComponentInChildren<CameraController>().GetFacingDirection();
 
 			Quaternion _counterRotation = GetCounterRotation(_rotationDifference);
 			Quaternion _cameraRotationDifference = Quaternion.AngleAxis(180f, _facingDirection);

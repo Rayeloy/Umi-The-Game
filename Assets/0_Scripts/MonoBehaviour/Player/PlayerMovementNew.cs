@@ -4,35 +4,35 @@ using UnityEngine;
 using UnityEngine.UI;
 
 #region ----[ PUBLIC ENUMS ]----
-public enum Team
-{
-    A = 1,// Blue - Green
-    B = 2,// Red - Pink
-    none = 0
-}
-public enum MoveState
-{
-    None = 0,
-    Moving = 1,
-    NotMoving = 2,//Not stunned, breaking
-    Knockback = 3,//Stunned
-    MovingBreaking = 4,//Moving but reducing speed by breakAcc till maxMovSpeed
-    Hooked = 5,
-    Boost = 6,
-    FixedJump = 7,
-    NotBreaking = 8,
-    Impulse = 9
-}
-public enum JumpState
-{
-    None,
-    Jumping,
-    Breaking,//Emergency stop
-    Falling,
-    WallJumping,
-    ChargeJumping,
-    BounceJumping
-}
+//public enum Team
+//{
+//    A = 1,// Blue - Green
+//    B = 2,// Red - Pink
+//    none = 0
+//}
+//public enum MoveState
+//{
+//    None = 0,
+//    Moving = 1,
+//    NotMoving = 2,//Not stunned, breaking
+//    Knockback = 3,//Stunned
+//    MovingBreaking = 4,//Moving but reducing speed by breakAcc till maxMovSpeed
+//    Hooked = 5,
+//    Boost = 6,
+//    FixedJump = 7,
+//    NotBreaking = 8,
+//    Impulse = 9
+//}
+//public enum JumpState
+//{
+//    None,
+//    Jumping,
+//    Breaking,//Emergency stop
+//    Falling,
+//    WallJumping,
+//    ChargeJumping,
+//    BounceJumping
+//}
 #endregion
 
 #region ----[ REQUIRECOMPONENT ]----
@@ -41,24 +41,24 @@ public enum JumpState
 [RequireComponent(typeof(PlayerWeapons))]
 [RequireComponent(typeof(PlayerHook))]
 #endregion
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovementNew : MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     [Header(" --- Referencias --- ")]
     public bool disableAllDebugs;
     //public PlayerCombat myPlayerCombat;
+    public Mover mover;
     public PlayerCombatNew myPlayerCombatNew;
     public PlayerWeapons myPlayerWeap;
     public PlayerPickups myPlayerPickups;
     //public PlayerAnimation myPlayerAnimation;
     public PlayerAnimation_01 myPlayerAnimation_01;
     public PlayerHook myPlayerHook;
-    public Controller3D controller;
+    //public Controller3D controller;
     public PlayerBody myPlayerBody;
     public PlayerObjectDetection myPlayerObjectDetection;
     public PlayerModel myPlayerModel;
     public PlayerVFX myPlayerVFX;
-    public PassiveCollisions myPassiveCollisions;
 
     public bool startBeingHitAnimation = false;
 
@@ -69,9 +69,12 @@ public class PlayerMovement : MonoBehaviour
 
 
     //CONTROLES
-    public PlayerActions Actions { get; set; }
+    public PlayerActions actions { get; set; }
+    public InputsInfo inputsInfo;
 
-    //[Header("Body and body color")]
+
+    //GROUND VARIABLES
+    CollisionInfo collInfo;
 
     //VARIABLES DE MOVIMIENTO
 
@@ -204,7 +207,7 @@ public class PlayerMovement : MonoBehaviour
         get
         {
             bool result = false;
-            result = controller.collisions.below && chargeJumpChargingJump && isFloorChargeJumpable && (jumpSt == JumpState.Falling || jumpSt == JumpState.None);
+            result = collInfo.isGrounded && chargeJumpChargingJump && isFloorChargeJumpable && (jumpSt == JumpState.Falling || jumpSt == JumpState.None);
             if (!disableAllDebugs) Debug.LogWarning("isChargeJump = " + result);
             return result;
         }
@@ -213,7 +216,7 @@ public class PlayerMovement : MonoBehaviour
     {
         get
         {
-            StageScript stageScript = controller.collisions.floor != null ? controller.collisions.floor.GetComponent<StageScript>() : null;
+            StageScript stageScript = collInfo.floor != null ? collInfo.floor.GetComponent<StageScript>() : null;
             return stageScript != null && stageScript.chargeJumpable;
         }
     }
@@ -230,9 +233,9 @@ public class PlayerMovement : MonoBehaviour
             bool result = false;
             float totalFallenHeight = chargeJumpLastApexHeight - transform.position.y;
             float auxBounceJumpCurrentMaxHeight = totalFallenHeight * bounceJumpMultiplier;
-            result = controller.collisions.below && isFloorBounceJumpable && auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight 
+            result = collInfo.isGrounded && isFloorBounceJumpable && auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight
                 && jumpSt == JumpState.Falling;
-            if (!disableAllDebugs) Debug.LogWarning("isBounceJump = " + result + "; controller.collisions.floor = " + controller.collisions.floor+ "; controller.collisions.below = "+ controller.collisions.below 
+            if (!disableAllDebugs) Debug.LogWarning("isBounceJump = " + result + "; currentFloor = " + collInfo.floor + "; collInfo.isGrounded = " + collInfo.isGrounded
                 + "; auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight = " + (auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight));
             return result;
         }
@@ -241,7 +244,7 @@ public class PlayerMovement : MonoBehaviour
     {
         get
         {
-            StageScript stageScript = controller.collisions.floor != null ? controller.collisions.floor.GetComponent<StageScript>() : null;
+            StageScript stageScript = collInfo.floor != null ? collInfo.floor.GetComponent<StageScript>() : null;
             if (stageScript != null) Debug.Log("stageScript = " + stageScript + "; stageScript.bounceJumpable = "
      + stageScript.bounceJumpable);
             return (stageScript == null || (stageScript != null && stageScript.bounceJumpable));
@@ -409,58 +412,35 @@ public class PlayerMovement : MonoBehaviour
 
     #region AWAKE
 
-    //public void Awake()
-    //{
-    //    online = PhotonNetwork.IsConnected;
-    //}
-
     public void KonoAwake(bool isMyCharacter = false)
     {
-        //if (!online || (online && isMyCharacter))
-        //{
-            if (breakAcc != knockbackBreakAcc) Debug.LogError("The breakAcceleration and the KnockbackAcceleration should be the same!");
-            maxMoveSpeed = 10;
-            currentSpeed = 0;
-            boostCurrentFuel = boostCapacity;
-            noInput = false;
-            lastWallAngle = 0;
-            SetupInputsBuffer();
-            myPlayerHook.myCameraBase = myCamera;
-            hardSteerAcc = Mathf.Clamp(hardSteerAcc, hardSteerAcc, breakAcc);
-            airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airHardSteerAcc, airBreakAcc);
+        mover = GetComponent<Mover>();
+        collInfo = new CollisionInfo(mover.capsuleCollider);
+        if (actions == null) Debug.LogError("Error: PlayerActions have not been yet assigned to Player");
+        else inputsInfo = new InputsInfo(actions);
 
-            //PLAYER MODEL
-            SwitchTeam(team);
+        if (breakAcc != knockbackBreakAcc) Debug.LogError("The breakAcceleration and the KnockbackAcceleration should be the same!");
+        maxMoveSpeed = 10;
+        currentSpeed = 0;
+        boostCurrentFuel = boostCapacity;
+        noInput = false;
+        lastWallAngle = 0;
+        SetupInputsBuffer();
+        myPlayerHook.myCameraBase = myCamera;
+        hardSteerAcc = Mathf.Clamp(hardSteerAcc, hardSteerAcc, breakAcc);
+        airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airHardSteerAcc, airBreakAcc);
 
-            //WALLJUMP
-            wallJumpCheckRaysRows = 5;
-            wallJumpCheckRaysColumns = 5;
-            wallJumpCheckRaysRowsSpacing = (controller.coll.bounds.size.y * wallJumpMinHeightPercent) / (wallJumpCheckRaysRows - 1);
-            wallJumpCheckRaysColumnsSpacing = controller.coll.bounds.size.x / (wallJumpCheckRaysColumns - 1);
-            auxLM = LayerMask.GetMask("Stage");
+        //PLAYER MODEL
+        SwitchTeam(team);
 
-            PlayerAwakes();
+        //WALLJUMP
+        wallJumpCheckRaysRows = 5;
+        wallJumpCheckRaysColumns = 5;
+        wallJumpCheckRaysRowsSpacing = (collInfo.collider.bounds.size.y * wallJumpMinHeightPercent) / (wallJumpCheckRaysRows - 1);
+        wallJumpCheckRaysColumnsSpacing = collInfo.collider.bounds.size.x / (wallJumpCheckRaysColumns - 1);
+        auxLM = LayerMask.GetMask("Stage");
 
-            // #Important
-            // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
-            //if (online)
-            //{
-            //    if (photonV)
-            //    {
-            //        PlayerMovement.LocalPlayerInstance = this.gameObject;
-            //    }
-            //}
-            // #Critical
-            // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
-            //DontDestroyOnLoad(this.gameObject);
-        //}
-        //else
-        //{
-        //    //PLAYER MODEL
-        //    SwitchTeam(team);
-        //}
-
-
+        PlayerAwakes();
     }
 
     //todos los konoAwakes
@@ -508,68 +488,46 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region UPDATE
-    public void KonoUpdate()
+    public void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.O))
-        //{
-        //    Debug.Log("I'm the owner of " + this.name + " ? " + base.photonView.IsMine);
-        //}
-        ResetMovementVariables();
-        //Debug.LogError("CONTROLLER 3D: collisions.below = " + controller.collisions.below + "; lastBelow = " + controller.collisions.lastBelow+ "; jumpSt = " + jumpSt);
-        //if (controller.collisions.below && !controller.collisions.lastBelow)
-        //{
-        //    Debug.LogError("LANDING");
-        //}
-        //Debug.Log("Mis acciones son " + Actions);
-        if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4"));
-        if (Actions.Start.WasPressed) gC.PauseGame(Actions);
+        if (actions.Start.WasPressed) gC.PauseGame(actions);
 
-        if ((controller.collisions.above || controller.collisions.below) && !hooked)
-        {
-            currentVel.y = 0;
-            if (controller.collisions.above) StopJump();
-        }
-        //print("FRAME NUMBER " + frameCounter);
-        frameCounter++;
-        UpdateFlagLightBeam();
-        ProcessInputsBuffer();
+        //POLL INPUTS
+        inputsInfo.PollInputs();
 
-        //print("CurrentVel 1= " + currentVel.ToString("F6"));
-        HorizontalMovement();
-        //print("CurrentVel 2= " + currentVel.ToString("F6"));
-        //print("vel = " + currentVel.ToString("F4"));
-        UpdateFacingDir();
-        VerticalMovement();
-        //print("vel = " + currentVel.ToString("F4"));
-
-        ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
-
-        //Debug.Log("currentVel = " + currentVel + "; Time.deltaTime = " + Time.deltaTime + "; currentVel * Time.deltaTime = " + (currentVel * Time.deltaTime) + "; Time.fixedDeltaTime = " + Time.fixedDeltaTime);
-        ////controller.Move(currentVel * Time.deltaTime);
-        //print("CurrentVel 3= " + currentVel.ToString("F6"));
-
-        myPlayerCombatNew.KonoUpdate();
-        ////controller.collisions.ResetAround();
-
-        //myPlayerAnimation.KonoUpdate();
-        ////myPlayerAnimation_01.KonoUpdate();
         myPlayerWeap.KonoUpdate();
         myPlayerHook.KonoUpdate();
     }
 
-    public void KonoFixedUpdate()
+    public void FixedUpdate()
     {
+        ResetMovementVariables();
+
+        if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4"));
+
+        if ((/*controller.collisions.above ||*/ collInfo.isGrounded) && !hooked)
+        {
+            currentVel.y = 0;
+            //if (controller.collisions.above) StopJump();
+        }
+
+        frameCounter++;
+        UpdateFlagLightBeam();
+        ProcessInputsBuffer();
+
+        HorizontalMovement();
+
+        UpdateFacingDir();
+        //VerticalMovement();
+
+        ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
+
+        myPlayerCombatNew.KonoUpdate();
     }
 
-    public void KonoLateUpdate()
+    public void LateUpdate()
     {
-        if(Time.deltaTime>0)
-        controller.Move(currentVel * Time.deltaTime);
-        //myPassiveCollisions.PassiveMove();
-        controller.collisions.ResetAround();
         myPlayerAnimation_01.KonoUpdate();
-        if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel End = " + currentVel.ToString("F6") + "; currentVel.normalized = " + currentVel.normalized.ToString("F6") +
-       "; currentSpeed =" + currentSpeed.ToString("F4") + "; Player position = " + transform.position.ToString("F6"));
     }
     #endregion
 
@@ -611,10 +569,11 @@ public class PlayerMovement : MonoBehaviour
                         }
                         break;
                     case PlayerInput.WallJump:
-                        if (StartWallJump(true))
-                        {
-                            inputsBuffer[i].StopBuffering();
-                        }
+                        //TO REDO
+                        //if (StartWallJump(true))
+                        //{
+                        //    inputsBuffer[i].StopBuffering();
+                        //}
                         break;
                     case PlayerInput.StartChargingChargeJump:
                         if (StartChargingChargeJump(true))
@@ -686,10 +645,10 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!noInput)
         {
-            float horiz = Actions.LeftJoystick.X;//Input.GetAxisRaw(contName + "H");
-            float vert = Actions.LeftJoystick.Y;//-Input.GetAxisRaw(contName + "V");
+            float horiz = actions.LeftJoystick.X;//Input.GetAxisRaw(contName + "H");
+            float vert = actions.LeftJoystick.Y;//-Input.GetAxisRaw(contName + "V");
                                                 // Check that they're not BOTH zero - otherwise dir would reset because the joystick is neutral.
-                                                //if (horiz != 0 || vert != 0)Debug.Log("Actions.LeftJoystick.X = "+ Actions.LeftJoystick.X+ "Actions.LeftJoystick.Y" + Actions.LeftJoystick.Y);
+                                                //if (horiz != 0 || vert != 0)Debug.Log("actions.LeftJoystick.X = "+ actions.LeftJoystick.X+ "actions.LeftJoystick.Y" + actions.LeftJoystick.Y);
             Vector3 temp = new Vector3(horiz, 0, vert);
             lastJoystickSens = joystickSens;
             joystickSens = temp.magnitude;
@@ -759,7 +718,6 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (fixedJumping)// FIXED JUMPING
         {
-
             ProcessFixedJump();
         }
         ProcessBoost();
@@ -771,7 +729,7 @@ public class PlayerMovement : MonoBehaviour
             //------------------------------- Joystick Direction -------------------------------
             CalculateMoveDir();//Movement direction
             //ProcessHardSteer();
-            if (!myPlayerCombatNew.aiming && Actions.R2.WasPressed)//Input.GetButtonDown(contName + "RB"))
+            if (!myPlayerCombatNew.aiming && actions.R2.WasPressed)//Input.GetButtonDown(contName + "RB"))
             {
                 StartBoost();
             }
@@ -794,10 +752,10 @@ public class PlayerMovement : MonoBehaviour
 
             #region ------------------------------- Acceleration -------------------------------
             float finalAcc = 0;
-            float finalBreakAcc = controller.collisions.below ? breakAcc : airBreakAcc;
-            float finalHardSteerAcc = controller.collisions.below ? hardSteerAcc : airHardSteerAcc;
-            float finalInitialAcc = controller.collisions.below ? initialAcc : airInitialAcc;
-            finalMovingAcc = (controller.collisions.below ? movingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
+            float finalBreakAcc = collInfo.isGrounded ? breakAcc : airBreakAcc;
+            float finalHardSteerAcc = collInfo.isGrounded ? hardSteerAcc : airHardSteerAcc;
+            float finalInitialAcc = collInfo.isGrounded ? initialAcc : airInitialAcc;
+            finalMovingAcc = (collInfo.isGrounded ? movingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
             //if (!disableAllDebugs && rotationRestrictedPercentage!=1) Debug.LogWarning("finalMovingAcc = " + finalMovingAcc+ "; rotationRestrictedPercentage = " + rotationRestrictedPercentage+
             //    "; attackStg = " + myPlayerCombatNew.attackStg);
             //finalBreakAcc = currentSpeed < 0 ? -finalBreakAcc : finalBreakAcc;
@@ -895,7 +853,7 @@ public class PlayerMovement : MonoBehaviour
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
         Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
         if (!disableAllDebugs && currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
-            "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + controller.collisions.below + "; horVel.magnitude = " + horVel.magnitude);
+            "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + collInfo.isGrounded + "; horVel.magnitude = " + horVel.magnitude);
         //print("CurrentVel 1.3= " + currentVel.ToString("F6")+ "MoveState = " + moveSt);
         if (jumpSt != JumpState.WallJumping || (jumpSt == JumpState.WallJumping && moveSt == MoveState.Knockback))
         {
@@ -974,7 +932,7 @@ public class PlayerMovement : MonoBehaviour
                     currentSpeed = horizontalVel.magnitude;
                     break;
                 case MoveState.Impulse:
-                    if(!disableAllDebugs)Debug.LogWarning("DOING IMPULSE");
+                    if (!disableAllDebugs) Debug.LogWarning("DOING IMPULSE");
                     impulseDone = true;
                     Vector3 finalImpulse = new Vector3(currentImpulse.impulseVel.x, 0, currentImpulse.impulseVel.z);
                     float maxMag = finalImpulse.magnitude;
@@ -1022,7 +980,7 @@ public class PlayerMovement : MonoBehaviour
             currentImpulse = _impulse;
             currentImpulse.initialPlayerPos = transform.position;
 
-            if (!controller.collisions.below)
+            if (!collInfo.isGrounded)
             {
                 currentImpulse.impulseVel *= airImpulsePercentage;
                 //IMPORTANT TO DO: 
@@ -1080,20 +1038,20 @@ public class PlayerMovement : MonoBehaviour
 
     void VerticalMovement()
     {
-        if (!jumpedOutOfWater && !inWater && controller.collisions.below)
+        if (!jumpedOutOfWater && !inWater && collInfo.isGrounded)
         {
             jumpedOutOfWater = true;
 
             maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
         }
 
-        if (lastWallAngle != -500 && controller.collisions.below)//RESET WALL JUMP VARIABLE TO MAKE IT READY
+        if (lastWallAngle != -500 && collInfo.isGrounded)//RESET WALL JUMP VARIABLE TO MAKE IT READY
         {
             lastWallAngle = -500;
             lastWall = null;
         }
 
-        if (Actions.A.WasPressed)//Input.GetButtonDown(contName + "A"))
+        if (actions.A.WasPressed)//Input.GetButtonDown(contName + "A"))
         {
             PressA();
         }
@@ -1108,9 +1066,9 @@ public class PlayerMovement : MonoBehaviour
             switch (jumpSt)
             {
                 case JumpState.None:
-                    if (currentVel.y < 0 && !controller.collisions.below)
+                    if (currentVel.y < 0 && !collInfo.isGrounded)
                     {
-                        if(!disableAllDebugs) Debug.Log("JumpSt = Falling");
+                        if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
                         jumpSt = JumpState.Falling;
                         chargeJumpLastApexHeight = transform.position.y;
                         //Debug.Log("START FALLING");
@@ -1119,16 +1077,16 @@ public class PlayerMovement : MonoBehaviour
                     break;
                 case JumpState.Falling:
 
-                    if (!chargeJumpChargingJump && controller.collisions.below)
+                    if (!chargeJumpChargingJump && collInfo.isGrounded)
                     {
-                        if(StartBounceJump())
-                        break;
+                        if (StartBounceJump())
+                            break;
                     }
 
-                    if (currentVel.y >= 0 || controller.collisions.below)
+                    if (currentVel.y >= 0 || collInfo.isGrounded)
                     {
                         //Debug.Log("STOP FALLING");
-                        if(!disableAllDebugs)Debug.Log("JumpSt = None");
+                        if (!disableAllDebugs) Debug.Log("JumpSt = None");
                         jumpSt = JumpState.None;
                     }
 
@@ -1143,7 +1101,7 @@ public class PlayerMovement : MonoBehaviour
                     }
                     else
                     {
-                        if (Actions.A.WasReleased)//Input.GetButtonUp(contName + "A"))
+                        if (actions.A.WasReleased)//Input.GetButtonUp(contName + "A"))
                         {
                             jumpSt = JumpState.Breaking;
                         }
@@ -1153,7 +1111,7 @@ public class PlayerMovement : MonoBehaviour
                     currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
                     if (currentVel.y <= 0)
                     {
-                        if(!disableAllDebugs)Debug.Log("JumpSt = None");
+                        if (!disableAllDebugs) Debug.Log("JumpSt = None");
                         jumpSt = JumpState.None;
                     }
                     break;
@@ -1198,10 +1156,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!StartJump())
         {
-            if (!StartWallJump())
-            {
-                StartChargingChargeJump();
-            }
+            //TO REDO
+            //if (!StartWallJump())
+            //{
+            //    StartChargingChargeJump();
+            //}
         }
     }
 
@@ -1210,9 +1169,9 @@ public class PlayerMovement : MonoBehaviour
         bool result = false;
         if (!noInput && moveSt != MoveState.Boost)
         {
-            if (!disableAllDebugs) Debug.Log("START JUMP: below = "+ controller.collisions.below + "; jumpInsurance = " + jumpInsurance+ "; inWater = "+ inWater);
-            if ((controller.collisions.below || jumpInsurance) && !isChargeJump && !isBounceJump &&
-                (!inWater || (inWater && controller.collisions.around &&
+            if (!disableAllDebugs) Debug.Log("START JUMP: below = " + collInfo.isGrounded + "; jumpInsurance = " + jumpInsurance + "; inWater = " + inWater);
+            if ((collInfo.isGrounded || jumpInsurance) && !isChargeJump && !isBounceJump &&
+                (!inWater || (inWater /*&& controller.collisions.around*/ &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
                 if (!disableAllDebugs) Debug.LogWarning("JUMP!");
@@ -1250,9 +1209,9 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!jumpInsurance)
         {
-            //Debug.LogWarning(" controller.collisions.lastBelow = " + (controller.collisions.lastBelow) + "; controller.collisions.below = " + (controller.collisions.below) +
+            //Debug.LogWarning(" controller.collisions.lastBelow = " + (controller.collisions.lastBelow) + "; collInfo.isGrounded = " + (collInfo.isGrounded) +
             //   "; jumpSt = " + jumpSt);
-            if (controller.collisions.lastBelow && !controller.collisions.below && (jumpSt == JumpState.None || jumpSt == JumpState.Falling) &&
+            if (collInfo.lastIsGrounded && !collInfo.isGrounded && (jumpSt == JumpState.None || jumpSt == JumpState.Falling) &&
                 (jumpSt != JumpState.BounceJumping && jumpSt != JumpState.ChargeJumping) && jumpedOutOfWater)
             {
                 //print("Jump Insurance");
@@ -1271,67 +1230,68 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    //TO REDO
     /// <summary>
     /// In order to be able to save the input for Input buffering, we return true if the input was successful, 
     /// and false if the input was not successful and should be buffered.
     /// </summary>
     /// <returns></returns>
-    bool StartWallJump(bool calledFromBuffer = false)
-    {
-        if (!disableAllDebugs) Debug.LogWarning("Check Wall jump: wall real normal = " + controller.collisions.closestHorRaycast.slopeAngle);
-        bool result = false;
-        float slopeAngle = controller.collisions.closestHorRaycast.slopeAngle;
-        bool goodWallAngle = !(slopeAngle >= 110 && slopeAngle <= 180);
-        wallJumpCurrentWall = controller.collisions.horWall;
-        if (!controller.collisions.below && !inWater && jumpedOutOfWater && controller.collisions.collisionHorizontal && goodWallAngle &&
-            (!firstWallJumpDone || lastWallAngle != controller.collisions.wallAngle || (lastWallAngle == controller.collisions.wallAngle &&
-            lastWall != controller.collisions.horWall)) && wallJumpCurrentWall.tag == "Stage")
-        {
-            if (wallJumpCurrentWall.GetComponent<StageScript>() == null || wallJumpCurrentWall.GetComponent<StageScript>().wallJumpable)
-            {
-                if (!disableAllDebugs) Debug.Log("Wall jumping start");
-                //PARA ORTU: PlayerAnimation_01.startJump = true;
-                jumpSt = JumpState.WallJumping;
-                result = true;
-                //wallJumped = true;
-                stopWallTime = 0;
-                SetVelocity(Vector3.zero);
-                wallJumping = true;
-                anchorPoint = transform.position;
-                wallNormal = controller.collisions.wallNormal;
-                wallNormal.y = 0;
-                wallJumpCurrentWallAngle = controller.collisions.wallAngle;
-                wallJumpRaycastAxis = controller.collisions.closestHorRaycast.axis;
-                //Debug.Log("WALL JUMP RAY HEIGHT PERCENTAGE : " + controller.collisions.closestHorRaycast.rayHeightPercentage + "%; wall = " + wallJumpCurrentWall.name);
+    //bool StartWallJump(bool calledFromBuffer = false)
+    //{
+    //    if (!disableAllDebugs) Debug.LogWarning("Check Wall jump: wall real normal = " + controller.collisions.closestHorRaycast.slopeAngle);
+    //    bool result = false;
+    //    float slopeAngle = controller.collisions.closestHorRaycast.slopeAngle;
+    //    bool goodWallAngle = !(slopeAngle >= 110 && slopeAngle <= 180);
+    //    wallJumpCurrentWall = controller.collisions.horWall;
+    //    if (!collInfo.isGrounded && !inWater && jumpedOutOfWater && controller.collisions.collisionHorizontal && goodWallAngle &&
+    //        (!firstWallJumpDone || lastWallAngle != controller.collisions.wallAngle || (lastWallAngle == controller.collisions.wallAngle &&
+    //        lastWall != controller.collisions.horWall)) && wallJumpCurrentWall.tag == "Stage")
+    //    {
+    //        if (wallJumpCurrentWall.GetComponent<StageScript>() == null || wallJumpCurrentWall.GetComponent<StageScript>().wallJumpable)
+    //        {
+    //            if (!disableAllDebugs) Debug.Log("Wall jumping start");
+    //            //PARA ORTU: PlayerAnimation_01.startJump = true;
+    //            jumpSt = JumpState.WallJumping;
+    //            result = true;
+    //            //wallJumped = true;
+    //            stopWallTime = 0;
+    //            SetVelocity(Vector3.zero);
+    //            wallJumping = true;
+    //            anchorPoint = transform.position;
+    //            wallNormal = controller.collisions.wallNormal;
+    //            wallNormal.y = 0;
+    //            wallJumpCurrentWallAngle = controller.collisions.wallAngle;
+    //            wallJumpRaycastAxis = controller.collisions.closestHorRaycast.axis;
+    //            //Debug.Log("WALL JUMP RAY HEIGHT PERCENTAGE : " + controller.collisions.closestHorRaycast.rayHeightPercentage + "%; wall = " + wallJumpCurrentWall.name);
 
-                //STOP OTHER JUMPS BUFFERINGS AND PROCESSES
-                StopBufferedInput(PlayerInput.Jump);
-                StopBufferedInput(PlayerInput.StartChargingChargeJump);
-                StopChargingChargeJump();
-            }
+    //            //STOP OTHER JUMPS BUFFERINGS AND PROCESSES
+    //            StopBufferedInput(PlayerInput.Jump);
+    //            StopBufferedInput(PlayerInput.StartChargingChargeJump);
+    //            StopChargingChargeJump();
+    //        }
 
-        }
-        else
-        {
-            if (!disableAllDebugs) Debug.Log("Couldn't wall jump because:  !controller.collisions.below (" + !controller.collisions.below + ") && !inWater(" + !inWater + ") &&" +
-                " jumpedOutOfWater(" + jumpedOutOfWater + ") && controller.collisions.collisionHorizontal(" + controller.collisions.collisionHorizontal + ") && " +
-                "(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != controller.collisions.wallAngle (" + (lastWallAngle != controller.collisions.wallAngle) + ") || " +
-                "(lastWallAngle == controller.collisions.wallAngle (" + (lastWallAngle == controller.collisions.wallAngle) + ")&& " +
-                "lastWall != controller.collisions.horWall(" + (lastWall != controller.collisions.horWall) + ")))");
-        }
-        if (!result && !calledFromBuffer)
-        {
-            BufferInput(PlayerInput.WallJump);
-        }
-        return result;
-    }
+    //    }
+    //    else
+    //    {
+    //        if (!disableAllDebugs) Debug.Log("Couldn't wall jump because:  !collInfo.isGrounded (" + !collInfo.isGrounded + ") && !inWater(" + !inWater + ") &&" +
+    //            " jumpedOutOfWater(" + jumpedOutOfWater + ") && controller.collisions.collisionHorizontal(" + controller.collisions.collisionHorizontal + ") && " +
+    //            "(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != controller.collisions.wallAngle (" + (lastWallAngle != controller.collisions.wallAngle) + ") || " +
+    //            "(lastWallAngle == controller.collisions.wallAngle (" + (lastWallAngle == controller.collisions.wallAngle) + ")&& " +
+    //            "lastWall != controller.collisions.horWall(" + (lastWall != controller.collisions.horWall) + ")))");
+    //    }
+    //    if (!result && !calledFromBuffer)
+    //    {
+    //        BufferInput(PlayerInput.WallJump);
+    //    }
+    //    return result;
+    //}
 
     void ProcessWallJump()//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
     {
         if (wallJumping)
         {
             stopWallTime += Time.deltaTime;
-            if (Actions.A.WasReleased || !Actions.A.IsPressed)
+            if (actions.A.WasReleased || !actions.A.IsPressed)
             {
                 EndWallJump();
                 return;
@@ -1345,14 +1305,14 @@ public class PlayerMovement : MonoBehaviour
 
             #region --- WALL JUMP CHECK RAYS ---
             //Check continuously if we are still attached to wall
-            float rayLength = controller.coll.bounds.extents.x + 0.5f;
+            float rayLength = collInfo.collider.bounds.extents.x + 0.5f;
             RaycastHit hit;
 
             //calculamos el origen de todos los rayos y columnas: esquina inferior (izda o dcha,no sé)
             //del personaje. 
             Vector3 paralelToWall = new Vector3(-wallNormal.z, 0, wallNormal.x).normalized;
-            Vector3 rowsOrigin = new Vector3(controller.coll.bounds.center.x, controller.coll.bounds.min.y, controller.coll.bounds.center.z);
-            rowsOrigin -= paralelToWall * controller.coll.bounds.extents.x;
+            Vector3 rowsOrigin = new Vector3(collInfo.collider.bounds.center.x, collInfo.collider.bounds.min.y, collInfo.collider.bounds.center.z);
+            rowsOrigin -= paralelToWall * collInfo.collider.bounds.extents.x;
             Vector3 dir = -wallNormal.normalized;
             bool success = false;
             for (int i = 0; i < wallJumpCheckRaysRows && !success; i++)
@@ -1455,14 +1415,14 @@ public class PlayerMovement : MonoBehaviour
     {
         if (chargeJumpChargingJump)
         {
-            if (!chargeJumpButtonReleased && Actions.A.WasReleased)
+            if (!chargeJumpButtonReleased && actions.A.WasReleased)
             {
                 chargeJumpButtonReleased = true;
             }
 
-            if (!chargeJumpLanded && controller.collisions.below)
+            if (!chargeJumpLanded && collInfo.isGrounded)
             {
-                if(!isFloorChargeJumpable)
+                if (!isFloorChargeJumpable)
                 {
                     StopChargingChargeJump();
                     StartBounceJump();
@@ -1587,7 +1547,7 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                if (!disableAllDebugs) Debug.LogWarning("Bounce Jump -> bounceJump height was too low (min = "+ bounceJumpMinHeight + ")");
+                if (!disableAllDebugs) Debug.LogWarning("Bounce Jump -> bounceJump height was too low (min = " + bounceJumpMinHeight + ")");
             }
         }
         return result;
@@ -1640,7 +1600,7 @@ public class PlayerMovement : MonoBehaviour
             boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
             if (boostCurrentFuel > 0)
             {
-                if (Actions.R2.WasReleased)
+                if (actions.R2.WasReleased)
                 {
                     StopBoost();
                 }
@@ -1722,7 +1682,7 @@ public class PlayerMovement : MonoBehaviour
         {
             //CALCULATE JUMP DIR
             Vector3 circleCenter = transform.position;
-            Vector3 circumfPoint = CalculateReflectPoint(1, controller.collisions.wallNormal, circleCenter);
+            Vector3 circumfPoint = CalculateReflectPoint(1, collInfo.wallNormal, circleCenter);
             Vector3 finalDir = (circumfPoint - circleCenter).normalized;
             Debug.LogWarning("WALL BOOST: FINAL DIR = " + finalDir.ToString("F4"));
 
@@ -1868,7 +1828,7 @@ public class PlayerMovement : MonoBehaviour
     PlayerMovement lastAttacker = null;
     int lastAutocomboIndex = -1;
     bool stunProtectionOn = false;
-    public bool StartReceiveHit(PlayerMovement attacker, Vector3 _knockback, EffectType effect, float _maxTime = 0, byte autocomboIndex=255)
+    public bool StartReceiveHit(PlayerMovement attacker, Vector3 _knockback, EffectType effect, float _maxTime = 0, byte autocomboIndex = 255)
     {
         if (!myPlayerCombatNew.invulnerable)
         {
@@ -1890,7 +1850,7 @@ public class PlayerMovement : MonoBehaviour
             //}
             #region STUN PROTECTION
 
-            if(sufferingEffect == EffectType.softStun && (lastAttacker != attacker ||(lastAttacker == attacker && autocomboIndex == 0)))
+            if (sufferingEffect == EffectType.softStun && (lastAttacker != attacker || (lastAttacker == attacker && autocomboIndex == 0)))
             {
                 Debug.Log("Stun protection ON");
                 stunProtectionOn = true;
@@ -2003,7 +1963,7 @@ public class PlayerMovement : MonoBehaviour
     //ES RECEIVE
     public void StartRecieveParry(PlayerMovement enemy, AttackEffect effect = null)
     {
-        if(!disableAllDebugs)Debug.Log("PARRY!!!");
+        if (!disableAllDebugs) Debug.Log("PARRY!!!");
         float knockbackMag = effect == null ? 10 : effect.knockbackMagnitude;
         float maxStunTime = effect != null && effect.parryStunTime > 0 ? effect.parryStunTime : 0.5f;
 
@@ -2017,7 +1977,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 parryColPos = transform.position;
         Vector3 resultKnockback = new Vector3(parryColPos.x - parryMyPos.x, 0, parryColPos.z - parryMyPos.z).normalized;
         //resultKnockback = Quaternion.Euler(0, effect.knockbackYAngle, 0) * resultKnockback;
-        if(!disableAllDebugs)Debug.Log("resultKnockback 1 = " + resultKnockback);
+        if (!disableAllDebugs) Debug.Log("resultKnockback 1 = " + resultKnockback);
         resultKnockback = Hitbox.CalculateYAngle(enemyPos, resultKnockback, 25f);
         if (!disableAllDebugs) Debug.Log("resultKnockback 2 = " + resultKnockback);
         resultKnockback = resultKnockback * knockbackMag;
@@ -2178,7 +2138,7 @@ public class PlayerMovement : MonoBehaviour
             hooking = true;
             myPlayerCombatNew.StopDoingCombat();
             hookingAndTouchedGroundOnce = false;
-            if (controller.collisions.below) hookingAndTouchedGroundOnce = true;
+            if (collInfo.isGrounded) hookingAndTouchedGroundOnce = true;
         }
     }
 
@@ -2188,7 +2148,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (!hookingAndTouchedGroundOnce)
             {
-                if (controller.collisions.below) hookingAndTouchedGroundOnce = true;
+                if (collInfo.isGrounded) hookingAndTouchedGroundOnce = true;
             }
             else if (currentMaxMoveSpeed > maxHookingSpeed)
             {
@@ -2209,7 +2169,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!aimingAndTouchedGroundOnce)
         {
-            if (controller.collisions.below)
+            if (collInfo.isGrounded)
             {
                 aimingAndTouchedGroundOnce = true;
             }
@@ -2242,14 +2202,14 @@ public class PlayerMovement : MonoBehaviour
     }
 
     //En desuso
-    public void Die()
-    {
-        if (haveFlag)
-        {
-            flag.SetAway(false);
-        }
-        gC.RespawnPlayer(this);
-    }
+    //public void Die()
+    //{
+    //    if (haveFlag)
+    //    {
+    //        flag.SetAway(false);
+    //    }
+    //    gC.RespawnPlayer(this);
+    //}
     #endregion
 
     #region  WATER ---------------------------------------------
@@ -2290,7 +2250,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (inWater)
         {
-            controller.AroundCollisions();
+            //TO REDO
+            //controller.AroundCollisions();
             if (currentMaxMoveSpeed > maxSpeedInWater)
             {
                 currentMaxMoveSpeed = maxSpeedInWater;
@@ -2335,7 +2296,8 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("GAME OVER");
         currentSpeed = 0;
         currentVel = Vector3.zero;
-        controller.Move(currentVel * Time.deltaTime);
+        //TO REDO
+        //controller.Move(currentVel * Time.deltaTime);
     }
     #endregion
 
@@ -2348,7 +2310,7 @@ public class PlayerMovement : MonoBehaviour
         //}
         //else
         //{
-            distanceToFlag = ((gC as GameController_FlagMode).flags[0].transform.position - transform.position).magnitude;
+        distanceToFlag = ((gC as GameController_FlagMode).flags[0].transform.position - transform.position).magnitude;
         //}
     }
 
@@ -2427,6 +2389,10 @@ public class PlayerMovement : MonoBehaviour
                 break;
         }
     }
+    #endregion
+
+    #region Check Collisions Around ------------------------------------
+
     #endregion
 
     #region  AUXILIAR FUNCTIONS ---------------------------------------------
@@ -2544,132 +2510,107 @@ public class PlayerMovement : MonoBehaviour
 
     #endregion
 
-    #region ----[ PUN CALLBACKS ]----
-    //public override void OnDisconnected(DisconnectCause cause)
-    //{
-    //    online = false;
-    //}
+    #region ----[ BOLT CALLBACKS ]----
 
-    //public void OnPhotonInstantiate(PhotonMessageInfo info)
-    //{
-    //    if (!base.photonView.IsMine)
-    //    {
-    //        gC = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerBase>();
-    //        team = gC.SetRandomOnlineTeam(PhotonNetwork.CurrentRoom.PlayerCount - 1);
-    //        SwitchTeam(team);
-    //        myPlayerWeap.SetTeamWeapon(team);
-    //        Debug.Log("I'm player " + gameObject.name + " and my team is " + team);
-    //    }
-    //}
-    #endregion
-
-    #region ----[ RPC ]----
-    //[PunRPC]
-    //void OnlineSetUpPlayer(byte _team)
-    //{
-    //    team = (Team)_team;
-    //}
-
-    //Player lastAttacker_Online;
-    //[PunRPC]
-    //public void RPC_StartReceiveHit(Vector3 _knockback, byte effect, float _maxTime, byte autocomboIndex, PhotonMessageInfo info)
-    //{
-    //    //PhotonView phV = PhotonView.Get(this);
-    //    Debug.Log("RPC: I RECEIVED A HIT");
-    //    if (base.photonView.IsMine)
-    //    {
-    //        if (!myPlayerCombatNew.invulnerable)
-    //        {
-    //            //Variable para Ortu
-    //            startBeingHitAnimation = true;
-
-    //            if (!disableAllDebugs) print("Receive hit with knockback= " + _knockback + "; effect = " + (EffectType)effect + "; maxtime = " + _maxTime);
-    //            myPlayerHook.FinishAutoGrapple();
-    //            myPlayerHook.StopHook();
-    //            StopWallJump();
-    //            StopBoost();
-    //            myPlayerCombatNew.StopDoingCombat();
-    //            StopImpulse();
-
-    //            //if (sufferingEffect == EffectType.stun)
-    //            //{
-    //            //    efecto = EffectType.knockdown;
-    //            //    _maxTime = AttackEffect.knockdownTime;
-    //            //}
-    //            #region STUN PROTECTION
-
-    //            if (sufferingEffect == EffectType.softStun && (!lastAttacker_Online.Equals(info.Sender) || (lastAttacker_Online.Equals(info.Sender) && autocomboIndex == 0)))
-    //            {
-    //                Debug.Log("Stun protection ON");
-    //                stunProtectionOn = true;
-    //            }
-
-    //            if (!stunProtectionOn)
-    //            {
-    //                Debug.Log("FULL EFFECT TIME");
-    //                effectMaxTime = _maxTime;
-    //            }
-    //            else
-    //            {
-    //                Debug.Log("THIRD EFFECT TIME");
-    //                effectMaxTime = _maxTime / 3;
-    //            }
-    //            #endregion
-
-    //            sufferingEffect = (EffectType)effect;
-    //            switch ((EffectType)effect)
-    //            {
-    //                case EffectType.softStun:
-    //                    noInput = true;
-    //                    break;
-    //                //case EffectType.stun:
-    //                //    if (disableAllDebugs) Debug.LogError("STUN !!!!!!!!");
-    //                //    noInput = true;
-    //                //    break;
-    //                //case EffectType.knockdown:
-    //                //    if (disableAllDebugs) Debug.LogError("KNOCKDOWN !!!!!!!!");
-    //                //    noInput = true;
-    //                //    //myPlayerCombatNew.StartInvulnerabilty(_maxTime);
-    //                //    break;
-    //                case EffectType.none:
-    //                    break;
-    //                default:
-    //                    Debug.LogError("Error: cannot have a 'sufferingEffect' of type " + sufferingEffect);
-    //                    break;
-    //            }
-
-    //            //Debug.Log("_maxTime = " + _maxTime + "; effectMaxTime = " + effectMaxTime);
-    //            effectTime = 0;
-    //            if (_knockback != Vector3.zero)
-    //            {
-    //                knockbackDone = false;
-    //                _knockback = _knockback / bodyMass;
-    //                knockback = _knockback;
-    //            }
-
-    //            //Give FLAG
-    //            if (haveFlag)
-    //            {
-    //                flag.DropFlag();
-    //            }
-    //            lastAttacker_Online = info.Sender;
-    //            lastAutocomboIndex = autocomboIndex;
-    //            if (!disableAllDebugs) print("Player " + playerNumber + " RECIEVED HIT");
-    //            //return true;
-    //        }
-    //        //else return false;
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("I'm not the owner of this player, but he received a hit. Missing code here? VFX? Invulnerabilty?");
-    //    }
-    //}
     #endregion
 
     #region ----[ NETWORK FUNCTIONS ]----
 
     #endregion
-
-    #region ----[ IPUNOBSERVABLE ]----
-    #endregion
 }
+
+#region --- [ STRUCTS & CLASSES ] ---
+public class InputsInfo
+{
+    PlayerActions actions;
+
+    public InputsInfo(PlayerActions _actions)
+    {
+        actions = _actions;
+    }
+
+    public bool JumpWasPressed;//A / Spacebar
+    public bool JumpWasReleased;//A / Spacebar
+
+    public bool R2WasPressed;//Dash / throw hook / Shift
+    public bool R2WasReleased;//Dash / throw hook / Shift
+
+    public void PollJump()
+    {
+        if (!JumpWasPressed && !JumpWasReleased)
+        {
+            if (actions.A.WasPressed)
+            {
+                JumpWasPressed = true;
+                JumpWasReleased = false;
+            }
+            else if (actions.A.WasReleased)
+            {
+                JumpWasPressed = false;
+                JumpWasReleased = true;
+            }
+        }
+    }
+
+    public void ResetJump()
+    {
+        JumpWasPressed = false;
+        JumpWasReleased = false;
+    }
+
+    public void PollR2()
+    {
+        if (!R2WasPressed && !R2WasReleased)
+        {
+            if (actions.R2.WasPressed)
+            {
+                R2WasPressed = true;
+                R2WasReleased = false;
+            }
+            else if (actions.R2.WasReleased)
+            {
+                R2WasPressed = false;
+                R2WasReleased = true;
+            }
+        }
+    }
+
+    public void ResetR2()
+    {
+        R2WasPressed = false;
+        R2WasReleased = false;
+    }
+
+    public void PollInputs()
+    {
+        PollJump();
+        PollR2();
+    }
+}
+
+public class CollisionInfo
+{
+    public Collider collider;
+    public GameObject floor;
+    public bool isGrounded;
+    public bool lastIsGrounded;
+    public Vector3 wallNormal;
+
+    public CollisionInfo(Collider _collider)
+    {
+        collider = _collider;
+        floor = null;
+        isGrounded = false;
+        lastIsGrounded = false;
+        wallNormal = Vector3.zero;
+    }
+
+    public void ResetVariables()
+    {
+        lastIsGrounded = isGrounded;
+        lastIsGrounded = false;
+        floor = null;
+        wallNormal = Vector3.zero;
+    }
+}
+#endregion

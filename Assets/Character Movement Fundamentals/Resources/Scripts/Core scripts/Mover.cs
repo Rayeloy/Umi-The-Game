@@ -16,7 +16,8 @@ public class Mover : MonoBehaviour {
 	//References to attached collider(s);
 	BoxCollider boxCollider;
 	SphereCollider sphereCollider;
-	CapsuleCollider capsuleCollider;
+    [HideInInspector]
+	public CapsuleCollider capsuleCollider;
 
 	//Sensor variables;
 	public Sensor.CastType sensorType = Sensor.CastType.Raycast;

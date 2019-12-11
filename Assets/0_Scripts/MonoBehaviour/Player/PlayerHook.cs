@@ -28,7 +28,7 @@ public class PlayerHook : MonoBehaviour
     PlayerCombatNew myPlayerCombatNew;
 
     [HideInInspector]
-    public CameraController myCameraBase;
+    public CameraControllerUmi myCameraBase;
     Hook myHook;
 
     [HideInInspector]

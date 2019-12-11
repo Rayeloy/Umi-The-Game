@@ -84,7 +84,7 @@ public class GameControllerBase : MonoBehaviour
 
     //Player components lists
     protected List<PlayerMovement> allPlayers;//Array que contiene a los PlayerMovement
-    protected List<CameraController> allCameraBases;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
+    protected List<CameraControllerUmi> allCameraBases;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
     protected List<GameObject> allCanvas;//Array que contiene los objetos de los canvas de cada jugador, solo util en Pantalla Dividida
     protected List<Camera> allUICameras;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
 
@@ -176,7 +176,7 @@ public class GameControllerBase : MonoBehaviour
 
         //initialize lists
         allPlayers = new List<PlayerMovement>();
-        allCameraBases = new List<CameraController>();
+        allCameraBases = new List<CameraControllerUmi>();
         allCanvas = new List<GameObject>();
         allUICameras = new List<Camera>();
 
@@ -537,7 +537,7 @@ public class GameControllerBase : MonoBehaviour
     {
         PlayerMovement newPlayer;
         GameObject newPlayerCanvas;
-        CameraController newPlayerCamera;
+        CameraControllerUmi newPlayerCamera;
         Camera newPlayerUICamera;
 
         //if (online)
@@ -605,7 +605,7 @@ public class GameControllerBase : MonoBehaviour
             newPlayer.mySpawnInfo = new PlayerSpawnInfo();
 
             newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
-            newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraController>();
+            newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerUmi>();
             newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
 
             //nombrado de objetos nuevos
@@ -619,7 +619,7 @@ public class GameControllerBase : MonoBehaviour
     }
 
     //Eloy: Juan, he creado este método porque copiar y pegar lo mismo en ambos lados del if(online/offline) era un horror para mi cerebro. cada nueva referencia sería un lío, así mejor.
-    void InitializePlayerReferences(PlayerMovement player, GameObject canvas, CameraController cameraBase, Camera UICamera)
+    void InitializePlayerReferences(PlayerMovement player, GameObject canvas, CameraControllerUmi cameraBase, Camera UICamera)
     {
         //Inicializar referencias
         PlayerHUD playerHUD = canvas.GetComponent<PlayerHUD>();
