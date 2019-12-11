@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-#region ----[ PUBLIC ENUMS ]----
-
 public class PlayerHUDCMF : MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
@@ -1376,9 +1373,3 @@ arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
     #region ----[ IPUNOBSERVABLE ]----
     #endregion
 }
-
-#region ----[ STRUCTS & CLASSES ]----
-
-#endregion
-
-
