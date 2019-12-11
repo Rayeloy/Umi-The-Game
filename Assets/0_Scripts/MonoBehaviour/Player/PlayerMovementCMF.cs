@@ -57,8 +57,8 @@ public class PlayerMovementCMF : MonoBehaviour
 
     public bool startBeingHitAnimation = false;
 
-    public GameControllerBase gC;
-    public CameraControllerUmi myCamera;
+    public GameControllerCMF gC;
+    public CameraControllerCMF myCamera;
     public Transform cameraFollow;
     public Transform rotateObj;
 
@@ -261,7 +261,7 @@ public class PlayerMovementCMF : MonoBehaviour
     [HideInInspector]
     public Camera myUICamera;
     [HideInInspector]
-    public PlayerHUD myPlayerHUD;
+    public PlayerHUDCMF myPlayerHUD;
 
     ////ONLINE
     //[HideInInspector]

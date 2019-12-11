@@ -528,7 +528,7 @@ public class GameControllerCMF : MonoBehaviour
     {
         PlayerMovementCMF newPlayer;
         GameObject newPlayerCanvas;
-        CameraControllerUmi newPlayerCamera;
+        CameraControllerCMF newPlayerCamera;
         Camera newPlayerUICamera;
 
         //if (online)
@@ -596,7 +596,7 @@ public class GameControllerCMF : MonoBehaviour
         newPlayer.mySpawnInfo = new PlayerSpawnInfo();
 
         newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
-        newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerUmi>();
+        newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();
         newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
 
         //nombrado de objetos nuevos
@@ -610,10 +610,10 @@ public class GameControllerCMF : MonoBehaviour
     }
 
     //Eloy: Juan, he creado este método porque copiar y pegar lo mismo en ambos lados del if(online/offline) era un horror para mi cerebro. cada nueva referencia sería un lío, así mejor.
-    void InitializePlayerReferences(PlayerMovementCMF player, GameObject canvas, CameraControllerUmi cameraBase, Camera UICamera)
+    void InitializePlayerReferences(PlayerMovementCMF player, GameObject canvas, CameraControllerCMF cameraBase, Camera UICamera)
     {
         //Inicializar referencias
-        PlayerHUD playerHUD = canvas.GetComponent<PlayerHUD>();
+        PlayerHUDCMF playerHUD = canvas.GetComponent<PlayerHUDCMF>();
         //Player
         player.gC = this;
         player.myCamera = cameraBase;
