@@ -1167,7 +1167,7 @@ public class PlayerMovementCMF : MonoBehaviour
             if (!disableAllDebugs) Debug.Log("START JUMP: below = " + collInfo.isGrounded + "; jumpInsurance = " + jumpInsurance + "; inWater = " + inWater);
             if ((collInfo.isGrounded || jumpInsurance) && !isChargeJump && !isBounceJump &&
                 (!inWater || (inWater /*&& controller.collisions.around*/ &&
-                ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameController_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))))
+                ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameControllerCMF_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
                 if (!disableAllDebugs) Debug.LogWarning("JUMP!");
                 //PlayerAnimation_01.startJump = true;

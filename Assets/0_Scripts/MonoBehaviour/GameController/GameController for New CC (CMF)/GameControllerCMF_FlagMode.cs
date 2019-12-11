@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameControllerCMF_FlagMode : GameControllerBase
+public class GameControllerCMF_FlagMode : GameControllerCMF
 {
     [Header(" --- FLAG MODE --- ")]
-    public ScoreManager myScoreManager;
+    public ScoreManagerCMF myScoreManager;
     public GameObject flagPrefab;
     public Transform flagsParent;
     [HideInInspector]
@@ -59,7 +59,7 @@ public class GameControllerCMF_FlagMode : GameControllerBase
         //}
     }
 
-    public override void RemovePlayer(PlayerMovement _pM)
+    public override void RemovePlayer(PlayerMovementCMF _pM)
     {
         int index = allPlayers.IndexOf(_pM);
         base.RemovePlayer(_pM);
