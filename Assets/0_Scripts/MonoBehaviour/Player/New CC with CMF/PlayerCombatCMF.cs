@@ -154,32 +154,32 @@ public class PlayerCombatCMF : MonoBehaviour
         if (hasWeapon)
         {
             //Autocombo  INPUT CHECK
-            if (myPlayerMovement.Actions.X.WasPressed && !myPlayerWeap.canPickupWeapon)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
+            if (myPlayerMovement.actions.X.WasPressed && !myPlayerWeap.canPickupWeapon)//Input.GetButtonDown(myPlayerMovement.contName + "X"))
             {
                 StartOrContinueAutocombo();
             }
 
             //Parry
-            if (myPlayerMovement.Actions.L1.WasPressed)
+            if (myPlayerMovement.actions.L1.WasPressed)
             {
                 StartParry();
             }
 
             //Skill 1
-            if (myPlayerMovement.Actions.Y.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
+            if (myPlayerMovement.actions.Y.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "Y"))
             {
                 StartWeaponSkill(0);
             }
 
             //Skill 2
-            if (myPlayerMovement.Actions.B.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "B"))
+            if (myPlayerMovement.actions.B.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "B"))
             {
                 StartWeaponSkill(1);
             }
 
             //HOOK INPUT CHECK
             if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && (attackStg == AttackPhaseType.ready)
-                && aiming && myPlayerMovement.Actions.R2.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
+                && aiming && myPlayerMovement.actions.R2.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
             {
                 myHook.StartHook();
                 //ChangeAttackType(gC.attackHook);
@@ -192,11 +192,11 @@ public class PlayerCombatCMF : MonoBehaviour
         ProcessAttack();
         //ProcessAttacksCD();
 
-        if (myPlayerMovement.Actions.L2.WasPressed && myPlayerWeap.hasWeapon)
+        if (myPlayerMovement.actions.L2.WasPressed && myPlayerWeap.hasWeapon)
         {
             StartAiming();
         }
-        if (myPlayerMovement.Actions.L2.WasReleased)
+        if (myPlayerMovement.actions.L2.WasReleased)
         {
             StopAiming();
         }
@@ -509,7 +509,7 @@ public class PlayerCombatCMF : MonoBehaviour
         if (canDoCombat)
         {
             if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " -> Starting Attack " + newAttack.attackName);
-            landedSinceAttackStarted = myPlayerMovement.controller.collisions.below ? true : false;
+            landedSinceAttackStarted = myPlayerMovement.controller.collisions.below ? true : false; //need change
             currentAttack = newAttack;
             //targetsHit.Clear();
             attackTime = 0;
@@ -534,7 +534,7 @@ public class PlayerCombatCMF : MonoBehaviour
     {
         if (attackStg != AttackPhaseType.ready)
         {
-            if (!landedSinceAttackStarted && myPlayerMovement.controller.collisions.below) landedSinceAttackStarted = true;
+            if (!landedSinceAttackStarted && myPlayerMovement.controller.collisions.below) landedSinceAttackStarted = true;//need change
             attackTime += Time.deltaTime;
             switch (attackStg)
             {

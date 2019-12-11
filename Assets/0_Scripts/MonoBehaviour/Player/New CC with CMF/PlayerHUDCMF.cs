@@ -9,7 +9,7 @@ public class PlayerHUDCMF : MonoBehaviour
     //Referencias
     [Header("Referencias")]
     [HideInInspector]
-    public GameControllerBase gC;
+    public GameControllerCMF gC;
     [HideInInspector]
     public PlayerMovementCMF myPlayerMov;
     [HideInInspector]

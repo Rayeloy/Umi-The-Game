@@ -326,7 +326,7 @@ public class PlayerMovementCMF : MonoBehaviour
     [HideInInspector]
     public bool haveFlag = false;
     [HideInInspector]
-    public Flag flag = null;
+    public FlagCMF flag = null;
 
     //WATER
     [HideInInspector]
