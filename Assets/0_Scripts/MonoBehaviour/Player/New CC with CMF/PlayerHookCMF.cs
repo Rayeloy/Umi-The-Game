@@ -12,7 +12,7 @@ public class PlayerHookCMF : MonoBehaviour
     PlayerCombatCMF myPlayerCombatNew;
 
     [HideInInspector]
-    public CameraControllerUmi myCameraBase;
+    public CameraControllerCMF myCameraBase;
     Hook myHook;
 
     [HideInInspector]
@@ -342,7 +342,7 @@ public class PlayerHookCMF : MonoBehaviour
         {
             if (item.tag == "Flag")
             {
-                Flag flag = item.GetComponent<Flag>();
+                FlagCMF flag = item.GetComponent<FlagCMF>();
                 if (!flag.HookFlag(myPlayerMov))
                 {
                     print("FLAG NOT HOOKED");
@@ -404,7 +404,7 @@ public class PlayerHookCMF : MonoBehaviour
                     //print("DROP OBJECT FROM HOOK");
                     if (hookedObject.tag == "Flag")
                     {
-                        Flag flag = hookedObject.GetComponent<Flag>();
+                        FlagCMF flag = hookedObject.GetComponent<FlagCMF>();
                         flag.DropFlag();
                     }
                     hookedObject.SetParent(StoringManager.instance.transform);
@@ -466,7 +466,7 @@ public class PlayerHookCMF : MonoBehaviour
             if (hookedObject.tag == "Flag")
             {
                 //print("Recieve flag with hook");
-                Flag flag = hookedObject.GetComponent<Flag>();
+                FlagCMF flag = hookedObject.GetComponent<FlagCMF>();
                 flag.StopBeingHooked();
                 flag.PickupFlag(myPlayerMov);
             }

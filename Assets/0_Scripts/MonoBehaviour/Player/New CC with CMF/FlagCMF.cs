@@ -8,7 +8,7 @@ public class FlagCMF : MonoBehaviour
     [Header("Referencias")]
     public Transform flagCamera;
     public Transform flagCameraLocalParent;
-    public GameController_FlagMode gC;
+    public GameController_FlagModeCMF gC;
     [HideInInspector]
     public Vector3 respawnPos;
     [Tooltip("Not used yet. Can be used to differentiate flags")]
@@ -211,7 +211,7 @@ public class FlagCMF : MonoBehaviour
             timeToRespawn = 0;
             respawning = true;
             StoringManager.instance.StoreObject(transform);
-            flagCamera.SetParent((gC as GameController_FlagMode).centerCameraParent);
+            flagCamera.SetParent((gC as GameControllerCMF_FlagMode).centerCameraParent);
             flagCamera.localPosition = Vector3.zero;
             flagCamera.localRotation = Quaternion.identity;
             lightBeam.transform.SetParent(gC.flagsParent);
@@ -301,23 +301,23 @@ public class FlagCMF : MonoBehaviour
         }
     }
 
-    public bool HookFlag(PlayerMovement player)
+    public bool HookFlag(PlayerMovementCMF player)
     {
         print("HookFlag");
         if (!player.haveFlag && !locked)
         {
-            if (!(currentOwner != null && player.team == currentOwner.GetComponent<PlayerMovement>().team))//si no hemos enganchado la bandera de un compañero de equipo
+            if (!(currentOwner != null && player.team == currentOwner.GetComponent<PlayerMovementCMF>().team))//si no hemos enganchado la bandera de un compañero de equipo
             {
                 if (beingHooked)
                 {
-                    playerHooking.GetComponent<PlayerHook>().StopHook();
+                    playerHooking.GetComponent<PlayerHookCMF>().StopHook();
                     playerHooking = player.transform;
                 }
                 else
                 {
                     if (currentOwner != null)
                     {
-                        currentOwner.GetComponent<PlayerMovement>().LoseFlag();
+                        currentOwner.GetComponent<PlayerMovementCMF>().LoseFlag();
                         currentOwner = null;
                     }
                     print("START BEING HOOKED");
@@ -341,7 +341,7 @@ public class FlagCMF : MonoBehaviour
         if (beingHooked)
         {
             beingHooked = false;//DO NOT CHANGE ORDER
-            playerHooking.GetComponent<PlayerHook>().StopHook();//DO NOT CHANGE ORDER
+            playerHooking.GetComponent<PlayerHookCMF>().StopHook();//DO NOT CHANGE ORDER
             playerHooking = null;//DO NOT CHANGE ORDER
             if (currentOwner != null)
             {
@@ -352,7 +352,7 @@ public class FlagCMF : MonoBehaviour
         {
             if (currentOwner != null)
             {
-                currentOwner.GetComponent<PlayerMovement>().LoseFlag();
+                currentOwner.GetComponent<PlayerMovementCMF>().LoseFlag();
                 currentOwner = null;
             }
         }
