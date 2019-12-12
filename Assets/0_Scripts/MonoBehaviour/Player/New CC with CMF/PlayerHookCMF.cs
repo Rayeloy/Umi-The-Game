@@ -13,7 +13,7 @@ public class PlayerHookCMF : MonoBehaviour
 
     [HideInInspector]
     public CameraControllerCMF myCameraBase;
-    Hook myHook;
+    HookCMF myHook;
 
     [HideInInspector]
     public HookState hookSt;
@@ -84,7 +84,7 @@ public class PlayerHookCMF : MonoBehaviour
     public bool enemyHooked;
     bool objectHooked;// item 
     [HideInInspector]
-    public PlayerMovement enemy;
+    public PlayerMovementCMF enemy;
 
     [Space]
     public LayerMask collisionMask;
@@ -133,7 +133,7 @@ public class PlayerHookCMF : MonoBehaviour
             FinishAutoGrapple();
         }
         UpdateHookPoints();
-        if (canAutoGrapple && myPlayerMov.Actions.R1.WasPressed && !myPlayerMov.inWater)
+        if (canAutoGrapple && myPlayerMov.actions.R1.WasPressed && !myPlayerMov.inWater)
         {
             CheckStartAutoGrapple();
         }
@@ -227,7 +227,7 @@ public class PlayerHookCMF : MonoBehaviour
             //Instantiate hook
             Quaternion rotation = Quaternion.LookRotation(hookMovingVel);
             currentHook = StoringManager.instance.Spawn(StoringManager.instance.hookPrefab, originPos, rotation).gameObject;
-            myHook = currentHook.GetComponent<Hook>();
+            myHook = currentHook.GetComponent<HookCMF>();
             myHook.GetComponent<LineRenderer>().enabled = true;
             myHook.KonoAwake(myPlayerMov, this);
             hookRopeEnd = myHook.hookRopeEnd;
@@ -321,7 +321,7 @@ public class PlayerHookCMF : MonoBehaviour
         currentHook.transform.Translate(finalVel, Space.World);
     }
 
-    public void HookPlayer(PlayerMovement player)
+    public void HookPlayer(PlayerMovementCMF player)
     {
         if (canHookSomething && player.StartHooked())
         {
@@ -452,7 +452,7 @@ public class PlayerHookCMF : MonoBehaviour
         StoringManager.instance.StoreObject(currentHook.transform);
         currentHook = null;
         cdTime = 0;
-        if (myPlayerMov.Actions.L2.IsPressed)
+        if (myPlayerMov.actions.L2.IsPressed)
         {
             myPlayerCombatNew.StartAiming();
         }
@@ -551,7 +551,7 @@ public class PlayerHookCMF : MonoBehaviour
         //Instantiate hook
         Quaternion rotation = Quaternion.LookRotation(hookMovingVel);
         currentHook = StoringManager.instance.Spawn(StoringManager.instance.hookPrefab, originPos, rotation).gameObject;
-        myHook = currentHook.GetComponent<Hook>();
+        myHook = currentHook.GetComponent<HookCMF>();
         myHook.GetComponent<LineRenderer>().enabled = true;
         myHook.KonoAwake(myPlayerMov, this);
         hookRopeEnd = myHook.hookRopeEnd;
@@ -651,7 +651,7 @@ public class PlayerHookCMF : MonoBehaviour
             StoringManager.instance.StoreObject(currentHook.transform);
             currentHook = null;
             grappleCDTime = 0;
-            if (myPlayerMov.Actions.L2.IsPressed)
+            if (myPlayerMov.actions.L2.IsPressed)
             {
                 myPlayerCombatNew.StartAiming();
             }

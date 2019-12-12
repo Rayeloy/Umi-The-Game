@@ -31,7 +31,7 @@ public class PlayerBodyCMF : MonoBehaviour
                 }
                 break;
             case "Flag":
-                col.GetComponent<Flag>().PickupFlag(myPlayerMov);
+                col.GetComponent<FlagCMF>().PickupFlag(myPlayerMov);
                 break;
         }
     }
@@ -47,14 +47,14 @@ public class PlayerBodyCMF : MonoBehaviour
                 //print("I'm " + name + " and I touched a respawn");
                 myPlayerMov.CheckScorePoint(col.GetComponent<FlagHome>());
                 break;
-            case "PickUp":
-                myPlayerMov.myPlayerPickups.CogerPickup(col.gameObject);
-                break;
+            //case "PickUp":
+            //    myPlayerMov.myPlayerPickups.CogerPickup(col.gameObject);
+            //    break;
             case "WeaponPickup":
                 myPlayerWeapons.AddWeaponNearby(col.GetComponent<Weapon>());
                 break;
             case "Player":
-                if (myPlayerMov.controller.collideWithTriggers)
+                if (myPlayerMov.collCheck.collideWithTriggers)
                 {
                     Debug.LogWarning("Hitting player! checking team");
                     PlayerMovement otherPlayer = col.transform.GetComponentInParent<PlayerMovement>();

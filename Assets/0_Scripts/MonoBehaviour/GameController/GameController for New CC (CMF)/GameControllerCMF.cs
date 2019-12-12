@@ -352,6 +352,11 @@ public class GameControllerCMF : MonoBehaviour
         SpecificUpdate();
     }
 
+    private void FixedUpdate()
+    {
+        FixedUpdatePlayers();
+    }
+
     private void LateUpdate()
     {
         if (!gamePaused)
@@ -371,6 +376,14 @@ public class GameControllerCMF : MonoBehaviour
         }
     }
 
+    void FixedUpdatePlayers()
+    {
+        for (int i = 0; i < playerNum; i++)
+        {
+            allPlayers[i].KonoFixedUpdate();
+        }
+    }
+
     void LateUpdatePlayers()
     {
         for (int i = 0; i < playerNum; i++)
@@ -381,7 +394,6 @@ public class GameControllerCMF : MonoBehaviour
 
     protected virtual void SpecificUpdate()
     {
-
     }
 
     protected virtual void UpdateModeExclusiveClasses()//no borrar, es para los hijos
@@ -1109,29 +1121,9 @@ public class GameControllerCMF : MonoBehaviour
 
     #endregion
 
-    #region ----[ PUN CALLBACKS ]----
-    //public override void OnPlayerEnteredRoom(Player newplayer)
-    //{
-    //    Debug.Log("El jugador " + newplayer.NickName + " acaba de entrar en la sala");
-    //}
-
-    //public override void OnDisconnected(DisconnectCause cause)
-    //{
-    //    Debug.Log("Disconnected from Photon server for cause " + cause);
-    //    if (online)
-    //    {
-    //        online = false;
-    //        SceneManager.LoadScene(MasterManager.GameSettings.MainMenuScene);
-    //    }
-    //}
-    #endregion
-
-    #region ----[ RPC ]----
+    #region ----[ BOLT CALLBACKS ]----
     #endregion
 
     #region ----[ NETWORK FUNCTIONS ]----
-    #endregion
-
-    #region ----[ IPUNOBSERVABLE ]----
     #endregion
 }

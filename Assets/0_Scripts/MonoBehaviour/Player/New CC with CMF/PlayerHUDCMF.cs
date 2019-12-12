@@ -53,7 +53,7 @@ public class PlayerHUDCMF : MonoBehaviour
     Vector3 redFlagHomePos;
     float sliderTotalDist;
     Transform flagTransform;
-    Flag flag;
+    FlagCMF flag;
     Vector3 flagPos;
 
     //Flag Arrow
@@ -193,7 +193,7 @@ public class PlayerHUDCMF : MonoBehaviour
         //{
         if (gC.gameMode == GameMode.CaptureTheFlag)
         {
-            flag = (gC as GameController_FlagMode).flags[0];
+            flag = (gC as GameControllerCMF_FlagMode).flags[0];
         }
 
         Interaction_Message.SetActive(false);
@@ -330,8 +330,8 @@ public class PlayerHUDCMF : MonoBehaviour
                 teamBPlayerIcons[i].color = playerNumTeamBCopy > 0 ? Color.white : whiteHalfTransparent;
                 if (playerNumTeamBCopy > 0) playerNumTeamBCopy--;
             }
-            maxScorePoints[0].text = "/" + (gC as GameController_FlagMode).myScoreManager.maxScore;
-            maxScorePoints[1].text = "/" + (gC as GameController_FlagMode).myScoreManager.maxScore;
+            maxScorePoints[0].text = "/" + (gC as GameControllerCMF_FlagMode).myScoreManager.maxScore;
+            maxScorePoints[1].text = "/" + (gC as GameControllerCMF_FlagMode).myScoreManager.maxScore;
         }
         else
         {
@@ -355,10 +355,10 @@ public class PlayerHUDCMF : MonoBehaviour
             //}
             //else
             //{
-            flagTransform = (gC as GameController_FlagMode).flags[0].transform;
+            flagTransform = (gC as GameControllerCMF_FlagMode).flags[0].transform;
             //}
-            blueFlagHomePos = (gC as GameController_FlagMode).FlagHome_TeamA.position;
-            redFlagHomePos = (gC as GameController_FlagMode).FlagHome_TeamB.position;
+            blueFlagHomePos = (gC as GameControllerCMF_FlagMode).FlagHome_TeamA.position;
+            redFlagHomePos = (gC as GameControllerCMF_FlagMode).FlagHome_TeamB.position;
             blueFlagHomePos.y = 0;
             redFlagHomePos.y = 0;
             flagSliderStartX = flagSliderStart.localPosition.x;
@@ -401,7 +401,7 @@ public class PlayerHUDCMF : MonoBehaviour
     {
         if (gC.gameMode == GameMode.CaptureTheFlag)
         {
-            flagSpawn = (gC as GameController_FlagMode).flagsParent;
+            flagSpawn = (gC as GameControllerCMF_FlagMode).flagsParent;
             flagArrowFollowTarget = flagTransform;
             DeactivateArrowToFlagOffScreen();
             if (minProportionWOCMaxDist <= maxProportionWhenOnCamera) Debug.LogError("Error: minProportionWOCMaxDist(" + minProportionWOCMaxDist + ") should be always higher than the " +
@@ -712,7 +712,7 @@ public class PlayerHUDCMF : MonoBehaviour
     {
         if (gC.gameMode == GameMode.CaptureTheFlag)
         {
-            flagHomeTransform = myPlayerMov.team == Team.A ? (gC as GameController_FlagMode).FlagHome_TeamA : (gC as GameController_FlagMode).FlagHome_TeamB;
+            flagHomeTransform = myPlayerMov.team == Team.A ? (gC as GameControllerCMF_FlagMode).FlagHome_TeamA : (gC as GameControllerCMF_FlagMode).FlagHome_TeamB;
             flagHomeArrowIconOutline.gameObject.SetActive(false);
             flagHomeArrowArrow.gameObject.SetActive(false);
             flagHomeArrowIconOriginalProportion = flagHomeArrowIconOutline.localScale;
@@ -1236,7 +1236,7 @@ arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
     #endregion
 
     #region --- SKILLS ---
-    public void SetupSkillsHUD(WeaponSkill[] equippedSkills)
+    public void SetupSkillsHUD(WeaponSkillCMF[] equippedSkills)
     {
         skillHUDCantDoAnimTime = new float[equippedSkills.Length];
         skillHUDCantDoAnimStarted = new bool[equippedSkills.Length];
@@ -1256,7 +1256,7 @@ arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
     {
         for (int i = 0; i < myPlayerCombat.equipedWeaponSkills.Length; i++)
         {
-            WeaponSkill skill = myPlayerCombat.equipedWeaponSkills[i];
+            WeaponSkillCMF skill = myPlayerCombat.equipedWeaponSkills[i];
             switch (skill.weaponSkillSt)
             {
                 case WeaponSkillState.cd:

@@ -43,6 +43,7 @@ public class PlayerMovementCMF : MonoBehaviour
     [Header(" --- Referencias --- ")]
     public bool disableAllDebugs;
     //public PlayerCombat myPlayerCombat;
+    public CollisionsCheck collCheck;
     public Mover mover;
     public PlayerCombatCMF myPlayerCombatNew;
     public PlayerWeaponsCMF myPlayerWeap;
@@ -69,8 +70,7 @@ public class PlayerMovementCMF : MonoBehaviour
 
 
     //GROUND VARIABLES
-    [HideInInspector]
-    public CollisionInfo collInfo;
+
 
     //VARIABLES DE MOVIMIENTO
 
@@ -203,7 +203,7 @@ public class PlayerMovementCMF : MonoBehaviour
         get
         {
             bool result = false;
-            result = collInfo.isGrounded && chargeJumpChargingJump && isFloorChargeJumpable && (jumpSt == JumpState.Falling || jumpSt == JumpState.None);
+            result = collCheck.below && chargeJumpChargingJump && isFloorChargeJumpable && (jumpSt == JumpState.Falling || jumpSt == JumpState.None);
             if (!disableAllDebugs) Debug.LogWarning("isChargeJump = " + result);
             return result;
         }
@@ -212,7 +212,7 @@ public class PlayerMovementCMF : MonoBehaviour
     {
         get
         {
-            StageScript stageScript = collInfo.floor != null ? collInfo.floor.GetComponent<StageScript>() : null;
+            StageScript stageScript = collCheck.floor != null ? collCheck.floor.GetComponent<StageScript>() : null;
             return stageScript != null && stageScript.chargeJumpable;
         }
     }
@@ -229,9 +229,9 @@ public class PlayerMovementCMF : MonoBehaviour
             bool result = false;
             float totalFallenHeight = chargeJumpLastApexHeight - transform.position.y;
             float auxBounceJumpCurrentMaxHeight = totalFallenHeight * bounceJumpMultiplier;
-            result = collInfo.isGrounded && isFloorBounceJumpable && auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight
+            result = collCheck.below && isFloorBounceJumpable && auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight
                 && jumpSt == JumpState.Falling;
-            if (!disableAllDebugs) Debug.LogWarning("isBounceJump = " + result + "; currentFloor = " + collInfo.floor + "; collInfo.isGrounded = " + collInfo.isGrounded
+            if (!disableAllDebugs) Debug.LogWarning("isBounceJump = " + result + "; currentFloor = " + collCheck.floor + "; collCheck.below = " + collCheck.below
                 + "; auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight = " + (auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight));
             return result;
         }
@@ -240,7 +240,7 @@ public class PlayerMovementCMF : MonoBehaviour
     {
         get
         {
-            StageScript stageScript = collInfo.floor != null ? collInfo.floor.GetComponent<StageScript>() : null;
+            StageScript stageScript = collCheck.floor != null ? collCheck.floor.GetComponent<StageScript>() : null;
             if (stageScript != null) Debug.Log("stageScript = " + stageScript + "; stageScript.bounceJumpable = "
      + stageScript.bounceJumpable);
             return (stageScript == null || (stageScript != null && stageScript.bounceJumpable));
@@ -411,7 +411,7 @@ public class PlayerMovementCMF : MonoBehaviour
     public void KonoAwake(bool isMyCharacter = false)
     {
         mover = GetComponent<Mover>();
-        collInfo = new CollisionInfo(mover.capsuleCollider);
+
         if (actions == null) Debug.LogError("Error: PlayerActions have not been yet assigned to Player");
         else inputsInfo = new InputsInfo(actions);
 
@@ -432,8 +432,8 @@ public class PlayerMovementCMF : MonoBehaviour
         //WALLJUMP
         wallJumpCheckRaysRows = 5;
         wallJumpCheckRaysColumns = 5;
-        wallJumpCheckRaysRowsSpacing = (collInfo.collider.bounds.size.y * wallJumpMinHeightPercent) / (wallJumpCheckRaysRows - 1);
-        wallJumpCheckRaysColumnsSpacing = collInfo.collider.bounds.size.x / (wallJumpCheckRaysColumns - 1);
+        wallJumpCheckRaysRowsSpacing = (collCheck.collider.bounds.size.y * wallJumpMinHeightPercent) / (wallJumpCheckRaysRows - 1);
+        wallJumpCheckRaysColumnsSpacing = collCheck.collider.bounds.size.x / (wallJumpCheckRaysColumns - 1);
         auxLM = LayerMask.GetMask("Stage");
 
         PlayerAwakes();
@@ -442,6 +442,7 @@ public class PlayerMovementCMF : MonoBehaviour
     //todos los konoAwakes
     void PlayerAwakes()
     {
+        collCheck.KonoAwake(mover.capsuleCollider);//we use capsule collider in our example
         myPlayerHUD.KonoAwake();
         myPlayerCombatNew.KonoAwake();
         //myPlayerAnimation.KonoAwake();
@@ -475,6 +476,7 @@ public class PlayerMovementCMF : MonoBehaviour
     }
     private void PlayerStarts()
     {
+        collCheck.KonoStart();
         myPlayerCombatNew.KonoStart();
         myPlayerHUD.KonoStart();
         myPlayerWeap.KonoStart();
@@ -499,9 +501,13 @@ public class PlayerMovementCMF : MonoBehaviour
     {
         ResetMovementVariables();
 
+        mover.CheckForGround();
+        collCheck.below = mover.IsGrounded();
+
         if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4"));
 
-        if ((/*controller.collisions.above ||*/ collInfo.isGrounded) && !hooked)
+        //TO REDO
+        if ((/*controller.collisions.above ||*/ collCheck.below) && !hooked)
         {
             currentVel.y = 0;
             //if (controller.collisions.above) StopJump();
@@ -517,6 +523,8 @@ public class PlayerMovementCMF : MonoBehaviour
         //VerticalMovement();
 
         ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
+
+        collCheck.UpdateCollisionChecks(currentVel);
 
         myPlayerCombatNew.KonoUpdate();
     }
@@ -748,10 +756,10 @@ public class PlayerMovementCMF : MonoBehaviour
 
             #region ------------------------------- Acceleration -------------------------------
             float finalAcc = 0;
-            float finalBreakAcc = collInfo.isGrounded ? breakAcc : airBreakAcc;
-            float finalHardSteerAcc = collInfo.isGrounded ? hardSteerAcc : airHardSteerAcc;
-            float finalInitialAcc = collInfo.isGrounded ? initialAcc : airInitialAcc;
-            finalMovingAcc = (collInfo.isGrounded ? movingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
+            float finalBreakAcc = collCheck.below ? breakAcc : airBreakAcc;
+            float finalHardSteerAcc = collCheck.below ? hardSteerAcc : airHardSteerAcc;
+            float finalInitialAcc = collCheck.below ? initialAcc : airInitialAcc;
+            finalMovingAcc = (collCheck.below ? movingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
             //if (!disableAllDebugs && rotationRestrictedPercentage!=1) Debug.LogWarning("finalMovingAcc = " + finalMovingAcc+ "; rotationRestrictedPercentage = " + rotationRestrictedPercentage+
             //    "; attackStg = " + myPlayerCombatNew.attackStg);
             //finalBreakAcc = currentSpeed < 0 ? -finalBreakAcc : finalBreakAcc;
@@ -849,7 +857,7 @@ public class PlayerMovementCMF : MonoBehaviour
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
         Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
         if (!disableAllDebugs && currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
-            "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + collInfo.isGrounded + "; horVel.magnitude = " + horVel.magnitude);
+            "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + collCheck.below + "; horVel.magnitude = " + horVel.magnitude);
         //print("CurrentVel 1.3= " + currentVel.ToString("F6")+ "MoveState = " + moveSt);
         if (jumpSt != JumpState.WallJumping || (jumpSt == JumpState.WallJumping && moveSt == MoveState.Knockback))
         {
@@ -976,7 +984,7 @@ public class PlayerMovementCMF : MonoBehaviour
             currentImpulse = _impulse;
             currentImpulse.initialPlayerPos = transform.position;
 
-            if (!collInfo.isGrounded)
+            if (!collCheck.below)
             {
                 currentImpulse.impulseVel *= airImpulsePercentage;
                 //IMPORTANT TO DO: 
@@ -1034,14 +1042,14 @@ public class PlayerMovementCMF : MonoBehaviour
 
     void VerticalMovement()
     {
-        if (!jumpedOutOfWater && !inWater && collInfo.isGrounded)
+        if (!jumpedOutOfWater && !inWater && collCheck.below)
         {
             jumpedOutOfWater = true;
 
             maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
         }
 
-        if (lastWallAngle != -500 && collInfo.isGrounded)//RESET WALL JUMP VARIABLE TO MAKE IT READY
+        if (lastWallAngle != -500 && collCheck.below)//RESET WALL JUMP VARIABLE TO MAKE IT READY
         {
             lastWallAngle = -500;
             lastWall = null;
@@ -1062,7 +1070,7 @@ public class PlayerMovementCMF : MonoBehaviour
             switch (jumpSt)
             {
                 case JumpState.None:
-                    if (currentVel.y < 0 && !collInfo.isGrounded)
+                    if (currentVel.y < 0 && !collCheck.below)
                     {
                         if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
                         jumpSt = JumpState.Falling;
@@ -1073,13 +1081,13 @@ public class PlayerMovementCMF : MonoBehaviour
                     break;
                 case JumpState.Falling:
 
-                    if (!chargeJumpChargingJump && collInfo.isGrounded)
+                    if (!chargeJumpChargingJump && collCheck.below)
                     {
                         if (StartBounceJump())
                             break;
                     }
 
-                    if (currentVel.y >= 0 || collInfo.isGrounded)
+                    if (currentVel.y >= 0 || collCheck.below)
                     {
                         //Debug.Log("STOP FALLING");
                         if (!disableAllDebugs) Debug.Log("JumpSt = None");
@@ -1165,8 +1173,8 @@ public class PlayerMovementCMF : MonoBehaviour
         bool result = false;
         if (!noInput && moveSt != MoveState.Boost)
         {
-            if (!disableAllDebugs) Debug.Log("START JUMP: below = " + collInfo.isGrounded + "; jumpInsurance = " + jumpInsurance + "; inWater = " + inWater);
-            if ((collInfo.isGrounded || jumpInsurance) && !isChargeJump && !isBounceJump &&
+            if (!disableAllDebugs) Debug.Log("START JUMP: below = " + collCheck.below + "; jumpInsurance = " + jumpInsurance + "; inWater = " + inWater);
+            if ((collCheck.below || jumpInsurance) && !isChargeJump && !isBounceJump &&
                 (!inWater || (inWater /*&& controller.collisions.around*/ &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameControllerCMF_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
@@ -1205,9 +1213,9 @@ public class PlayerMovementCMF : MonoBehaviour
     {
         if (!jumpInsurance)
         {
-            //Debug.LogWarning(" controller.collisions.lastBelow = " + (controller.collisions.lastBelow) + "; collInfo.isGrounded = " + (collInfo.isGrounded) +
+            //Debug.LogWarning(" controller.collisions.lastBelow = " + (controller.collisions.lastBelow) + "; collCheck.below = " + (collCheck.below) +
             //   "; jumpSt = " + jumpSt);
-            if (collInfo.lastIsGrounded && !collInfo.isGrounded && (jumpSt == JumpState.None || jumpSt == JumpState.Falling) &&
+            if (collCheck.lastBelow && !collCheck.below && (jumpSt == JumpState.None || jumpSt == JumpState.Falling) &&
                 (jumpSt != JumpState.BounceJumping && jumpSt != JumpState.ChargeJumping) && jumpedOutOfWater)
             {
                 //print("Jump Insurance");
@@ -1239,7 +1247,7 @@ public class PlayerMovementCMF : MonoBehaviour
     //    float slopeAngle = controller.collisions.closestHorRaycast.slopeAngle;
     //    bool goodWallAngle = !(slopeAngle >= 110 && slopeAngle <= 180);
     //    wallJumpCurrentWall = controller.collisions.horWall;
-    //    if (!collInfo.isGrounded && !inWater && jumpedOutOfWater && controller.collisions.collisionHorizontal && goodWallAngle &&
+    //    if (!collCheck.below && !inWater && jumpedOutOfWater && controller.collisions.collisionHorizontal && goodWallAngle &&
     //        (!firstWallJumpDone || lastWallAngle != controller.collisions.wallAngle || (lastWallAngle == controller.collisions.wallAngle &&
     //        lastWall != controller.collisions.horWall)) && wallJumpCurrentWall.tag == "Stage")
     //    {
@@ -1269,7 +1277,7 @@ public class PlayerMovementCMF : MonoBehaviour
     //    }
     //    else
     //    {
-    //        if (!disableAllDebugs) Debug.Log("Couldn't wall jump because:  !collInfo.isGrounded (" + !collInfo.isGrounded + ") && !inWater(" + !inWater + ") &&" +
+    //        if (!disableAllDebugs) Debug.Log("Couldn't wall jump because:  !collCheck.below (" + !collCheck.below + ") && !inWater(" + !inWater + ") &&" +
     //            " jumpedOutOfWater(" + jumpedOutOfWater + ") && controller.collisions.collisionHorizontal(" + controller.collisions.collisionHorizontal + ") && " +
     //            "(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != controller.collisions.wallAngle (" + (lastWallAngle != controller.collisions.wallAngle) + ") || " +
     //            "(lastWallAngle == controller.collisions.wallAngle (" + (lastWallAngle == controller.collisions.wallAngle) + ")&& " +
@@ -1301,14 +1309,14 @@ public class PlayerMovementCMF : MonoBehaviour
 
             #region --- WALL JUMP CHECK RAYS ---
             //Check continuously if we are still attached to wall
-            float rayLength = collInfo.collider.bounds.extents.x + 0.5f;
+            float rayLength = collCheck.collider.bounds.extents.x + 0.5f;
             RaycastHit hit;
 
             //calculamos el origen de todos los rayos y columnas: esquina inferior (izda o dcha,no sé)
             //del personaje. 
             Vector3 paralelToWall = new Vector3(-wallNormal.z, 0, wallNormal.x).normalized;
-            Vector3 rowsOrigin = new Vector3(collInfo.collider.bounds.center.x, collInfo.collider.bounds.min.y, collInfo.collider.bounds.center.z);
-            rowsOrigin -= paralelToWall * collInfo.collider.bounds.extents.x;
+            Vector3 rowsOrigin = new Vector3(collCheck.collider.bounds.center.x, collCheck.collider.bounds.min.y, collCheck.collider.bounds.center.z);
+            rowsOrigin -= paralelToWall * collCheck.collider.bounds.extents.x;
             Vector3 dir = -wallNormal.normalized;
             bool success = false;
             for (int i = 0; i < wallJumpCheckRaysRows && !success; i++)
@@ -1416,7 +1424,7 @@ public class PlayerMovementCMF : MonoBehaviour
                 chargeJumpButtonReleased = true;
             }
 
-            if (!chargeJumpLanded && collInfo.isGrounded)
+            if (!chargeJumpLanded && collCheck.below)
             {
                 if (!isFloorChargeJumpable)
                 {
@@ -1672,22 +1680,22 @@ public class PlayerMovementCMF : MonoBehaviour
         }
     }
 
-    void WallBoost(GameObject wall)
-    {
-        if (wall.tag == "Stage")
-        {
-            //CALCULATE JUMP DIR
-            Vector3 circleCenter = transform.position;
-            Vector3 circumfPoint = CalculateReflectPoint(1, collInfo.wallNormal, circleCenter);
-            Vector3 finalDir = (circumfPoint - circleCenter).normalized;
-            Debug.LogWarning("WALL BOOST: FINAL DIR = " + finalDir.ToString("F4"));
+    //void WallBoost(GameObject wall)
+    //{
+    //    if (wall.tag == "Stage")
+    //    {
+    //        //CALCULATE JUMP DIR
+    //        Vector3 circleCenter = transform.position;
+    //        Vector3 circumfPoint = CalculateReflectPoint(1, collInfo.wallNormal, circleCenter);
+    //        Vector3 finalDir = (circumfPoint - circleCenter).normalized;
+    //        Debug.LogWarning("WALL BOOST: FINAL DIR = " + finalDir.ToString("F4"));
 
-            currentVel = finalDir * currentVel.magnitude;
-            currentSpeed = currentVel.magnitude;
-            boostDir = new Vector3(finalDir.x, 0, finalDir.z);
-            RotateCharacter(boostDir);
-        }
-    }
+    //        currentVel = finalDir * currentVel.magnitude;
+    //        currentSpeed = currentVel.magnitude;
+    //        boostDir = new Vector3(finalDir.x, 0, finalDir.z);
+    //        RotateCharacter(boostDir);
+    //    }
+    //}
 
     #endregion
 
@@ -1821,10 +1829,10 @@ public class PlayerMovementCMF : MonoBehaviour
     #endregion
 
     #region RECIEVE HIT AND EFFECTS ---------------------------------------------
-    PlayerMovement lastAttacker = null;
+    PlayerMovementCMF lastAttacker = null;
     int lastAutocomboIndex = -1;
     bool stunProtectionOn = false;
-    public bool StartReceiveHit(PlayerMovement attacker, Vector3 _knockback, EffectType effect, float _maxTime = 0, byte autocomboIndex = 255)
+    public bool StartReceiveHit(PlayerMovementCMF attacker, Vector3 _knockback, EffectType effect, float _maxTime = 0, byte autocomboIndex = 255)
     {
         if (!myPlayerCombatNew.invulnerable)
         {
@@ -1957,7 +1965,7 @@ public class PlayerMovementCMF : MonoBehaviour
     }
 
     //ES RECEIVE
-    public void StartRecieveParry(PlayerMovement enemy, AttackEffect effect = null)
+    public void StartRecieveParry(PlayerMovementCMF enemy, AttackEffect effect = null)
     {
         if (!disableAllDebugs) Debug.Log("PARRY!!!");
         float knockbackMag = effect == null ? 10 : effect.knockbackMagnitude;
@@ -1974,7 +1982,7 @@ public class PlayerMovementCMF : MonoBehaviour
         Vector3 resultKnockback = new Vector3(parryColPos.x - parryMyPos.x, 0, parryColPos.z - parryMyPos.z).normalized;
         //resultKnockback = Quaternion.Euler(0, effect.knockbackYAngle, 0) * resultKnockback;
         if (!disableAllDebugs) Debug.Log("resultKnockback 1 = " + resultKnockback);
-        resultKnockback = Hitbox.CalculateYAngle(enemyPos, resultKnockback, 25f);
+        resultKnockback = HitboxCMF.CalculateYAngle(enemyPos, resultKnockback, 25f);
         if (!disableAllDebugs) Debug.Log("resultKnockback 2 = " + resultKnockback);
         resultKnockback = resultKnockback * knockbackMag;
         if (!disableAllDebugs) Debug.Log("resultKnockback 3 = " + resultKnockback + "; maxStunTime = " + maxStunTime);
@@ -2134,7 +2142,7 @@ public class PlayerMovementCMF : MonoBehaviour
             hooking = true;
             myPlayerCombatNew.StopDoingCombat();
             hookingAndTouchedGroundOnce = false;
-            if (collInfo.isGrounded) hookingAndTouchedGroundOnce = true;
+            if (collCheck.below) hookingAndTouchedGroundOnce = true;
         }
     }
 
@@ -2144,7 +2152,7 @@ public class PlayerMovementCMF : MonoBehaviour
         {
             if (!hookingAndTouchedGroundOnce)
             {
-                if (collInfo.isGrounded) hookingAndTouchedGroundOnce = true;
+                if (collCheck.below) hookingAndTouchedGroundOnce = true;
             }
             else if (currentMaxMoveSpeed > maxHookingSpeed)
             {
@@ -2165,7 +2173,7 @@ public class PlayerMovementCMF : MonoBehaviour
     {
         if (!aimingAndTouchedGroundOnce)
         {
-            if (collInfo.isGrounded)
+            if (collCheck.below)
             {
                 aimingAndTouchedGroundOnce = true;
             }
@@ -2198,14 +2206,14 @@ public class PlayerMovementCMF : MonoBehaviour
     }
 
     //En desuso
-    //public void Die()
-    //{
-    //    if (haveFlag)
-    //    {
-    //        flag.SetAway(false);
-    //    }
-    //    gC.RespawnPlayer(this);
-    //}
+    public void Die()
+    {
+        if (haveFlag)
+        {
+            flag.SetAway(false);
+        }
+        gC.RespawnPlayer(this);
+    }
     #endregion
 
     #region  WATER ---------------------------------------------
@@ -2385,10 +2393,6 @@ public class PlayerMovementCMF : MonoBehaviour
                 break;
         }
     }
-    #endregion
-
-    #region Check Collisions Around ------------------------------------
-
     #endregion
 
     #region  AUXILIAR FUNCTIONS ---------------------------------------------
@@ -2584,29 +2588,29 @@ public class InputsInfo
     }
 }
 
-public class CollisionInfo
-{
-    public Collider collider;
-    public GameObject floor;
-    public bool isGrounded;
-    public bool lastIsGrounded;
-    public Vector3 wallNormal;
+//public class CollisionInfo
+//{
+//    public Collider collider;
+//    public GameObject floor;
+//    public bool isGrounded;
+//    public bool lastIsGrounded;
+//    public Vector3 wallNormal;
 
-    public CollisionInfo(Collider _collider)
-    {
-        collider = _collider;
-        floor = null;
-        isGrounded = false;
-        lastIsGrounded = false;
-        wallNormal = Vector3.zero;
-    }
+//    public CollisionInfo(Collider _collider)
+//    {
+//        collider = _collider;
+//        floor = null;
+//        isGrounded = false;
+//        lastIsGrounded = false;
+//        wallNormal = Vector3.zero;
+//    }
 
-    public void ResetVariables()
-    {
-        lastIsGrounded = isGrounded;
-        lastIsGrounded = false;
-        floor = null;
-        wallNormal = Vector3.zero;
-    }
-}
+//    public void ResetVariables()
+//    {
+//        lastIsGrounded = isGrounded;
+//        lastIsGrounded = false;
+//        floor = null;
+//        wallNormal = Vector3.zero;
+//    }
+//}
 #endregion

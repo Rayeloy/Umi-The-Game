@@ -5,7 +5,7 @@ using TMPro;
 
 public class ScoreManagerCMF : MonoBehaviour
 {
-    public GameController_FlagMode gC;
+    public GameControllerCMF_FlagMode gC;
     // Use this for initialization
 
     [Tooltip("Tiempo de juego en segundos")]

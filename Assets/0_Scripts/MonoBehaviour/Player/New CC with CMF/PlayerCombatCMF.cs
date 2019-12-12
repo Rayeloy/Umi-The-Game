@@ -16,7 +16,7 @@ public class PlayerCombatCMF : MonoBehaviour
     [HideInInspector] public Transform weaponHandle;
 
     [Header(" --- SKILLS ---")]
-    [HideInInspector] public WeaponSkill[] equipedWeaponSkills = new WeaponSkill[2];
+    [HideInInspector] public WeaponSkillCMF[] equipedWeaponSkills = new WeaponSkillCMF[2];
 
     #endregion
 
@@ -85,7 +85,7 @@ public class PlayerCombatCMF : MonoBehaviour
         }
     }
     [HideInInspector]
-    public WeaponSkill currentWeaponSkill
+    public WeaponSkillCMF currentWeaponSkill
     {
         get
         {
@@ -130,7 +130,7 @@ public class PlayerCombatCMF : MonoBehaviour
         currentHitboxes = new List<GameObject>();
         attackStg = AttackPhaseType.ready;
         attackTime = 0;
-        equipedWeaponSkills = new WeaponSkill[2];
+        equipedWeaponSkills = new WeaponSkillCMF[2];
 
     }
     #endregion
@@ -509,7 +509,7 @@ public class PlayerCombatCMF : MonoBehaviour
         if (canDoCombat)
         {
             if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " -> Starting Attack " + newAttack.attackName);
-            landedSinceAttackStarted = myPlayerMovement.controller.collisions.below ? true : false; //need change
+            landedSinceAttackStarted = myPlayerMovement.collCheck.below ? true : false; //need change
             currentAttack = newAttack;
             //targetsHit.Clear();
             attackTime = 0;
@@ -534,7 +534,7 @@ public class PlayerCombatCMF : MonoBehaviour
     {
         if (attackStg != AttackPhaseType.ready)
         {
-            if (!landedSinceAttackStarted && myPlayerMovement.controller.collisions.below) landedSinceAttackStarted = true;//need change
+            if (!landedSinceAttackStarted && myPlayerMovement.collCheck.below) landedSinceAttackStarted = true;//need change
             attackTime += Time.deltaTime;
             switch (attackStg)
             {
@@ -702,8 +702,8 @@ public class PlayerCombatCMF : MonoBehaviour
                     currentWeaponSkill.StartSkill();
                     break;
                 case WeaponSkillType.attack_extend:
-                    (currentWeaponSkill as WeaponSkill_AttackExtend).KonoAwake();
-                    (currentWeaponSkill as WeaponSkill_AttackExtend).StartSkill();
+                    (currentWeaponSkill as WeaponSkillCMF_AttackExtend).KonoAwake();
+                    (currentWeaponSkill as WeaponSkillCMF_AttackExtend).StartSkill();
                     break;
             }
         }
@@ -742,21 +742,21 @@ public class PlayerCombatCMF : MonoBehaviour
             switch (currentWeaponSkill.myWeaponSkillData.weaponSkillType)
             {
                 case WeaponSkillType.attack:
-                    WeaponSkill auxWeapSkill = currentWeaponSkill;
+                    WeaponSkillCMF auxWeapSkill = currentWeaponSkill;
                     weaponSkillIndex = -1;
                     auxWeapSkill.StopSkill();
                     break;
                 case WeaponSkillType.attack_extend:
-                    if ((currentWeaponSkill as WeaponSkill_AttackExtend).attackExtendStg != AttackExtendStage.finished)
+                    if ((currentWeaponSkill as WeaponSkillCMF_AttackExtend).attackExtendStg != AttackExtendStage.finished)
                     {
-                        (currentWeaponSkill as WeaponSkill_AttackExtend).StartRetracting();
+                        (currentWeaponSkill as WeaponSkillCMF_AttackExtend).StartRetracting();
                     }
                     else
                     {
-                        (currentWeaponSkill as WeaponSkill_AttackExtend).attackExtendStg = AttackExtendStage.notStarted;
+                        (currentWeaponSkill as WeaponSkillCMF_AttackExtend).attackExtendStg = AttackExtendStage.notStarted;
                         auxWeapSkill = currentWeaponSkill;
                         weaponSkillIndex = -1;
-                        (auxWeapSkill as WeaponSkill_AttackExtend).StopSkill();
+                        (auxWeapSkill as WeaponSkillCMF_AttackExtend).StopSkill();
                     }
                     break;
             }
@@ -798,10 +798,10 @@ public class PlayerCombatCMF : MonoBehaviour
             switch (currentWeapon.allWeaponSkills[i].weaponSkillType)
             {
                 case WeaponSkillType.attack:
-                    equipedWeaponSkills[i] = new WeaponSkill(this, currentWeapon.allWeaponSkills[i]);
+                    equipedWeaponSkills[i] = new WeaponSkillCMF(this, currentWeapon.allWeaponSkills[i]);
                     break;
                 case WeaponSkillType.attack_extend:
-                    equipedWeaponSkills[i] = new WeaponSkill_AttackExtend(this, currentWeapon.allWeaponSkills[i]);
+                    equipedWeaponSkills[i] = new WeaponSkillCMF_AttackExtend(this, currentWeapon.allWeaponSkills[i]);
                     break;
             }
             equipedWeaponSkills[i].skillIndex = i;
@@ -841,7 +841,7 @@ public class PlayerCombatCMF : MonoBehaviour
             myPlayerHUD.StartAim();
             //ChangeAttackType(GameController.instance.attackHook);
             myPlayerMovement.aimingAndTouchedGroundOnce = false;
-            if (myPlayerMovement.controller.collisions.below) myPlayerMovement.aimingAndTouchedGroundOnce = true;
+            if (myPlayerMovement.collCheck.below) myPlayerMovement.aimingAndTouchedGroundOnce = true;
         }
     }
 

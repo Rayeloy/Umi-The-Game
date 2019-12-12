@@ -90,7 +90,7 @@ public class PlayerWeaponsCMF : MonoBehaviour
     #region Update
     public void KonoUpdate()
     {
-        if (nearestWeapon != null && myPlayerMovement.Actions.X.WasPressed)
+        if (nearestWeapon != null && myPlayerMovement.actions.X.WasPressed)
         {
             PickupWeapon(nearestWeapon);
         }
