@@ -242,7 +242,10 @@ public class Mover : MonoBehaviour {
 		float _middle = _upperLimit + colliderHeight * stepHeightRatio;
 		float _distanceToGo = _middle - _distance;
 
-		//Set new ground adjustment velocity for the next frame;
+        //Set new ground adjustment velocity for the next frame;
+        //Eloy's addition:
+        //float slopeAngle = Vector3.Angle(GetGroundNormal(), Vector3.up);
+        //if (isGrounded && slopeAngle <= 60)
 		currentGroundAdjustmentVelocity = tr.up * (_distanceToGo/Time.fixedDeltaTime);
 	}
 

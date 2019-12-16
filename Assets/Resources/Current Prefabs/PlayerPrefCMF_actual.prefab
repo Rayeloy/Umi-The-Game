@@ -45027,6 +45027,7 @@ MonoBehaviour:
   collisionMaskAround:
     serializedVersion: 2
     m_Bits: 512
+  maxSlopeAngle: 60
   FloorMaxDistanceCheck: 5
   coll: {fileID: 820385934952834849}
   showDistanceCheckRays: 1
@@ -45035,11 +45036,14 @@ MonoBehaviour:
   lastBelow: 0
   lastLastBelow: 0
   safeBelow: 0
+  tooSteepSlope: 0
   distanceToFloor: 0
   safeBelowStarted: 0
   collider: {fileID: 0}
   floor: {fileID: 0}
   wallNormal: {x: 0, y: 0, z: 0}
+  slopeAngle: 0
+  lastSliping: 0
 --- !u!114 &873758771431004316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45052,7 +45056,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcb1f6fd1a158a74f9c7f9580017ee6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllDebugs: 0
+  disableAllDebugs: 1
   collCheck: {fileID: 4826634726855863062}
   mover: {fileID: 2655243504092265548}
   myPlayerCombatNew: {fileID: 8719508589324532801}
@@ -65240,7 +65244,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 7753593567714089022}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 0
+  m_Enabled: 1
   m_Radius: 0.4
   m_Height: 2
   m_Direction: 1

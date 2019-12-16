@@ -13,6 +13,7 @@ public class CollisionsCheck : MonoBehaviour
     QueryTriggerInteraction qTI;
     public LayerMask collisionMask;
     public LayerMask collisionMaskAround;
+    public float maxSlopeAngle = 60;
     public float FloorMaxDistanceCheck = 5;
     Color purple = new Color(0.749f, 0.380f, 1f);
     Color brown = new Color(0.615f, 0.329f, 0.047f);
@@ -38,7 +39,7 @@ public class CollisionsCheck : MonoBehaviour
     //float verticalRowSpacing;
     //float verticalRaySpacing;
     [HideInInspector]
-    public bool above, below, lastBelow, lastLastBelow, safeBelow;
+    public bool above, below, lastBelow, lastLastBelow, safeBelow, tooSteepSlope;
     [HideInInspector]
     public float distanceToFloor;
     [HideInInspector]
@@ -51,6 +52,11 @@ public class CollisionsCheck : MonoBehaviour
     public GameObject floor;
     [HideInInspector]
     public Vector3 wallNormal;
+    [HideInInspector]
+    public float slopeAngle;
+    [HideInInspector]
+    public bool lastSliping;
+    public bool sliping { get { return below && tooSteepSlope; } }
 
     public void KonoAwake(Collider _collider)
     {
@@ -74,6 +80,13 @@ public class CollisionsCheck : MonoBehaviour
         //print("bounds.size.z = " + coll.bounds.size.z+"bounds.size.y = "+ coll.bounds.size.y);
     }
 
+    public void UpdateCollisionVariables(Mover mover)
+    {
+        mover.CheckForGround();
+        below = mover.IsGrounded();
+        SetSlopeAngle(mover.GetGroundNormal());
+    }
+
     /// <summary>
     /// MAIN FUNCTION OF CollisionsCheck
     /// </summary>
@@ -93,14 +106,23 @@ public class CollisionsCheck : MonoBehaviour
 
     public void ResetVariables()
     {
+        lastSliping = sliping;
+
         lastLastBelow = lastBelow;
-        lastLastBelow = below;
+        lastBelow = below;
 
         floor = null;
         wallNormal = Vector3.zero;
-        above = below = safeBelow = safeBelowStarted = false;
+        above = below = safeBelow = safeBelowStarted = tooSteepSlope = false;
         distanceToFloor = float.MaxValue;
         safeBelowTime = 0;
+        slopeAngle = -500;
+    }
+
+    public void SetSlopeAngle(Vector3 floorNormal)
+    {
+        slopeAngle = Vector3.Angle(floorNormal, Vector3.up);
+        tooSteepSlope = slopeAngle > maxSlopeAngle;
     }
 
     #region --- COLLISIONS (RAYCASTS FUNCTIONS) --- 

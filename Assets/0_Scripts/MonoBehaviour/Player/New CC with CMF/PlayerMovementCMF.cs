@@ -500,37 +500,39 @@ public class PlayerMovementCMF : MonoBehaviour
 
     public void KonoFixedUpdate()
     {
+        collCheck.ResetVariables();
         ResetMovementVariables();
 
-        mover.CheckForGround();
-        collCheck.below = mover.IsGrounded();
+        collCheck.UpdateCollisionVariables(mover);
 
         collCheck.UpdateCollisionChecks(currentVel);
 
         if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4"));
 
-        //TO REDO
-        if ((/*controller.collisions.above ||*/ collCheck.below) && !hooked)
-        {
-            currentVel.y = 0;
-            //if (controller.collisions.above) StopJump();
-        }
 
         frameCounter++;
         UpdateFlagLightBeam();
         ProcessInputsBuffer();
 
+        #region --- Calculate Movement ---
+
         HorizontalMovement();
 
         UpdateFacingDir();
+
         VerticalMovement();
+
+        HandleSlopes();
 
         ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
 
+        #endregion
+        Debug.Log("Movement Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
         //If the character is grounded, extend ground detection sensor range;
         mover.SetExtendSensorRange(collCheck.below);
         //Set mover velocity;
-        mover.SetVelocity(currentVel);
+        mover.SetVelocity(finalVel);
+        Debug.Log("Mover SetVel Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
 
         myPlayerCombatNew.KonoUpdate();
 
@@ -742,7 +744,7 @@ public class PlayerMovementCMF : MonoBehaviour
             //------------------------------- Joystick Direction -------------------------------
             CalculateMoveDir();//Movement direction
             //ProcessHardSteer();
-            if (!myPlayerCombatNew.aiming && actions.R2.WasPressed)//Input.GetButtonDown(contName + "RB"))
+            if (!myPlayerCombatNew.aiming && inputsInfo.R2WasPressed)//Input.GetButtonDown(contName + "RB"))
             {
                 StartBoost();
             }
@@ -1051,7 +1053,15 @@ public class PlayerMovementCMF : MonoBehaviour
 
     void VerticalMovement()
     {
-        if (currentVel.y != 0) Debug.Log("Vert Mov Inicio: currentVel.y = " + currentVel.y.ToString("F6") + collCheck.below);
+        Debug.Log("Vert Mov Inicio: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
+
+        //TO REDO
+        if ((/*controller.collisions.above ||*/ collCheck.below) && !hooked && !collCheck.sliping)
+        {
+            currentVel.y = 0;
+            //if (controller.collisions.above) StopJump();
+        }
+
         if (!jumpedOutOfWater && !inWater && collCheck.below)
         {
             jumpedOutOfWater = true;
@@ -1080,7 +1090,7 @@ public class PlayerMovementCMF : MonoBehaviour
             switch (jumpSt)
             {
                 case JumpState.None:
-                    if (currentVel.y < 0 && !collCheck.below)
+                    if (currentVel.y < 0 && (!collCheck.below || collCheck.sliping))
                     {
                         if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
                         jumpSt = JumpState.Falling;
@@ -1091,13 +1101,13 @@ public class PlayerMovementCMF : MonoBehaviour
                     break;
                 case JumpState.Falling:
 
-                    if (!chargeJumpChargingJump && collCheck.below)
+                    if (!chargeJumpChargingJump && collCheck.below && !collCheck.sliping)
                     {
                         if (StartBounceJump())
                             break;
                     }
 
-                    if (currentVel.y >= 0 || collCheck.below)
+                    if (currentVel.y >= 0 || (collCheck.below && !collCheck.sliping))
                     {
                         //Debug.Log("STOP FALLING");
                         if (!disableAllDebugs) Debug.Log("JumpSt = None");
@@ -1163,7 +1173,43 @@ public class PlayerMovementCMF : MonoBehaviour
             currentVel.y = Mathf.Clamp(currentVel.y, -maxFallSpeed, maxFallSpeed);
         }
 
-        if (currentVel.y != 0) Debug.Log("Vert Mov Fin: currentVel.y = " + currentVel.y.ToString("F6") +"; below = "+collCheck.below);
+        Debug.Log("Vert Mov Fin: currentVel = " + currentVel.ToString("F6") + "; below = "+collCheck.below);
+    }
+
+    Vector3 finalVel;
+    void HandleSlopes()
+    {
+        if (collCheck.sliping)
+        {
+            // HORIZONTAL VELOCITY
+            Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
+            Vector3 wallNormal = mover.GetGroundNormal();
+            wallNormal.y = 0;
+            wallNormal = -wallNormal.normalized;
+            float angle = Vector3.Angle(wallNormal, horVel);
+            float a = Mathf.Sin(angle * Mathf.Deg2Rad) * horVel.magnitude;
+            Vector3 slideVel = Vector3.Cross(wallNormal, Vector3.up).normalized;
+            Debug.DrawRay(mover.GetGroundPoint(), slideVel * 2, Color.green);
+            //LEFT OR RIGHT ORIENTATION?
+            float ang = Vector3.Angle(slideVel, horVel);
+            slideVel = ang > 90 ? -slideVel : slideVel;
+            //print("SLIDE ANGLE= " + angle + "; vel = " + vel + "; slideVel = " + slideVel.ToString("F4") + "; a = " + a + "; wallAngle = " + wallAngle + "; distanceToWall = " + rayCast.distance);
+            slideVel *= a;
+
+            horVel = new Vector3(slideVel.x, 0, slideVel.z);
+
+            //VERTICAL VELOCITY
+            //Apply slide gravity along ground normal, if controller is sliding;
+            Vector3 _slideDirection = Vector3.ProjectOnPlane(-Vector3.up, mover.GetGroundNormal()).normalized;
+            Debug.DrawRay(mover.GetGroundPoint(), _slideDirection * 2, Color.yellow);
+            Vector3 slipVel = _slideDirection * -currentVel.y;
+            finalVel = slipVel + horVel;
+            Debug.Log("Handle Slopes Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
+        }
+        else
+        {
+            finalVel = currentVel;
+        }
     }
     #endregion
 
@@ -1185,8 +1231,8 @@ public class PlayerMovementCMF : MonoBehaviour
         bool result = false;
         if (!noInput && moveSt != MoveState.Boost)
         {
-            if (!disableAllDebugs) Debug.Log("START JUMP: below = " + collCheck.below + "; jumpInsurance = " + jumpInsurance + "; inWater = " + inWater);
-            if ((collCheck.below || jumpInsurance) && !isChargeJump && !isBounceJump &&
+            if (!disableAllDebugs) Debug.Log("START JUMP: below = " + collCheck.below + "; jumpInsurance = " + jumpInsurance + "; sliding = " + collCheck.sliping + "; inWater = " + inWater);
+            if ((collCheck.below || jumpInsurance) && !collCheck.sliping && !isChargeJump && !isBounceJump &&
                 (!inWater || (inWater /*&& controller.collisions.around*/ &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameControllerCMF_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
@@ -1226,9 +1272,9 @@ public class PlayerMovementCMF : MonoBehaviour
     {
         if (!jumpInsurance)
         {
-            //Debug.LogWarning(" controller.collisions.lastBelow = " + (controller.collisions.lastBelow) + "; collCheck.below = " + (collCheck.below) +
-            //   "; jumpSt = " + jumpSt);
-            if (collCheck.lastBelow && !collCheck.below && (jumpSt == JumpState.None || jumpSt == JumpState.Falling) &&
+            //Debug.LogWarning(" collCheck.lastBelow = " + (collCheck.lastBelow) + "; collCheck.below = " + (collCheck.below) +
+            //   "; jumpSt = " + jumpSt+"; jumpedOutOfWater = "+jumpedOutOfWater);
+            if (collCheck.lastBelow && !collCheck.below && !collCheck.lastSliping && (jumpSt == JumpState.None || jumpSt == JumpState.Falling) &&
                 (jumpSt != JumpState.BounceJumping && jumpSt != JumpState.ChargeJumping) && jumpedOutOfWater)
             {
                 //print("Jump Insurance");
@@ -1617,7 +1663,7 @@ public class PlayerMovementCMF : MonoBehaviour
             boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
             if (boostCurrentFuel > 0)
             {
-                if (actions.R2.WasReleased)
+                if (inputsInfo.R2WasReleased)
                 {
                     StopBoost();
                 }
@@ -2554,6 +2600,12 @@ public class InputsInfo
         ResetR2();
     }
 
+    public void PollInputs()
+    {
+        PollJump();
+        PollR2();
+    }
+
     public void PollJump()
     {
         if (!JumpWasPressed && !JumpWasReleased)
@@ -2598,12 +2650,6 @@ public class InputsInfo
     {
         R2WasPressed = false;
         R2WasReleased = false;
-    }
-
-    public void PollInputs()
-    {
-        PollJump();
-        PollR2();
     }
 }
 
