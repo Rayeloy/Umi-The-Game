@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1076829307455358925
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1076829307455358924}
+  - component: {fileID: 1076829307455358923}
+  m_Layer: 0
+  m_Name: GameControllerCMF
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1076829307455358924
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1076829307455358925}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1076829307455358923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1076829307455358925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 270d7b4d3e451bd45ad2ce42cce2bd6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myGameInterface: {fileID: 0}
+  gameMode: 0
+  slowMoButtonOn: 1
+  recordMode: 0
+  playerPrefab: {fileID: 5233746851346624046, guid: 3608bac3943d1b44db8c10a3777339a6,
+    type: 3}
+  playerCanvasPrefab: {fileID: 3319925387928097593, guid: 58312e89f9cfab944943d3c0cd7d30b5,
+    type: 3}
+  playerCameraPrefab: {fileID: 1097116061200254726, guid: b2e0fb8fdd3158d4f910b86f2b5e8780,
+    type: 3}
+  playerUICameraPrefab: {fileID: 3759195869619577861, guid: 146b447ecc8851946a27058b8e17d0ad,
+    type: 3}
+  playersParent: {fileID: 0}
+  playersCanvasParent: {fileID: 0}
+  playersCamerasParent: {fileID: 0}
+  playersUICamerasParent: {fileID: 0}
+  allBufferedInputs: []
+  teamASpawns:
+  - {fileID: 0}
+  teamBSpawns:
+  - {fileID: 0}
+  scaleDos: 1.25
+  scaleCuatro: 1.25
+  playerNumTeamA: 0
+  playerNumTeamB: 0
+  gameOverStarted: 0
+  playerNum: 1
+  gamePaused: 0
+  playing: 0

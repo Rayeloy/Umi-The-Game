@@ -37,14 +37,19 @@ public class CollisionsCheck : MonoBehaviour
     //public int verticalRaysPerRow;
     //float verticalRowSpacing;
     //float verticalRaySpacing;
-
+    [HideInInspector]
     public bool above, below, lastBelow, lastLastBelow, safeBelow;
+    [HideInInspector]
     public float distanceToFloor;
+    [HideInInspector]
     public bool safeBelowStarted;
     float safeBelowTime, safeBelowMaxTime;
 
+    [HideInInspector]
     public Collider collider;
+    [HideInInspector]
     public GameObject floor;
+    [HideInInspector]
     public Vector3 wallNormal;
 
     public void KonoAwake(Collider _collider)

@@ -268,9 +268,9 @@ public class CameraControllerCMF : MonoBehaviour
                 case cameraMode.FixedFree:
                     break;
             }
-            if (myCamera.GetComponentInChildren<CameraCollisions>().enabled)
+            if (myCamera.GetComponentInChildren<CameraCollisionsCMF>().enabled)
             {
-                myCamera.GetComponent<CameraCollisions>().KonoUpdate();
+                myCamera.GetComponent<CameraCollisionsCMF>().KonoUpdate();
             }
             SmoothCameraMove();
             //print("I'm " + gameObject.name + " and my local rotation = " + transform.localRotation.eulerAngles);

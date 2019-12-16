@@ -48,13 +48,13 @@ public class PlayerMovementCMF : MonoBehaviour
     public PlayerCombatCMF myPlayerCombatNew;
     public PlayerWeaponsCMF myPlayerWeap;
     //public PlayerAnimation myPlayerAnimation;
-    public PlayerAnimation_01 myPlayerAnimation_01;
+    public PlayerAnimationCMF myPlayerAnimation;
     public PlayerHookCMF myPlayerHook;
     //public Controller3D controller;
     public PlayerBodyCMF myPlayerBody;
-    public PlayerObjectDetection myPlayerObjectDetection;
+    public PlayerObjectDetectionCMF myPlayerObjectDetection;
     public PlayerModel myPlayerModel;
-    public PlayerVFX myPlayerVFX;
+    public PlayerVFXCMF myPlayerVFX;
 
     public bool startBeingHitAnimation = false;
 
@@ -411,6 +411,8 @@ public class PlayerMovementCMF : MonoBehaviour
     public void KonoAwake(bool isMyCharacter = false)
     {
         mover = GetComponent<Mover>();
+        collCheck.KonoAwake(mover.capsuleCollider);//we use capsule collider in our example
+
 
         if (actions == null) Debug.LogError("Error: PlayerActions have not been yet assigned to Player");
         else inputsInfo = new InputsInfo(actions);
@@ -442,11 +444,10 @@ public class PlayerMovementCMF : MonoBehaviour
     //todos los konoAwakes
     void PlayerAwakes()
     {
-        collCheck.KonoAwake(mover.capsuleCollider);//we use capsule collider in our example
         myPlayerHUD.KonoAwake();
         myPlayerCombatNew.KonoAwake();
         //myPlayerAnimation.KonoAwake();
-        myPlayerAnimation_01.KonoAwake();
+        myPlayerAnimation.KonoAwake();
         myPlayerHook.KonoAwake();
         myPlayerWeap.KonoAwake();
         myPlayerBody.KonoAwake();
@@ -504,6 +505,8 @@ public class PlayerMovementCMF : MonoBehaviour
         mover.CheckForGround();
         collCheck.below = mover.IsGrounded();
 
+        collCheck.UpdateCollisionChecks(currentVel);
+
         if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4"));
 
         //TO REDO
@@ -520,18 +523,24 @@ public class PlayerMovementCMF : MonoBehaviour
         HorizontalMovement();
 
         UpdateFacingDir();
-        //VerticalMovement();
+        VerticalMovement();
 
         ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
 
-        collCheck.UpdateCollisionChecks(currentVel);
+        //If the character is grounded, extend ground detection sensor range;
+        mover.SetExtendSensorRange(collCheck.below);
+        //Set mover velocity;
+        mover.SetVelocity(currentVel);
 
         myPlayerCombatNew.KonoUpdate();
+
+        // RESET InputsInfo class to get new possible inputs during the next Update frames
+        inputsInfo.ResetInputs();
     }
 
     public void KonoLateUpdate()
     {
-        myPlayerAnimation_01.KonoUpdate();
+        myPlayerAnimation.KonoUpdate();
     }
     #endregion
 
@@ -1042,6 +1051,7 @@ public class PlayerMovementCMF : MonoBehaviour
 
     void VerticalMovement()
     {
+        if (currentVel.y != 0) Debug.Log("Vert Mov Inicio: currentVel.y = " + currentVel.y.ToString("F6") + collCheck.below);
         if (!jumpedOutOfWater && !inWater && collCheck.below)
         {
             jumpedOutOfWater = true;
@@ -1055,7 +1065,7 @@ public class PlayerMovementCMF : MonoBehaviour
             lastWall = null;
         }
 
-        if (actions.A.WasPressed)//Input.GetButtonDown(contName + "A"))
+        if (inputsInfo.JumpWasPressed)//Input.GetButtonDown(contName + "A"))
         {
             PressA();
         }
@@ -1105,7 +1115,7 @@ public class PlayerMovementCMF : MonoBehaviour
                     }
                     else
                     {
-                        if (actions.A.WasReleased)//Input.GetButtonUp(contName + "A"))
+                        if (inputsInfo.JumpWasReleased)//Input.GetButtonUp(contName + "A"))
                         {
                             jumpSt = JumpState.Breaking;
                         }
@@ -1152,6 +1162,8 @@ public class PlayerMovementCMF : MonoBehaviour
         {
             currentVel.y = Mathf.Clamp(currentVel.y, -maxFallSpeed, maxFallSpeed);
         }
+
+        if (currentVel.y != 0) Debug.Log("Vert Mov Fin: currentVel.y = " + currentVel.y.ToString("F6") +"; below = "+collCheck.below);
     }
     #endregion
 
@@ -1180,11 +1192,12 @@ public class PlayerMovementCMF : MonoBehaviour
             {
                 if (!disableAllDebugs) Debug.LogWarning("JUMP!");
                 //PlayerAnimation_01.startJump = true;
-                myPlayerAnimation_01.SetJump(true);
+                myPlayerAnimation.SetJump(true);
                 result = true;
                 currentVel.y = jumpVelocity;
                 jumpSt = JumpState.Jumping;
                 timePressingJump = 0;
+                collCheck.below = false;
                 //myPlayerAnimation.SetJump(true);
 
             }
@@ -1203,7 +1216,7 @@ public class PlayerMovementCMF : MonoBehaviour
 
     void StopJump()
     {
-        myPlayerAnimation_01.SetJump(false);
+        myPlayerAnimation.SetJump(false);
         if (!disableAllDebugs) Debug.Log("JumpSt = None");
         jumpSt = JumpState.None;
         timePressingJump = 0;
@@ -2222,7 +2235,7 @@ public class PlayerMovementCMF : MonoBehaviour
     {
         if (!inWater)
         {
-            myPlayerAnimation_01.enterWater = true;
+            myPlayerAnimation.enterWater = true;
             inWater = true;
             jumpedOutOfWater = false;
             maxTimePressingJump = 0f;
@@ -2267,7 +2280,7 @@ public class PlayerMovementCMF : MonoBehaviour
     {
         if (inWater)
         {
-            myPlayerAnimation_01.exitWater = true;
+            myPlayerAnimation.exitWater = true;
             inWater = false;
             myPlayerWeap.AttatchWeapon();
             myPlayerVFX.DeactivateEffect(PlayerVFXType.SwimmingEffect);
@@ -2534,6 +2547,12 @@ public class InputsInfo
 
     public bool R2WasPressed;//Dash / throw hook / Shift
     public bool R2WasReleased;//Dash / throw hook / Shift
+
+    public void ResetInputs()
+    {
+        ResetJump();
+        ResetR2();
+    }
 
     public void PollJump()
     {

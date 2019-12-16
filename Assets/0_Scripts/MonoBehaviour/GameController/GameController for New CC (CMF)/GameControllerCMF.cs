@@ -878,7 +878,7 @@ public class GameControllerCMF : MonoBehaviour
     {
         for (int i = 0; i < allCanvas.Count; i++)
         {
-            allCanvas[i].GetComponent<PlayerHUD>().AdaptCanvasHeightScale();
+            allCanvas[i].GetComponent<PlayerHUDCMF>().AdaptCanvasHeightScale();
         }
 
         //for(int i = 0; playerNum >= 2 && i < contador.Count;i++)
@@ -1028,7 +1028,7 @@ public class GameControllerCMF : MonoBehaviour
         //player.myCamera.transform.localRotation = player.rotateObj.transform.localRotation;
         //player.myCamera.SwitchCamera(player.myCamera.camMode);
         player.ResetPlayer();
-        player.myPlayerAnimation_01.RestartAnimation();
+        player.myPlayerAnimation.RestartAnimation();
     }
 
     public virtual void ResetGame()//Eloy: habrá que resetear muchas más cosas
@@ -1060,11 +1060,11 @@ public class GameControllerCMF : MonoBehaviour
         {
             playersCamerasParent.GetChild(i).gameObject.SetActive(false);
         }
-        count = playersUICamerasParent.childCount;
-        for (int i = 0; i < count; i++)
-        {
-            playersUICamerasParent.GetChild(i).gameObject.SetActive(false);
-        }
+        //count = playersUICamerasParent.childCount;
+        //for (int i = 0; i < count; i++)
+        //{
+        //    playersUICamerasParent.GetChild(i).gameObject.SetActive(false);
+        //}
         count = playersCanvasParent.childCount;
         for (int i = 0; i < count; i++)
         {
