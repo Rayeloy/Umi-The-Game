@@ -1,0 +1,187 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: armBlood LWRP
+  m_Shader: {fileID: 4800000, guid: c2bc6b35f99ef3c46badabd3d8081900, type: 3}
+  m_ShaderKeywords: _INVERTX_ON _INVERTY_ON _INVERTZ_ON _UV1MODEL2_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AO:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AO2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Albedo:
+        m_Texture: {fileID: 2800000, guid: 09ec19661cd07f948982c38c292c77d4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Albedo2:
+        m_Texture: {fileID: 2800000, guid: 01071c3709d423a488e6ddc43cafe4d5, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: 98e3ac1205855054eb0b01c561f1164c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap2:
+        m_Texture: {fileID: 2800000, guid: 0bed3578642597e47bf58c1e18fe173d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SSS_thickness:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SSS_thickness2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Specular:
+        m_Texture: {fileID: 2800000, guid: 056e59f423c41b048b188a44b7d7ecfd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Specular2:
+        m_Texture: {fileID: 2800000, guid: 01e11026ba0c901429869396ab81f7a8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TransformationMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord4:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BumpScale: 1
+    - _ContrastMaskX: 1
+    - _ContrastMaskY: 1
+    - _ContrastMaskZ: 1
+    - _Cutoff: 0.5
+    - _DepthSSS: 0.499
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0
+    - _GlossyReflections: 1
+    - _IntensityFresnel: 0.293
+    - _IntensityMask: 1
+    - _IntensityMaskX: 2
+    - _IntensityMaskY: 60.82
+    - _IntensityMaskZ: 0
+    - _IntensitySSS: 0.278
+    - _InvertX: 1
+    - _InvertY: 1
+    - _InvertZ: 1
+    - _LvlSSS1: 0.093
+    - _LvlSSS2: 0.396
+    - _MaskInfo: 0
+    - _MaxIntensityMask: 1
+    - _Metallic: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _OffsetMask: 0
+    - _Parallax: 0.02
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _TillingMask: 1
+    - _TransAmbient: 0.288
+    - _TransDirect: 1
+    - _TransNormalDistortion: 0.1
+    - _TransScattering: 36.9
+    - _TransShadow: 0.9
+    - _Transformation: 1
+    - _Translucency: 7
+    - _Transmission: 0.061
+    - _UVSec: 0
+    - _ZWrite: 1
+    - __dirty: 1
+    - __scale: 1
+    - _powerFresnel: 0.66
+    - _uv0: 0
+    - _uv0Mask: 0
+    - _uv0Model2: 0
+    - _uv1: 0
+    - _uv1Mask: 0
+    - _uv1Model2: 1
+    - _uv2: 0
+    - _uv2Mask: 0
+    - _uv2Model2: 0
+    - _uv3: 0
+    - _uv3Mask: 0
+    - _uv3Model2: 0
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color2: {r: 1, g: 1, b: 1, a: 0}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _LevelsX: {r: 0.04, g: 2.39, b: 0, a: 1}
+    - _LevelsY: {r: -1.05, g: 3, b: 0, a: 1}
+    - _LevelsZ: {r: -200, g: 2.06, b: 0, a: 1}
+    - _SSScolor1: {r: 0.6627451, g: 0.72156864, b: 0.7490196, a: 0}
+    - _SSScolor2: {r: 0.7843138, g: 0.46274513, b: 0, a: 0}
+    - _SSScolor3: {r: 0.90196085, g: 0.098039225, b: 0, a: 0}
+    - _Spec: {r: 1, g: 1, b: 1, a: 1}
+    - _Translucency_: {r: 1, g: 0, b: 0.2857132, a: 0.21176471}

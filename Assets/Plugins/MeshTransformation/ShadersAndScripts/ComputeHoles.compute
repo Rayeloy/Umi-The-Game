@@ -1,0 +1,84 @@
+﻿#pragma kernel CSMain
+#include "UnityCG.cginc"
+
+RWStructuredBuffer<float3> vert;
+RWStructuredBuffer<float2> uv;
+RWStructuredBuffer<float4> _colors;
+
+CBUFFER_START(Params)
+Texture2D<float4> _RangeTexture;
+SamplerState PointClamp;
+Texture2D<float4> _LimbLevel;
+Texture2D<float4> _LimbID;
+bool Limb;
+float3 PosHit;
+int CountVertex;
+float3x4 _Matrix;
+float3 PosTransform;
+float3 SizeTransform;
+float Range;
+float _Min;
+float _Max;
+CBUFFER_END
+
+[numthreads(512, 1, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    float3 vertex_ = vert[id.x];
+    vertex_ = mul(_Matrix, vert[id.x]).xyz;
+    vertex_ = vertex_ + PosTransform;
+
+
+    float dist = distance(vertex_, PosHit) * -1;
+    float _range = _RangeTexture.SampleLevel(PointClamp, uv[id.x].xy, 0) * Range;
+
+
+    dist = dist *= 1 - _range;
+
+    float remap = (_Min + (dist - -10) * (_Max - _Min) / (10 - -10));
+
+
+    float Result = _colors[id.x];
+    Result += clamp(remap, 0, 1);
+    Result = clamp(Result,0,1);
+    _colors[id.x] = Result;
+
+
+
+
+
+if (Limb && Result >= 0.9) {
+
+for (int i = 0;i < CountVertex;i++) {
+
+
+float _LimbLVL = _LimbLevel.SampleLevel(PointClamp, uv[id.x].xy, 0);
+float _LimbLVL_i = _LimbLevel.SampleLevel(PointClamp, uv[i].xy, 0);
+
+float4 id_ = _LimbID.SampleLevel(PointClamp, uv[id.x].xy, 0);
+float4 id_i = _LimbID.SampleLevel(PointClamp, uv[i].xy, 0);
+
+
+
+
+   if (_LimbLVL_i > _LimbLVL){
+        if ( id_i.x == id_.x && id_i.y == id_.y && id_i.z == id_.z) {  
+        
+            _colors[i] = Result;
+            }
+}
+
+
+
+    }
+for (int i = 0;i < CountVertex;i++) {
+if (_colors[i].x < Result) {
+if (distance(vert[id.x],vert[i]) <= 0.00000001) {
+_colors[i] = Result;
+}
+}
+}
+}
+
+
+}
