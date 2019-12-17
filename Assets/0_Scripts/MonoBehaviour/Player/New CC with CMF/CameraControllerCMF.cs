@@ -333,12 +333,12 @@ public class CameraControllerCMF : MonoBehaviour
         switch (camMode)
         {
             case cameraMode.Fixed:
-                GetComponentInChildren<CameraCollisions>().enabled = true;
+                GetComponentInChildren<CameraCollisionsCMF>().enabled = true;
                 targetMyCamPos = originalPos;
                 myPlayerMov.rotateObj.localRotation = Quaternion.Euler(0, transform.localRotation.eulerAngles.y, 0);
                 break;
             case cameraMode.Free:
-                GetComponentInChildren<CameraCollisions>().enabled = true;
+                GetComponentInChildren<CameraCollisionsCMF>().enabled = true;
                 //transform.localRotation = myPlayerMov.rotateObj.localRotation;
                 rotY = myPlayerMov.rotateObj.localRotation.eulerAngles.y;
                 targetMyCamPos = originalCamPosFree;
@@ -346,7 +346,7 @@ public class CameraControllerCMF : MonoBehaviour
             case cameraMode.FixedFree:
                 break;
             case cameraMode.Shoulder:
-                GetComponentInChildren<CameraCollisions>().enabled = true;
+                GetComponentInChildren<CameraCollisionsCMF>().enabled = true;
                 originalPos = originalCamPosSho;
                 targetMyCamPos = originalPos;
                 myPlayerMov.rotateObj.localRotation = Quaternion.Euler(0, transform.localRotation.eulerAngles.y, 0);
@@ -354,7 +354,7 @@ public class CameraControllerCMF : MonoBehaviour
         }
         timeSwitching = 0;
         //switching = true;
-        myCamera.GetComponent<CameraCollisions>().ResetData();
+        myCamera.GetComponent<CameraCollisionsCMF>().ResetData();
     }
 
     #region Reset Camera

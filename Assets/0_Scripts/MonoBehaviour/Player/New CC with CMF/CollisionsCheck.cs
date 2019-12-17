@@ -80,9 +80,10 @@ public class CollisionsCheck : MonoBehaviour
         //print("bounds.size.z = " + coll.bounds.size.z+"bounds.size.y = "+ coll.bounds.size.y);
     }
 
-    public void UpdateCollisionVariables(Mover mover)
+    public void UpdateCollisionVariables(Mover mover, JumpState jumpSt)
     {
         mover.CheckForGround();
+        if(jumpSt!= JumpState.Jumping && jumpSt != JumpState.Breaking)
         below = mover.IsGrounded();
         SetSlopeAngle(mover.GetGroundNormal());
     }
@@ -110,6 +111,7 @@ public class CollisionsCheck : MonoBehaviour
 
         lastLastBelow = lastBelow;
         lastBelow = below;
+        below = false;
 
         floor = null;
         wallNormal = Vector3.zero;

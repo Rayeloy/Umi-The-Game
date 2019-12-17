@@ -56,7 +56,7 @@ public class PlayerCombatCMF : MonoBehaviour
     [HideInInspector]
     public bool landedSinceAttackStarted = false;
     bool currentAttackHasRedirect = false;
-    List<Hitbox> hitboxes;
+    List<HitboxCMF> hitboxes;
 
     //Autocombo
     AutocomboData autocombo;
@@ -207,14 +207,14 @@ public class PlayerCombatCMF : MonoBehaviour
 
     #region ----[ PRIVATE FUNCTIONS ]----
 
-    #region --- Change Attack / Hitbox ---
+    #region --- Change Attack / HitboxCMF ---
 
     public void ChangeAttackPhase(AttackPhaseType attackStage)
     {
         if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " ->Change attack phase to " + attackStage);
         attackStg = attackStage;
 
-        //change hitbox
+        //change HitboxCMF
         //HideAttackHitBox();
         ChangeHitboxes(attackStg);
         if (attackStg != AttackPhaseType.ready && currentAttack.GetAttackPhase(attackStg).invulnerability) StartInvulnerability(currentAttack.GetAttackPhase(attackStg).duration);
@@ -268,7 +268,7 @@ public class PlayerCombatCMF : MonoBehaviour
                 HideAttackHitBox();
                 break;
             case AttackPhaseType.charging:
-                hitboxes = new List<Hitbox>();
+                hitboxes = new List<HitboxCMF>();
                 for (int i = 0; i < currentAttack.activePhase.attackHitboxes.Length; i++)
                 {
                     AddHitbox(currentAttack.activePhase.attackHitboxes[i]);
@@ -281,7 +281,7 @@ public class PlayerCombatCMF : MonoBehaviour
             case AttackPhaseType.startup:
                 if (!currentAttack.hasChargingPhase)
                 {
-                    hitboxes = new List<Hitbox>();
+                    hitboxes = new List<HitboxCMF>();
                     for (int i = 0; i < currentAttack.activePhase.attackHitboxes.Length; i++)
                     {
                         AddHitbox(currentAttack.activePhase.attackHitboxes[i]);
@@ -315,27 +315,47 @@ public class PlayerCombatCMF : MonoBehaviour
         {
             case HitboxParentType.player:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab, hitboxesParent);
+                Hitbox badHitboxScript = auxHitbox.GetComponent<Hitbox>();
+                if (badHitboxScript != null)
+                    Destroy(badHitboxScript);
+                auxHitbox.AddComponent<HitboxCMF>();
                 break;
             case HitboxParentType.weaponEdge:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab, weaponEdge);
+                badHitboxScript = auxHitbox.GetComponent<Hitbox>();
+                if (badHitboxScript != null)
+                    Destroy(badHitboxScript);
+                auxHitbox.AddComponent<HitboxCMF>();
                 break;
             case HitboxParentType.weaponHandle:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab, weaponHandle);
+                badHitboxScript = auxHitbox.GetComponent<Hitbox>();
+                if (badHitboxScript != null)
+                    Destroy(badHitboxScript);
+                auxHitbox.AddComponent<HitboxCMF>();
                 break;
             case HitboxParentType.player_localParent:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab, hitboxesParent);
-                auxHitbox = auxHitbox.GetComponentInChildren<Hitbox>().gameObject;
+                badHitboxScript = auxHitbox.GetComponent<Hitbox>();
+                if (badHitboxScript != null)
+                    Destroy(badHitboxScript);
+                auxHitbox.AddComponent<HitboxCMF>();
+                auxHitbox = auxHitbox.GetComponentInChildren<HitboxCMF>().gameObject;
                 break;
             case HitboxParentType.player_followTransform:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab, hitboxesParent);
-                //auxHitbox = auxHitbox.GetComponentInChildren<Hitbox>().gameObject;
+                //auxHitbox = auxHitbox.GetComponentInChildren<HitboxCMF>().gameObject;
                 Transform follTrans = null;
                 if (weaponSkillStarted)
                 {
                     switch (currentWeaponSkill.myWeaponSkillData.skillName)
                     {
                         case "QTip_Cannon_Skill"://Q-Tip_Cannon
-                            follTrans = currentHitboxes[0].GetComponent<Hitbox>().referencePos1;
+                            badHitboxScript = currentHitboxes[0].GetComponent<Hitbox>();
+                            if (badHitboxScript != null)
+                                Destroy(badHitboxScript);
+                            currentHitboxes[0].AddComponent<HitboxCMF>();
+                            follTrans = currentHitboxes[0].GetComponent<HitboxCMF>().referencePos1;
                             break;
                     }
                 }
@@ -349,7 +369,7 @@ public class PlayerCombatCMF : MonoBehaviour
         //{
         if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " ->CurrentHitboxes ADD -> " + auxHitbox.name);
         currentHitboxes.Add(auxHitbox);
-        Hitbox hb = auxHitbox.GetComponent<Hitbox>();
+        HitboxCMF hb = auxHitbox.GetComponent<HitboxCMF>();
         hb.myAttackHitbox = attackHitbox;
         hitboxes.Add(hb);
         //}
@@ -357,7 +377,7 @@ public class PlayerCombatCMF : MonoBehaviour
 
     void HideAttackHitBox()
     {
-        hitboxes = new List<Hitbox>();
+        hitboxes = new List<HitboxCMF>();
         for (int i = 0; i < 100 && currentHitboxes.Count > 0; i++)
         {
             Destroy(currentHitboxes[0]);
@@ -835,6 +855,7 @@ public class PlayerCombatCMF : MonoBehaviour
     {
         if (!aiming && attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput)
         {
+            Debug.Log("Start aiming");
             aiming = true;
             myPlayerMovement.myCamera.SwitchCamera(cameraMode.Shoulder);
             myPlayerWeap.AttachWeaponToBack();
@@ -849,24 +870,13 @@ public class PlayerCombatCMF : MonoBehaviour
     {
         if (aiming)
         {
+            Debug.Log("Stop aiming");
             aiming = false;
             myPlayerMovement.myCamera.SwitchCamera(cameraMode.Free);
             myPlayerWeap.AttatchWeapon();
             myPlayerHUD.StopAim();
         }
     }
-    #endregion
-
-    #region ----[ PUN CALLBACKS ]----
-    #endregion
-
-    #region ----[ RPC ]----
-    #endregion
-
-    #region ----[ NETWORK FUNCTIONS ]----
-    #endregion
-
-    #region ----[ IPUNOBSERVABLE ]----
     #endregion
 }
 #region ----[ STRUCTS & CLASSES ]----

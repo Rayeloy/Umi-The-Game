@@ -30,6 +30,8 @@ public class Mover : MonoBehaviour {
 
 	//Ground detection variables;
 	bool isGrounded = false;
+    [HideInInspector]
+    public bool stickToGround = true;
 
 	//Sensor range variables;
 	bool IsUsingExtendedSensorRange  = true;
@@ -244,9 +246,17 @@ public class Mover : MonoBehaviour {
 
         //Set new ground adjustment velocity for the next frame;
         //Eloy's addition:
-        //float slopeAngle = Vector3.Angle(GetGroundNormal(), Vector3.up);
-        //if (isGrounded && slopeAngle <= 60)
-		currentGroundAdjustmentVelocity = tr.up * (_distanceToGo/Time.fixedDeltaTime);
+        float slopeAngle = Vector3.Angle(GetGroundNormal(), Vector3.up);
+
+        //Stick to ground again
+        //if (!stickToGround && isGrounded && slopeAngle <= 60) stickToGround = true;
+
+        //if (stickToGround && isGrounded && slopeAngle <= 60)
+            currentGroundAdjustmentVelocity = tr.up * (_distanceToGo/Time.fixedDeltaTime);
+        if((!stickToGround && currentGroundAdjustmentVelocity.y < 0) ||(isGrounded && slopeAngle > 60))
+        {
+            currentGroundAdjustmentVelocity.y = 0;
+        }
 	}
 
 	//Check if mover is grounded;
@@ -258,6 +268,7 @@ public class Mover : MonoBehaviour {
 	//Set mover velocity;
 	public void SetVelocity(Vector3 _velocity)
 	{
+        //Debug.Log("currentGroundAdjustmentVelocity = " + currentGroundAdjustmentVelocity.ToString("F6"));
 		rig.velocity = _velocity + currentGroundAdjustmentVelocity;	
 	}	
 

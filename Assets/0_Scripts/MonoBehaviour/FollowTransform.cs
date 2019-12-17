@@ -10,7 +10,10 @@ public class FollowTransform : MonoBehaviour
 
     private void Update()
     {
-        transform.position = followTransform.position;
-        transform.localPosition = new Vector3(transform.localPosition.x + offset.x ,transform.localPosition.y + offset.y, transform.localPosition.z+offset.z);
+        if(followTransform != null)
+        {
+            transform.position = followTransform.position;
+            transform.localPosition = new Vector3(transform.localPosition.x + offset.x, transform.localPosition.y + offset.y, transform.localPosition.z + offset.z);
+        }
     }
 }

@@ -494,6 +494,8 @@ public class PlayerMovementCMF : MonoBehaviour
         //POLL INPUTS
         inputsInfo.PollInputs();
 
+        myPlayerCombatNew.KonoUpdate();
+
         myPlayerWeap.KonoUpdate();
         myPlayerHook.KonoUpdate();
     }
@@ -503,7 +505,7 @@ public class PlayerMovementCMF : MonoBehaviour
         collCheck.ResetVariables();
         ResetMovementVariables();
 
-        collCheck.UpdateCollisionVariables(mover);
+        collCheck.UpdateCollisionVariables(mover, jumpSt);
 
         collCheck.UpdateCollisionChecks(currentVel);
 
@@ -524,17 +526,15 @@ public class PlayerMovementCMF : MonoBehaviour
 
         HandleSlopes();
 
-        ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
+        ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "mover.SetVelocity"
 
         #endregion
-        Debug.Log("Movement Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
+        //Debug.Log("Movement Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
         //If the character is grounded, extend ground detection sensor range;
         mover.SetExtendSensorRange(collCheck.below);
         //Set mover velocity;
         mover.SetVelocity(finalVel);
-        Debug.Log("Mover SetVel Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
-
-        myPlayerCombatNew.KonoUpdate();
+        //Debug.Log("Mover SetVel Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
 
         // RESET InputsInfo class to get new possible inputs during the next Update frames
         inputsInfo.ResetInputs();
@@ -1053,14 +1053,7 @@ public class PlayerMovementCMF : MonoBehaviour
 
     void VerticalMovement()
     {
-        Debug.Log("Vert Mov Inicio: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
-
-        //TO REDO
-        if ((/*controller.collisions.above ||*/ collCheck.below) && !hooked && !collCheck.sliping)
-        {
-            currentVel.y = 0;
-            //if (controller.collisions.above) StopJump();
-        }
+        //Debug.Log("Vert Mov Inicio: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
 
         if (!jumpedOutOfWater && !inWater && collCheck.below)
         {
@@ -1125,7 +1118,7 @@ public class PlayerMovementCMF : MonoBehaviour
                     }
                     else
                     {
-                        if (inputsInfo.JumpWasReleased)//Input.GetButtonUp(contName + "A"))
+                        if (inputsInfo.JumpWasReleased || !actions.A.IsPressed)//Input.GetButtonUp(contName + "A"))
                         {
                             jumpSt = JumpState.Breaking;
                         }
@@ -1137,6 +1130,8 @@ public class PlayerMovementCMF : MonoBehaviour
                     {
                         if (!disableAllDebugs) Debug.Log("JumpSt = None");
                         jumpSt = JumpState.None;
+                        mover.stickToGround = true;
+                        Debug.LogWarning("stickToGround On");
                     }
                     break;
                 case JumpState.WallJumping:
@@ -1173,7 +1168,14 @@ public class PlayerMovementCMF : MonoBehaviour
             currentVel.y = Mathf.Clamp(currentVel.y, -maxFallSpeed, maxFallSpeed);
         }
 
-        Debug.Log("Vert Mov Fin: currentVel = " + currentVel.ToString("F6") + "; below = "+collCheck.below);
+        //TO REDO
+        if ((/*controller.collisions.above ||*/ collCheck.below) && !hooked && !collCheck.sliping)
+        {
+            currentVel.y = 0;
+            //if (controller.collisions.above) StopJump();
+        }
+
+        //Debug.Log("Vert Mov Fin: currentVel = " + currentVel.ToString("F6") + "; below = "+collCheck.below);
     }
 
     Vector3 finalVel;
@@ -1183,27 +1185,30 @@ public class PlayerMovementCMF : MonoBehaviour
         {
             // HORIZONTAL VELOCITY
             Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
-            Vector3 wallNormal = mover.GetGroundNormal();
-            wallNormal.y = 0;
-            wallNormal = -wallNormal.normalized;
-            float angle = Vector3.Angle(wallNormal, horVel);
-            float a = Mathf.Sin(angle * Mathf.Deg2Rad) * horVel.magnitude;
-            Vector3 slideVel = Vector3.Cross(wallNormal, Vector3.up).normalized;
-            Debug.DrawRay(mover.GetGroundPoint(), slideVel * 2, Color.green);
-            //LEFT OR RIGHT ORIENTATION?
-            float ang = Vector3.Angle(slideVel, horVel);
-            slideVel = ang > 90 ? -slideVel : slideVel;
-            //print("SLIDE ANGLE= " + angle + "; vel = " + vel + "; slideVel = " + slideVel.ToString("F4") + "; a = " + a + "; wallAngle = " + wallAngle + "; distanceToWall = " + rayCast.distance);
-            slideVel *= a;
+            //Vector3 wallNormal = mover.GetGroundNormal();
+            //wallNormal.y = 0;
+            //wallNormal = -wallNormal.normalized;
+            //float angle = Vector3.Angle(wallNormal, horVel);
+            //float a = Mathf.Sin(angle * Mathf.Deg2Rad) * horVel.magnitude;
+            //Vector3 slideVel = Vector3.Cross(wallNormal, Vector3.up).normalized;
+            //Debug.DrawRay(mover.GetGroundPoint(), slideVel * 2, Color.green);
+            ////LEFT OR RIGHT ORIENTATION?
+            //float ang = Vector3.Angle(slideVel, horVel);
+            //slideVel = ang > 90 ? -slideVel : slideVel;
+            ////print("SLIDE ANGLE= " + angle + "; vel = " + vel + "; slideVel = " + slideVel.ToString("F4") + "; a = " + a + "; wallAngle = " + wallAngle + "; distanceToWall = " + rayCast.distance);
+            //slideVel *= a;
 
-            horVel = new Vector3(slideVel.x, 0, slideVel.z);
+            //horVel = new Vector3(slideVel.x, 0, slideVel.z);
 
             //VERTICAL VELOCITY
             //Apply slide gravity along ground normal, if controller is sliding;
-            Vector3 _slideDirection = Vector3.ProjectOnPlane(-Vector3.up, mover.GetGroundNormal()).normalized;
-            Debug.DrawRay(mover.GetGroundPoint(), _slideDirection * 2, Color.yellow);
-            Vector3 slipVel = _slideDirection * -currentVel.y;
-            finalVel = slipVel + horVel;
+            if (currentVel.y < 0)
+            {
+                Vector3 _slideDirection = Vector3.ProjectOnPlane(-Vector3.up, mover.GetGroundNormal()).normalized;
+                Debug.DrawRay(mover.GetGroundPoint(), _slideDirection * 2, Color.yellow);
+                Vector3 slipVel = _slideDirection * -currentVel.y;
+                finalVel = slipVel + horVel;
+            }
             Debug.Log("Handle Slopes Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
         }
         else
@@ -1232,11 +1237,13 @@ public class PlayerMovementCMF : MonoBehaviour
         if (!noInput && moveSt != MoveState.Boost)
         {
             if (!disableAllDebugs) Debug.Log("START JUMP: below = " + collCheck.below + "; jumpInsurance = " + jumpInsurance + "; sliding = " + collCheck.sliping + "; inWater = " + inWater);
-            if ((collCheck.below || jumpInsurance) && !collCheck.sliping && !isChargeJump && !isBounceJump &&
+            if (((collCheck.below && !collCheck.sliping) || jumpInsurance) && !isChargeJump && !isBounceJump &&
                 (!inWater || (inWater /*&& controller.collisions.around*/ &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameControllerCMF_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
                 if (!disableAllDebugs) Debug.LogWarning("JUMP!");
+                mover.stickToGround = false;
+                Debug.LogWarning("stickToGround Off");
                 //PlayerAnimation_01.startJump = true;
                 myPlayerAnimation.SetJump(true);
                 result = true;
@@ -1266,6 +1273,8 @@ public class PlayerMovementCMF : MonoBehaviour
         if (!disableAllDebugs) Debug.Log("JumpSt = None");
         jumpSt = JumpState.None;
         timePressingJump = 0;
+        mover.stickToGround = true;
+        Debug.LogWarning("stickToGround On");
     }
 
     void ProcessJumpInsurance()
@@ -1274,7 +1283,7 @@ public class PlayerMovementCMF : MonoBehaviour
         {
             //Debug.LogWarning(" collCheck.lastBelow = " + (collCheck.lastBelow) + "; collCheck.below = " + (collCheck.below) +
             //   "; jumpSt = " + jumpSt+"; jumpedOutOfWater = "+jumpedOutOfWater);
-            if (collCheck.lastBelow && !collCheck.below && !collCheck.lastSliping && (jumpSt == JumpState.None || jumpSt == JumpState.Falling) &&
+            if ((collCheck.lastBelow && !collCheck.lastSliping) && (!collCheck.below || !collCheck.sliping) && (jumpSt == JumpState.None || jumpSt == JumpState.Falling) &&
                 (jumpSt != JumpState.BounceJumping && jumpSt != JumpState.ChargeJumping) && jumpedOutOfWater)
             {
                 //print("Jump Insurance");
@@ -1628,6 +1637,8 @@ public class PlayerMovementCMF : MonoBehaviour
             //PARA ORTU: Variable para empezar boost
 
             //myPlayerAnimation_01.dash = true;
+            mover.stickToGround = false;
+            Debug.LogWarning("stickToGround Off");
             boostCurrentFuel -= boostCapacity * boostFuelLostOnStart;
             boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
             moveSt = MoveState.Boost;
@@ -1689,6 +1700,8 @@ public class PlayerMovementCMF : MonoBehaviour
         if (moveSt == MoveState.Boost)
         {
             //print("STOP BOOST");
+            mover.stickToGround = true;
+            Debug.LogWarning("stickToGround On");
             moveSt = MoveState.None;
             StartBoostCD();
             myPlayerHUD.StopCamVFX(CameraVFXType.Dash);
@@ -1814,60 +1827,6 @@ public class PlayerMovementCMF : MonoBehaviour
                     angle = lookingDir.x < 0 ? 360 - angle : angle;
                     RotateCharacterInstantly(angle);
                 }
-                //if (currentInputDir != Vector3.zero)
-                //{
-                //    currentRotation = rotateObj.localRotation.eulerAngles.y;
-
-                //    float angle = Mathf.Acos(((0 * currentInputDir.x) + (1 * currentInputDir.z)) / (1 * currentInputDir.magnitude)) * Mathf.Rad2Deg;
-                //    angle = currentInputDir.x < 0 ? 360 - angle : angle;
-                //    targetRotation = angle;
-                //    Vector3 targetRotationVector = AngleToVector(targetRotation);
-                //    Vector3 currentRotationVector = AngleToVector(currentRotation);
-                //    float rotationDiff = Vector3.Angle(targetRotationVector, currentRotationVector);
-                //    if (hasCharacterRotation)
-                //    {
-                //        #region --- Character Rotation with rotation speed ---
-                //        if (currentRotation != targetRotation)
-                //        {
-                //            if (!myPlayerCombatNew.isRotationRestricted && rotationDiff > instantRotationMinAngle)//Instant rotation
-                //            {
-                //                //Debug.LogError("INSTANT BODY ROTATION, angle = "+targetRotation);
-                //                RotateCharacterInstantly(targetRotation);
-                //                //Debug.LogError("INSANT BODYY ROTATION after, angle = " + rotateObj.localRotation.eulerAngles.y);
-                //            }
-                //            else
-                //            {//rotate with speed
-                //                #region --- Decide rotation direction ---
-                //                int sign = 1;
-                //                bool currentRotOver180 = currentRotation > 180 ? true : false;
-                //                bool targetRotOver180 = targetRotation > 180 ? true : false;
-                //                if (currentRotOver180 == targetRotOver180)
-                //                {
-                //                    sign = currentRotation > targetRotation ? -1 : 1;
-                //                }
-                //                else
-                //                {
-                //                    float oppositeAngle = currentRotation + 180;
-                //                    oppositeAngle = oppositeAngle > 360 ? oppositeAngle - 360 : oppositeAngle;
-                //                    //print("oppositeAngle = " + oppositeAngle);
-                //                    sign = oppositeAngle < targetRotation ? -1 : 1;
-                //                }
-                //                #endregion
-
-                //                float newAngle = currentRotation + (sign * currentRotationSpeed * Time.deltaTime);
-                //                Vector3 newAngleVector = AngleToVector(newAngle);
-                //                float newAngleDiff = Vector3.Angle(currentRotationVector, newAngleVector);
-                //                if (newAngleDiff > rotationDiff) newAngle = targetRotation;
-                //                rotateObj.localRotation = Quaternion.Euler(0, newAngle, 0);
-                //            }
-                //        }
-                //        #endregion
-                //    }
-                //    else
-                //    {
-                //        RotateCharacterInstantly(targetRotation);
-                //    }
-                //}
                 break;
         }
         //print("current angle = " + rotateObj.rotation.eulerAngles.y + "; currentInputDir = "+currentInputDir);
