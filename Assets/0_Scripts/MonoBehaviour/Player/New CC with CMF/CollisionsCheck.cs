@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.Linq;
 
 public class CollisionsCheck : MonoBehaviour
 {
@@ -28,6 +30,7 @@ public class CollisionsCheck : MonoBehaviour
 
     public CapsuleCollider coll;
     RaycastOrigins raycastOrigins;
+
 
     [Header(" -- Vertical Collisions -- ")]
     //public bool showVerticalRays;
@@ -57,6 +60,17 @@ public class CollisionsCheck : MonoBehaviour
     [HideInInspector]
     public bool lastSliping;
     public bool sliping { get { return below && tooSteepSlope; } }
+
+    [Header(" -- Horizontal Collisions -- ")]
+    public Transform origin;
+    public float radius = 5;
+    bool hit;
+    public Rigidbody rig;
+    Collider[] hitColliders;
+    Plane a;
+    public Transform mid;
+    public Collider colliderFinal;
+    public Vector3 finalNormal;
 
     public void KonoAwake(Collider _collider)
     {
@@ -176,6 +190,52 @@ public class CollisionsCheck : MonoBehaviour
 
     #endregion
 
+    #region --- HORIZONTAL COLLISIONS ---
+    public Collider DetectWallCollision()
+    {
+        hitColliders = Physics.OverlapSphere(gameObject.transform.position, radius, collisionMask);
+        if (hitColliders.Length > 0)
+        {
+            Collider Goodcol = new Collider();
+            Collider oldcol = new Collider();
+
+            bool b = false;
+            for (int i = 0; i < hitColliders.Length; i++)
+            {
+                if ((!b && a.GetSide(hitColliders[i].transform.position)) || a.GetSide(hitColliders[i].transform.position) && (Vector3.Distance(gameObject.transform.position, hitColliders[i].transform.position) < Vector3.Distance(gameObject.transform.position, oldcol.transform.position)))
+                {
+                    b = true;
+                    Goodcol = hitColliders[i];
+                    oldcol = hitColliders[i];
+                }
+                else
+                {
+                    oldcol = hitColliders[i];
+                }
+            }
+            hit = Physics.Raycast(mid.position, rig.velocity, out RaycastHit _hit, 5, collisionMask, qTI);
+            Debug.DrawRay(mid.position, rig.velocity);
+            finalNormal = _hit.normal;
+            if (Goodcol != null && hit)
+            {
+                if (Vector3.Distance(origin.position, Goodcol.transform.position) < 3)
+                {
+                    return Goodcol;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void CheckIfJump()
+    {
+
+    }
+    void Update()
+    {
+        a = new Plane(rig.velocity, origin.position);
+        colliderFinal = DetectWallCollision();
+    }
     #endregion
 
     #region --- MOVING PLATFORMS ---
