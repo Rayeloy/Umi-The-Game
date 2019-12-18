@@ -7,6 +7,9 @@ using System.Collections.Generic;
 [System.Serializable]
 public class Sensor {
 
+    //Slope Max Angle
+    public float maxSlopeAngle=60;
+
 	//Basic raycast parameters;
 	public float castLength = 1f;
 	public float sphereCastRadius = 0.2f;
@@ -233,8 +236,21 @@ public class Sensor {
 			}
 		}
 
-		//Evaluate results;
-		hasDetectedHit = (arrayPoints.Count > 0);
+        //Evaluate results;
+        List<Vector3> auxArrayPoints = new List<Vector3>();
+
+        for (int i = 0; i < arrayPoints.Count; i++)
+        {
+            float slopeAngle = Vector3.Angle(arrayNormals[i], Vector3.up);
+            if (slopeAngle <= maxSlopeAngle)
+            {
+                auxArrayPoints.Add(arrayPoints[i]);
+            }
+        }
+        //arrayPoints.Clear();
+        arrayPoints = auxArrayPoints;
+
+        hasDetectedHit = (arrayPoints.Count > 0);
 
 		if(hasDetectedHit)
 		{
@@ -249,12 +265,16 @@ public class Sensor {
 
 			//Calculate average surface point;
 			Vector3 _averagePoint = Vector3.zero;
-			foreach(Vector3 v in arrayPoints)
-			{
-				_averagePoint += v;
-			}
+            for (int i = 0; i < arrayPoints.Count; i++)
+            {
+                    _averagePoint += arrayPoints[i];
+            }
+            //foreach (Vector3 v in arrayPoints)
+            //{
+            //    _averagePoint += v;
+            //}
 
-			_averagePoint /= arrayPoints.Count;
+            _averagePoint /= arrayPoints.Count;
 			
 			hitPosition = _averagePoint;
 			hitNormal = _averageNormal;
@@ -379,7 +399,10 @@ public class Sensor {
 	//Returns a reference to the collider that was hit by the raycast;
 	public Collider GetCollider()
 	{
-		return hitColliders[0];
+        if (hitColliders.Count > 0)
+            return hitColliders[0];
+        else
+            return null;
 	}
 
 	//Returns a reference to the transform component attached to the collider that was hit by the raycast;

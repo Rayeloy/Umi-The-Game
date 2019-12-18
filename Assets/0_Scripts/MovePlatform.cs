@@ -32,6 +32,7 @@ public class MovePlatform : MonoBehaviour
     {
         if (!GameInfo.instance.gameIsPaused)
         {
+            Debug.LogError("PLATFORM UPDATE");
             if (moveVertically)
             {
                 currentVertAmp += verticalSpeed * Time.deltaTime * vertSentido;

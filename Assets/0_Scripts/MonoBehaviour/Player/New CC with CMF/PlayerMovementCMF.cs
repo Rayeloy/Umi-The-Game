@@ -542,6 +542,7 @@ public class PlayerMovementCMF : MonoBehaviour
 
     public void KonoLateUpdate()
     {
+        //collCheck.MoveWithPlatform();
         myPlayerAnimation.KonoUpdate();
     }
     #endregion
@@ -1131,7 +1132,7 @@ public class PlayerMovementCMF : MonoBehaviour
                         if (!disableAllDebugs) Debug.Log("JumpSt = None");
                         jumpSt = JumpState.None;
                         mover.stickToGround = true;
-                        Debug.LogWarning("stickToGround On");
+                        if (!disableAllDebugs) Debug.LogWarning("stickToGround On");
                     }
                     break;
                 case JumpState.WallJumping:
@@ -1243,7 +1244,7 @@ public class PlayerMovementCMF : MonoBehaviour
             {
                 if (!disableAllDebugs) Debug.LogWarning("JUMP!");
                 mover.stickToGround = false;
-                Debug.LogWarning("stickToGround Off");
+                if (!disableAllDebugs) Debug.LogWarning("stickToGround Off");
                 //PlayerAnimation_01.startJump = true;
                 myPlayerAnimation.SetJump(true);
                 result = true;
@@ -1274,7 +1275,7 @@ public class PlayerMovementCMF : MonoBehaviour
         jumpSt = JumpState.None;
         timePressingJump = 0;
         mover.stickToGround = true;
-        Debug.LogWarning("stickToGround On");
+        if (!disableAllDebugs) Debug.LogWarning("stickToGround On");
     }
 
     void ProcessJumpInsurance()
@@ -1283,7 +1284,7 @@ public class PlayerMovementCMF : MonoBehaviour
         {
             //Debug.LogWarning(" collCheck.lastBelow = " + (collCheck.lastBelow) + "; collCheck.below = " + (collCheck.below) +
             //   "; jumpSt = " + jumpSt+"; jumpedOutOfWater = "+jumpedOutOfWater);
-            if ((collCheck.lastBelow && !collCheck.lastSliping) && (!collCheck.below || !collCheck.sliping) && (jumpSt == JumpState.None || jumpSt == JumpState.Falling) &&
+            if ((collCheck.lastBelow && !collCheck.lastSliping) && (!collCheck.below || collCheck.sliping) && (jumpSt == JumpState.None || jumpSt == JumpState.Falling) &&
                 (jumpSt != JumpState.BounceJumping && jumpSt != JumpState.ChargeJumping) && jumpedOutOfWater)
             {
                 //print("Jump Insurance");
@@ -1638,7 +1639,7 @@ public class PlayerMovementCMF : MonoBehaviour
 
             //myPlayerAnimation_01.dash = true;
             mover.stickToGround = false;
-            Debug.LogWarning("stickToGround Off");
+            if (!disableAllDebugs) Debug.LogWarning("stickToGround Off");
             boostCurrentFuel -= boostCapacity * boostFuelLostOnStart;
             boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
             moveSt = MoveState.Boost;
@@ -1701,7 +1702,7 @@ public class PlayerMovementCMF : MonoBehaviour
         {
             //print("STOP BOOST");
             mover.stickToGround = true;
-            Debug.LogWarning("stickToGround On");
+            if (!disableAllDebugs) Debug.LogWarning("stickToGround On");
             moveSt = MoveState.None;
             StartBoostCD();
             myPlayerHUD.StopCamVFX(CameraVFXType.Dash);

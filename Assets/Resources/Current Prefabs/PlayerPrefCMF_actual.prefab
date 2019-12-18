@@ -44980,7 +44980,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &2655243504092265548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44993,6 +44993,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d98ace8715c2a184ca85247b18eb0853, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disableAllDebugs: 0
   stepHeightRatio: 0.25
   colliderHeight: 2.2
   colliderThickness: 0.7
@@ -45001,12 +45002,14 @@ MonoBehaviour:
   sensorType: 1
   sensorLayermask:
     serializedVersion: 2
-    m_Bits: 16900
+    m_Bits: 16896
   isInDebugMode: 1
   sensorArrayRows: 1
   sensorArrayRayCount: 5
   sensorArrayRowsAreOffset: 0
+  maxSlopeAngle: 60
   stickToGround: 1
+  isGroundTooSteep: 0
 --- !u!114 &4826634726855863062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45046,6 +45049,12 @@ MonoBehaviour:
   wallNormal: {x: 0, y: 0, z: 0}
   slopeAngle: 0
   lastSliping: 0
+  origin: {fileID: 0}
+  radius: 5
+  rig: {fileID: 0}
+  mid: {fileID: 0}
+  colliderFinal: {fileID: 0}
+  finalNormal: {x: 0, y: 0, z: 0}
 --- !u!114 &873758771431004316
 MonoBehaviour:
   m_ObjectHideFlags: 0

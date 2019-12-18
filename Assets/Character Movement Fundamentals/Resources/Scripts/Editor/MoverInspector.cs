@@ -7,150 +7,153 @@ using UnityEditor.SceneManagement;
 //This editor script displays the inspector GUI of the mover components;
 //It also updates the collider dimensions whenever a value is changed in the inspector;
 [CustomEditor(typeof(Mover))]
-public class MoverInspector : Editor {
+public class MoverInspector : Editor
+{
 
-	private Mover mover;
+    private Mover mover;
 
-	private string[] physicsLayers;
+    private string[] physicsLayers;
 
-	private Vector3[] raycastArrayPositions;
+    private Vector3[] raycastArrayPositions;
 
-	void Start()
-	{
-		Setup();
-	}
+    void Start()
+    {
+        Setup();
+    }
 
-	void Reset()
-	{
-		Setup();
-	}
+    void Reset()
+    {
+        Setup();
+    }
 
-	void OnEnable()
-	{
-		Setup();
-	}
+    void OnEnable()
+    {
+        Setup();
+    }
 
-	void Setup()
-	{
-		mover = (Mover)target;
+    void Setup()
+    {
+        mover = (Mover)target;
 
-		List<string> _layers = new List<string>();
+        List<string> _layers = new List<string>();
 
-		for(int i = 0; i < 32; i ++)
-		{
-			_layers.Add(LayerMask.LayerToName(i));
-		}
+        for (int i = 0; i < 32; i++)
+        {
+            _layers.Add(LayerMask.LayerToName(i));
+        }
 
-		physicsLayers = _layers.ToArray();
+        physicsLayers = _layers.ToArray();
 
-		raycastArrayPositions = Sensor.GetRaycastStartPositions(mover.sensorArrayRows, mover.sensorArrayRayCount, mover.sensorArrayRowsAreOffset, 1f);
-	}
+        raycastArrayPositions = Sensor.GetRaycastStartPositions(mover.sensorArrayRows, mover.sensorArrayRayCount, mover.sensorArrayRowsAreOffset, 1f);
+    }
 
-	public override void OnInspectorGUI()
-	{
-		if(Application.isPlaying)
-		{
-			GUILayout.Label("Mover settings can't be changed  in the inspector while the game is running.", EditorStyles.centeredGreyMiniLabel);
-			return;
-		}
-			
-		if(mover == null)
-		{
-			Setup();
-			return;
-		}
+    public override void OnInspectorGUI()
+    {
+        if (Application.isPlaying)
+        {
+            GUILayout.Label("Mover settings can't be changed  in the inspector while the game is running.", EditorStyles.centeredGreyMiniLabel);
+            return;
+        }
 
-		GUILayout.Label("Mover Options", EditorStyles.boldLabel);
+        if (mover == null)
+        {
+            Setup();
+            return;
+        }
 
-		Rect _space;
+        GUILayout.Label("Mover Options", EditorStyles.boldLabel);
 
-		EditorGUI.BeginChangeCheck();
+        Rect _space;
 
-		mover.stepHeightRatio = EditorGUILayout.Slider("Step Height Ratio", mover.stepHeightRatio, 0f, 1f);
+        EditorGUI.BeginChangeCheck();
 
-		GUILayout.Label("Collider Options", EditorStyles.boldLabel);
+        mover.disableAllDebugs = EditorGUILayout.Toggle("Disable Debug Logs", mover.disableAllDebugs);
 
-		mover.colliderHeight = EditorGUILayout.FloatField("Collider Height", mover.colliderHeight);
-		mover.colliderThickness = EditorGUILayout.FloatField("Collider Thickness",mover.colliderThickness);
-		mover.colliderOffset = EditorGUILayout.Vector3Field("Collider Offset", mover.colliderOffset);
+        mover.stepHeightRatio = EditorGUILayout.Slider("Step Height Ratio", mover.stepHeightRatio, 0f, 1f);
 
-		if(EditorGUI.EndChangeCheck())
-		{
-			mover.RecalculateColliderDimensions();
-			OnEditorVariableChanged();
-		}
+        GUILayout.Label("Collider Options", EditorStyles.boldLabel);
 
-		GUILayout.Label("Sensor Options", EditorStyles.boldLabel);
+        mover.colliderHeight = EditorGUILayout.FloatField("Collider Height", mover.colliderHeight);
+        mover.colliderThickness = EditorGUILayout.FloatField("Collider Thickness", mover.colliderThickness);
+        mover.colliderOffset = EditorGUILayout.Vector3Field("Collider Offset", mover.colliderOffset);
 
-		EditorGUI.BeginChangeCheck();
+        if (EditorGUI.EndChangeCheck())
+        {
+            mover.RecalculateColliderDimensions();
+            OnEditorVariableChanged();
+        }
 
-		mover.sensorType = (Sensor.CastType)EditorGUILayout.EnumPopup("Sensor Type", mover.sensorType);
-		mover.sensorLayermask = EditorGUILayout.MaskField("Layermask", mover.sensorLayermask, physicsLayers);
+        GUILayout.Label("Sensor Options", EditorStyles.boldLabel);
 
-		mover.isInDebugMode = EditorGUILayout.Toggle("Debug Mode",mover.isInDebugMode);
+        EditorGUI.BeginChangeCheck();
 
-		if(EditorGUI.EndChangeCheck())
-		{
-			OnEditorVariableChanged();
-		}
+        mover.sensorType = (Sensor.CastType)EditorGUILayout.EnumPopup("Sensor Type", mover.sensorType);
+        mover.sensorLayermask = EditorGUILayout.MaskField("Layermask", mover.sensorLayermask, physicsLayers);
 
-		if(mover.sensorType == Sensor.CastType.RaycastArray)
-			GUILayout.Label("Advanced Options", EditorStyles.centeredGreyMiniLabel);
-		GUILayout.Space(5);
+        mover.isInDebugMode = EditorGUILayout.Toggle("Debug Mode", mover.isInDebugMode);
 
-		if(mover.sensorType == Sensor.CastType.Raycast)
-		{
-		}
-		else if(mover.sensorType == Sensor.CastType.Spherecast)
-		{
+        if (EditorGUI.EndChangeCheck())
+        {
+            OnEditorVariableChanged();
+        }
 
-		}
-		else if(mover.sensorType == Sensor.CastType.RaycastArray)
-		{
-			if(raycastArrayPositions == null)
-				raycastArrayPositions = Sensor.GetRaycastStartPositions(mover.sensorArrayRows, mover.sensorArrayRayCount, mover.sensorArrayRowsAreOffset, 1f);
+        if (mover.sensorType == Sensor.CastType.RaycastArray)
+            GUILayout.Label("Advanced Options", EditorStyles.centeredGreyMiniLabel);
+        GUILayout.Space(5);
 
-			EditorGUI.BeginChangeCheck();
+        if (mover.sensorType == Sensor.CastType.Raycast)
+        {
+        }
+        else if (mover.sensorType == Sensor.CastType.Spherecast)
+        {
 
-			mover.sensorArrayRayCount = EditorGUILayout.IntSlider("Number", mover.sensorArrayRayCount, 3, 9);
-			mover.sensorArrayRows = EditorGUILayout.IntSlider("Rows", mover.sensorArrayRows, 1, 5);
-			mover.sensorArrayRowsAreOffset = EditorGUILayout.Toggle("Offset Rows", mover.sensorArrayRowsAreOffset);
+        }
+        else if (mover.sensorType == Sensor.CastType.RaycastArray)
+        {
+            if (raycastArrayPositions == null)
+                raycastArrayPositions = Sensor.GetRaycastStartPositions(mover.sensorArrayRows, mover.sensorArrayRayCount, mover.sensorArrayRowsAreOffset, 1f);
 
-			if(EditorGUI.EndChangeCheck())
-			{
-				raycastArrayPositions = Sensor.GetRaycastStartPositions(mover.sensorArrayRows, mover.sensorArrayRayCount, mover.sensorArrayRowsAreOffset, 1f);
-				OnEditorVariableChanged();
-			}
+            EditorGUI.BeginChangeCheck();
 
-			GUILayout.Space(5);
+            mover.sensorArrayRayCount = EditorGUILayout.IntSlider("Number", mover.sensorArrayRayCount, 3, 9);
+            mover.sensorArrayRows = EditorGUILayout.IntSlider("Rows", mover.sensorArrayRows, 1, 5);
+            mover.sensorArrayRowsAreOffset = EditorGUILayout.Toggle("Offset Rows", mover.sensorArrayRowsAreOffset);
 
-			_space = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(100));
+            if (EditorGUI.EndChangeCheck())
+            {
+                raycastArrayPositions = Sensor.GetRaycastStartPositions(mover.sensorArrayRows, mover.sensorArrayRayCount, mover.sensorArrayRowsAreOffset, 1f);
+                OnEditorVariableChanged();
+            }
 
-			Rect background = new Rect(_space.x + (_space.width - _space.height)/2f, _space.y, _space.height, _space.height);
-			EditorGUI.DrawRect(background, Color.grey);
+            GUILayout.Space(5);
 
-			float point_size = 3f;
+            _space = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(100));
 
-			Vector2 center = new Vector2(background.x + background.width/2f, background.y + background.height/2f);
+            Rect background = new Rect(_space.x + (_space.width - _space.height) / 2f, _space.y, _space.height, _space.height);
+            EditorGUI.DrawRect(background, Color.grey);
 
-			if(raycastArrayPositions != null && raycastArrayPositions.Length != 0)
-			{
-				for(int i = 0; i < raycastArrayPositions.Length; i++)
-				{
-					Vector2 position = center + new Vector2(raycastArrayPositions[i].x, raycastArrayPositions[i].z) * background.width/2f * 0.9f;
+            float point_size = 3f;
 
-					EditorGUI.DrawRect(new Rect(position.x - point_size/2f, position.y - point_size/2f, point_size, point_size), Color.white);
-				}
-			}
+            Vector2 center = new Vector2(background.x + background.width / 2f, background.y + background.height / 2f);
 
-			if(raycastArrayPositions != null && raycastArrayPositions.Length != 0)
-				GUILayout.Label("Number of rays = " + raycastArrayPositions.Length, EditorStyles.centeredGreyMiniLabel );
-		}
-	}
+            if (raycastArrayPositions != null && raycastArrayPositions.Length != 0)
+            {
+                for (int i = 0; i < raycastArrayPositions.Length; i++)
+                {
+                    Vector2 position = center + new Vector2(raycastArrayPositions[i].x, raycastArrayPositions[i].z) * background.width / 2f * 0.9f;
 
-	void OnEditorVariableChanged()
-	{
-		EditorUtility.SetDirty(mover);
-		EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-	}
+                    EditorGUI.DrawRect(new Rect(position.x - point_size / 2f, position.y - point_size / 2f, point_size, point_size), Color.white);
+                }
+            }
+           
+            if (raycastArrayPositions != null && raycastArrayPositions.Length != 0)
+                GUILayout.Label("Number of rays = " + raycastArrayPositions.Length, EditorStyles.centeredGreyMiniLabel);
+        }
+    }
+
+    void OnEditorVariableChanged()
+    {
+        EditorUtility.SetDirty(mover);
+        EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+    }
 }

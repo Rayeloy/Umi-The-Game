@@ -8,6 +8,8 @@ using System.Linq;
 public class CollisionsCheck : MonoBehaviour
 {
     public PlayerMovementCMF myPlayerMov;
+    [HideInInspector]
+    public Collider collider;
 
     public bool disableAllDebugs = true;
     public bool disableAllRays = true;
@@ -48,20 +50,20 @@ public class CollisionsCheck : MonoBehaviour
     [HideInInspector]
     public bool safeBelowStarted;
     float safeBelowTime, safeBelowMaxTime;
-
-    [HideInInspector]
-    public Collider collider;
-    [HideInInspector]
-    public GameObject floor;
-    [HideInInspector]
-    public Vector3 wallNormal;
     [HideInInspector]
     public float slopeAngle;
     [HideInInspector]
     public bool lastSliping;
     public bool sliping { get { return below && tooSteepSlope; } }
+    [HideInInspector]
+    public GameObject floor;
+    [HideInInspector]
+    Vector3 groundContactPoint = Vector3.zero;
+
 
     [Header(" -- Horizontal Collisions -- ")]
+    [HideInInspector]
+    public Vector3 wallNormal;
     public Transform origin;
     public float radius = 5;
     bool hit;
@@ -94,12 +96,19 @@ public class CollisionsCheck : MonoBehaviour
         //print("bounds.size.z = " + coll.bounds.size.z+"bounds.size.y = "+ coll.bounds.size.y);
     }
 
+    #region FixedUpdate
+    //RUN IN FIXED UPDATE
     public void UpdateCollisionVariables(Mover mover, JumpState jumpSt)
     {
         mover.CheckForGround();
-        if(jumpSt!= JumpState.Jumping && jumpSt != JumpState.Breaking)
-        below = mover.IsGrounded();
+        if (jumpSt != JumpState.Jumping && jumpSt != JumpState.Breaking)
+            below = mover.IsGrounded();
         SetSlopeAngle(mover.GetGroundNormal());
+        floor = mover.GetGroundCollider() != null ? mover.GetGroundCollider().gameObject : null;
+        if (below)
+        {
+            groundContactPoint = mover.GetGroundPoint();
+        }
     }
 
     /// <summary>
@@ -128,12 +137,21 @@ public class CollisionsCheck : MonoBehaviour
         below = false;
 
         floor = null;
-        wallNormal = Vector3.zero;
+        wallNormal = groundContactPoint = Vector3.zero;
         above = below = safeBelow = safeBelowStarted = tooSteepSlope = false;
         distanceToFloor = float.MaxValue;
         safeBelowTime = 0;
         slopeAngle = -500;
     }
+    #endregion
+
+    #region Update
+    //public void MoveWithPlatform()
+    //{
+    //    ChangePositionWithPlatform();
+    //    SavePlatformPoint();
+    //}
+    #endregion
 
     public void SetSlopeAngle(Vector3 floorNormal)
     {
@@ -158,30 +176,30 @@ public class CollisionsCheck : MonoBehaviour
             //    //rowOrigin.z = rowsOrigin.z - (verticalRowSpacing * i);
             //    for (int j = 0; j < verticalRaysPerRow; j++)
             //    {
-                    //if (i % 2 == 0 && j % 2 == 0)// Every even number throw a ray. This is to reduce raycasts to half since not so many are needed.
-                    //{
-                        Vector3 rayOrigin = raycastOrigins.BottomCentre;
+            //if (i % 2 == 0 && j % 2 == 0)// Every even number throw a ray. This is to reduce raycasts to half since not so many are needed.
+            //{
+            Vector3 rayOrigin = raycastOrigins.BottomCentre;
             //rayOrigin += Vector3.up * skinWidth;
             Vector3 rayDir = vel.normalized;
-                        RaycastHit hit;
-                        if (showDistanceCheckRays && !disableAllRays)
-                        {
-                            Debug.DrawRay(rayOrigin, rayDir * rayLength, Color.red);
-                        }
+            RaycastHit hit;
+            if (showDistanceCheckRays && !disableAllRays)
+            {
+                Debug.DrawRay(rayOrigin, rayDir * rayLength, Color.red);
+            }
 
 
-                        if (ThrowRaycast(rayOrigin, rayDir, out hit, rayLength, collisionMask, qTI))
-                        {
-                            if (CanCollide(hit))
-                            {
-                                //print("Vertical Hit");
-                                //if (hit.distance < collisions.distanceToFloor)
-                                //{
-                                    distanceToFloor = hit.distance;
-                                //}
-                            }
-                        }
+            if (ThrowRaycast(rayOrigin, rayDir, out hit, rayLength, collisionMask, qTI))
+            {
+                if (CanCollide(hit))
+                {
+                    //print("Vertical Hit");
+                    //if (hit.distance < collisions.distanceToFloor)
+                    //{
+                    distanceToFloor = hit.distance;
                     //}
+                }
+            }
+            //}
             //    }
             //}
             //collisions.distanceToFloor -= skinWidth;
@@ -231,11 +249,13 @@ public class CollisionsCheck : MonoBehaviour
     {
 
     }
-    void Update()
-    {
-        a = new Plane(rig.velocity, origin.position);
-        colliderFinal = DetectWallCollision();
-    }
+    //void Update()
+    //{
+    //    a = new Plane(rig.velocity, origin.position);
+    //    colliderFinal = DetectWallCollision();
+    //}
+    #endregion
+
     #endregion
 
     #region --- MOVING PLATFORMS ---
@@ -247,39 +267,46 @@ public class CollisionsCheck : MonoBehaviour
     //{
     //    get
     //    {
-    //        //Debug.Log("onMovingPlatform-> below = "+ collisions.below + "; lastBelow = "+ collisions.lastBelow + "; floor = "+ collisions.floor + "; lastFloor = " + collisions.lastFloor);
-    //        return collisions.below && collisions.floor != null /*&& collisions.lastBelow && collisions.lastFloor != null && collisions.lastFloor == collisions.floor*/;
+    //        Debug.Log("onMovingPlatform-> below = "+ below + "; lastBelow = "+ lastBelow + "; floor = "+ floor);
+    //        return below && !sliping && floor != null; /*&& collisions.lastBelow && collisions.lastFloor != null && collisions.lastFloor == collisions.floor*/
     //    }
     //}
 
     //void SavePlatformPoint()
     //{
-    //    if (collisions.below && collisions.floor != null)
+    //    if (below && !sliping && floor != null)
     //    {
-    //        platformOldWorldPoint = collisions.closestVerRaycast.ray.point;
-    //        platformOldLocalPoint = collisions.floor.transform.InverseTransformPoint(platformOldWorldPoint);
-    //        if (!disableAllDebugs) Debug.Log("OnMovingPlatform true && Save Platform Point: Local = " + platformOldLocalPoint.ToString("F4") + "; world = " + platformOldWorldPoint.ToString("F4"));
+    //        platformOldWorldPoint = groundContactPoint;
+    //        platformOldLocalPoint = floor.transform.InverseTransformPoint(platformOldWorldPoint);
+    //        /*if (!disableAllDebugs) */Debug.Log("OnMovingPlatform true && Save Platform Point: Local = " + platformOldLocalPoint.ToString("F4") + "; world = " + platformOldWorldPoint.ToString("F4"));
+    //    }
+    //    else
+    //    {
+    //        platformOldWorldPoint = Vector3.zero;
     //    }
     //}
 
     //void CalculatePlatformPointMovement()
     //{
-    //    if (onMovingPlatform)
+    //    if (onMovingPlatform && platformOldWorldPoint!=Vector3.zero)
     //    {
-    //        if (!disableAllDebugs) Debug.LogWarning("CALCULATE PLATFORM POINT MOVEMENT");
-    //        platformNewWorldPoint = collisions.floor.transform.TransformPoint(platformOldLocalPoint);
+    //        /*if (!disableAllDebugs)*/ Debug.Log("CALCULATE PLATFORM POINT MOVEMENT");
+    //        platformNewWorldPoint = floor.transform.TransformPoint(platformOldLocalPoint);
     //        platformMovement = platformNewWorldPoint - platformOldWorldPoint;
-    //        if (!disableAllDebugs) Debug.Log("platformOldWorldPoint = " + platformOldWorldPoint.ToString("F4") + "; New Platform Point = " + platformNewWorldPoint.ToString("F4") + "; platformMovement = " + platformMovement.ToString("F4"));
-    //        if (!disableAllRays) Debug.DrawLine(platformOldWorldPoint, platformNewWorldPoint, Color.red, 1f);
+    //        /*if (!disableAllDebugs)*/ Debug.LogWarning("platformOldWorldPoint = " + platformOldWorldPoint.ToString("F4") + "; New Platform Point = " 
+    //                                       + platformNewWorldPoint.ToString("F4") + "; platformMovement = " + platformMovement.ToString("F8"));
+    //        /*if (!disableAllRays)*/ Debug.DrawLine(platformOldWorldPoint, platformNewWorldPoint, Color.red, 1f);
     //    }
     //}
 
     //void ChangePositionWithPlatform()
     //{
+    //    platformMovement = Vector3.zero;
     //    CalculatePlatformPointMovement();
 
     //    //transform.Translate(platformMovement, Space.World);
-    //    if (onMovingPlatform)
+    //    Debug.Log("platformMovement = " + platformMovement.ToString("F8"));
+    //    if (onMovingPlatform && platformMovement != Vector3.zero)
     //        transform.position += platformMovement;
     //}
     #endregion
@@ -538,7 +565,7 @@ public class CollisionsCheck : MonoBehaviour
     //    //VERTICAL
     //    public Raycast closestVerRaycast;
     //    public Raycast[,] verRaycastsY;
-        
+
     //    public float roofAngle, oldRoofAngle;
     //    public bool climbJump;
 
