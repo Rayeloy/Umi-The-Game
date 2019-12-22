@@ -44993,7 +44993,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d98ace8715c2a184ca85247b18eb0853, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllDebugs: 0
+  disableAllDebugs: 1
   stepHeightRatio: 0.25
   colliderHeight: 2.2
   colliderThickness: 0.7
@@ -45002,7 +45002,7 @@ MonoBehaviour:
   sensorType: 1
   sensorLayermask:
     serializedVersion: 2
-    m_Bits: 16896
+    m_Bits: 16900
   isInDebugMode: 1
   sensorArrayRows: 1
   sensorArrayRayCount: 5
@@ -45023,6 +45023,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myPlayerMov: {fileID: 873758771431004316}
+  collider: {fileID: 0}
   disableAllDebugs: 1
   disableAllRays: 1
   collideWithTriggers: 0
@@ -45044,11 +45045,10 @@ MonoBehaviour:
   tooSteepSlope: 0
   distanceToFloor: 0
   safeBelowStarted: 0
-  collider: {fileID: 0}
-  floor: {fileID: 0}
-  wallNormal: {x: 0, y: 0, z: 0}
   slopeAngle: 0
   lastSliping: 0
+  floor: {fileID: 0}
+  wallNormal: {x: 0, y: 0, z: 0}
   origin: {fileID: 0}
   radius: 5
   rig: {fileID: 0}

@@ -272,23 +272,25 @@ public class Mover : MonoBehaviour {
 	//Check if mover is grounded;
 	public void CheckForGround()
 	{
-        ChangePositionWithPlatform();
+        //ChangePositionWithPlatform();
 
         Check();
 
-        SavePlatformPoint();
+        //SavePlatformPoint();
 	}
 
 	//Set mover velocity;
 	public void SetVelocity(Vector3 _velocity)
 	{
-        Debug.LogWarning("Velocity = " + _velocity.ToString("F6") + "; currentPlatformMovement = " + currentPlatformMovement.ToString("F6") +
-            "; currentGroundAdjustmentVelocity = " + currentGroundAdjustmentVelocity.ToString("F6"));
-        rig.velocity = _velocity + currentGroundAdjustmentVelocity + currentPlatformMovement;	
-	}	
+        ///*if (!disableAllDebugs)*/ Debug.LogWarning("Velocity = " + _velocity.ToString("F6") + "; currentPlatformMovement = " + currentPlatformMovement.ToString("F6") +
+        //    "; currentGroundAdjustmentVelocity = " + currentGroundAdjustmentVelocity.ToString("F8"));
+        //Debug.Log("Rigibody.Velocity b4 setvel = " + rig.velocity.ToString("F8"));
+        rig.velocity = _velocity + currentGroundAdjustmentVelocity + currentPlatformMovement;
+        //Debug.Log("Rigibody.Velocity after setvel = " + rig.velocity.ToString("F8"));
+    }
 
-	//Returns 'true' if mover is touching ground and the angle between hte 'up' vector and ground normal is not too steep (e.g., angle < slope_limit);
-	public bool IsGrounded()
+    //Returns 'true' if mover is touching ground and the angle between hte 'up' vector and ground normal is not too steep (e.g., angle < slope_limit);
+    public bool IsGrounded()
 	{
 		return isGrounded;
 	}
@@ -302,7 +304,7 @@ public class Mover : MonoBehaviour {
     {
         get
         {
-            Debug.Log("onMovingPlatform-> isGrounded = " + isGrounded + "; isGroundTooSteep = "+ isGroundTooSteep + "; GetGroundCollider() = " + GetGroundCollider());
+            if (!disableAllDebugs) Debug.Log("onMovingPlatform-> isGrounded = " + isGrounded + "; isGroundTooSteep = "+ isGroundTooSteep + "; GetGroundCollider() = " + GetGroundCollider());
             return isGrounded && !isGroundTooSteep && GetGroundCollider() != null /*&& collisions.lastBelow && collisions.lastFloor != null && collisions.lastFloor == collisions.floor*/;
         }
     }
@@ -338,7 +340,7 @@ public class Mover : MonoBehaviour {
 
         //transform.Translate(platformMovement, Space.World);
         if (onMovingPlatform)
-            currentPlatformMovement = platformMovement * 50;
+            currentPlatformMovement = platformMovement * (1/Time.fixedDeltaTime);
         //transform.position += platformMovement;
 
     }

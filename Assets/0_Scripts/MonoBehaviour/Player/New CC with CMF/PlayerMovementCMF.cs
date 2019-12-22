@@ -502,6 +502,8 @@ public class PlayerMovementCMF : MonoBehaviour
 
     public void KonoFixedUpdate()
     {
+        Debug.LogWarning("Current pos = " + transform.position.ToString("F8"));
+        lastPos = transform.position;
         collCheck.ResetVariables();
         ResetMovementVariables();
 
@@ -540,9 +542,12 @@ public class PlayerMovementCMF : MonoBehaviour
         inputsInfo.ResetInputs();
     }
 
+    Vector3 lastPos;
     public void KonoLateUpdate()
     {
-        //collCheck.MoveWithPlatform();
+        Vector3 currentTotalMovement = transform.position - lastPos;
+        collCheck.MoveWithPlatform();
+        Debug.Log("rb velocity = " + GetComponent<Rigidbody>().velocity.ToString("F8") + "; currentTotalMovement = "+ currentTotalMovement.ToString("F8"));
         myPlayerAnimation.KonoUpdate();
     }
     #endregion

@@ -274,6 +274,7 @@ public class GameControllerCMF : MonoBehaviour
         //    //    Debug.Log("GameControllerBase: Empezamos el juego pues se han unido todos los jugadores");
         //    //}
         //}
+        Application.targetFrameRate = 60;
         Debug.Log("GameController Start finished");
     }
 

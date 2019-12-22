@@ -10,6 +10,7 @@ public class CollisionsCheck : MonoBehaviour
     public PlayerMovementCMF myPlayerMov;
     [HideInInspector]
     public Collider collider;
+    Rigidbody rb;
 
     public bool disableAllDebugs = true;
     public bool disableAllRays = true;
@@ -62,12 +63,11 @@ public class CollisionsCheck : MonoBehaviour
 
 
     [Header(" -- Horizontal Collisions -- ")]
+    public Transform origin;
     [HideInInspector]
     public Vector3 wallNormal;
-    public Transform origin;
     public float radius = 5;
     bool hit;
-    public Rigidbody rig;
     Collider[] hitColliders;
     Plane a;
     public Transform mid;
@@ -77,7 +77,7 @@ public class CollisionsCheck : MonoBehaviour
     public void KonoAwake(Collider _collider)
     {
         qTI = collideWithTriggers ? QueryTriggerInteraction.Collide : QueryTriggerInteraction.Ignore;
-
+        rb = GetComponent<Rigidbody>();
         hits = new RaycastHit[10];
 
         collider = _collider;
@@ -121,6 +121,8 @@ public class CollisionsCheck : MonoBehaviour
 
         UpdateRaycastOrigins();
 
+        colliderFinal = DetectWallCollision();
+
         VerticalCollisionsDistanceCheck(ref vel);
 
         UpdateSafeBelow();
@@ -146,11 +148,11 @@ public class CollisionsCheck : MonoBehaviour
     #endregion
 
     #region Update
-    //public void MoveWithPlatform()
-    //{
-    //    ChangePositionWithPlatform();
-    //    SavePlatformPoint();
-    //}
+    public void MoveWithPlatform()
+    {
+        ChangePositionWithPlatform();
+        SavePlatformPoint();
+    }
     #endregion
 
     public void SetSlopeAngle(Vector3 floorNormal)
@@ -231,8 +233,8 @@ public class CollisionsCheck : MonoBehaviour
                     oldcol = hitColliders[i];
                 }
             }
-            hit = Physics.Raycast(mid.position, rig.velocity, out RaycastHit _hit, 5, collisionMask, qTI);
-            Debug.DrawRay(mid.position, rig.velocity);
+            hit = Physics.Raycast(mid.position, rb.velocity, out RaycastHit _hit, 5, collisionMask, qTI);
+            Debug.DrawRay(mid.position, rb.velocity);
             finalNormal = _hit.normal;
             if (Goodcol != null && hit)
             {
@@ -259,56 +261,65 @@ public class CollisionsCheck : MonoBehaviour
     #endregion
 
     #region --- MOVING PLATFORMS ---
-    //Vector3 platformMovement;
-    //Vector3 platformOldWorldPoint;
-    //Vector3 platformOldLocalPoint;
-    //Vector3 platformNewWorldPoint;
-    //bool onMovingPlatform
-    //{
-    //    get
-    //    {
-    //        Debug.Log("onMovingPlatform-> below = "+ below + "; lastBelow = "+ lastBelow + "; floor = "+ floor);
-    //        return below && !sliping && floor != null; /*&& collisions.lastBelow && collisions.lastFloor != null && collisions.lastFloor == collisions.floor*/
-    //    }
-    //}
+    Vector3 platformMovement;
+    Vector3 platformOldWorldPoint;
+    Vector3 platformOldLocalPoint;
+    Vector3 platformNewWorldPoint;
+    bool onMovingPlatform
+    {
+        get
+        {
+            //Debug.Log("onMovingPlatform-> below = " + below + "; lastBelow = " + lastBelow + "; floor = " + floor);
+            return below && !sliping && floor != null; /*&& collisions.lastBelow && collisions.lastFloor != null && collisions.lastFloor == collisions.floor*/
+        }
+    }
 
-    //void SavePlatformPoint()
-    //{
-    //    if (below && !sliping && floor != null)
-    //    {
-    //        platformOldWorldPoint = groundContactPoint;
-    //        platformOldLocalPoint = floor.transform.InverseTransformPoint(platformOldWorldPoint);
-    //        /*if (!disableAllDebugs) */Debug.Log("OnMovingPlatform true && Save Platform Point: Local = " + platformOldLocalPoint.ToString("F4") + "; world = " + platformOldWorldPoint.ToString("F4"));
-    //    }
-    //    else
-    //    {
-    //        platformOldWorldPoint = Vector3.zero;
-    //    }
-    //}
+    void SavePlatformPoint()
+    {
+        if (below && !sliping && floor != null)
+        {
+            platformOldWorldPoint = groundContactPoint;
+            platformOldLocalPoint = floor.transform.InverseTransformPoint(platformOldWorldPoint);
+            /*if (!disableAllDebugs) */
+            //Debug.Log("OnMovingPlatform true && Save Platform Point: Local = " + platformOldLocalPoint.ToString("F4") + "; world = " + platformOldWorldPoint.ToString("F4"));
+        }
+        else
+        {
+            platformOldWorldPoint = Vector3.zero;
+        }
+    }
 
-    //void CalculatePlatformPointMovement()
-    //{
-    //    if (onMovingPlatform && platformOldWorldPoint!=Vector3.zero)
-    //    {
-    //        /*if (!disableAllDebugs)*/ Debug.Log("CALCULATE PLATFORM POINT MOVEMENT");
-    //        platformNewWorldPoint = floor.transform.TransformPoint(platformOldLocalPoint);
-    //        platformMovement = platformNewWorldPoint - platformOldWorldPoint;
-    //        /*if (!disableAllDebugs)*/ Debug.LogWarning("platformOldWorldPoint = " + platformOldWorldPoint.ToString("F4") + "; New Platform Point = " 
-    //                                       + platformNewWorldPoint.ToString("F4") + "; platformMovement = " + platformMovement.ToString("F8"));
-    //        /*if (!disableAllRays)*/ Debug.DrawLine(platformOldWorldPoint, platformNewWorldPoint, Color.red, 1f);
-    //    }
-    //}
+    void CalculatePlatformPointMovement()
+    {
+        if (onMovingPlatform && platformOldWorldPoint != Vector3.zero)
+        {
+            /*if (!disableAllDebugs)*/
+            //Debug.Log("CALCULATE PLATFORM POINT MOVEMENT");
+            platformNewWorldPoint = floor.transform.TransformPoint(platformOldLocalPoint);
+            platformMovement = platformNewWorldPoint - platformOldWorldPoint;
+            /*if (!disableAllDebugs)*/
+            //Debug.LogWarning("platformOldWorldPoint = " + platformOldWorldPoint.ToString("F4") + "; New Platform Point = "
+            //    + platformNewWorldPoint.ToString("F4") + "; platformMovement = " + platformMovement.ToString("F8"));
+            /*if (!disableAllRays)*/
+            Debug.DrawLine(platformOldWorldPoint, platformNewWorldPoint, Color.red, 1f);
+        }
+    }
 
-    //void ChangePositionWithPlatform()
-    //{
-    //    platformMovement = Vector3.zero;
-    //    CalculatePlatformPointMovement();
+    void ChangePositionWithPlatform()
+    {
+        platformMovement = Vector3.zero;
+        CalculatePlatformPointMovement();
 
-    //    //transform.Translate(platformMovement, Space.World);
-    //    Debug.Log("platformMovement = " + platformMovement.ToString("F8"));
-    //    if (onMovingPlatform && platformMovement != Vector3.zero)
-    //        transform.position += platformMovement;
-    //}
+        //transform.Translate(platformMovement, Space.World);
+        if (onMovingPlatform && platformMovement.magnitude > 0.0001f)
+        {
+            //GetComponent<Rigidbody>().velocity = myPlayerMov.currentVel + platformMovement * (1 / Time.fixedDeltaTime) * 100000;
+            //transform.position += platformMovement;
+            //rb.MovePosition(rb.position + platformMovement);
+            rb.position += platformMovement;
+            Debug.LogWarning("platformMovement = " + platformMovement.ToString("F8")+"; newPos = "+platformNewWorldPoint.ToString("F8") + "; current pos = "+rb.position.ToString("F8"));
+        }
+    }
     #endregion
 
     #region --- AUXILIAR ---
