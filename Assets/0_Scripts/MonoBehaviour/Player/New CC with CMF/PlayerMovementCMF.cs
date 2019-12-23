@@ -358,7 +358,6 @@ public class PlayerMovementCMF : MonoBehaviour
     GameObject lastWall = null;
     float wallJumpRadius;
     float walJumpConeHeight = 1;
-    Axis wallJumpRaycastAxis = Axis.none;
     int wallJumpCheckRaysRows = 5;
     int wallJumpCheckRaysColumns = 5;
     float wallJumpCheckRaysRowsSpacing;
@@ -502,7 +501,7 @@ public class PlayerMovementCMF : MonoBehaviour
 
     public void KonoFixedUpdate()
     {
-        Debug.LogWarning("Current pos = " + transform.position.ToString("F8"));
+        //Debug.LogWarning("Current pos = " + transform.position.ToString("F8"));
         lastPos = transform.position;
         collCheck.ResetVariables();
         ResetMovementVariables();
@@ -547,7 +546,7 @@ public class PlayerMovementCMF : MonoBehaviour
     {
         Vector3 currentTotalMovement = transform.position - lastPos;
         collCheck.MoveWithPlatform();
-        Debug.Log("rb velocity = " + GetComponent<Rigidbody>().velocity.ToString("F8") + "; currentTotalMovement = "+ currentTotalMovement.ToString("F8"));
+        //Debug.Log("rb velocity = " + GetComponent<Rigidbody>().velocity.ToString("F8") + "; currentTotalMovement = "+ currentTotalMovement.ToString("F8"));
         myPlayerAnimation.KonoUpdate();
     }
     #endregion
@@ -905,9 +904,9 @@ public class PlayerMovementCMF : MonoBehaviour
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
                     break;
                 case MoveState.Boost:
-                    //if (controller.collisions.collisionHorizontal)//BOOST CONTRA PARED
+                    //if (wallJumpCurrentWall != null)//BOOST CONTRA PARED
                     //{
-                    //    WallBoost(controller.collisions.horWall);
+                    //    WallBoost(collCheck.wall);
                     //}
                     //else//BOOST NORMAL
                     //{
@@ -1230,10 +1229,10 @@ public class PlayerMovementCMF : MonoBehaviour
         if (!StartJump())
         {
             //TO REDO
-            //if (!StartWallJump())
-            //{
-            //    StartChargingChargeJump();
-            //}
+            if (!StartWallJump())
+            {
+                StartChargingChargeJump();
+            }
         }
     }
 
@@ -1314,55 +1313,55 @@ public class PlayerMovementCMF : MonoBehaviour
     /// and false if the input was not successful and should be buffered.
     /// </summary>
     /// <returns></returns>
-    //bool StartWallJump(bool calledFromBuffer = false)
-    //{
-    //    if (!disableAllDebugs) Debug.LogWarning("Check Wall jump: wall real normal = " + controller.collisions.closestHorRaycast.slopeAngle);
-    //    bool result = false;
-    //    float slopeAngle = controller.collisions.closestHorRaycast.slopeAngle;
-    //    bool goodWallAngle = !(slopeAngle >= 110 && slopeAngle <= 180);
-    //    wallJumpCurrentWall = controller.collisions.horWall;
-    //    if (!collCheck.below && !inWater && jumpedOutOfWater && controller.collisions.collisionHorizontal && goodWallAngle &&
-    //        (!firstWallJumpDone || lastWallAngle != controller.collisions.wallAngle || (lastWallAngle == controller.collisions.wallAngle &&
-    //        lastWall != controller.collisions.horWall)) && wallJumpCurrentWall.tag == "Stage")
-    //    {
-    //        if (wallJumpCurrentWall.GetComponent<StageScript>() == null || wallJumpCurrentWall.GetComponent<StageScript>().wallJumpable)
-    //        {
-    //            if (!disableAllDebugs) Debug.Log("Wall jumping start");
-    //            //PARA ORTU: PlayerAnimation_01.startJump = true;
-    //            jumpSt = JumpState.WallJumping;
-    //            result = true;
-    //            //wallJumped = true;
-    //            stopWallTime = 0;
-    //            SetVelocity(Vector3.zero);
-    //            wallJumping = true;
-    //            anchorPoint = transform.position;
-    //            wallNormal = controller.collisions.wallNormal;
-    //            wallNormal.y = 0;
-    //            wallJumpCurrentWallAngle = controller.collisions.wallAngle;
-    //            wallJumpRaycastAxis = controller.collisions.closestHorRaycast.axis;
-    //            //Debug.Log("WALL JUMP RAY HEIGHT PERCENTAGE : " + controller.collisions.closestHorRaycast.rayHeightPercentage + "%; wall = " + wallJumpCurrentWall.name);
+    bool StartWallJump(bool calledFromBuffer = false)
+    {
+        /*if (!disableAllDebugs)*/ Debug.LogWarning("Check Wall jump: wall real normal = " + collCheck.wallSlopeAngle);
+        bool result = false;
+        float slopeAngle = collCheck.wallSlopeAngle;
+        bool goodWallAngle = !(slopeAngle >= 110 && slopeAngle <= 180);
+        wallJumpCurrentWall = collCheck.wall;
+        if (!collCheck.below && !inWater && jumpedOutOfWater && wallJumpCurrentWall != null && goodWallAngle &&
+            (!firstWallJumpDone || lastWallAngle != collCheck.wallAngle || (lastWallAngle == collCheck.wallAngle &&
+            lastWall != collCheck.wall)) && wallJumpCurrentWall.tag == "Stage")
+        {
+            Debug.Log("WallJump Stage script check...");
+            if (wallJumpCurrentWall.GetComponent<StageScript>() == null || wallJumpCurrentWall.GetComponent<StageScript>().wallJumpable)
+            {
+                /*if (!disableAllDebugs)*/ Debug.Log("Wall jumping start");
+                //PARA ORTU: PlayerAnimation_01.startJump = true;
+                jumpSt = JumpState.WallJumping;
+                result = true;
+                //wallJumped = true;
+                stopWallTime = 0;
+                SetVelocity(Vector3.zero);
+                wallJumping = true;
+                anchorPoint = transform.position;
+                wallNormal = collCheck.wallNormal;
+                wallNormal.y = 0;
+                wallJumpCurrentWallAngle = collCheck.wallAngle;
+                //Debug.Log("WALL JUMP RAY HEIGHT PERCENTAGE : " + controller.collisions.closestHorRaycast.rayHeightPercentage + "%; wall = " + wallJumpCurrentWall.name);
 
-    //            //STOP OTHER JUMPS BUFFERINGS AND PROCESSES
-    //            StopBufferedInput(PlayerInput.Jump);
-    //            StopBufferedInput(PlayerInput.StartChargingChargeJump);
-    //            StopChargingChargeJump();
-    //        }
+                //STOP OTHER JUMPS BUFFERINGS AND PROCESSES
+                StopBufferedInput(PlayerInput.Jump);
+                StopBufferedInput(PlayerInput.StartChargingChargeJump);
+                StopChargingChargeJump();
+            }
 
-    //    }
-    //    else
-    //    {
-    //        if (!disableAllDebugs) Debug.Log("Couldn't wall jump because:  !collCheck.below (" + !collCheck.below + ") && !inWater(" + !inWater + ") &&" +
-    //            " jumpedOutOfWater(" + jumpedOutOfWater + ") && controller.collisions.collisionHorizontal(" + controller.collisions.collisionHorizontal + ") && " +
-    //            "(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != controller.collisions.wallAngle (" + (lastWallAngle != controller.collisions.wallAngle) + ") || " +
-    //            "(lastWallAngle == controller.collisions.wallAngle (" + (lastWallAngle == controller.collisions.wallAngle) + ")&& " +
-    //            "lastWall != controller.collisions.horWall(" + (lastWall != controller.collisions.horWall) + ")))");
-    //    }
-    //    if (!result && !calledFromBuffer)
-    //    {
-    //        BufferInput(PlayerInput.WallJump);
-    //    }
-    //    return result;
-    //}
+        }
+        else
+        {
+            /*if (!disableAllDebugs)*/ Debug.Log("Couldn't wall jump because:  !collCheck.below (" + !collCheck.below + ") && !inWater(" + !inWater + ") &&" +
+                " jumpedOutOfWater(" + jumpedOutOfWater + ") && wallJumpCurrentWall != null(" + (wallJumpCurrentWall != null) + ") && " +
+                "(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ") || " +
+                "(lastWallAngle == collCheck.wallAngle (" + (lastWallAngle == collCheck.wallAngle) + ")&& " +
+                "lastWall != collCheck.wall(" + (lastWall != collCheck.wall) + ")))");
+        }
+        if (!result && !calledFromBuffer)
+        {
+            BufferInput(PlayerInput.WallJump);
+        }
+        return result;
+    }
 
     void ProcessWallJump()//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
     {
@@ -1437,7 +1436,6 @@ public class PlayerMovementCMF : MonoBehaviour
         wallJumping = false;
         wallJumpAnim = true;
         jumpSt = JumpState.None;
-        wallJumpRaycastAxis = Axis.none;
         //CALCULATE JUMP DIR
         //LEFT OR RIGHT ORIENTATION?
         //Angle

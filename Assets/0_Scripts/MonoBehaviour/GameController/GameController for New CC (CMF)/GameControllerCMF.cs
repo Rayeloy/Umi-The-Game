@@ -355,7 +355,7 @@ public class GameControllerCMF : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Debug.LogError("GAME CONTROLLER FIXED UPDATE");
+        //Debug.Log("GAME CONTROLLER FIXED UPDATE");
         FixedUpdatePlayers();
     }
 

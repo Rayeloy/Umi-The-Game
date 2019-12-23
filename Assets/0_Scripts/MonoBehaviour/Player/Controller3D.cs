@@ -2801,7 +2801,7 @@ FirstCollisionWithWallType.climbingAndBackwardsWall : FirstCollisionWithWallType
         aroundAngleSpacing = 360 / (aroundRaysPerCircle);
     }
 
-    struct RaycastOrigins
+    public struct RaycastOrigins
     {
         public Vector3 BottomEnd;//TopEnd= center x, min y, max z
         public Vector3 BottomCentre;

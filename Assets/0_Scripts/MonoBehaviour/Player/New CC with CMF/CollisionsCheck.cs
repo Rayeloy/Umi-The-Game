@@ -18,7 +18,7 @@ public class CollisionsCheck : MonoBehaviour
     QueryTriggerInteraction qTI;
     public LayerMask collisionMask;
     public LayerMask collisionMaskAround;
-    public float maxSlopeAngle = 60;
+    public float maxSlopeAngle = 60;//in the future, take the value from "mover" script
     public float FloorMaxDistanceCheck = 5;
     Color purple = new Color(0.749f, 0.380f, 1f);
     Color brown = new Color(0.615f, 0.329f, 0.047f);
@@ -63,16 +63,26 @@ public class CollisionsCheck : MonoBehaviour
 
 
     [Header(" -- Horizontal Collisions -- ")]
+    public SphereCollider sphereColl;
     public LayerMask wallMask;
     public Vector3 localStartPoint;
+    public float sphereRadius = 5;
+
     [HideInInspector]
     public Vector3 wallNormal;
-    public float radius = 5;
+    [HideInInspector]
+    public GameObject wall;
+    [HideInInspector]
+    public float wallSlopeAngle, wallAngle;
+
+    List<CollisionHit> horizontalCollHits;
+    List<CollisionHit> wallJumpCollHits;
     bool hit;
     public Collider[] hitColliders;
-    public Plane a;
+    public Plane plane;
     public Collider colliderFinal;
     public Vector3 finalNormal;
+
     Collider Goodcol = new Collider();
     Collider oldcol = new Collider();
 
@@ -90,6 +100,9 @@ public class CollisionsCheck : MonoBehaviour
         safeBelowStarted = false;
         safeBelowTime = 0;
         safeBelowMaxTime = 0;
+
+        sphereColl.radius = sphereRadius;
+        sphereColl.center = localStartPoint;
     }
 
     public void KonoStart()
@@ -123,7 +136,10 @@ public class CollisionsCheck : MonoBehaviour
 
         UpdateRaycastOrigins();
 
-        colliderFinal = DetectWallCollision();
+        //colliderFinal = DetectWallCollision();
+
+        HorizontalCollisions();
+        WallJumpCollisions(vel);
 
         VerticalCollisionsDistanceCheck(ref vel);
 
@@ -146,6 +162,11 @@ public class CollisionsCheck : MonoBehaviour
         distanceToFloor = float.MaxValue;
         safeBelowTime = 0;
         slopeAngle = -500;
+
+        //Horizontal
+        wall = null;
+        wallAngle = wallSlopeAngle = 0;
+        wallNormal = Vector3.zero;
     }
     #endregion
 
@@ -215,14 +236,15 @@ public class CollisionsCheck : MonoBehaviour
     #region --- HORIZONTAL COLLISIONS ---
     public Collider DetectWallCollision()
     {
-        hitColliders = Physics.OverlapSphere(gameObject.transform.position+localStartPoint, radius, wallMask);
+        hitColliders = Physics.OverlapSphere(gameObject.transform.position + localStartPoint, sphereRadius, wallMask);
         if (hitColliders.Length > 0)
         {
 
             bool b = false;
             for (int i = 0; i < hitColliders.Length; i++)
             {
-                if ((!b && a.GetSide(hitColliders[i].transform.position)) || a.GetSide(hitColliders[i].transform.position) && (Vector3.Distance(gameObject.transform.position, hitColliders[i].transform.position) < Vector3.Distance(gameObject.transform.position, oldcol.transform.position)))
+                if ((!b && plane.GetSide(hitColliders[i].transform.position)) || plane.GetSide(hitColliders[i].transform.position) &&
+                    (Vector3.Distance(gameObject.transform.position, hitColliders[i].transform.position) < Vector3.Distance(gameObject.transform.position, oldcol.transform.position)))
                 {
                     b = true;
                     Goodcol = hitColliders[i];
@@ -239,7 +261,7 @@ public class CollisionsCheck : MonoBehaviour
                 hit = Physics.Raycast(gameObject.transform.position + localStartPoint, Goodcol.transform.position - gameObject.transform.position, out RaycastHit _hit, 5, wallMask, qTI);
                 Debug.DrawRay(gameObject.transform.position + localStartPoint, Goodcol.transform.position - gameObject.transform.position);
                 finalNormal = _hit.normal;
-                if (Vector3.Distance(gameObject.transform.position+localStartPoint, Goodcol.transform.position) < 3 && hit)
+                if (Vector3.Distance(gameObject.transform.position + localStartPoint, Goodcol.transform.position) < 3 && hit)
                 {
                     return Goodcol;
                 }
@@ -248,10 +270,106 @@ public class CollisionsCheck : MonoBehaviour
         return null;
     }
 
-    void Update()
+    //Eloy's attemp:
+    public void HorizontalCollisions()
     {
-        colliderFinal = DetectWallCollision();
+        hitColliders = Physics.OverlapSphere(raycastOrigins.Center + localStartPoint, sphereRadius, wallMask);
+        horizontalCollHits = new List<CollisionHit>();
+        //List<Collider> usedColliders = new List<Collider>();
+
+        for (int i = 0; i < hitColliders.Length; i++)
+        {
+            Collider auxColl = hitColliders[i];
+
+            //Skip if collided with ourselves
+            if (auxColl == collider || auxColl == sphereColl) continue;
+
+            //Skip if we already processed that collider
+            bool collFound = false;
+            for (int j = 0; j < horizontalCollHits.Count && !collFound; j++)
+            {
+                if(auxColl == horizontalCollHits[j].collider)
+                {
+                    collFound = true;
+                }
+            }
+            if (collFound) continue;
+
+            //New collider found
+            Vector3 hitDir = Vector3.zero;
+            float hitDist = 0;
+            if(Physics.ComputePenetration(sphereColl, sphereColl.transform.position, sphereColl.transform.rotation, auxColl, auxColl.transform.position,auxColl.transform.rotation,
+                    out hitDir, out hitDist))
+            {
+                //Vector3 contactPoint = sphereColl.transform.position + (-hitDir * (sphereRadius - hitDist));
+
+                RaycastHit hit;
+                if(Physics.Raycast(sphereColl.transform.position, -hitDir, out hit,2, wallMask, QueryTriggerInteraction.Ignore))
+                {
+                    if(hit.collider == auxColl)
+                    {
+                        float slopeAngle = Vector3.Angle(hit.normal, Vector3.up);
+
+                        //too steep for a slope, so it's a wall
+                        if(slopeAngle > maxSlopeAngle)
+                        {
+
+                            //Debug.LogWarning("HORIZONTAL COLLISION FOUND! myCollPos = " + sphereColl.transform.position + "; hitDir = " + hitDir + "; hitDist = " + hitDist.ToString("F8"));
+                            //Debug.DrawRay(sphereColl.transform.position, hitDir * hitDist, orange);
+
+                            CollisionHit collHit = new CollisionHit(auxColl, hit.point, hit, slopeAngle);
+                            if(!disableAllRays)Debug.DrawLine(sphereColl.transform.position, hit.point, darkBrown);
+                            horizontalCollHits.Add(collHit);
+                        }
+                    }
+                }
+            }
+        }
     }
+
+    public void WallJumpCollisions(Vector3 vel)
+    {
+        Vector3 horVel = new Vector3(vel.x, 0, vel.z);
+        if (horVel.magnitude < 0.001f) return;
+
+        wallJumpCollHits = new List<CollisionHit>();
+        Plane charPlane = new Plane(horVel, transform.position);
+        for (int i = 0; i < horizontalCollHits.Count; i++)
+        {
+            if (charPlane.GetSide(horizontalCollHits[i].point))
+            {
+                wallJumpCollHits.Add(horizontalCollHits[i]);
+                if (!disableAllRays) Debug.DrawLine(transform.position, horizontalCollHits[i].point, orange);
+            }
+        }
+
+        float minDist = float.MaxValue;
+        CollisionHit wallCollHit = new CollisionHit(null, Vector3.zero, new RaycastHit());
+        for (int i = 0; i < wallJumpCollHits.Count; i++)
+        {
+            float dist = (transform.position - wallJumpCollHits[i].point).magnitude;
+            if (dist < minDist)
+            {
+                minDist = dist;
+                wallCollHit = wallJumpCollHits[i];
+                //wallNormal =;
+            }
+        }
+        //At least one walljumpable wall
+        if (wallCollHit.collider != null)
+        {
+            wall = wallCollHit.collider.gameObject;
+            wallSlopeAngle = wallCollHit.slopeAngle;
+            wallNormal = wallCollHit.hit.normal;
+            wallAngle = SignedRelativeAngle(Vector3.forward, wallNormal, Vector3.up);
+        }
+        
+    }
+
+    //void Update()
+    //{
+    //    colliderFinal = DetectWallCollision();
+    //}
 
     public void CheckIfJump()
     {
@@ -323,7 +441,7 @@ public class CollisionsCheck : MonoBehaviour
             //transform.position += platformMovement;
             //rb.MovePosition(rb.position + platformMovement);
             rb.position += platformMovement;
-            Debug.LogWarning("platformMovement = " + platformMovement.ToString("F8")+"; newPos = "+platformNewWorldPoint.ToString("F8") + "; current pos = "+rb.position.ToString("F8"));
+            //Debug.LogWarning("platformMovement = " + platformMovement.ToString("F8")+"; newPos = "+platformNewWorldPoint.ToString("F8") + "; current pos = "+rb.position.ToString("F8"));
         }
     }
     #endregion
@@ -510,19 +628,6 @@ public class CollisionsCheck : MonoBehaviour
 
     }
 
-    //void CalculateRaySpacing()
-    //{
-    //    Bounds bounds = coll.bounds;
-
-    //    verticalRows = Mathf.Clamp(verticalRows, 2, int.MaxValue);
-    //    verticalRaysPerRow = Mathf.Clamp(verticalRaysPerRow, 3, int.MaxValue);
-
-    //    verticalRowSpacing = (bounds.size.z) / (verticalRows - 1);
-    //    verticalRaySpacing = bounds.size.x / (verticalRaysPerRow - 1);
-
-    //    bounds.Expand(skinWidth * -2);
-    //}
-
     struct RaycastOrigins
     {
         public Vector3 BottomEnd;//TopEnd= center x, min y, max z
@@ -535,163 +640,18 @@ public class CollisionsCheck : MonoBehaviour
         public float AroundRadius;
     }
 
-    //public struct CollisionInfo
-    //{
-    //    public bool above, below, lastBelow, lastLastBelow, safeBelow;
-    //    public bool left, right;
-    //    public bool foward, behind;
-    //    public bool collisionHorizontal
-    //    {
-    //        get
-    //        {
-    //            return (left || right || foward || behind);
-    //        }
-    //        set { }
-    //    }
-    //    public bool around;
-
-    //    //HORIZONTAL
-    //    public CollisionState collSt;
-    //    public CollisionState lastCollSt;
-    //    public float slopeAngle, slopeAngleOld, realSlopeAngle, wallAngle, wallAngleOld, wallAngle2, wallAngleOld2, floorAngle;
-    //    public Vector3 startVel;
-    //    public Raycast closestHorRaycast;
-    //    public Raycast[,] horRaycastsX;
-    //    public Raycast[,] horRaycastsZ;
-    //    //public Vector3 horCollisionsPoint;
-    //    public Vector3 wallNormal;
-    //    public Vector3 oldWallNormal;
-    //    public GameObject horWall;
-    //    public GameObject floor, lastFloor;
-    //    public Vector3 lastClosestVertRayPoint;
-    //    public SlideState slideSt;
-    //    public SlideState oldSlideSt;
-    //    public SlideState oldSlideSt2;
-    //    public FirstCollisionWithWallType fcww;
-    //    public FirstCollisionWithWallType oldFcww;
-    //    public float fcwwSlopeAngle;
-    //    public bool finishedClimbing, lastFinishedClimbing;
-    //    public Vector3 lastHorVel;
-    //    //WALLSLIDE COLLISIONS
-    //    public CollisionState wallSlideCollSt;
-    //    public float wallSlideSlopeAngle;
-    //    public float wallEdgeSecondWallAngle;
-    //    public float wallEdgeFirstWallAngle;
-    //    public float wallEdgeNewWallAngle;
-
-    //    //VERTICAL
-    //    public Raycast closestVerRaycast;
-    //    public Raycast[,] verRaycastsY;
-
-    //    public float roofAngle, oldRoofAngle;
-    //    public bool climbJump;
-
-    //    public void ResetVertical()
-    //    {
-    //        lastLastBelow = lastBelow;
-    //        lastBelow = below;
-    //        above = below = false;
-    //        lastClosestVertRayPoint = closestVerRaycast.ray.point;
-    //        closestVerRaycast = new Raycast(new RaycastHit(), Vector3.zero, float.MaxValue, Vector3.zero, Vector3.zero);
-    //        distanceToFloor = float.MaxValue;
-    //        verRaycastsY = new Raycast[0, 0];
-    //        lastFloor = floor;
-    //        floor = null;
-    //        oldRoofAngle = roofAngle;
-    //        roofAngle = -600;
-    //        climbJump = false;
-    //    }
-
-    //    public void ResetHorizontal()
-    //    {
-    //        left = right = false;
-    //        foward = behind = false;
-    //        wallAngleOld = wallAngle;
-    //        wallAngle = -500;
-    //        wallAngleOld2 = wallAngle2;
-    //        wallAngle2 = 0;
-    //        oldWallNormal = wallNormal;
-    //        wallNormal = Vector3.zero;
-    //        horWall = null;
-    //        oldSlideSt2 = oldSlideSt;
-    //        oldSlideSt = slideSt;
-    //        slideSt = SlideState.none;
-    //        Vector3 auxHorVel = new Vector3(startVel.x, 0, startVel.z);
-    //        lastHorVel = auxHorVel != Vector3.zero ? auxHorVel : lastHorVel;
-    //        startVel = Vector3.zero;
-    //        closestHorRaycast = new Raycast(new RaycastHit(), Vector3.zero, float.MaxValue, Vector3.zero, Vector3.zero);
-    //        horRaycastsX = new Raycast[0, 0];
-    //        horRaycastsZ = new Raycast[0, 0];
-    //        lastFinishedClimbing = finishedClimbing;
-    //        finishedClimbing = false;
-
-    //        oldFcww = fcww;
-    //        fcww = FirstCollisionWithWallType.none;
-    //        fcwwSlopeAngle = -400;
-
-    //        //WallSlideCollisions
-    //        wallSlideCollSt = CollisionState.none;
-    //        wallSlideSlopeAngle = -504;
-    //        wallEdgeFirstWallAngle = -501;
-    //        wallEdgeSecondWallAngle = -502;
-    //        wallEdgeNewWallAngle = -503;
-    //    }
-
-    //    public void ResetAround()
-    //    {
-    //        around = false;
-    //    }
-
-    //    public void ResetClimbingSlope()
-    //    {
-    //        lastCollSt = collSt;
-    //        collSt = CollisionState.none;
-    //        floorAngle = -1;
-    //        slopeAngleOld = slopeAngle;
-    //        slopeAngle = -700;
-    //        realSlopeAngle = -701;
-    //    }
-
-
-    //    #region --- SAFE BELOW ---
-    //    public void StartSafeBelow()
-    //    {
-    //        if (!safeBelowStarted)
-    //        {
-    //            safeBelowStarted = true;
-    //            safeBelowMaxTime = 0.14f;
-    //            safeBelowTime = 0;
-    //        }
-    //    }
-
-    //    public void ProcessSafeBelow()
-    //    {
-    //        if (!lastBelow && below)
-    //        {
-    //            safeBelow = true;
-    //            if (safeBelowStarted)
-    //            {
-    //                safeBelowStarted = false;
-    //            }
-    //        }
-
-    //        if (safeBelowStarted)
-    //        {
-    //            safeBelowTime += Time.deltaTime;
-    //            //print("safeBelowTime = " + safeBelowTime);
-    //            if (safeBelowTime >= safeBelowMaxTime)
-    //            {
-    //                EndSafeBelow();
-    //            }
-    //        }
-    //    }
-
-    //    void EndSafeBelow()
-    //    {
-    //        safeBelowStarted = false;
-    //        safeBelow = false;
-    //        safeBelowTime = 0;
-    //    }
-    //    #endregion
-    //}
+    struct CollisionHit
+    {
+        public Collider collider;
+        public Vector3 point;
+        public RaycastHit hit;
+        public float slopeAngle;
+        public CollisionHit(Collider _collider, Vector3 _point, RaycastHit _hit, float _slopeAngle = 0)
+        {
+            collider = _collider;
+            point = _point;
+            hit = _hit;
+            slopeAngle = _slopeAngle;
+        }
+    }
 }
