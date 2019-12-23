@@ -63,16 +63,18 @@ public class CollisionsCheck : MonoBehaviour
 
 
     [Header(" -- Horizontal Collisions -- ")]
-    public Transform origin;
+    public LayerMask wallMask;
+    public Vector3 localStartPoint;
     [HideInInspector]
     public Vector3 wallNormal;
     public float radius = 5;
     bool hit;
-    Collider[] hitColliders;
-    Plane a;
-    public Transform mid;
+    public Collider[] hitColliders;
+    public Plane a;
     public Collider colliderFinal;
     public Vector3 finalNormal;
+    Collider Goodcol = new Collider();
+    Collider oldcol = new Collider();
 
     public void KonoAwake(Collider _collider)
     {
@@ -213,11 +215,9 @@ public class CollisionsCheck : MonoBehaviour
     #region --- HORIZONTAL COLLISIONS ---
     public Collider DetectWallCollision()
     {
-        hitColliders = Physics.OverlapSphere(gameObject.transform.position, radius, collisionMask);
+        hitColliders = Physics.OverlapSphere(gameObject.transform.position+localStartPoint, radius, wallMask);
         if (hitColliders.Length > 0)
         {
-            Collider Goodcol = new Collider();
-            Collider oldcol = new Collider();
 
             bool b = false;
             for (int i = 0; i < hitColliders.Length; i++)
@@ -233,18 +233,24 @@ public class CollisionsCheck : MonoBehaviour
                     oldcol = hitColliders[i];
                 }
             }
-            hit = Physics.Raycast(mid.position, rb.velocity, out RaycastHit _hit, 5, collisionMask, qTI);
-            Debug.DrawRay(mid.position, rb.velocity);
-            finalNormal = _hit.normal;
-            if (Goodcol != null && hit)
+            Debug.Log(Goodcol != null);
+            if (Goodcol != null)
             {
-                if (Vector3.Distance(origin.position, Goodcol.transform.position) < 3)
+                hit = Physics.Raycast(gameObject.transform.position + localStartPoint, Goodcol.transform.position - gameObject.transform.position, out RaycastHit _hit, 5, wallMask, qTI);
+                Debug.DrawRay(gameObject.transform.position + localStartPoint, Goodcol.transform.position - gameObject.transform.position);
+                finalNormal = _hit.normal;
+                if (Vector3.Distance(gameObject.transform.position+localStartPoint, Goodcol.transform.position) < 3 && hit)
                 {
                     return Goodcol;
                 }
             }
         }
         return null;
+    }
+
+    void Update()
+    {
+        colliderFinal = DetectWallCollision();
     }
 
     public void CheckIfJump()
