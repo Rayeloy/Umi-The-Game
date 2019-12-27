@@ -45134,6 +45134,20 @@ MonoBehaviour:
   maxSlopeAngle: 60
   stickToGround: 1
   isGroundTooSteep: 0
+  sensor:
+    maxSlopeAngle: 60
+    castLength: 1.375
+    sphereCastRadius: 0.28
+    castType: 1
+    layermask:
+      serializedVersion: 2
+      m_Bits: 16900
+    calculateRealSurfaceNormal: 1
+    calculateRealDistance: 1
+    arrayRayCount: 5
+    ArrayRows: 1
+    offsetArrayRows: 0
+    isInDebugMode: 1
 --- !u!114 &4826634726855863062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45234,12 +45248,16 @@ MonoBehaviour:
   boostMinFuelNeeded: 0.2
   initialAcc: 90
   airInitialAcc: 40
+  wallJumpInitialAcc: 20
   breakAcc: -45
-  airBreakAcc: -30
+  airBreakAcc: -22.5
+  wallJumpBreakAcc: -5
   hardSteerAcc: -90
-  airHardSteerAcc: -60
+  airHardSteerAcc: -45
+  wallJumpHardSteerAcc: -10
   movingAcc: 11.5
   airMovingAcc: 5
+  wallJumpMovingAcc: 0.5
   hardBreakAcc: -90
   knockbackBreakAcc: -45
   gravity: 0
@@ -45248,12 +45266,12 @@ MonoBehaviour:
   breakJumpForce: 2
   pressingJumpActiveProportion: 0.7
   maxTimeJumpInsurance: 0.25
-  wallJumpVelocity: 20
+  wallJumpVelocity: 15
   wallJumpSlidingAcc: -2
   wallJumpMinHeightPercent: 1
   stopWallMaxTime: 2
   wallJumping: 0
-  wallJumpAngle: 10.1
+  wallJumpAngle: 30
   wallJumpMinHorizAngle: 30
   chargeJumpFallenHeightMultiplier: 0.07
   chargeJumpReleaseTimeBeforeLand: 0.4

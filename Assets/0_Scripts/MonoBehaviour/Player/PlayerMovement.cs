@@ -30,6 +30,7 @@ public enum JumpState
     Breaking,//Emergency stop
     Falling,
     WallJumping,
+    WallJumped,
     ChargeJumping,
     BounceJumping
 }

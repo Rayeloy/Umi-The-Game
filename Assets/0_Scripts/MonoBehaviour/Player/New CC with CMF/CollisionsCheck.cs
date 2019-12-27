@@ -58,8 +58,10 @@ public class CollisionsCheck : MonoBehaviour
     public bool sliping { get { return below && tooSteepSlope; } }
     [HideInInspector]
     public GameObject floor;
+    GameObject lastFloor;
     [HideInInspector]
     Vector3 groundContactPoint = Vector3.zero;
+    bool justJumped = false;
 
 
     [Header(" -- Horizontal Collisions -- ")]
@@ -93,7 +95,7 @@ public class CollisionsCheck : MonoBehaviour
         hits = new RaycastHit[10];
 
         collider = _collider;
-        floor = null;
+        floor = lastFloor = null;
         wallNormal = Vector3.zero;
         above = below = lastBelow = lastLastBelow = safeBelow = false;
         distanceToFloor = float.MaxValue;
@@ -120,9 +122,24 @@ public class CollisionsCheck : MonoBehaviour
             below = mover.IsGrounded();
         SetSlopeAngle(mover.GetGroundNormal());
         floor = mover.GetGroundCollider() != null ? mover.GetGroundCollider().gameObject : null;
+        Debug.Log(" CURRENT FLOOR = " + floor);
         if (below)
         {
             groundContactPoint = mover.GetGroundPoint();
+        }
+
+        if(mover.sensor.castType == Sensor.CastType.RaycastArray)
+        {
+            if (!lastBelow && below)
+            {
+                //Debug.LogError("WE JUST LANDED");
+                mover.sensor.RecalibrateRaycastArrayPositions();
+            }
+            else if (lastBelow && !below)
+            {
+                //Debug.LogError("WE JUST TOOK OFF");
+                mover.sensor.RecalibrateRaycastArrayPositions(0.1f);
+            }
         }
     }
 
@@ -153,9 +170,12 @@ public class CollisionsCheck : MonoBehaviour
         lastSliping = sliping;
 
         lastLastBelow = lastBelow;
-        lastBelow = below;
-        below = false;
 
+        lastBelow = justJumped?true:below;
+        below = false;
+        justJumped = false;
+
+        lastFloor = floor;
         floor = null;
         wallNormal = groundContactPoint = Vector3.zero;
         above = below = safeBelow = safeBelowStarted = tooSteepSlope = false;
@@ -389,23 +409,24 @@ public class CollisionsCheck : MonoBehaviour
     Vector3 platformOldWorldPoint;
     Vector3 platformOldLocalPoint;
     Vector3 platformNewWorldPoint;
+    //Only for deciding if we calculate new platform movement, not used to decide if we need to save the current position and platform
     bool onMovingPlatform
     {
         get
         {
-            //Debug.Log("onMovingPlatform-> below = " + below + "; lastBelow = " + lastBelow + "; floor = " + floor);
-            return below && !sliping && floor != null; /*&& collisions.lastBelow && collisions.lastFloor != null && collisions.lastFloor == collisions.floor*/
+            Debug.Log("onMovingPlatform-> below = " + below + "; lastBelow = " + lastBelow + "; floor = " + floor+"; lastFloor = "+lastFloor);
+            return below && lastBelow && !sliping && floor != null && lastFloor == floor; /*&& collisions.lastBelow && collisions.lastFloor != null && collisions.lastFloor == collisions.floor*/
         }
     }
 
-    void SavePlatformPoint()
+    public void SavePlatformPoint()
     {
         if (below && !sliping && floor != null)
         {
             platformOldWorldPoint = groundContactPoint;
             platformOldLocalPoint = floor.transform.InverseTransformPoint(platformOldWorldPoint);
             /*if (!disableAllDebugs) */
-            //Debug.Log("OnMovingPlatform true && Save Platform Point: Local = " + platformOldLocalPoint.ToString("F4") + "; world = " + platformOldWorldPoint.ToString("F4"));
+            Debug.Log("OnMovingPlatform true && Save Platform Point: Local = " + platformOldLocalPoint.ToString("F4") + "; world = " + platformOldWorldPoint.ToString("F4"));
         }
         else
         {
@@ -422,14 +443,14 @@ public class CollisionsCheck : MonoBehaviour
             platformNewWorldPoint = floor.transform.TransformPoint(platformOldLocalPoint);
             platformMovement = platformNewWorldPoint - platformOldWorldPoint;
             /*if (!disableAllDebugs)*/
-            //Debug.LogWarning("platformOldWorldPoint = " + platformOldWorldPoint.ToString("F4") + "; New Platform Point = "
-            //    + platformNewWorldPoint.ToString("F4") + "; platformMovement = " + platformMovement.ToString("F8"));
+            Debug.Log("platformOldWorldPoint = " + platformOldWorldPoint.ToString("F4") + "; New Platform Point = "
+                + platformNewWorldPoint.ToString("F4") + "; platformMovement = " + platformMovement.ToString("F8"));
             /*if (!disableAllRays)*/
             Debug.DrawLine(platformOldWorldPoint, platformNewWorldPoint, Color.red, 1f);
         }
     }
 
-    void ChangePositionWithPlatform()
+    public void ChangePositionWithPlatform()
     {
         platformMovement = Vector3.zero;
         CalculatePlatformPointMovement();
@@ -437,11 +458,12 @@ public class CollisionsCheck : MonoBehaviour
         //transform.Translate(platformMovement, Space.World);
         if (onMovingPlatform && platformMovement.magnitude > 0.0001f)
         {
+            if (platformMovement.magnitude > 1) Debug.LogError("ERROR: MOVIMIENTO EXCESIVO");
             //GetComponent<Rigidbody>().velocity = myPlayerMov.currentVel + platformMovement * (1 / Time.fixedDeltaTime) * 100000;
             //transform.position += platformMovement;
             //rb.MovePosition(rb.position + platformMovement);
             rb.position += platformMovement;
-            //Debug.LogWarning("platformMovement = " + platformMovement.ToString("F8")+"; newPos = "+platformNewWorldPoint.ToString("F8") + "; current pos = "+rb.position.ToString("F8"));
+            Debug.LogWarning("platformMovement = " + platformMovement.ToString("F8")+"; newPos = "+platformNewWorldPoint.ToString("F8") + "; current pos = "+rb.position.ToString("F8"));
         }
     }
     #endregion
@@ -558,6 +580,14 @@ public class CollisionsCheck : MonoBehaviour
         safeBelowStarted = false;
         safeBelow = false;
         safeBelowTime = 0;
+    }
+    #endregion
+
+    #region --- JUMP ---
+    public void StartJump()
+    {
+        below = false;
+        justJumped = true;
     }
     #endregion
 

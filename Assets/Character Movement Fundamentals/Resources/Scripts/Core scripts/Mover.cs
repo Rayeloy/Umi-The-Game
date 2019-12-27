@@ -51,7 +51,8 @@ public class Mover : MonoBehaviour {
 	Collider col;
 	Rigidbody rig;
 	Transform tr;
-	Sensor sensor;
+    [HideInInspector]
+	public Sensor sensor;
 
 	void Awake()
 	{

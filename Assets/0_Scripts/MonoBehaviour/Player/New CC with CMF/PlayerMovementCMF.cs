@@ -129,12 +129,16 @@ public class PlayerMovementCMF : MonoBehaviour
     [Header(" --- ACCELERATIONS --- ")]
     public float initialAcc = 30;
     public float airInitialAcc = 30;
+    public float wallJumpInitialAcc = 30;
     public float breakAcc = -30;
     public float airBreakAcc = -5;
+    public float wallJumpBreakAcc = -5;
     public float hardSteerAcc = -60;
     public float airHardSteerAcc = -10;
+    public float wallJumpHardSteerAcc = -10;
     public float movingAcc = 2.0f;
     public float airMovingAcc = 0.5f;
+    public float wallJumpMovingAcc = 0.5f;
     [Tooltip("Acceleration used when breaking from a boost.")]
     public float hardBreakAcc = -120f;
     [Tooltip("Breaking negative acceleration that is used under the effects of a knockback (stunned). Value is clamped to not be higher than breakAcc.")]
@@ -501,8 +505,12 @@ public class PlayerMovementCMF : MonoBehaviour
 
     public void KonoFixedUpdate()
     {
+        Debug.LogWarning("PLAYER FIXED UPDATE: ");
         //Debug.LogWarning("Current pos = " + transform.position.ToString("F8"));
         lastPos = transform.position;
+
+        collCheck.ChangePositionWithPlatform();
+
         collCheck.ResetVariables();
         ResetMovementVariables();
 
@@ -539,13 +547,15 @@ public class PlayerMovementCMF : MonoBehaviour
 
         // RESET InputsInfo class to get new possible inputs during the next Update frames
         inputsInfo.ResetInputs();
+
+        collCheck.SavePlatformPoint();
     }
 
     Vector3 lastPos;
     public void KonoLateUpdate()
     {
+        Debug.LogWarning(" --- NEW LATE UPDATE ---");
         Vector3 currentTotalMovement = transform.position - lastPos;
-        collCheck.MoveWithPlatform();
         //Debug.Log("rb velocity = " + GetComponent<Rigidbody>().velocity.ToString("F8") + "; currentTotalMovement = "+ currentTotalMovement.ToString("F8"));
         myPlayerAnimation.KonoUpdate();
     }
@@ -769,13 +779,12 @@ public class PlayerMovementCMF : MonoBehaviour
             ProcessImpulse(currentMaxMoveSpeed);
             #endregion
 
-
             #region ------------------------------- Acceleration -------------------------------
             float finalAcc = 0;
-            float finalBreakAcc = collCheck.below ? breakAcc : airBreakAcc;
-            float finalHardSteerAcc = collCheck.below ? hardSteerAcc : airHardSteerAcc;
-            float finalInitialAcc = collCheck.below ? initialAcc : airInitialAcc;
-            finalMovingAcc = (collCheck.below ? movingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
+            float finalBreakAcc = collCheck.below ? breakAcc : jumpSt == JumpState.WallJumped?wallJumpBreakAcc : airBreakAcc;
+            float finalHardSteerAcc = collCheck.below ? hardSteerAcc : jumpSt == JumpState.WallJumped ? wallJumpHardSteerAcc : airHardSteerAcc;
+            float finalInitialAcc = collCheck.below ? initialAcc : jumpSt == JumpState.WallJumped ? wallJumpInitialAcc : airInitialAcc;
+            finalMovingAcc = (collCheck.below ? movingAcc : jumpSt == JumpState.WallJumped ? wallJumpMovingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
             //if (!disableAllDebugs && rotationRestrictedPercentage!=1) Debug.LogWarning("finalMovingAcc = " + finalMovingAcc+ "; rotationRestrictedPercentage = " + rotationRestrictedPercentage+
             //    "; attackStg = " + myPlayerCombatNew.attackStg);
             //finalBreakAcc = currentSpeed < 0 ? -finalBreakAcc : finalBreakAcc;
@@ -1142,6 +1151,16 @@ public class PlayerMovementCMF : MonoBehaviour
                 case JumpState.WallJumping:
                     currentVel.y += wallJumpSlidingAcc * Time.deltaTime;
                     break;
+                case JumpState.WallJumped:
+                    if (currentVel.y < 0 && (!collCheck.below || collCheck.sliping))
+                    {
+                        if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
+                        jumpSt = JumpState.Falling;
+                        chargeJumpLastApexHeight = transform.position.y;
+                        //Debug.Log("START FALLING");
+                    }
+                    currentVel.y += gravity * Time.deltaTime;
+                    break;
                 case JumpState.ChargeJumping:
                     if (currentVel.y <= 0)
                     {
@@ -1255,9 +1274,8 @@ public class PlayerMovementCMF : MonoBehaviour
                 currentVel.y = jumpVelocity;
                 jumpSt = JumpState.Jumping;
                 timePressingJump = 0;
-                collCheck.below = false;
+                collCheck.StartJump();
                 //myPlayerAnimation.SetJump(true);
-
             }
         }
         else
@@ -1435,7 +1453,7 @@ public class PlayerMovementCMF : MonoBehaviour
         lastWall = wallJumpCurrentWall;
         wallJumping = false;
         wallJumpAnim = true;
-        jumpSt = JumpState.None;
+        jumpSt = JumpState.WallJumped;
         //CALCULATE JUMP DIR
         //LEFT OR RIGHT ORIENTATION?
         //Angle

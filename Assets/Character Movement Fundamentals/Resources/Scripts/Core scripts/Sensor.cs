@@ -17,6 +17,8 @@ public class Sensor {
 	//Starting point of (ray-)cast;
 	private Vector3 origin = Vector3.zero;
 
+    Color darkRed = new Color(0.533f, 0.031f, 0.027f);
+
 	//Enum describing local transform axes used as directions for raycasting;
 	public enum CastDirection
 	{
@@ -223,8 +225,10 @@ public class Sensor {
 		{
 			//Calculate ray start position;
 			_rayStartPosition = _origin + tr.TransformDirection(raycastArrayStartPositions[i]);
+            if (isInDebugMode)
+                Debug.DrawRay(_rayStartPosition, rayDirection, darkRed, Time.fixedDeltaTime * 1.01f);
 
-			if(Physics.Raycast(_rayStartPosition, rayDirection, out _hit, castLength, layermask, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(_rayStartPosition, rayDirection, out _hit, castLength, layermask, QueryTriggerInteraction.Ignore))
 			{
 				if(isInDebugMode)
 					Debug.DrawRay(_hit.point, _hit.normal, Color.red, Time.fixedDeltaTime * 1.01f);
@@ -233,7 +237,7 @@ public class Sensor {
 				hitTransforms.Add(_hit.transform);
 				arrayNormals.Add(_hit.normal);
 				arrayPoints.Add(_hit.point);
-			}
+            }
 		}
 
         //Evaluate results;
@@ -436,4 +440,10 @@ public class Sensor {
 	{
 		raycastArrayStartPositions = GetRaycastStartPositions(ArrayRows, arrayRayCount, offsetArrayRows, sphereCastRadius);
 	}
+
+    public void RecalibrateRaycastArrayPositions(float radiusOffset)
+    {
+        raycastArrayStartPositions = GetRaycastStartPositions(ArrayRows, arrayRayCount, offsetArrayRows, sphereCastRadius - radiusOffset);
+
+    }
 }
