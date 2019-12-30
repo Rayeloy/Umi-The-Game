@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class RotatePlatform : MonoBehaviour
 {
+    public UpdateMode executeMode = UpdateMode.FixedUpdate;
+    Rigidbody myRb;
+
     public bool rotateX = true;
     public bool rotateY = true;
     public bool rotateZ = true;
@@ -26,11 +30,12 @@ public class RotatePlatform : MonoBehaviour
         zOrigin = transform.localRotation.eulerAngles.z;
         xSentido = zSentido = 1;
         xCurrentAmplitude = zCurrentAmplitude = 0;
+        myRb = GetComponent<Rigidbody>();
     }
 
     private void Update()
     {
-        if (!GameInfo.instance.gameIsPaused)
+        if (!GameInfo.instance.gameIsPaused && executeMode == UpdateMode.Update)
         {
             float finalRotationX, finalRotationY, finalRotationZ;
             finalRotationX = finalRotationY = finalRotationZ = 0;
@@ -83,6 +88,64 @@ public class RotatePlatform : MonoBehaviour
                 //Debug.Log("Z ROTATION-> zSentido = "+ zSentido + "; zCurrentAmplitude = "+ zCurrentAmplitude);
             }
             transform.localRotation = Quaternion.Euler(finalRotationX, finalRotationY, finalRotationZ);
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (!GameInfo.instance.gameIsPaused && executeMode == UpdateMode.FixedUpdate)
+        {
+            float finalRotationX, finalRotationY, finalRotationZ;
+            finalRotationX = finalRotationY = finalRotationZ = 0;
+            if (rotateX)
+            {
+                xCurrentAmplitude += (rotationSpeedX * Time.deltaTime * xSentido);
+                finalRotationX = xOrigin + xCurrentAmplitude;
+                if (xSentido == 1)
+                {
+                    if (xCurrentAmplitude >= xAmplitude)
+                    {
+                        xSentido *= -1;
+                        //xCurrentAmplitude = 0;
+                    }
+                }
+                else
+                {
+                    if (xCurrentAmplitude <= -xAmplitude)
+                    {
+                        xSentido *= -1;
+                        //xCurrentAmplitude = 0;
+                    }
+                }
+                //Debug.Log("X ROTATION-> xSentido = " + xSentido + "; xCurrentAmplitude = " + xCurrentAmplitude);
+            }
+            if (rotateY)
+            {
+                finalRotationY = myRb.rotation.eulerAngles.y + (rotationSpeedY * Time.deltaTime);
+            }
+            if (rotateZ)
+            {
+                zCurrentAmplitude += (rotationSpeedZ * Time.deltaTime * zSentido);
+                finalRotationZ = zOrigin + zCurrentAmplitude;
+                if (zSentido == 1)
+                {
+                    if (zCurrentAmplitude >= zAmplitude)
+                    {
+                        zSentido *= -1;
+                        //zCurrentAmplitude = 0;
+                    }
+                }
+                else
+                {
+                    if (zCurrentAmplitude <= -zAmplitude)
+                    {
+                        zSentido *= -1;
+                        //zCurrentAmplitude = 0;
+                    }
+                }
+                //Debug.Log("Z ROTATION-> zSentido = "+ zSentido + "; zCurrentAmplitude = "+ zCurrentAmplitude);
+            }
+            myRb.rotation = Quaternion.Euler(finalRotationX, finalRotationY, finalRotationZ);
         }
     }
 }

@@ -141,7 +141,7 @@ public class BasicWalkerController : MonoBehaviour {
 		mover.SetExtendSensorRange(IsGrounded());
 
 		//Set mover velocity;		
-		mover.SetVelocity(_velocity);
+		mover.SetVelocity(_velocity, Vector3.zero);
 
 		//Store velocity for next frame;
 		savedVelocity = _velocity;

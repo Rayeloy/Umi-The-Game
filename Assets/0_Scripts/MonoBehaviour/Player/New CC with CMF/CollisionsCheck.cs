@@ -117,7 +117,8 @@ public class CollisionsCheck : MonoBehaviour
     //RUN IN FIXED UPDATE
     public void UpdateCollisionVariables(Mover mover, JumpState jumpSt)
     {
-        mover.CheckForGround();
+        Debug.Log("UpdateCollisionVariables: platform movement = " + platformMovement.ToString("F8"));
+        mover.CheckForGround(platformMovement.magnitude > 0.0001f);
         if (jumpSt != JumpState.Jumping && jumpSt != JumpState.Breaking)
             below = mover.IsGrounded();
         SetSlopeAngle(mover.GetGroundNormal());
@@ -191,11 +192,11 @@ public class CollisionsCheck : MonoBehaviour
     #endregion
 
     #region Update
-    public void MoveWithPlatform()
-    {
-        ChangePositionWithPlatform();
-        SavePlatformPoint();
-    }
+    //public void MoveWithPlatform()
+    //{
+    //    ChangePositionWithPlatform();
+    //    SavePlatformPoint();
+    //}
     #endregion
 
     public void SetSlopeAngle(Vector3 floorNormal)
@@ -450,7 +451,7 @@ public class CollisionsCheck : MonoBehaviour
         }
     }
 
-    public void ChangePositionWithPlatform()
+    public Vector3 ChangePositionWithPlatform(bool instantMode)
     {
         platformMovement = Vector3.zero;
         CalculatePlatformPointMovement();
@@ -462,9 +463,15 @@ public class CollisionsCheck : MonoBehaviour
             //GetComponent<Rigidbody>().velocity = myPlayerMov.currentVel + platformMovement * (1 / Time.fixedDeltaTime) * 100000;
             //transform.position += platformMovement;
             //rb.MovePosition(rb.position + platformMovement);
-            rb.position += platformMovement;
+            if (instantMode)
+            {
+                Vector3 auxPlatformMovement = platformMovement;
+                auxPlatformMovement.y = 0;
+                rb.position += auxPlatformMovement;
+            }
             Debug.LogWarning("platformMovement = " + platformMovement.ToString("F8")+"; newPos = "+platformNewWorldPoint.ToString("F8") + "; current pos = "+rb.position.ToString("F8"));
         }
+        return platformMovement;
     }
     #endregion
 

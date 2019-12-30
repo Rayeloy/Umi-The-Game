@@ -540,6 +540,10 @@ public class PlayerHookCMF : MonoBehaviour
         //VARIABLES
         grappleSt = GrappleState.throwing;
         //currentGrappleDistance = 0;
+
+        //Stop sticking to ground
+        myPlayerMov.mover.stickToGround = false;
+
         lastCurrentDistance = 0;
         hookPos = originPos;
         myPlayerMov.StartHooking();
@@ -643,6 +647,9 @@ public class PlayerHookCMF : MonoBehaviour
         if (usingAutoGrapple)
         {
             //print("FINISH AUTOGRAPPLE");
+            //Start sticking to ground
+            myPlayerMov.mover.stickToGround = true;
+
             currentGrapplingHookPoint = null;
             currentHookPointPos = null;
             grappleSt = GrappleState.cd;

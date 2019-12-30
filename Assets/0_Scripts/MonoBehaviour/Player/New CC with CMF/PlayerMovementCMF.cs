@@ -509,7 +509,8 @@ public class PlayerMovementCMF : MonoBehaviour
         //Debug.LogWarning("Current pos = " + transform.position.ToString("F8"));
         lastPos = transform.position;
 
-        collCheck.ChangePositionWithPlatform();
+        
+        Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
 
         collCheck.ResetVariables();
         ResetMovementVariables();
@@ -542,7 +543,7 @@ public class PlayerMovementCMF : MonoBehaviour
         //If the character is grounded, extend ground detection sensor range;
         mover.SetExtendSensorRange(collCheck.below);
         //Set mover velocity;
-        mover.SetVelocity(finalVel);
+        mover.SetVelocity(finalVel, platformMovement);
         //Debug.Log("Mover SetVel Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
 
         // RESET InputsInfo class to get new possible inputs during the next Update frames

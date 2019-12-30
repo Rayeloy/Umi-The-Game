@@ -7,6 +7,8 @@ using System.Collections;
 [ExecuteInEditMode]
 public class Mover : MonoBehaviour {
     public bool disableAllDebugs = true;
+    public bool instantGroundAdjustment = true;//if false, it will be "smoothen", or moved little by little in every Update frame in between fixed updates
+    public bool instantPlatformMovement = true; //if false, it will be "smoothen", or moved little by little in every Update frame in between fixed updates
 
 	//Collider variables;
 	[Range(0f, 1f)] public float stepHeightRatio = 0.25f;
@@ -36,6 +38,10 @@ public class Mover : MonoBehaviour {
     public bool stickToGround = true;
     [HideInInspector]
     public bool isGroundTooSteep = false;
+
+    //Moving Platforms
+    [HideInInspector]
+    public bool onMovingPlatform = false; 
 
 	//Sensor range variables;
 	bool IsUsingExtendedSensorRange  = true;
@@ -263,7 +269,8 @@ public class Mover : MonoBehaviour {
         //if (!stickToGround && isGrounded && slopeAngle <= 60) stickToGround = true;
 
         //if (stickToGround && isGrounded && slopeAngle <= 60)
-            currentGroundAdjustmentVelocity = tr.up * (_distanceToGo/Time.fixedDeltaTime);
+        Debug.Log("onMovingPlatform = " + onMovingPlatform);
+            currentGroundAdjustmentVelocity = instantGroundAdjustment && onMovingPlatform? tr.up * _distanceToGo : tr.up * (_distanceToGo/Time.fixedDeltaTime);
         if((!stickToGround && currentGroundAdjustmentVelocity.y < 0) || isGroundTooSteep)
         {
             currentGroundAdjustmentVelocity.y = 0;
@@ -271,9 +278,10 @@ public class Mover : MonoBehaviour {
 	}
 
 	//Check if mover is grounded;
-	public void CheckForGround()
+	public void CheckForGround(bool _onMovingPlatform = false)
 	{
         //ChangePositionWithPlatform();
+        onMovingPlatform = _onMovingPlatform;
 
         Check();
 
@@ -281,13 +289,18 @@ public class Mover : MonoBehaviour {
 	}
 
 	//Set mover velocity;
-	public void SetVelocity(Vector3 _velocity)
+	public void SetVelocity(Vector3 _velocity, Vector3 platformMovement)
 	{
-        ///*if (!disableAllDebugs)*/ Debug.LogWarning("Velocity = " + _velocity.ToString("F6") + "; currentPlatformMovement = " + currentPlatformMovement.ToString("F6") +
-        //    "; currentGroundAdjustmentVelocity = " + currentGroundAdjustmentVelocity.ToString("F8"));
+        if (!instantPlatformMovement) currentPlatformMovement = platformMovement * (1 / Time.fixedDeltaTime);
+        else currentPlatformMovement = Vector3.zero;
         //Debug.Log("Rigibody.Velocity b4 setvel = " + rig.velocity.ToString("F8"));
-        rig.velocity = _velocity + currentGroundAdjustmentVelocity + currentPlatformMovement;
+        rig.velocity = _velocity + currentPlatformMovement;
+        if (instantGroundAdjustment && onMovingPlatform) rig.position += currentGroundAdjustmentVelocity;
+        else rig.velocity += currentGroundAdjustmentVelocity;
         //Debug.Log("Rigibody.Velocity after setvel = " + rig.velocity.ToString("F8"));
+        /*if (!disableAllDebugs)*/
+        Debug.LogWarning("Velocity = " + _velocity.ToString("F6") + "; currentPlatformMovement = " + currentPlatformMovement.ToString("F6") +
+"; currentGroundAdjustmentVelocity = " + currentGroundAdjustmentVelocity.ToString("F8"));
     }
 
     //Returns 'true' if mover is touching ground and the angle between hte 'up' vector and ground normal is not too steep (e.g., angle < slope_limit);
@@ -297,54 +310,54 @@ public class Mover : MonoBehaviour {
 	}
 
     #region --- MOVING PLATFORMS ---
-    Vector3 platformMovement;
-    Vector3 platformOldWorldPoint;
-    Vector3 platformOldLocalPoint;
-    Vector3 platformNewWorldPoint;
-    bool onMovingPlatform
-    {
-        get
-        {
-            if (!disableAllDebugs) Debug.Log("onMovingPlatform-> isGrounded = " + isGrounded + "; isGroundTooSteep = "+ isGroundTooSteep + "; GetGroundCollider() = " + GetGroundCollider());
-            return isGrounded && !isGroundTooSteep && GetGroundCollider() != null /*&& collisions.lastBelow && collisions.lastFloor != null && collisions.lastFloor == collisions.floor*/;
-        }
-    }
+    //Vector3 platformMovement;
+    //Vector3 platformOldWorldPoint;
+    //Vector3 platformOldLocalPoint;
+    //Vector3 platformNewWorldPoint;
+    //bool onMovingPlatform
+    //{
+    //    get
+    //    {
+    //        if (!disableAllDebugs) Debug.Log("onMovingPlatform-> isGrounded = " + isGrounded + "; isGroundTooSteep = "+ isGroundTooSteep + "; GetGroundCollider() = " + GetGroundCollider());
+    //        return isGrounded && !isGroundTooSteep && GetGroundCollider() != null /*&& collisions.lastBelow && collisions.lastFloor != null && collisions.lastFloor == collisions.floor*/;
+    //    }
+    //}
 
-    void SavePlatformPoint()
-    {
-        if (isGrounded && !isGroundTooSteep && GetGroundCollider() != null)
-        {
-            platformOldWorldPoint = GetGroundPoint();
-            platformOldLocalPoint = GetGroundCollider().transform.InverseTransformPoint(platformOldWorldPoint);
-            if (!disableAllDebugs) Debug.Log("OnMovingPlatform true && Save Platform Point: Local = " + platformOldLocalPoint.ToString("F4") + "; world = " + platformOldWorldPoint.ToString("F4"));
-        }
-    }
+    //void SavePlatformPoint()
+    //{
+    //    if (isGrounded && !isGroundTooSteep && GetGroundCollider() != null)
+    //    {
+    //        platformOldWorldPoint = GetGroundPoint();
+    //        platformOldLocalPoint = GetGroundCollider().transform.InverseTransformPoint(platformOldWorldPoint);
+    //        if (!disableAllDebugs) Debug.Log("OnMovingPlatform true && Save Platform Point: Local = " + platformOldLocalPoint.ToString("F4") + "; world = " + platformOldWorldPoint.ToString("F4"));
+    //    }
+    //}
 
-    void CalculatePlatformPointMovement()
-    {
-        if (onMovingPlatform)
-        {
-            if (!disableAllDebugs) Debug.LogWarning("CALCULATE PLATFORM POINT MOVEMENT");
-            platformNewWorldPoint = GetGroundCollider().transform.TransformPoint(platformOldLocalPoint);
-            platformMovement = platformNewWorldPoint - platformOldWorldPoint;
-            if (!disableAllDebugs) Debug.Log("platformOldWorldPoint = " + platformOldWorldPoint.ToString("F4") + "; New Platform Point = " + platformNewWorldPoint.ToString("F4") + "; platformMovement = " + platformMovement.ToString("F4"));
-            if (!disableAllDebugs) Debug.DrawLine(platformOldWorldPoint, platformNewWorldPoint, Color.red);
-        }
-    }
+    //void CalculatePlatformPointMovement()
+    //{
+    //    if (onMovingPlatform)
+    //    {
+    //        if (!disableAllDebugs) Debug.LogWarning("CALCULATE PLATFORM POINT MOVEMENT");
+    //        platformNewWorldPoint = GetGroundCollider().transform.TransformPoint(platformOldLocalPoint);
+    //        platformMovement = platformNewWorldPoint - platformOldWorldPoint;
+    //        if (!disableAllDebugs) Debug.Log("platformOldWorldPoint = " + platformOldWorldPoint.ToString("F4") + "; New Platform Point = " + platformNewWorldPoint.ToString("F4") + "; platformMovement = " + platformMovement.ToString("F4"));
+    //        if (!disableAllDebugs) Debug.DrawLine(platformOldWorldPoint, platformNewWorldPoint, Color.red);
+    //    }
+    //}
 
-    void ChangePositionWithPlatform()
-    {
-        //Reset platform's movement velocity
-        currentPlatformMovement = Vector3.zero;
+    //void ChangePositionWithPlatform()
+    //{
+    //    //Reset platform's movement velocity
+    //    currentPlatformMovement = Vector3.zero;
 
-        CalculatePlatformPointMovement();
+    //    CalculatePlatformPointMovement();
 
-        //transform.Translate(platformMovement, Space.World);
-        if (onMovingPlatform)
-            currentPlatformMovement = platformMovement * (1/Time.fixedDeltaTime);
-        //transform.position += platformMovement;
+    //    //transform.Translate(platformMovement, Space.World);
+    //    if (onMovingPlatform)
+    //        currentPlatformMovement = platformMovement * (1/Time.fixedDeltaTime);
+    //    //transform.position += platformMovement;
 
-    }
+    //}
     #endregion
 
     //Setters;

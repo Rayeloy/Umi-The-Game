@@ -68,6 +68,8 @@ public class MoverInspector : Editor
         EditorGUI.BeginChangeCheck();
 
         mover.disableAllDebugs = EditorGUILayout.Toggle("Disable Debug Logs", mover.disableAllDebugs);
+        mover.instantGroundAdjustment = EditorGUILayout.Toggle("Instant Ground Adjustment", mover.instantGroundAdjustment);
+        mover.instantPlatformMovement = EditorGUILayout.Toggle("Instant Platform Movement", mover.instantPlatformMovement);
 
         mover.stepHeightRatio = EditorGUILayout.Slider("Step Height Ratio", mover.stepHeightRatio, 0f, 1f);
 
