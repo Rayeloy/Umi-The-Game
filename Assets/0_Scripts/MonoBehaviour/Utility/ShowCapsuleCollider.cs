@@ -8,7 +8,7 @@ public class ShowCapsuleCollider : MonoBehaviour
     CapsuleCollider capColl;
     GameObject capsuleGO;
 
-    private void Awake()
+    private void Start()
     {
         capColl = GetComponent<CapsuleCollider>();
         if (capColl != null)

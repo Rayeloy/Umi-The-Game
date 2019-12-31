@@ -9,7 +9,7 @@ public class CollisionsCheck : MonoBehaviour
 {
     public PlayerMovementCMF myPlayerMov;
     [HideInInspector]
-    public Collider collider;
+    public Collider myCollider;
     Rigidbody rb;
 
     public bool disableAllDebugs = true;
@@ -65,9 +65,11 @@ public class CollisionsCheck : MonoBehaviour
 
 
     [Header(" -- Horizontal Collisions -- ")]
-    public SphereCollider sphereColl;
+    public SphereCollider sphereCollTop;
+    public SphereCollider sphereCollMiddle;
+    public SphereCollider sphereCollBottom;
+
     public LayerMask wallMask;
-    public Vector3 localStartPoint;
     public float sphereRadius = 5;
 
     [HideInInspector]
@@ -76,11 +78,16 @@ public class CollisionsCheck : MonoBehaviour
     public GameObject wall;
     [HideInInspector]
     public float wallSlopeAngle, wallAngle;
+    public float wallJumpWallMaxAngleWithMovement = 110f;
 
     List<CollisionHit> horizontalCollHits;
+    List<CollisionHit> horizontalCollHitsTop;
+    List<CollisionHit> horizontalCollHitsMiddle;
+    List<CollisionHit> horizontalCollHitsBottom;
     List<CollisionHit> wallJumpCollHits;
     bool hit;
     public Collider[] hitColliders;
+    public int maxHitColliders = 10;
     public Plane plane;
     public Collider colliderFinal;
     public Vector3 finalNormal;
@@ -94,7 +101,7 @@ public class CollisionsCheck : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         hits = new RaycastHit[10];
 
-        collider = _collider;
+        myCollider = _collider;
         floor = lastFloor = null;
         wallNormal = Vector3.zero;
         above = below = lastBelow = lastLastBelow = safeBelow = false;
@@ -103,8 +110,10 @@ public class CollisionsCheck : MonoBehaviour
         safeBelowTime = 0;
         safeBelowMaxTime = 0;
 
-        sphereColl.radius = sphereRadius;
-        sphereColl.center = localStartPoint;
+        sphereCollTop.radius = sphereRadius;
+        sphereCollMiddle.radius = sphereRadius;
+        sphereCollBottom.radius = sphereRadius;
+        hitColliders = new Collider[maxHitColliders];
     }
 
     public void KonoStart()
@@ -117,13 +126,12 @@ public class CollisionsCheck : MonoBehaviour
     //RUN IN FIXED UPDATE
     public void UpdateCollisionVariables(Mover mover, JumpState jumpSt)
     {
-        Debug.Log("UpdateCollisionVariables: platform movement = " + platformMovement.ToString("F8"));
         mover.CheckForGround(platformMovement.magnitude > 0.0001f);
         if (jumpSt != JumpState.Jumping && jumpSt != JumpState.Breaking)
             below = mover.IsGrounded();
         SetSlopeAngle(mover.GetGroundNormal());
         floor = mover.GetGroundCollider() != null ? mover.GetGroundCollider().gameObject : null;
-        Debug.Log(" CURRENT FLOOR = " + floor);
+
         if (below)
         {
             groundContactPoint = mover.GetGroundPoint();
@@ -255,97 +263,51 @@ public class CollisionsCheck : MonoBehaviour
     #endregion
 
     #region --- HORIZONTAL COLLISIONS ---
-    public Collider DetectWallCollision()
-    {
-        hitColliders = Physics.OverlapSphere(gameObject.transform.position + localStartPoint, sphereRadius, wallMask);
-        if (hitColliders.Length > 0)
-        {
+    //public Collider DetectWallCollision()
+    //{
+    //    hitColliders = Physics.OverlapSphere(gameObject.transform.position + localStartPoint, sphereRadius, wallMask);
+    //    if (hitColliders.Length > 0)
+    //    {
 
-            bool b = false;
-            for (int i = 0; i < hitColliders.Length; i++)
-            {
-                if ((!b && plane.GetSide(hitColliders[i].transform.position)) || plane.GetSide(hitColliders[i].transform.position) &&
-                    (Vector3.Distance(gameObject.transform.position, hitColliders[i].transform.position) < Vector3.Distance(gameObject.transform.position, oldcol.transform.position)))
-                {
-                    b = true;
-                    Goodcol = hitColliders[i];
-                    oldcol = hitColliders[i];
-                }
-                else
-                {
-                    oldcol = hitColliders[i];
-                }
-            }
-            Debug.Log(Goodcol != null);
-            if (Goodcol != null)
-            {
-                hit = Physics.Raycast(gameObject.transform.position + localStartPoint, Goodcol.transform.position - gameObject.transform.position, out RaycastHit _hit, 5, wallMask, qTI);
-                Debug.DrawRay(gameObject.transform.position + localStartPoint, Goodcol.transform.position - gameObject.transform.position);
-                finalNormal = _hit.normal;
-                if (Vector3.Distance(gameObject.transform.position + localStartPoint, Goodcol.transform.position) < 3 && hit)
-                {
-                    return Goodcol;
-                }
-            }
-        }
-        return null;
-    }
+    //        bool b = false;
+    //        for (int i = 0; i < hitColliders.Length; i++)
+    //        {
+    //            if ((!b && plane.GetSide(hitColliders[i].transform.position)) || plane.GetSide(hitColliders[i].transform.position) &&
+    //                (Vector3.Distance(gameObject.transform.position, hitColliders[i].transform.position) < Vector3.Distance(gameObject.transform.position, oldcol.transform.position)))
+    //            {
+    //                b = true;
+    //                Goodcol = hitColliders[i];
+    //                oldcol = hitColliders[i];
+    //            }
+    //            else
+    //            {
+    //                oldcol = hitColliders[i];
+    //            }
+    //        }
+    //        Debug.Log(Goodcol != null);
+    //        if (Goodcol != null)
+    //        {
+    //            hit = Physics.Raycast(gameObject.transform.position + localStartPoint, Goodcol.transform.position - gameObject.transform.position, out RaycastHit _hit, 5, wallMask, qTI);
+    //            Debug.DrawRay(gameObject.transform.position + localStartPoint, Goodcol.transform.position - gameObject.transform.position);
+    //            finalNormal = _hit.normal;
+    //            if (Vector3.Distance(gameObject.transform.position + localStartPoint, Goodcol.transform.position) < 3 && hit)
+    //            {
+    //                return Goodcol;
+    //            }
+    //        }
+    //    }
+    //    return null;
+    //}
 
     //Eloy's attemp:
+
     public void HorizontalCollisions()
     {
-        hitColliders = Physics.OverlapSphere(raycastOrigins.Center + localStartPoint, sphereRadius, wallMask);
+        Collider[] ourColliders= new Collider[]{ myCollider, sphereCollTop, sphereCollMiddle, sphereCollBottom};
         horizontalCollHits = new List<CollisionHit>();
-        //List<Collider> usedColliders = new List<Collider>();
-
-        for (int i = 0; i < hitColliders.Length; i++)
-        {
-            Collider auxColl = hitColliders[i];
-
-            //Skip if collided with ourselves
-            if (auxColl == collider || auxColl == sphereColl) continue;
-
-            //Skip if we already processed that collider
-            bool collFound = false;
-            for (int j = 0; j < horizontalCollHits.Count && !collFound; j++)
-            {
-                if(auxColl == horizontalCollHits[j].collider)
-                {
-                    collFound = true;
-                }
-            }
-            if (collFound) continue;
-
-            //New collider found
-            Vector3 hitDir = Vector3.zero;
-            float hitDist = 0;
-            if(Physics.ComputePenetration(sphereColl, sphereColl.transform.position, sphereColl.transform.rotation, auxColl, auxColl.transform.position,auxColl.transform.rotation,
-                    out hitDir, out hitDist))
-            {
-                //Vector3 contactPoint = sphereColl.transform.position + (-hitDir * (sphereRadius - hitDist));
-
-                RaycastHit hit;
-                if(Physics.Raycast(sphereColl.transform.position, -hitDir, out hit,2, wallMask, QueryTriggerInteraction.Ignore))
-                {
-                    if(hit.collider == auxColl)
-                    {
-                        float slopeAngle = Vector3.Angle(hit.normal, Vector3.up);
-
-                        //too steep for a slope, so it's a wall
-                        if(slopeAngle > maxSlopeAngle)
-                        {
-
-                            //Debug.LogWarning("HORIZONTAL COLLISION FOUND! myCollPos = " + sphereColl.transform.position + "; hitDir = " + hitDir + "; hitDist = " + hitDist.ToString("F8"));
-                            //Debug.DrawRay(sphereColl.transform.position, hitDir * hitDist, orange);
-
-                            CollisionHit collHit = new CollisionHit(auxColl, hit.point, hit, slopeAngle);
-                            if(!disableAllRays)Debug.DrawLine(sphereColl.transform.position, hit.point, darkBrown);
-                            horizontalCollHits.Add(collHit);
-                        }
-                    }
-                }
-            }
-        }
+        GetCollisionsHits(SpherePosition.Top, sphereCollTop, ourColliders);
+        GetCollisionsHits(SpherePosition.Middle, sphereCollMiddle, ourColliders);
+        GetCollisionsHits(SpherePosition.Bottom, sphereCollBottom, ourColliders);
     }
 
     public void WallJumpCollisions(Vector3 vel)
@@ -354,21 +316,30 @@ public class CollisionsCheck : MonoBehaviour
         if (horVel.magnitude < 0.001f) return;
 
         wallJumpCollHits = new List<CollisionHit>();
-        Plane charPlane = new Plane(horVel, transform.position);
         for (int i = 0; i < horizontalCollHits.Count; i++)
         {
-            if (charPlane.GetSide(horizontalCollHits[i].point))
+            Vector3 sphereCenter = horizontalCollHits[i].spherePos == SpherePosition.Top ? sphereCollTop.transform.position : horizontalCollHits[i].spherePos == SpherePosition.Bottom ?
+sphereCollBottom.transform.position : sphereCollMiddle.transform.position;
+            Vector3 collisionVector = horizontalCollHits[i].point - sphereCenter;
+            collisionVector.y = 0;
+            float angleWithMovementVector = Vector3.Angle(horVel, collisionVector);
+            if (angleWithMovementVector <= wallJumpWallMaxAngleWithMovement)
             {
                 wallJumpCollHits.Add(horizontalCollHits[i]);
-                if (!disableAllRays) Debug.DrawLine(transform.position, horizontalCollHits[i].point, orange);
+
+                if (!disableAllRays) Debug.DrawLine(sphereCenter, horizontalCollHits[i].point, orange);
             }
         }
 
+        //Find closest hit
         float minDist = float.MaxValue;
-        CollisionHit wallCollHit = new CollisionHit(null, Vector3.zero, new RaycastHit());
+        CollisionHit wallCollHit = new CollisionHit(SpherePosition.None ,null, Vector3.zero, new RaycastHit());
         for (int i = 0; i < wallJumpCollHits.Count; i++)
         {
-            float dist = (transform.position - wallJumpCollHits[i].point).magnitude;
+            Vector3 sphereCenter = wallJumpCollHits[i].spherePos == SpherePosition.Top ? sphereCollTop.transform.position : horizontalCollHits[i].spherePos == SpherePosition.Bottom ?
+    sphereCollBottom.transform.position : sphereCollMiddle.transform.position;
+
+            float dist = (sphereCenter - wallJumpCollHits[i].point).magnitude;
             if (dist < minDist)
             {
                 minDist = dist;
@@ -376,6 +347,7 @@ public class CollisionsCheck : MonoBehaviour
                 //wallNormal =;
             }
         }
+
         //At least one walljumpable wall
         if (wallCollHit.collider != null)
         {
@@ -385,6 +357,68 @@ public class CollisionsCheck : MonoBehaviour
             wallAngle = SignedRelativeAngle(Vector3.forward, wallNormal, Vector3.up);
         }
         
+    }
+
+    void GetCollisionsHits(SpherePosition spherePos, SphereCollider mySphereCollider, Collider[] ourColliders)
+    {
+        hitColliders = new Collider[maxHitColliders];
+        hitColliders = Physics.OverlapSphere(mySphereCollider.transform.position, sphereRadius, wallMask);
+
+        List<CollisionHit> collisionHits = new List<CollisionHit>();
+        for (int i = 0; i < hitColliders.Length; i++)
+        {
+            Collider auxColl = hitColliders[i];
+
+            //Skip if collided with ourselves
+            bool collidedWithOurself = false;
+            for (int f = 0; f < ourColliders.Length && !collidedWithOurself; f++)
+            {
+                if (auxColl == ourColliders[f]) collidedWithOurself = true;
+            }
+            if (collidedWithOurself) continue;
+
+            //Skip if we already processed that collider
+            bool collFound = false;
+            for (int j = 0; j < horizontalCollHits.Count && !collFound; j++)
+            {
+                if (auxColl == horizontalCollHits[j].collider && horizontalCollHits[j].spherePos == spherePos)
+                {
+                    collFound = true;
+                }
+            }
+            if (collFound) continue;
+
+            //New collider found
+            Vector3 hitDir = Vector3.zero;
+            float hitDist = 0;
+            if (Physics.ComputePenetration(mySphereCollider, mySphereCollider.transform.position, mySphereCollider.transform.rotation, auxColl, auxColl.transform.position, auxColl.transform.rotation,
+                    out hitDir, out hitDist))
+            {
+                //Vector3 contactPoint = sphereColl.transform.position + (-hitDir * (sphereRadius - hitDist));
+
+                RaycastHit hit;
+                if (Physics.Raycast(mySphereCollider.transform.position, -hitDir, out hit, 2, wallMask, QueryTriggerInteraction.Ignore))
+                {
+                    if (hit.collider == auxColl)
+                    {
+                        float slopeAngle = Vector3.Angle(hit.normal, Vector3.up);
+
+                        //too steep for a slope, so it's a wall
+                        if (slopeAngle > maxSlopeAngle)
+                        {
+
+                            //Debug.LogWarning("HORIZONTAL COLLISION FOUND! myCollPos = " + sphereColl.transform.position + "; hitDir = " + hitDir + "; hitDist = " + hitDist.ToString("F8"));
+                            //Debug.DrawRay(sphereColl.transform.position, hitDir * hitDist, orange);
+
+                            CollisionHit collHit = new CollisionHit(spherePos, auxColl, hit.point, hit, slopeAngle);
+                            if (!disableAllRays) Debug.DrawLine(mySphereCollider.transform.position, hit.point, darkBrown);
+                            horizontalCollHits.Add(collHit);
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     //void Update()
@@ -415,7 +449,7 @@ public class CollisionsCheck : MonoBehaviour
     {
         get
         {
-            Debug.Log("onMovingPlatform-> below = " + below + "; lastBelow = " + lastBelow + "; floor = " + floor+"; lastFloor = "+lastFloor);
+            if(!disableAllDebugs) Debug.Log("onMovingPlatform-> below = " + below + "; lastBelow = " + lastBelow + "; floor = " + floor+"; lastFloor = "+lastFloor);
             return below && lastBelow && !sliping && floor != null && lastFloor == floor; /*&& collisions.lastBelow && collisions.lastFloor != null && collisions.lastFloor == collisions.floor*/
         }
     }
@@ -427,7 +461,7 @@ public class CollisionsCheck : MonoBehaviour
             platformOldWorldPoint = groundContactPoint;
             platformOldLocalPoint = floor.transform.InverseTransformPoint(platformOldWorldPoint);
             /*if (!disableAllDebugs) */
-            Debug.Log("OnMovingPlatform true && Save Platform Point: Local = " + platformOldLocalPoint.ToString("F4") + "; world = " + platformOldWorldPoint.ToString("F4"));
+            if (!disableAllDebugs) Debug.Log("OnMovingPlatform true && Save Platform Point: Local = " + platformOldLocalPoint.ToString("F4") + "; world = " + platformOldWorldPoint.ToString("F4"));
         }
         else
         {
@@ -444,7 +478,7 @@ public class CollisionsCheck : MonoBehaviour
             platformNewWorldPoint = floor.transform.TransformPoint(platformOldLocalPoint);
             platformMovement = platformNewWorldPoint - platformOldWorldPoint;
             /*if (!disableAllDebugs)*/
-            Debug.Log("platformOldWorldPoint = " + platformOldWorldPoint.ToString("F4") + "; New Platform Point = "
+            if (!disableAllDebugs) Debug.Log("platformOldWorldPoint = " + platformOldWorldPoint.ToString("F4") + "; New Platform Point = "
                 + platformNewWorldPoint.ToString("F4") + "; platformMovement = " + platformMovement.ToString("F8"));
             /*if (!disableAllRays)*/
             Debug.DrawLine(platformOldWorldPoint, platformNewWorldPoint, Color.red, 1f);
@@ -677,14 +711,24 @@ public class CollisionsCheck : MonoBehaviour
         public float AroundRadius;
     }
 
+    public enum SpherePosition
+    {
+        None,
+        Top,
+        Middle,
+        Bottom
+    }
+
     struct CollisionHit
     {
+        public SpherePosition spherePos;
         public Collider collider;
         public Vector3 point;
         public RaycastHit hit;
         public float slopeAngle;
-        public CollisionHit(Collider _collider, Vector3 _point, RaycastHit _hit, float _slopeAngle = 0)
+        public CollisionHit(SpherePosition _spherePos, Collider _collider, Vector3 _point, RaycastHit _hit, float _slopeAngle = 0)
         {
+            spherePos = _spherePos;
             collider = _collider;
             point = _point;
             hit = _hit;

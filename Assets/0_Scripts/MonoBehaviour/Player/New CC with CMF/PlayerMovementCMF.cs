@@ -437,8 +437,8 @@ public class PlayerMovementCMF : MonoBehaviour
         //WALLJUMP
         wallJumpCheckRaysRows = 5;
         wallJumpCheckRaysColumns = 5;
-        wallJumpCheckRaysRowsSpacing = (collCheck.collider.bounds.size.y * wallJumpMinHeightPercent) / (wallJumpCheckRaysRows - 1);
-        wallJumpCheckRaysColumnsSpacing = collCheck.collider.bounds.size.x / (wallJumpCheckRaysColumns - 1);
+        wallJumpCheckRaysRowsSpacing = (collCheck.myCollider.bounds.size.y * wallJumpMinHeightPercent) / (wallJumpCheckRaysRows - 1);
+        wallJumpCheckRaysColumnsSpacing = collCheck.myCollider.bounds.size.x / (wallJumpCheckRaysColumns - 1);
         auxLM = LayerMask.GetMask("Stage");
 
         PlayerAwakes();
@@ -505,7 +505,7 @@ public class PlayerMovementCMF : MonoBehaviour
 
     public void KonoFixedUpdate()
     {
-        Debug.LogWarning("PLAYER FIXED UPDATE: ");
+        if (!disableAllDebugs) Debug.LogWarning("PLAYER FIXED UPDATE: ");
         //Debug.LogWarning("Current pos = " + transform.position.ToString("F8"));
         lastPos = transform.position;
 
@@ -555,7 +555,7 @@ public class PlayerMovementCMF : MonoBehaviour
     Vector3 lastPos;
     public void KonoLateUpdate()
     {
-        Debug.LogWarning(" --- NEW LATE UPDATE ---");
+        if (!disableAllDebugs) Debug.LogWarning(" --- NEW LATE UPDATE ---");
         Vector3 currentTotalMovement = transform.position - lastPos;
         //Debug.Log("rb velocity = " + GetComponent<Rigidbody>().velocity.ToString("F8") + "; currentTotalMovement = "+ currentTotalMovement.ToString("F8"));
         myPlayerAnimation.KonoUpdate();
@@ -601,10 +601,10 @@ public class PlayerMovementCMF : MonoBehaviour
                         break;
                     case PlayerInput.WallJump:
                         //TO REDO
-                        //if (StartWallJump(true))
-                        //{
-                        //    inputsBuffer[i].StopBuffering();
-                        //}
+                        if (StartWallJump(true))
+                        {
+                            inputsBuffer[i].StopBuffering();
+                        }
                         break;
                     case PlayerInput.StartChargingChargeJump:
                         if (StartChargingChargeJump(true))
@@ -1246,11 +1246,14 @@ public class PlayerMovementCMF : MonoBehaviour
     #region JUMP ---------------------------------------------------
     void PressA()
     {
+        Debug.Log("TRY JUMP");
         if (!StartJump())
         {
+            Debug.Log("FAILED JUMP... TRY WALLJUMP");
             //TO REDO
             if (!StartWallJump())
             {
+                Debug.Log("FAILED WALLJUMP... START CHARGING CHARGE JUMP ");
                 StartChargingChargeJump();
             }
         }
@@ -1268,7 +1271,6 @@ public class PlayerMovementCMF : MonoBehaviour
             {
                 if (!disableAllDebugs) Debug.LogWarning("JUMP!");
                 mover.stickToGround = false;
-                if (!disableAllDebugs) Debug.LogWarning("stickToGround Off");
                 //PlayerAnimation_01.startJump = true;
                 myPlayerAnimation.SetJump(true);
                 result = true;
@@ -1276,6 +1278,7 @@ public class PlayerMovementCMF : MonoBehaviour
                 jumpSt = JumpState.Jumping;
                 timePressingJump = 0;
                 collCheck.StartJump();
+                StopBufferedInput(PlayerInput.WallJump);
                 //myPlayerAnimation.SetJump(true);
             }
         }
@@ -1334,6 +1337,7 @@ public class PlayerMovementCMF : MonoBehaviour
     /// <returns></returns>
     bool StartWallJump(bool calledFromBuffer = false)
     {
+        if (calledFromBuffer) Debug.Log("TRY WALLJUMP FROM BUFFER");
         /*if (!disableAllDebugs)*/ Debug.LogWarning("Check Wall jump: wall real normal = " + collCheck.wallSlopeAngle);
         bool result = false;
         float slopeAngle = collCheck.wallSlopeAngle;
@@ -1370,9 +1374,9 @@ public class PlayerMovementCMF : MonoBehaviour
         else
         {
             /*if (!disableAllDebugs)*/ Debug.Log("Couldn't wall jump because:  !collCheck.below (" + !collCheck.below + ") && !inWater(" + !inWater + ") &&" +
-                " jumpedOutOfWater(" + jumpedOutOfWater + ") && wallJumpCurrentWall != null(" + (wallJumpCurrentWall != null) + ") && " +
+                " jumpedOutOfWater(" + jumpedOutOfWater + ") && goodWallAngle("+ goodWallAngle + ") && wallJumpCurrentWall != null(" + (wallJumpCurrentWall != null) + ") && " +
                 "(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ") || " +
-                "(lastWallAngle == collCheck.wallAngle (" + (lastWallAngle == collCheck.wallAngle) + ")&& " +
+                "(lastWallAngle == collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ")&& " +
                 "lastWall != collCheck.wall(" + (lastWall != collCheck.wall) + ")))");
         }
         if (!result && !calledFromBuffer)
@@ -1401,14 +1405,14 @@ public class PlayerMovementCMF : MonoBehaviour
 
             #region --- WALL JUMP CHECK RAYS ---
             //Check continuously if we are still attached to wall
-            float rayLength = collCheck.collider.bounds.extents.x + 0.5f;
+            float rayLength = collCheck.myCollider.bounds.extents.x + 0.5f;
             RaycastHit hit;
 
             //calculamos el origen de todos los rayos y columnas: esquina inferior (izda o dcha,no sé)
             //del personaje. 
             Vector3 paralelToWall = new Vector3(-wallNormal.z, 0, wallNormal.x).normalized;
-            Vector3 rowsOrigin = new Vector3(collCheck.collider.bounds.center.x, collCheck.collider.bounds.min.y, collCheck.collider.bounds.center.z);
-            rowsOrigin -= paralelToWall * collCheck.collider.bounds.extents.x;
+            Vector3 rowsOrigin = new Vector3(collCheck.myCollider.bounds.center.x, collCheck.myCollider.bounds.min.y, collCheck.myCollider.bounds.center.z);
+            rowsOrigin -= paralelToWall * collCheck.myCollider.bounds.extents.x;
             Vector3 dir = -wallNormal.normalized;
             bool success = false;
             for (int i = 0; i < wallJumpCheckRaysRows && !success; i++)
@@ -1448,7 +1452,7 @@ public class PlayerMovementCMF : MonoBehaviour
 
     void EndWallJump()
     {
-        if (!disableAllDebugs) Debug.Log("End Wall jump");
+        /*if (!disableAllDebugs)*/ Debug.Log("End Wall jump");
         if (!firstWallJumpDone) firstWallJumpDone = true;
         lastWallAngle = wallJumpCurrentWallAngle;
         lastWall = wallJumpCurrentWall;

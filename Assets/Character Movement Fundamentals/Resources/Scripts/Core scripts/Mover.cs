@@ -269,7 +269,6 @@ public class Mover : MonoBehaviour {
         //if (!stickToGround && isGrounded && slopeAngle <= 60) stickToGround = true;
 
         //if (stickToGround && isGrounded && slopeAngle <= 60)
-        Debug.Log("onMovingPlatform = " + onMovingPlatform);
             currentGroundAdjustmentVelocity = instantGroundAdjustment && onMovingPlatform? tr.up * _distanceToGo : tr.up * (_distanceToGo/Time.fixedDeltaTime);
         if((!stickToGround && currentGroundAdjustmentVelocity.y < 0) || isGroundTooSteep)
         {
@@ -299,7 +298,7 @@ public class Mover : MonoBehaviour {
         else rig.velocity += currentGroundAdjustmentVelocity;
         //Debug.Log("Rigibody.Velocity after setvel = " + rig.velocity.ToString("F8"));
         /*if (!disableAllDebugs)*/
-        Debug.LogWarning("Velocity = " + _velocity.ToString("F6") + "; currentPlatformMovement = " + currentPlatformMovement.ToString("F6") +
+        if (!disableAllDebugs) Debug.LogWarning("Velocity = " + _velocity.ToString("F6") + "; currentPlatformMovement = " + currentPlatformMovement.ToString("F6") +
 "; currentGroundAdjustmentVelocity = " + currentGroundAdjustmentVelocity.ToString("F8"));
     }
 
