@@ -8,6 +8,7 @@ public class HitboxCMF : MonoBehaviour
     public PlayerMovementCMF myPlayerMov;
     [HideInInspector]
     public PlayerCombatCMF myPlayerCombatNew;
+    [HideInInspector]
     public AttackHitbox myAttackHitbox;
 
     public Transform referencePos1;

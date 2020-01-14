@@ -44,7 +44,7 @@ public class WeaponSkillCMF_AttackExtend : WeaponSkillCMF
         {
             attackExtendStg = AttackExtendStage.extending;
             hitboxParent = myPlayerCombat.currentHitboxes[0].transform.parent;
-            referencePoint = myPlayerCombat.currentHitboxes[0].GetComponent<Hitbox>().referencePos1;
+            referencePoint = myPlayerCombat.currentHitboxes[0].GetComponentInChildren<HitboxCMF>().referencePos1;
             initialPos = referencePoint.position;
             initialProportionZ = hitboxParent.localScale.z;
             currentDist = 0;

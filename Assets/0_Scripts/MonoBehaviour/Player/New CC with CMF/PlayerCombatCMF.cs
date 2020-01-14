@@ -309,7 +309,7 @@ public class PlayerCombatCMF : MonoBehaviour
 
     void AddHitbox(AttackHitbox attackHitbox)
     {
-        if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " ->Adding hitbox of parent type " + attackHitbox.parentType);
+/*        if (!myPlayerMovement.disableAllDebugs) */Debug.Log(myPlayerMovement.gameObject.name + " ->Adding hitbox of parent type " + attackHitbox.parentType);
         GameObject auxHitbox = null;
         switch (attackHitbox.parentType)
         {
@@ -336,11 +336,12 @@ public class PlayerCombatCMF : MonoBehaviour
                 break;
             case HitboxParentType.player_localParent:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab, hitboxesParent);
-                badHitboxScript = auxHitbox.GetComponent<Hitbox>();
+                badHitboxScript = auxHitbox.GetComponentInChildren<Hitbox>();
+                auxHitbox = badHitboxScript.gameObject;
+                auxHitbox.AddComponent<HitboxCMF>();
+                auxHitbox.GetComponent<HitboxCMF>().referencePos1 = badHitboxScript.referencePos1;
                 if (badHitboxScript != null)
                     Destroy(badHitboxScript);
-                auxHitbox.AddComponent<HitboxCMF>();
-                auxHitbox = auxHitbox.GetComponentInChildren<HitboxCMF>().gameObject;
                 break;
             case HitboxParentType.player_followTransform:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab, hitboxesParent);
@@ -348,13 +349,14 @@ public class PlayerCombatCMF : MonoBehaviour
                 Transform follTrans = null;
                 if (weaponSkillStarted)
                 {
-                    switch (currentWeaponSkill.myWeaponSkillData.skillName)
+                    switch (currentWeaponSkill.myWeaponSkillData.skillName)// Change this in the future for an enum
                     {
                         case "QTip_Cannon_Skill"://Q-Tip_Cannon
-                            badHitboxScript = currentHitboxes[0].GetComponent<Hitbox>();
+                            Debug.Log("currentHitboxes[0] = " + currentHitboxes[0]);
+                            badHitboxScript = auxHitbox.GetComponent<Hitbox>();
                             if (badHitboxScript != null)
                                 Destroy(badHitboxScript);
-                            currentHitboxes[0].AddComponent<HitboxCMF>();
+                            auxHitbox.AddComponent<HitboxCMF>();
                             follTrans = currentHitboxes[0].GetComponent<HitboxCMF>().referencePos1;
                             break;
                     }

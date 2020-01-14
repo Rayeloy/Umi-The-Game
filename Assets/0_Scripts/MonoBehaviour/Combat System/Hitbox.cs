@@ -8,6 +8,7 @@ public class Hitbox : MonoBehaviour
     public PlayerMovement myPlayerMov;
     [HideInInspector]
     public PlayerCombatNew myPlayerCombatNew;
+    [HideInInspector]
     public AttackHitbox myAttackHitbox;
 
     public Transform referencePos1;
