@@ -35,6 +35,8 @@ public class GameSettings : ScriptableObject
     [SerializeField]
     private byte _maxPlayersPerGameRoom = 4;
 
+    public bool online = false;
+
     public byte MaxPlayersPerGameRoom { get { return _maxPlayersPerGameRoom; } }
 
 }
