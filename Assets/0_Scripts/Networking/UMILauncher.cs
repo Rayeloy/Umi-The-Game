@@ -1,18 +1,9 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="UMILauncher.cs" company="AnotherCoffeeGames">
-//   Made with: Photon Unity Networking Plugin
-// </copyright>
-// <summary>
-//  Used in "UMI" to connect, and join/create room automatically
-// </summary>
-// <author>developer@exitgames.com</author>
-// --------------------------------------------------------------------------------------------------------------------
-
+﻿using Bolt.Matchmaking;
 using UnityEngine;
 using UnityEngine.UI;
 
 
-public class UMILauncher: MonoBehaviour
+public class UMILauncher: Bolt.GlobalEventListener
 {
     #region ----[ VARIABLES FOR DESIGNERS ]---- 
     [Tooltip("Panel que controla el nombre de usuario y el botón de login")]
@@ -39,6 +30,7 @@ public class UMILauncher: MonoBehaviour
     /// </summary>
     [HideInInspector]
     bool isConnectingToRoom;
+    public string sceneName;
     #endregion
 
     #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
@@ -60,7 +52,7 @@ public class UMILauncher: MonoBehaviour
 
     #endregion
 
-    #region ----[ PRIVATE FUNCTIONS ]----
+    #region ----[ PUBLIC FUNCTIONS ]----
     /// <summary>
     /// Start the connection process. 
     /// - If already connected, we attempt joining a random room
@@ -74,19 +66,15 @@ public class UMILauncher: MonoBehaviour
         // hide the Play button for visual consistency
         controlPanel.SetActive(false);
         LoadingPanel.SetActive(true);
-        
 
-        //// we check if we are connected or not, we join if we are , else we initiate the connection to the server.
-        //if (PhotonNetwork.IsConnected)
-        //{
-        //    // #Critical we need at this point to attempt joining a Random Room. If it fails, we'll get notified in OnJoinRandomFailed() and we'll create one.
-        //    PhotonNetwork.JoinRandomRoom();
-        //}
-        //else
-        //{
-            // #Critical, we must first and foremost connect to Photon Online Server.
-            //PhotonNetwork.ConnectUsingSettings();
-        //}
+        MasterManager.GameSettings.online = true;
+        BoltLauncher.StartServer();
+    }
+
+    public void StartClient()
+    {
+        MasterManager.GameSettings.online = true;
+        BoltLauncher.StartClient();
     }
     #endregion
 
@@ -169,5 +157,30 @@ public class UMILauncher: MonoBehaviour
     //    }
     //}
 
+    #endregion
+
+    #region ----[ BOLT Callbacks]----
+    public override void BoltStartBegin()
+    {
+        // añadir esto later
+        //BoltNetwork.RegisterTokenClass<>();
+    }
+
+    public override void BoltStartDone()
+    {
+        if (BoltNetwork.IsServer)
+        {
+            var matchName = "test";
+
+            BoltMatchmaking.CreateSession(
+                sessionID: matchName,
+                sceneToLoad: BoltScenes.CMF_online_Test
+            );
+        }
+        else
+        {
+            BoltMatchmaking.JoinRandomSession();
+        }
+    }
     #endregion
 }

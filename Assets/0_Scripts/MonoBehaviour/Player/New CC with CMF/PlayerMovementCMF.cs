@@ -37,7 +37,7 @@ using UnityEngine.UI;
 
 #region ----[ REQUIRECOMPONENT ]----
 #endregion
-public class PlayerMovementCMF : MonoBehaviour
+public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     [Header(" --- Referencias --- ")]
@@ -413,35 +413,41 @@ public class PlayerMovementCMF : MonoBehaviour
 
     public void KonoAwake(bool isMyCharacter = false)
     {
-        mover = GetComponent<Mover>();
-        collCheck.KonoAwake(mover.capsuleCollider);//we use capsule collider in our example
+        if (MasterManager.GameSettings.online)
+        {
+        }
+        else
+        {
+            mover = GetComponent<Mover>();
+            collCheck.KonoAwake(mover.capsuleCollider);//we use capsule collider in our example
 
 
-        if (actions == null) Debug.LogError("Error: PlayerActions have not been yet assigned to Player");
-        else inputsInfo = new InputsInfo(actions);
+            if (actions == null) Debug.LogError("Error: PlayerActions have not been yet assigned to Player");
+            else inputsInfo = new InputsInfo(actions);
 
-        if (breakAcc != knockbackBreakAcc) Debug.LogError("The breakAcceleration and the KnockbackAcceleration should be the same!");
-        maxMoveSpeed = 10;
-        currentSpeed = 0;
-        boostCurrentFuel = boostCapacity;
-        noInput = false;
-        lastWallAngle = 0;
-        SetupInputsBuffer();
-        myPlayerHook.myCameraBase = myCamera;
-        hardSteerAcc = Mathf.Clamp(hardSteerAcc, hardSteerAcc, breakAcc);
-        airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airHardSteerAcc, airBreakAcc);
+            if (breakAcc != knockbackBreakAcc) Debug.LogError("The breakAcceleration and the KnockbackAcceleration should be the same!");
+            maxMoveSpeed = 10;
+            currentSpeed = 0;
+            boostCurrentFuel = boostCapacity;
+            noInput = false;
+            lastWallAngle = 0;
+            SetupInputsBuffer();
+            myPlayerHook.myCameraBase = myCamera;
+            hardSteerAcc = Mathf.Clamp(hardSteerAcc, hardSteerAcc, breakAcc);
+            airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airHardSteerAcc, airBreakAcc);
 
-        //PLAYER MODEL
-        SwitchTeam(team);
+            //PLAYER MODEL
+            SwitchTeam(team);
 
-        //WALLJUMP
-        wallJumpCheckRaysRows = 5;
-        wallJumpCheckRaysColumns = 5;
-        wallJumpCheckRaysRowsSpacing = (collCheck.myCollider.bounds.size.y * wallJumpMinHeightPercent) / (wallJumpCheckRaysRows - 1);
-        wallJumpCheckRaysColumnsSpacing = collCheck.myCollider.bounds.size.x / (wallJumpCheckRaysColumns - 1);
-        auxLM = LayerMask.GetMask("Stage");
+            //WALLJUMP
+            wallJumpCheckRaysRows = 5;
+            wallJumpCheckRaysColumns = 5;
+            wallJumpCheckRaysRowsSpacing = (collCheck.myCollider.bounds.size.y * wallJumpMinHeightPercent) / (wallJumpCheckRaysRows - 1);
+            wallJumpCheckRaysColumnsSpacing = collCheck.myCollider.bounds.size.x / (wallJumpCheckRaysColumns - 1);
+            auxLM = LayerMask.GetMask("Stage");
 
-        PlayerAwakes();
+            PlayerAwakes();
+        }    
     }
 
     //todos los konoAwakes
