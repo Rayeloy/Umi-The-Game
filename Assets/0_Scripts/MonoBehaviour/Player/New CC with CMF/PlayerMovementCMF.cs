@@ -1623,33 +1623,52 @@ public class PlayerMovementCMF : MonoBehaviour
         }
     }
 
+    bool bounceJumpBuffered = false;
+    float bounceJumpVelocity = 0;
     bool StartBounceJump()//WHEN CHARGEJUMP FAILS
     {
+        Debug.Log("Start Bounce Jump");
         bool result = false;
-
-        if (!inWater && isFloorBounceJumpable)
-        {
-            if (!disableAllDebugs) Debug.Log("DO BOUNCE JUMP");
-            float totalFallenHeight = chargeJumpLastApexHeight - transform.position.y;
-            chargeJumpCurrentJumpMaxHeight = totalFallenHeight * bounceJumpMultiplier;
-            if (chargeJumpCurrentJumpMaxHeight >= bounceJumpMinHeight)
+            if (!bounceJumpBuffered & !inWater && isFloorBounceJumpable)
             {
-                float chargeJumpApexTime = Mathf.Sqrt((2 * chargeJumpCurrentJumpMaxHeight) / Mathf.Abs(currentGravity));
-                float chargeJumpJumpVelocity = Mathf.Abs(currentGravity * chargeJumpApexTime);
-                currentVel.y = chargeJumpJumpVelocity;
+                if (!disableAllDebugs) Debug.Log("DO BOUNCE JUMP");
+                float totalFallenHeight = chargeJumpLastApexHeight - transform.position.y;
+                chargeJumpCurrentJumpMaxHeight = totalFallenHeight * bounceJumpMultiplier;
+                if (chargeJumpCurrentJumpMaxHeight >= bounceJumpMinHeight)
+                {
+                    float chargeJumpApexTime = Mathf.Sqrt((2 * chargeJumpCurrentJumpMaxHeight) / Mathf.Abs(currentGravity));
+                    float chargeJumpJumpVelocity = Mathf.Abs(currentGravity * chargeJumpApexTime);
+                    bounceJumpVelocity = chargeJumpJumpVelocity;
 
-                Debug.Log("JumpSt = BounceJumping");
-                jumpSt = JumpState.BounceJumping;
-                StopBufferedInput(PlayerInput.Jump);
-                StopBufferedInput(PlayerInput.WallJump);
-                result = true;
+                    Debug.Log("JumpSt = BounceJumping" + "; chargeJumpJumpVelocity = " + chargeJumpJumpVelocity);
+                    result = true;
+                }
+                else
+                {
+                    if (!disableAllDebugs) Debug.LogWarning("Bounce Jump -> bounceJump height was too low (min = " + bounceJumpMinHeight + ")");
+                }
             }
-            else
-            {
-                if (!disableAllDebugs) Debug.LogWarning("Bounce Jump -> bounceJump height was too low (min = " + bounceJumpMinHeight + ")");
-            }
-        }
         return result;
+    }
+
+    void ProcessBounceJump()
+    {
+        if (bounceJumpBuffered)
+        {
+            DoBounceJump();
+        }
+    }
+
+    void DoBounceJump()
+    {
+        if (bounceJumpBuffered)
+        {
+            bounceJumpBuffered = false;
+            currentVel.y = bounceJumpVelocity;
+            jumpSt = JumpState.BounceJumping;
+            StopBufferedInput(PlayerInput.Jump);
+            StopBufferedInput(PlayerInput.WallJump);
+        }
     }
 
     #endregion
