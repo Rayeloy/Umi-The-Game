@@ -177,7 +177,7 @@ public class UMILauncher: Bolt.GlobalEventListener
         }
         else
         {
-            BoltMatchmaking.JoinSession(matchName);
+            BoltMatchmaking.JoinRandomSession();
         }
     }
     #endregion

@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 #region ----[ PUBLIC ENUMS ]----
 #endregion
 
-public class GameControllerCMF : MonoBehaviour
+public class GameControllerCMF : Bolt.GlobalEventListener
 {
 
     #region ----[ VARIABLES FOR DESIGNERS ]----
@@ -146,88 +146,91 @@ public class GameControllerCMF : MonoBehaviour
         //{
         //Esto es para no entrar en escenas cuando no tenemos los controles. Te devuelve a seleccion de equipo
         //Eloy: he cambiado esto porque me he dado cuenta de que es necesario hasta en la build final, no solo en el editor.
-        if (GameInfo.instance == null || GameInfo.instance.inControlManager == null)
+        if (!MasterManager.GameSettings.online)
         {
-            Debug.LogWarning("GameInfo or InControlManager was not found, so we load Team Setup Scene");
-            //string escena = TeamSetupManager.siguienteEscena;
-            //print(escena);
-            TeamSetupManager.siguienteEscena = SceneManager.GetActiveScene().name;
-            TeamSetupManager.startFromMap = true;
-            //TO CHANGE TO:
-            Alpha_Team_Select.startFromMapScene = SceneManager.GetActiveScene().name;
-            Alpha_Team_Select.startFromMap = true;
-            SceneManager.LoadScene("Demo_TeamSetUp");
-            return;
+            if (GameInfo.instance == null || GameInfo.instance.inControlManager == null)
+            {
+                Debug.LogWarning("GameInfo or InControlManager was not found, so we load Team Setup Scene");
+                //string escena = TeamSetupManager.siguienteEscena;
+                //print(escena);
+                TeamSetupManager.siguienteEscena = SceneManager.GetActiveScene().name;
+                TeamSetupManager.startFromMap = true;
+                //TO CHANGE TO:
+                Alpha_Team_Select.startFromMapScene = SceneManager.GetActiveScene().name;
+                Alpha_Team_Select.startFromMap = true;
+                SceneManager.LoadScene("Demo_TeamSetUp");
+                return;
+            }
+            //}
+
+            //Deactivate test player components. DO NOT MOVE!
+            DeactivatePlayerComponents();
+
+
+            //initialize lists
+            allPlayers = new List<PlayerMovementCMF>();
+            allCameraBases = new List<CameraControllerCMF>();
+            allCanvas = new List<GameObject>();
+            allUICameras = new List<Camera>();
+
+            contador = new List<RectTransform>();
+            powerUpPanel = new List<RectTransform>();
+
+            //Check data
+            CheckValidInputsBuffer();
+
+            //Set stuff active
+            myGameInterface.gameObject.SetActive(true);
+
+            //if (!online)
+            //{
+            playerNum = GameInfo.instance.nPlayers;
+            playerNum = Mathf.Clamp(playerNum, 1, 4);
+            for (int i = 0; i < playerNum; i++)
+            {
+                CreatePlayer(i + 1);
+            }
+
+            //AUTOMATIC PLAYERS & CAMERAS/CANVAS SETUP
+            PlayersSetup();
+            SetUpCanvases();
+            AllAwakes();
+            //}
+            //else //ONLINE //Eloy: para Juan: aqui inicia al host! playerNum deberia estar a 0 y luego ponerse a 1 cuando se crea el jugador
+            //{
+            //    //Calculate spawns
+            //    SetSpawnPositions();
+            //    //CreatePlayer
+            //    int playernumber = PhotonNetwork.CurrentRoom.PlayerCount - 1;//ELOY: Para Juan: ESTO NO ESTA PREPARADO PARA CUANDO SE SALE ALGUIEN. Si eran 10 jugadores y se sale el 3
+            //    //no se rellena el 3, sino el 10. Hay que buscar con un for el numero más bajo por rellenar.
+            //    print("Creating player number " + playernumber);
+            //    Debug.Log("0 - AllCameraBases.Length = " + allCameraBases.Count);
+            //    CreatePlayer(playernumber);
+            //    //PlayerSetupOnline?
+            //    //No hace falta SetUpCanvas creo
+            //    //Haz los awakes, y haz el awake de cada jugador nuevo(esto ultimo hay que buscar donde ponerlo... en el CreatePlayer?
+
+            //    Debug.Log("3 - AllCameraBases.Length = " + allCameraBases.Count);
+            //    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+            //    allUICameras[0].rect = new Rect(0, 0, 1, 1);
+            //    //Debug.Log("Nuestro jugador es: "+ GameInfo.instance.myControls);
+            //    allPlayers[0].Actions = GameInfo.instance.myControls == null ? PlayerActions.CreateWithKeyboardBindings() : GameInfo.instance.myControls;
+
+
+            //    allCanvas[0].GetComponent<PlayerHUD>().AdaptCanvasHeightScale();
+            //    myGameInterface.KonoAwake(this);
+            //    allPlayers[0].KonoAwake(true);
+            //    allCameraBases[0].KonoAwake();
+
+            //    gameOverStarted = false;
+            //    contador[0].anchoredPosition = new Vector3(contador[0].anchoredPosition.x, 100, contador[0].anchoredPosition.y);
+
+            //    //OnlinePlayerSetup();
+            //    //OnlineCanvasSetUp();
+            //    //OnlineAwakePlayer();
+
+            //}
         }
-        //}
-
-        //Deactivate test player components. DO NOT MOVE!
-        DeactivatePlayerComponents();
-
-
-        //initialize lists
-        allPlayers = new List<PlayerMovementCMF>();
-        allCameraBases = new List<CameraControllerCMF>();
-        allCanvas = new List<GameObject>();
-        allUICameras = new List<Camera>();
-
-        contador = new List<RectTransform>();
-        powerUpPanel = new List<RectTransform>();
-
-        //Check data
-        CheckValidInputsBuffer();
-
-        //Set stuff active
-        myGameInterface.gameObject.SetActive(true);
-
-        //if (!online)
-        //{
-        playerNum = GameInfo.instance.nPlayers;
-        playerNum = Mathf.Clamp(playerNum, 1, 4);
-        for (int i = 0; i < playerNum; i++)
-        {
-            CreatePlayer(i + 1);
-        }
-
-        //AUTOMATIC PLAYERS & CAMERAS/CANVAS SETUP
-        PlayersSetup();
-        SetUpCanvases();
-        AllAwakes();
-        //}
-        //else //ONLINE //Eloy: para Juan: aqui inicia al host! playerNum deberia estar a 0 y luego ponerse a 1 cuando se crea el jugador
-        //{
-        //    //Calculate spawns
-        //    SetSpawnPositions();
-        //    //CreatePlayer
-        //    int playernumber = PhotonNetwork.CurrentRoom.PlayerCount - 1;//ELOY: Para Juan: ESTO NO ESTA PREPARADO PARA CUANDO SE SALE ALGUIEN. Si eran 10 jugadores y se sale el 3
-        //    //no se rellena el 3, sino el 10. Hay que buscar con un for el numero más bajo por rellenar.
-        //    print("Creating player number " + playernumber);
-        //    Debug.Log("0 - AllCameraBases.Length = " + allCameraBases.Count);
-        //    CreatePlayer(playernumber);
-        //    //PlayerSetupOnline?
-        //    //No hace falta SetUpCanvas creo
-        //    //Haz los awakes, y haz el awake de cada jugador nuevo(esto ultimo hay que buscar donde ponerlo... en el CreatePlayer?
-
-        //    Debug.Log("3 - AllCameraBases.Length = " + allCameraBases.Count);
-        //    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-        //    allUICameras[0].rect = new Rect(0, 0, 1, 1);
-        //    //Debug.Log("Nuestro jugador es: "+ GameInfo.instance.myControls);
-        //    allPlayers[0].Actions = GameInfo.instance.myControls == null ? PlayerActions.CreateWithKeyboardBindings() : GameInfo.instance.myControls;
-
-
-        //    allCanvas[0].GetComponent<PlayerHUD>().AdaptCanvasHeightScale();
-        //    myGameInterface.KonoAwake(this);
-        //    allPlayers[0].KonoAwake(true);
-        //    allCameraBases[0].KonoAwake();
-
-        //    gameOverStarted = false;
-        //    contador[0].anchoredPosition = new Vector3(contador[0].anchoredPosition.x, 100, contador[0].anchoredPosition.y);
-
-        //    //OnlinePlayerSetup();
-        //    //OnlineCanvasSetUp();
-        //    //OnlineAwakePlayer();
-
-        //}
         SpecificAwake();
     }
 
@@ -241,10 +244,11 @@ public class GameControllerCMF : MonoBehaviour
     #region Start
     protected virtual void Start()
     {
-        //if (!online)
-        //{
-        StartPlayers();
-        StartGame();
+        if (!MasterManager.GameSettings.online)
+        {
+            StartPlayers();
+            StartGame();
+        }
         //}
         //else
         //{
@@ -309,14 +313,16 @@ public class GameControllerCMF : MonoBehaviour
     #region Update
     void Update()
     {
-        //if (playerNum == 1)
-        //{
-        //    allPlayers[0].Actions = GameInfo.instance.myControls;
-        //}
-        //if (scoreManager.End) return;
-        SlowMotion();
-        SwitchLockMouse();
-
+        if (!MasterManager.GameSettings.online)
+        {
+            //if (playerNum == 1)
+            //{
+            //    allPlayers[0].Actions = GameInfo.instance.myControls;
+            //}
+            //if (scoreManager.End) return;
+            SlowMotion();
+            SwitchLockMouse();
+        }
         if (!gamePaused)
         {
 
@@ -403,6 +409,36 @@ public class GameControllerCMF : MonoBehaviour
     }
     #endregion
 
+    #region SceneLoad (online test 1)
+    public override void SceneLoadLocalDone(string Scenename)
+    {
+        PlayerMovementCMF newPlayer;
+        GameObject newPlayerCanvas;
+        CameraControllerCMF newPlayerCamera;
+        Camera newPlayerUICamera;
+        newPlayer = BoltNetwork.Instantiate(BoltPrefabs.PlayerPrefCMF_actual_online).GetComponent<PlayerMovementCMF>();
+        newPlayer.mySpawnInfo = new PlayerSpawnInfo();
+        newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
+        newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();
+        newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
+
+        InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
+        StartGame(newPlayer);
+    }
+
+    void StartGame(PlayerMovementCMF newPlayer)
+    {
+        newPlayer.KonoStart();
+        newPlayer.SetVelocity(Vector3.zero);
+        newPlayer.myCamera.InstantPositioning();
+        newPlayer.myCamera.InstantRotation();
+        newPlayer.ResetPlayer();
+        newPlayer.myPlayerAnimation.RestartAnimation();
+        playing = true;
+        gamePaused = false;
+    }
+
+    #endregion
     #endregion
 
     #region ----[ CLASS FUNCTIONS ]----
@@ -511,7 +547,7 @@ public class GameControllerCMF : MonoBehaviour
                     break;
             }
             //}
-            SetSpawnPositions();
+            SetSpawnPositions(allPlayers.Count);
         }
 
     }
@@ -704,9 +740,8 @@ public class GameControllerCMF : MonoBehaviour
     /// <summary>
     /// Calcula las posiciones de spawn dentro de cada spawn (rojo y azul), de manera equidistante y centrada y se las da a los Players.
     /// </summary>
-    void SetSpawnPositions()
+    void SetSpawnPositions(int maxPlayers)
     {
-        int maxPlayers = /*online ? PhotonNetwork.CurrentRoom.MaxPlayers :*/ allPlayers.Count;
         int playerNumACopy, playerNumBCopy;
         List<PlayerMovementCMF> teamBPlayers = new List<PlayerMovementCMF>();
         List<PlayerMovementCMF> teamAPlayers = new List<PlayerMovementCMF>();

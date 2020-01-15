@@ -3565,6 +3565,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!4 &1616954927 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2628611287434160560, guid: 6db9117d4df26494a8873799cc3754b6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5727753658726138299}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1644354355 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5661165447155484469, guid: bca6cad767c996344a3b6b9f64717f8a,
@@ -4360,6 +4366,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: UmiSampleScenePrefabCMF
       objectReference: {fileID: 0}
+    - target: {fileID: 7815827734573673779, guid: 6db9117d4df26494a8873799cc3754b6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6009999617834601626, guid: 6db9117d4df26494a8873799cc3754b6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4490,10 +4501,25 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 15985891250862825, guid: 6db9117d4df26494a8873799cc3754b6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2623835901987874862, guid: 6db9117d4df26494a8873799cc3754b6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5727753658902507015, guid: 6db9117d4df26494a8873799cc3754b6,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5727753658902507015, guid: 6db9117d4df26494a8873799cc3754b6,
+        type: 3}
+      propertyPath: playersUICamerasParent
+      value: 
+      objectReference: {fileID: 1616954927}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6db9117d4df26494a8873799cc3754b6, type: 3}
