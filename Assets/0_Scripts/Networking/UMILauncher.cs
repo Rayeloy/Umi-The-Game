@@ -30,7 +30,7 @@ public class UMILauncher: Bolt.GlobalEventListener
     /// </summary>
     [HideInInspector]
     bool isConnectingToRoom;
-    public string sceneName;
+    public string matchName;
     #endregion
 
     #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
@@ -170,16 +170,14 @@ public class UMILauncher: Bolt.GlobalEventListener
     {
         if (BoltNetwork.IsServer)
         {
-            var matchName = "test";
-
             BoltMatchmaking.CreateSession(
                 sessionID: matchName,
-                sceneToLoad: BoltScenes.CMF_online_Test
+                sceneToLoad: BoltScenes.CMF_Online_Test
             );
         }
         else
         {
-            BoltMatchmaking.JoinRandomSession();
+            BoltMatchmaking.JoinSession(matchName);
         }
     }
     #endregion
