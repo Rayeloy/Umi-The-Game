@@ -79,6 +79,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     [Range(0, 180)]
     public float instantRotationMinAngle = 120;
     float rotationRestrictedPercentage = 1;
+    float targetRotAngle;
+    float rotationVelocity = 2;
 
     [Header("--- SPEED ---")]
     public float maxFallSpeed = 100;
@@ -397,6 +399,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     [HideInInspector] public bool aimingAndTouchedGroundOnce = false;
     [HideInInspector] public bool hookingAndTouchedGroundOnce = false;
 
+    //ROTATION
+
+
 
     ////GRAPPLE
     //bool grappling = false;
@@ -504,9 +509,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
         //POLL INPUTS
         inputsInfo.PollInputs();
-
+        SmoothRotateCharacter();
         myPlayerCombatNew.KonoUpdate();
-
         myPlayerWeap.KonoUpdate();
         myPlayerHook.KonoUpdate();
     }
@@ -535,9 +539,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         ProcessInputsBuffer();
 
         #region --- Calculate Movement ---
-
         HorizontalMovement();
-
         UpdateFacingDir();
 
         VerticalMovement();
@@ -729,7 +731,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                                 hardSteerDir = currentInputDir;
                             }
                         }
-                        RotateCharacter();
                         break;
                 }
             }
@@ -743,7 +744,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     void HorizontalMovement()
     {
-
         float finalMovingAcc = 0;
         Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
         #region//------------------------------------------------ DECIDO TIPO DE MOVIMIENTO --------------------------------------------
@@ -988,6 +988,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         //print("CurrentVel after processing= " + currentVel.ToString("F6") + "; CurrentSpeed 1.4 = " + currentSpeed + "; horVel.magnitude = " 
         //    + horVel.magnitude + "; currentInputDir = " + currentInputDir.ToString("F6"));
         #endregion
+        RotateCharacter();
     }
 
     public void SetPlayerAttackMovementSpeed(float movementPercent)
@@ -1621,7 +1622,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 float currentMaxHeight = Mathf.Min(chargeJumpMaxJumpHeight, distToCloudHeight);
                 StageScript stageScript = collCheck.floor != null ? collCheck.floor.GetComponent<StageScript>() : null;
 
-                bool fixedAmount = stageScript != null? stageScript.fixedChargeJump : false;
+                bool fixedAmount = stageScript != null ? stageScript.fixedChargeJump : false;
                 if (!fixedAmount)
                 {
                     float auxChargeJumpCurrentJumpMaxHeight = totalFallenHeight + (totalFallenHeight * percentageCharged * chargeJumpFallenHeightMultiplier);
@@ -1659,7 +1660,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         Debug.Log("Start Bounce Jump");
         bool result = false;
-        if ( !inWater && isFloorBounceJumpable)
+        if (!inWater && isFloorBounceJumpable)
         {
             float totalFallenHeight = chargeJumpLastApexHeight - transform.position.y;
             chargeJumpCurrentJumpMaxHeight = totalFallenHeight * bounceJumpMultiplier;
@@ -1889,11 +1890,31 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 {
                     float angle = Mathf.Acos(((0 * lookingDir.x) + (1 * lookingDir.z)) / (1 * lookingDir.magnitude)) * Mathf.Rad2Deg;
                     angle = lookingDir.x < 0 ? 360 - angle : angle;
-                    RotateCharacterInstantly(angle);
+                    targetRotAngle = angle;
+                    //if (hardSteerStarted)
+                    //{
+                    //    rotateObj.localRotation = Quaternion.Euler(0, targetRotAngle, 0);
+                    //}
                 }
                 break;
         }
-        //print("current angle = " + rotateObj.rotation.eulerAngles.y + "; currentInputDir = "+currentInputDir);
+        print("current angle = " + rotateObj.rotation.eulerAngles.y + "; currentInputDir = " + currentInputDir);
+    }
+
+    void SmoothRotateCharacter()
+    {
+        float currentAngle = rotateObj.rotation.eulerAngles.y;
+        //if(currentAngle != targetRotAngle)
+        //{
+        float result1 = currentAngle - targetRotAngle;
+        float result2 = currentAngle - (targetRotAngle + (360 * Mathf.Sign(result1)));
+        bool normal = Mathf.Abs(result1) <= Mathf.Abs(result2);
+        float newAngle = normal ? targetRotAngle : targetRotAngle >= 0 && targetRotAngle < 180 ? targetRotAngle + 360 : targetRotAngle - 360;
+        currentAngle = Mathf.Lerp(currentAngle, newAngle, 0.3f);
+        Debug.Log("currentAngle = " + rotateObj.rotation.eulerAngles.y + "; targetRotAngle = " + targetRotAngle + "; newAngle = " + newAngle +
+            "; result1 = " + result1 + "; result2 = " + result2 + "; normal = " + normal);
+        rotateObj.localRotation = Quaternion.Euler(0, currentAngle, 0);
+        //}
     }
 
     void RotateCharacter(Vector3 dir)
@@ -1905,7 +1926,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     void RotateCharacterInstantly(float angle)
     {
+        targetRotAngle = angle;
         rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
+        Debug.Log(angle);
     }
 
     #endregion
