@@ -330,7 +330,7 @@ public class PlayerHookCMF : MonoBehaviour
             enemy = player;
 
             currentHook.transform.SetParent(enemy.transform);
-            currentHook.transform.localPosition = Vector3.zero;
+            currentHook.transform.localPosition = new Vector3(0,0.5f,0);
             StartReeling();
         }
 

@@ -10,6 +10,8 @@ public class Hitbox : MonoBehaviour
     public PlayerCombatNew myPlayerCombatNew;
     [HideInInspector]
     public AttackHitbox myAttackHitbox;
+    [HideInInspector]
+    public bool active = false;
 
     public Transform referencePos1;
 
@@ -17,8 +19,9 @@ public class Hitbox : MonoBehaviour
     List<string> dummiesHit;
     List<string> targetsHitWait1Frame;
 
-    private void Awake()
+    public void KonoAwake()
     {
+        active = true;
         if (transform.GetComponentsInParent<PlayerMovement>().Length == 0)
             return;
 
@@ -32,6 +35,8 @@ public class Hitbox : MonoBehaviour
 
     private void OnTriggerEnter(Collider col)
     {
+        if (!active)
+            return;
         if (!myPlayerMov.disableAllDebugs) Debug.Log("HITBOX COLLIDED WITH " + col.name);
         if (col.gameObject != myPlayerMov.gameObject)
         {
@@ -50,6 +55,8 @@ public class Hitbox : MonoBehaviour
 
     private void OnTriggerStay(Collider col)
     {
+        if (!active)
+            return;
         //Debug.LogWarning("I'm " + gameObject.name);
         if (col.gameObject != myPlayerMov.gameObject)
         {
@@ -414,6 +421,8 @@ public class Hitbox : MonoBehaviour
 
     private void OnTriggerExit(Collider col)
     {
+        if (!active)
+            return;
         if (col.gameObject != myPlayerMov.gameObject)
         {
             if (myPlayerCombatNew.attackStg == AttackPhaseType.active)//(tag != "HookBigHB" && tag != "HookSmallHB") && 

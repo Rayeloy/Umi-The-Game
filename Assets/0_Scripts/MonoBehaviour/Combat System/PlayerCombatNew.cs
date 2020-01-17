@@ -347,12 +347,16 @@ public class PlayerCombatNew : MonoBehaviour
         }
         //if(attackHitbox.parentType!= HitboxParentType.player_animated)
         //{
-        if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " ->CurrentHitboxes ADD -> " + auxHitbox.name);
-        currentHitboxes.Add(auxHitbox);
-        Hitbox hb = auxHitbox.GetComponent<Hitbox>();
-        hb.myAttackHitbox = attackHitbox;
-        hitboxes.Add(hb);
-        //}
+        if(auxHitbox != null)
+        {
+            auxHitbox.GetComponent<Hitbox>().KonoAwake();
+
+            if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " ->CurrentHitboxes ADD -> " + auxHitbox.name);
+            currentHitboxes.Add(auxHitbox);
+            Hitbox hb = auxHitbox.GetComponent<Hitbox>();
+            hb.myAttackHitbox = attackHitbox;
+            hitboxes.Add(hb);
+        }
     }
 
     void HideAttackHitBox()

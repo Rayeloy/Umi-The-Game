@@ -45063,7 +45063,6 @@ GameObject:
   - component: {fileID: 9217598655678958731}
   - component: {fileID: 5164337253723804911}
   - component: {fileID: 3492127030470539752}
-  - component: {fileID: 1681186807962953373}
   - component: {fileID: 852548598361810586}
   m_Layer: 10
   m_Name: PlayerPrefCMF_actual
@@ -45265,7 +45264,7 @@ MonoBehaviour:
   boostCurrentFuel: 1
   boostCDMaxTime: 0.3
   boostFuelLostOnStart: 0.1
-  boostMinFuelNeeded: 0.2
+  boostMinFuelNeeded: 0.35
   initialAcc: 90
   airInitialAcc: 40
   wallJumpInitialAcc: 20
@@ -45491,19 +45490,6 @@ MonoBehaviour:
   exitWater: 0
   dash: 0
   maxTimeToLand: 0.154
---- !u!114 &1681186807962953373
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5233746851346624046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97becf028b00afb40b769d0c9526dd7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myPlayerMov: {fileID: 873758771431004316}
 --- !u!114 &852548598361810586
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -65462,6 +65448,7 @@ GameObject:
   - component: {fileID: 4968334877559186131}
   - component: {fileID: 4222018764240873069}
   - component: {fileID: 6605384209687612580}
+  - component: {fileID: 7852406728139055613}
   m_Layer: 10
   m_Name: Body
   m_TagString: Player
@@ -65530,6 +65517,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myPlayerMov: {fileID: 873758771431004316}
+--- !u!114 &7852406728139055613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7753593567714089022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91d754fb19bf93b42bc56895520c1e72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  capsuleMaterial: {fileID: 0}
 --- !u!1 &7763574380936585783
 GameObject:
   m_ObjectHideFlags: 0
