@@ -405,6 +405,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     public bool jumpedOutOfWater = true;
 
     BufferedInput[] inputsBuffer;//Eloy: para Juan: esta variable iría aquí? o a "Variables", JUAN: A variables mejor
+    [HideInInspector]
+    public bool online_isLocal = false;
     #endregion
 
     #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
@@ -413,10 +415,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void KonoAwake(bool isMyCharacter = false)
     {
-        if (MasterManager.GameSettings.online)
-        {
-        }
-        else
+        if (online_isLocal)
         {
             mover = GetComponent<Mover>();
             collCheck.KonoAwake(mover.capsuleCollider);//we use capsule collider in our example
@@ -447,7 +446,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             auxLM = LayerMask.GetMask("Stage");
 
             PlayerAwakes();
-        }    
+        }
+        else
+        {
+            enabled = false;
+        }
     }
 
     //todos los konoAwakes

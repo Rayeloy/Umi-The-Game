@@ -10,7 +10,6 @@ namespace Bolt.AdvancedTutorial
 		public override void SceneLoadLocalDone(string scene)
 		{
 			// ui
-			GameUI.Instantiate();
 
 			// camera
 			PlayerCamera.Instantiate();
@@ -37,9 +36,6 @@ namespace Bolt.AdvancedTutorial
 			entity.gameObject.AddComponent<AudioListener>();
 
 			// set camera callbacks
-			PlayerCamera.instance.getAiming = () => entity.GetState<IPlayerState>().Aiming;
-			PlayerCamera.instance.getHealth = () => entity.GetState<IPlayerState>().health;
-			PlayerCamera.instance.getPitch = () => entity.GetState<IPlayerState>().pitch;
 
 			// set camera target
 			PlayerCamera.instance.SetTarget(entity);

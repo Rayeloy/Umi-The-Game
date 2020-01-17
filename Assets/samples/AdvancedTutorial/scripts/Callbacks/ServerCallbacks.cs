@@ -26,17 +26,6 @@ namespace Bolt.AdvancedTutorial
 			}
 		}
 
-		void FixedUpdate()
-		{
-			foreach (Player p in Player.allPlayers)
-			{
-				// if we have an entity, it's dead but our spawn frame has passed
-				if (p.entity && p.state.Dead && p.state.respawnFrame <= BoltNetwork.ServerFrame)
-				{
-					p.Spawn();
-				}
-			}
-		}
 
 		public override void ConnectRequest(UdpKit.UdpEndPoint endpoint, Bolt.IProtocolToken token)
 		{

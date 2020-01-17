@@ -27,31 +27,8 @@ namespace Bolt.AdvancedTutorial
             //TODO: FIX PITCH OFFSET CALCULATION
 
             //			float pitchOffsetArm = -state.pitch * 0.025f;
-            float pitchOffsetHead = -state.pitch * 0.01f;
 
-            _animator.SetLookAtPosition(transform.position + transform.forward + new Vector3(0, 1.5f + pitchOffsetHead, 0f));
             _animator.SetLookAtWeight(1f);
-
-            if (_aiming)
-            {
-                if (state.Aiming == false)
-                {
-                    weightacc = 0f;
-                    weightfrom = weight;
-                    weightto = 0f;
-                    _aiming = false;
-                }
-            }
-            else
-            {
-                if (state.Aiming)
-                {
-                    weightacc = 0f;
-                    weightfrom = weight;
-                    weightto = 1f;
-                    _aiming = true;
-                }
-            }
         }
     }
 }

@@ -32,26 +32,7 @@ namespace Bolt.AdvancedTutorial
 			players.Add(this);
 		}
 
-		public void Kill()
-		{
-			if (entity)
-			{
-				state.Dead = true;
-				state.respawnFrame = BoltNetwork.ServerFrame + (15 * BoltNetwork.FramesPerSecond);
-			}
-		}
 
-		internal void Spawn()
-		{
-			if (entity)
-			{
-				state.Dead = false;
-				state.health = 100;
-
-				// teleport
-				entity.transform.position = RandomSpawn();
-			}
-		}
 
 		public void Dispose()
 		{
@@ -64,21 +45,7 @@ namespace Bolt.AdvancedTutorial
 			}
 
 			// while we have a team difference of more then 1 player
-			while (Mathf.Abs(redPlayers.Count() - bluePlayers.Count()) > 1)
-			{
-				if (redPlayers.Count() < bluePlayers.Count())
-				{
-					var player = bluePlayers.First();
-					player.Kill();
-					player.state.team = TEAM_RED;
-				}
-				else
-				{
-					var player = redPlayers.First();
-					player.Kill();
-					player.state.team = TEAM_BLUE;
-				}
-			}
+
 		}
 
 		public void InstantiateEntity()
@@ -86,7 +53,6 @@ namespace Bolt.AdvancedTutorial
 			entity = BoltNetwork.Instantiate(BoltPrefabs.Player, new TestToken(), RandomSpawn(), Quaternion.identity);
 
 			state.name = name;
-			state.team = redPlayers.Count() >= bluePlayers.Count() ? TEAM_BLUE : TEAM_RED;
 
 			if (isServer)
 			{
@@ -96,8 +62,6 @@ namespace Bolt.AdvancedTutorial
 			{
 				entity.AssignControl(connection, new TestToken());
 			}
-
-			Spawn();
 		}
 	}
 
@@ -105,15 +69,6 @@ namespace Bolt.AdvancedTutorial
 	{
 		static List<Player> players = new List<Player>();
 
-		public static IEnumerable<Player> redPlayers
-		{
-			get { return players.Where(x => x.entity && x.state.team == TEAM_RED); }
-		}
-
-		public static IEnumerable<Player> bluePlayers
-		{
-			get { return players.Where(x => x.entity && x.state.team == TEAM_BLUE); }
-		}
 
 		public static IEnumerable<Player> allPlayers
 		{

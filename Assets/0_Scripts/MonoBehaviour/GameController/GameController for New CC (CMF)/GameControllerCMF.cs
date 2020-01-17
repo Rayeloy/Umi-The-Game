@@ -91,10 +91,6 @@ public class GameControllerCMF : Bolt.GlobalEventListener
     //variables globales de la partida
     [HideInInspector]
     public bool playing = false;
-    //[HideInInspector]
-    //public bool online; //= PhotonNetwork.IsConnected; JUAN: No se puede inicializar el valor porque tira un error chungo, THX UNITY, está inicializado en el Awake
-
-    // variables para nuestro jugador online
     [HideInInspector]
     public PlayerActions BaseGameActions { get; set; }
 
@@ -137,15 +133,13 @@ public class GameControllerCMF : Bolt.GlobalEventListener
     #region Awake
     protected virtual void Awake()
     {
-        //online = PhotonNetwork.IsConnected;
-        //if (online)
-        //{
-        //    Debug.Log("GameControllerBase: estamos conectados y la base del game controller está funcionando correctamente");
-        //}
-        //else
-        //{
-        //Esto es para no entrar en escenas cuando no tenemos los controles. Te devuelve a seleccion de equipo
-        //Eloy: he cambiado esto porque me he dado cuenta de que es necesario hasta en la build final, no solo en el editor.
+        allPlayers = new List<PlayerMovementCMF>();
+        allCameraBases = new List<CameraControllerCMF>();
+        allCanvas = new List<GameObject>();
+        allUICameras = new List<Camera>();
+
+        contador = new List<RectTransform>();
+        powerUpPanel = new List<RectTransform>();
         if (!MasterManager.GameSettings.online)
         {
             if (GameInfo.instance == null || GameInfo.instance.inControlManager == null)
@@ -165,16 +159,6 @@ public class GameControllerCMF : Bolt.GlobalEventListener
 
             //Deactivate test player components. DO NOT MOVE!
             DeactivatePlayerComponents();
-
-
-            //initialize lists
-            allPlayers = new List<PlayerMovementCMF>();
-            allCameraBases = new List<CameraControllerCMF>();
-            allCanvas = new List<GameObject>();
-            allUICameras = new List<Camera>();
-
-            contador = new List<RectTransform>();
-            powerUpPanel = new List<RectTransform>();
 
             //Check data
             CheckValidInputsBuffer();
@@ -386,9 +370,19 @@ public class GameControllerCMF : Bolt.GlobalEventListener
 
     void FixedUpdatePlayers()
     {
-        for (int i = 0; i < playerNum; i++)
+        if (!MasterManager.GameSettings.online)
         {
-            allPlayers[i].KonoFixedUpdate();
+            for (int i = 0; i < playerNum; i++)
+            {
+                allPlayers[i].KonoFixedUpdate();
+            }
+        }
+        else
+        {
+            for (int i = 0; i < allPlayers.Count; i++)
+            {
+                allPlayers[i].KonoFixedUpdate();
+            }
         }
     }
 
@@ -407,37 +401,6 @@ public class GameControllerCMF : Bolt.GlobalEventListener
     protected virtual void UpdateModeExclusiveClasses()//no borrar, es para los hijos
     {
     }
-    #endregion
-
-    #region SceneLoad (online test 1)
-    public override void SceneLoadLocalDone(string Scenename)
-    {
-        PlayerMovementCMF newPlayer;
-        GameObject newPlayerCanvas;
-        CameraControllerCMF newPlayerCamera;
-        Camera newPlayerUICamera;
-        newPlayer = BoltNetwork.Instantiate(BoltPrefabs.PlayerPrefCMF_actual_online).GetComponent<PlayerMovementCMF>();
-        newPlayer.mySpawnInfo = new PlayerSpawnInfo();
-        newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
-        newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();
-        newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
-
-        InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
-        StartGame(newPlayer);
-    }
-
-    void StartGame(PlayerMovementCMF newPlayer)
-    {
-        newPlayer.KonoStart();
-        newPlayer.SetVelocity(Vector3.zero);
-        newPlayer.myCamera.InstantPositioning();
-        newPlayer.myCamera.InstantRotation();
-        newPlayer.ResetPlayer();
-        newPlayer.myPlayerAnimation.RestartAnimation();
-        playing = true;
-        gamePaused = false;
-    }
-
     #endregion
     #endregion
 
@@ -1159,6 +1122,40 @@ public class GameControllerCMF : Bolt.GlobalEventListener
     #endregion
 
     #region ----[ BOLT CALLBACKS ]----
+    public override void SceneLoadLocalDone(string Scenename)
+    {
+        PlayerMovementCMF newPlayer;
+        GameObject newPlayerCanvas;
+        CameraControllerCMF newPlayerCamera;
+        Camera newPlayerUICamera;
+        newPlayer = BoltNetwork.Instantiate(BoltPrefabs.PlayerPrefCMF_actual_online).GetComponent<PlayerMovementCMF>();
+        newPlayer.online_isLocal = true;
+        allPlayers.Add(newPlayer);
+        newPlayer.mySpawnInfo = new PlayerSpawnInfo();
+        newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
+        newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();
+        newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
+        InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
+        myGameInterface.gameObject.SetActive(true);
+        AllAwakes();
+        StartGame(newPlayer);
+    }
+
+    void StartGame(PlayerMovementCMF newPlayer)
+    {
+        GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
+        Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
+        allPlayers[0].actions = GameInfo.instance.myControls;
+        CheckValidInputsBuffer();
+        newPlayer.KonoStart();
+        newPlayer.SetVelocity(Vector3.zero);
+        newPlayer.myCamera.InstantPositioning();
+        newPlayer.myCamera.InstantRotation();
+        newPlayer.ResetPlayer();
+        newPlayer.myPlayerAnimation.RestartAnimation();
+        playing = true;
+        gamePaused = false;
+    }
     #endregion
 
     #region ----[ NETWORK FUNCTIONS ]----
