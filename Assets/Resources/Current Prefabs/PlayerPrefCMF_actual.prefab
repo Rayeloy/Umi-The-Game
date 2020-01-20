@@ -45292,11 +45292,12 @@ MonoBehaviour:
   wallJumping: 0
   wallJumpAngle: 30
   wallJumpMinHorizAngle: 30
-  chargeJumpFallenHeightMultiplier: 1
-  chargeJumpReleaseTimeBeforeLand: 0.4
-  chargeJumpReleaseTimeAfterLand: 0.3
-  chargeJumpMaxJumpHeight: 100
-  chargeJumpMinPercentageNeeded: 0.5
+  chargedJumpMode: 2
+  chargedJumpFallenHeightMultiplier: 0.75
+  chargedJumpReleaseTimeBeforeLand: 0.5
+  chargedJumpReleaseTimeAfterLand: 0.5
+  chargedJumpMaxJumpHeight: 50
+  chargedJumpMinPercentageNeeded: 0.25
   bounceJumpMultiplier: 0.4
   bounceJumpMinHeight: 3
   StinrayGradient:

@@ -649,6 +649,7 @@ public class PlayerHookCMF : MonoBehaviour
             //print("FINISH AUTOGRAPPLE");
             //Start sticking to ground
             myPlayerMov.mover.stickToGround = true;
+            /*if (!disableAllDebugs) */Debug.LogWarning("stickToGround On");
 
             currentGrapplingHookPoint = null;
             currentHookPointPos = null;

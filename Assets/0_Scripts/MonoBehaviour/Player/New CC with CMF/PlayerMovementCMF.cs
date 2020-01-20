@@ -33,6 +33,13 @@ using UnityEngine.UI;
 //    ChargeJumping,
 //    BounceJumping
 //}
+
+public enum ChargedJumpMode
+{
+    Fixed,
+    Proportional,
+    Proportional_With_Min
+}
 #endregion
 
 #region ----[ REQUIRECOMPONENT ]----
@@ -187,31 +194,33 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     [Header(" --- CHARGE JUMP ---")]
     //[Tooltip("If true, any charge jump will always the same fixed amount, which is equal to the chargeJumpMaxJumpHeight.")]
     //public bool chargeJumpFixedAmount = false;
+    public ChargedJumpMode chargedJumpMode = ChargedJumpMode.Proportional;
+    [Tooltip("The bigger the multiplier, the faster we will adquire height by ChargedJumping. Normal value would be = 1 ~")]
     [Range(0, 6)]
-    public float chargeJumpFallenHeightMultiplier = 1f;
+    public float chargedJumpFallenHeightMultiplier = 1f;
     [Range(0, 2)]
-    public float chargeJumpReleaseTimeBeforeLand = 0.5f;
+    public float chargedJumpReleaseTimeBeforeLand = 0.5f;
     [Range(0, 2)]
-    public float chargeJumpReleaseTimeAfterLand = 0.5f;
-    public float chargeJumpMaxJumpHeight = 100;
+    public float chargedJumpReleaseTimeAfterLand = 0.5f;
+    public float chargedJumpMaxJumpHeight = 100;
     [Range(0, 1)]
-    public float chargeJumpMinPercentageNeeded = 0.3f;
-    float chargeJumpMaxHeight = 80;//clouds height
-    bool chargeJumpChargingJump = false;
-    float chargeJumpLastApexHeight;
-    float chargeJumpCurrentJumpMaxHeight;
-    float chargeJumpCurrentReleaseTime = 0;
-    bool chargeJumpButtonReleased;
-    bool chargeJumpLanded = false;
-    float chargeJumpLandedTime = 0;
-    float chargeJumpChargingStartHeight;
+    public float chargedJumpMinPercentageNeeded = 0.3f;
+    float chargedJumpMaxHeight = 80;//clouds height
+    bool chargedJumpChargingJump = false;
+    float chargedJumpLastApexHeight;
+    float chargedJumpCurrentJumpMaxHeight;
+    float chargedJumpCurrentReleaseTime = 0;
+    bool chargedJumpButtonReleased;
+    bool chargedJumpLanded = false;
+    float chargedJumpLandedTime = 0;
+    float chargedJumpChargingStartHeight;
     bool failedJump = false;
-    bool isChargeJump//for StartJump only
+    bool isChargedJump//for StartJump only
     {
         get
         {
             bool result = false;
-            result = collCheck.below && chargeJumpChargingJump && isFloorChargeJumpable && (jumpSt == JumpState.Falling || jumpSt == JumpState.None);
+            result = collCheck.below && chargedJumpChargingJump && isFloorChargeJumpable && (jumpSt == JumpState.Falling || jumpSt == JumpState.None);
             if (!disableAllDebugs) Debug.LogWarning("isChargeJump = " + result);
             return result;
         }
@@ -235,7 +244,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         get
         {
             bool result = false;
-            float totalFallenHeight = chargeJumpLastApexHeight - transform.position.y;
+            float totalFallenHeight = chargedJumpLastApexHeight - transform.position.y;
             float auxBounceJumpCurrentMaxHeight = totalFallenHeight * bounceJumpMultiplier;
             result = collCheck.below && isFloorBounceJumpable && auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight
                 && jumpSt == JumpState.Falling;
@@ -618,7 +627,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         }
                         break;
                     case PlayerInput.StartChargingChargeJump:
-                        if (StartChargingChargeJump(true))
+                        if (StartChargingChargedJump(true))
                         {
                             inputsBuffer[i].StopBuffering();
                         }
@@ -729,6 +738,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                             {
                                 //if (!disableAllDebugs && hardSteerOn) Debug.LogError("HARD STEER ON: STARTED");
                                 hardSteerDir = currentInputDir;
+                                RotateCharacterInstantly(hardSteerDir);
                             }
                         }
                         break;
@@ -1102,7 +1112,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         {
             if (jumpSt == JumpState.None || jumpSt == JumpState.Falling)
             {
-                ProcessChargingChargeJump();
+                ProcessChargingChargedJump();
             }
 
             switch (jumpSt)
@@ -1112,14 +1122,14 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     {
                         if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
                         jumpSt = JumpState.Falling;
-                        chargeJumpLastApexHeight = transform.position.y;
+                        chargedJumpLastApexHeight = transform.position.y;
                         //Debug.Log("START FALLING");
                     }
                     currentVel.y += gravity * Time.deltaTime;
                     break;
                 case JumpState.Falling:
 
-                    if (!chargeJumpChargingJump && collCheck.below && !collCheck.sliping)
+                    if (!chargedJumpChargingJump && collCheck.below && !collCheck.sliping)
                     {
                         if (StartBounceJump())
                             break;
@@ -1143,48 +1153,40 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     }
                     else
                     {
-                        if (inputsInfo.JumpWasReleased || !actions.A.IsPressed)//Input.GetButtonUp(contName + "A"))
+                        if (inputsInfo.JumpWasReleased || !actions.A.IsPressed)//This condition is actually correct, first one is for release stored on buffer from Update. Second one is for when you tap too fast the jump button
                         {
                             jumpSt = JumpState.Breaking;
                         }
                     }
                     break;
                 case JumpState.Breaking:
-                    currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
                     if (currentVel.y <= 0)
                     {
-                        if (!disableAllDebugs) Debug.Log("JumpSt = None");
-                        jumpSt = JumpState.None;
-                        mover.stickToGround = true;
-                        if (!disableAllDebugs) Debug.LogWarning("stickToGround On");
+                        ResetJumpState();
                     }
+                    currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
                     break;
                 case JumpState.WallJumping:
                     currentVel.y += wallJumpSlidingAcc * Time.deltaTime;
                     break;
                 case JumpState.WallJumped:
-                    if (currentVel.y < 0 && (!collCheck.below || collCheck.sliping))
+                    if (currentVel.y <= 0 && (!collCheck.below || collCheck.sliping))
                     {
-                        if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
-                        jumpSt = JumpState.Falling;
-                        chargeJumpLastApexHeight = transform.position.y;
-                        //Debug.Log("START FALLING");
+                        ResetJumpState();
                     }
                     currentVel.y += gravity * Time.deltaTime;
                     break;
                 case JumpState.ChargeJumping:
                     if (currentVel.y <= 0)
                     {
-                        if (!disableAllDebugs) Debug.Log("JumpSt = None");
-                        jumpSt = JumpState.None;
+                        ResetJumpState();
                     }
                     currentVel.y += currentGravity * Time.deltaTime;
                     break;
                 case JumpState.BounceJumping:
                     if (currentVel.y <= 0)
                     {
-                        if (!disableAllDebugs) Debug.Log("JumpSt = None");
-                        jumpSt = JumpState.None;
+                        ResetJumpState();
                     }
                     currentVel.y += currentGravity * Time.deltaTime;
                     break;
@@ -1204,13 +1206,21 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         }
 
         //TO REDO
-        if ((/*controller.collisions.above ||*/ collCheck.below) && !hooked && !collCheck.sliping)
+        if ((/*controller.collisions.above ||*/ collCheck.below) && !hooked && !collCheck.sliping && mover.stickToGround)
         {
             currentVel.y = 0;
             //if (controller.collisions.above) StopJump();
         }
 
         //Debug.Log("Vert Mov Fin: currentVel = " + currentVel.ToString("F6") + "; below = "+collCheck.below);
+    }
+
+    void ResetJumpState()
+    {
+        if (!disableAllDebugs) Debug.Log("JumpSt = None");
+        jumpSt = JumpState.None;
+        mover.stickToGround = true;
+        /*if (!disableAllDebugs) */Debug.LogWarning("stickToGround On");
     }
 
     Vector3 finalVel;
@@ -1264,7 +1274,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             if (!StartWallJump())
             {
                 Debug.Log("FAILED WALLJUMP... Try CHARGING CHARGE JUMP ");
-                StartChargingChargeJump();
+                StartChargingChargedJump();
             }
         }
     }
@@ -1276,12 +1286,13 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         if (!noInput && moveSt != MoveState.Boost)
         {
             if (!disableAllDebugs) Debug.Log("START JUMP: below = " + collCheck.below + "; jumpInsurance = " + jumpInsurance + "; sliding = " + collCheck.sliping + "; inWater = " + inWater);
-            if (((collCheck.below && !collCheck.sliping) || jumpInsurance) && !isChargeJump && !isBounceJump &&
+            if (((collCheck.below && !collCheck.sliping) || jumpInsurance) && !isChargedJump && !isBounceJump &&
                 (!inWater || (inWater /*&& controller.collisions.around*/ &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameControllerCMF_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
                 if (!disableAllDebugs) Debug.LogWarning("JUMP!");
                 mover.stickToGround = false;
+                /*if (!disableAllDebugs) */Debug.LogWarning("stickToGround Off");
                 //PlayerAnimation_01.startJump = true;
                 myPlayerAnimation.SetJump(true);
                 result = true;
@@ -1312,7 +1323,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         jumpSt = JumpState.None;
         timePressingJump = 0;
         mover.stickToGround = true;
-        if (!disableAllDebugs) Debug.LogWarning("stickToGround On");
+        /*if (!disableAllDebugs)*/ Debug.LogWarning("stickToGround On");
     }
 
     void ProcessJumpInsurance()
@@ -1349,9 +1360,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     /// <returns></returns>
     bool StartWallJump(bool calledFromBuffer = false)
     {
-        if (calledFromBuffer) Debug.Log("TRY WALLJUMP FROM BUFFER");
-        /*if (!disableAllDebugs)*/
-        Debug.LogWarning("Check Wall jump: wall real normal = " + collCheck.wallSlopeAngle);
+        if (!disableAllDebugs && calledFromBuffer) Debug.Log("TRY WALLJUMP FROM BUFFER");
+        if (!disableAllDebugs) Debug.LogWarning("Check Wall jump: wall real normal = " + collCheck.wallSlopeAngle);
         bool result = false;
         float slopeAngle = collCheck.wallSlopeAngle;
         bool goodWallAngle = !(slopeAngle >= 110 && slopeAngle <= 180);
@@ -1381,18 +1391,18 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 //STOP OTHER JUMPS BUFFERINGS AND PROCESSES
                 StopBufferedInput(PlayerInput.Jump);
                 StopBufferedInput(PlayerInput.StartChargingChargeJump);
-                StopChargingChargeJump();
+                StopChargingChargedJump();
             }
 
         }
         else
         {
             /*if (!disableAllDebugs)*/
-            Debug.Log("Couldn't wall jump because:  !collCheck.below (" + !collCheck.below + ") && !inWater(" + !inWater + ") &&" +
-" jumpedOutOfWater(" + jumpedOutOfWater + ") && goodWallAngle(" + goodWallAngle + ") && wallJumpCurrentWall != null(" + (wallJumpCurrentWall != null) + ") && " +
-"(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ") || " +
-"(lastWallAngle == collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ")&& " +
-"lastWall != collCheck.wall(" + (lastWall != collCheck.wall) + ")))");
+//            Debug.Log("Couldn't wall jump because:  !collCheck.below (" + !collCheck.below + ") && !inWater(" + !inWater + ") &&" +
+//" jumpedOutOfWater(" + jumpedOutOfWater + ") && goodWallAngle(" + goodWallAngle + ") && wallJumpCurrentWall != null(" + (wallJumpCurrentWall != null) + ") && " +
+//"(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ") || " +
+//"(lastWallAngle == collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ")&& " +
+//"lastWall != collCheck.wall(" + (lastWall != collCheck.wall) + ")))");
         }
         if (!result && !calledFromBuffer)
         {
@@ -1502,20 +1512,20 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     }
     #endregion
 
-    #region --- Charge Jump ---
-    bool StartChargingChargeJump(bool calledFromBuffer = false)
+    #region --- Charged Jump ---
+    bool StartChargingChargedJump(bool calledFromBuffer = false)
     {
         bool result = false;
-        Debug.Log("Start Charging Charge Jump ? chargeJumpChargingJump = " + chargeJumpChargingJump);
-        if (!chargeJumpChargingJump && !chargeJumpButtonReleased && jumpSt == JumpState.Falling && !inWater && !noInput && !jumpInsurance)
+        //Debug.Log("Start Charging Charge Jump ? chargeJumpChargingJump = " + chargedJumpChargingJump);
+        if (!chargedJumpChargingJump && !chargedJumpButtonReleased && jumpSt == JumpState.Falling && !inWater && !noInput && !jumpInsurance)
         {
             result = true;
-            chargeJumpChargingJump = true;
-            chargeJumpLanded = false;
+            chargedJumpChargingJump = true;
+            chargedJumpLanded = false;
             //chargeJumpButtonReleased = false;
-            chargeJumpCurrentReleaseTime = 0;
-            chargeJumpLandedTime = 0;
-            chargeJumpChargingStartHeight = transform.position.y;
+            chargedJumpCurrentReleaseTime = 0;
+            chargedJumpLandedTime = 0;
+            chargedJumpChargingStartHeight = transform.position.y;
             failedJump = false;
             //StopBufferedInput(PlayerInput.Jump);
             Debug.Log("Start Charging Jump");
@@ -1528,127 +1538,159 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         return result;
     }
 
-    void ProcessChargingChargeJump()
+    void ProcessChargingChargedJump()
     {
-        if (chargeJumpChargingJump)
+        if (chargedJumpChargingJump)
         {
-            if (!chargeJumpButtonReleased && inputsInfo.JumpWasReleased)
+            if (!chargedJumpButtonReleased && inputsInfo.JumpWasReleased)
             {
-                chargeJumpButtonReleased = true;
+                chargedJumpButtonReleased = true;
             }
 
-            if (!chargeJumpLanded && collCheck.below)
+            if (!chargedJumpLanded && collCheck.below)
             {
                 if (!isFloorChargeJumpable)
                 {
-                    StopChargingChargeJump();
+                    StopChargingChargedJump();
                     StartBounceJump();
                     return;
                 }
-                chargeJumpLanded = true;
+                chargedJumpLanded = true;
             }
 
-            Debug.Log("charging jump: button released = " + chargeJumpButtonReleased);
-            if (chargeJumpButtonReleased)
+            //Debug.Log("charging jump: button released = " + chargedJumpButtonReleased);
+            if (chargedJumpButtonReleased)
             {
-                Debug.Log("charging jump: chargeJumpLanded = " + chargeJumpLanded);
-                if (chargeJumpLanded)
+                //Debug.Log("charging jump: chargeJumpLanded = " + chargedJumpLanded);
+                if (chargedJumpLanded)
                 {
-                    StopChargingChargeJump();
+                    StopChargingChargedJump();
                     if (failedJump)
                     {
                         StartBounceJump();
                     }
                     else
                     {
-                        StartChargeJump();
+                        StartChargedJump();
                     }
                     return;
                 }
 
                 //FAIL?
-                if (chargeJumpCurrentReleaseTime >= chargeJumpReleaseTimeBeforeLand)//FAIL: Released too early
+                if (chargedJumpCurrentReleaseTime >= chargedJumpReleaseTimeBeforeLand)//FAIL: Released too early
                 {
                     Debug.LogWarning("Charged Jump-> FAILED JUMP: RELEASED TOO EARLY");
                     failedJump = true;
                     return;
                 }
 
-                chargeJumpCurrentReleaseTime += Time.deltaTime;
+                chargedJumpCurrentReleaseTime += Time.deltaTime;
             }
 
             //FAIL?
-            if (chargeJumpLanded && !chargeJumpButtonReleased)
+            if (chargedJumpLanded && !chargedJumpButtonReleased)
             {
-                if (chargeJumpLandedTime >= chargeJumpReleaseTimeAfterLand)//FAIL: Released too late
+                if (chargedJumpLandedTime >= chargedJumpReleaseTimeAfterLand)//FAIL: Released too late
                 {
                     Debug.LogWarning("Charged Jump-> FAILED JUMP: RELEASED TOO LATE");
-                    StopChargingChargeJump();
+                    StopChargingChargedJump();
                     StartBounceJump();
                     return;
                 }
-                Debug.Log("chargeJumpLandedTime  = " + chargeJumpLandedTime);
-                chargeJumpLandedTime += Time.deltaTime;
+                //Debug.Log("chargeJumpLandedTime  = " + chargedJumpLandedTime);
+                chargedJumpLandedTime += Time.deltaTime;
             }
         }
     }
 
-    void StopChargingChargeJump()
+    void StopChargingChargedJump()
     {
-        if (chargeJumpChargingJump)
+        if (chargedJumpChargingJump)
         {
-            chargeJumpChargingJump = false;
-            chargeJumpLanded = false;
-            chargeJumpButtonReleased = false;
-            chargeJumpCurrentReleaseTime = 0;
-            chargeJumpLandedTime = 0;
+            chargedJumpChargingJump = false;
+            chargedJumpLanded = false;
+            chargedJumpButtonReleased = false;
+            chargedJumpCurrentReleaseTime = 0;
+            chargedJumpLandedTime = 0;
             Debug.Log("Stop Charging Jump");
         }
     }
 
-    void StartChargeJump()
+    void StartChargedJump()
     {
-        Debug.Log("Start Charge Jump?");
+        //Debug.Log("Start Charge Jump?");
         if (isFloorChargeJumpable && !inWater && !noInput)
         {
-            float totalFallenHeight = chargeJumpLastApexHeight - transform.position.y;
+            float totalFallenHeight = chargedJumpLastApexHeight - transform.position.y;
             if (totalFallenHeight == 0) Debug.LogError("Charge Jump Error: totalFallenHeight = 0");
-            float totalChargedHeight = chargeJumpChargingStartHeight - transform.position.y;
+            float totalChargedHeight = chargedJumpChargingStartHeight - transform.position.y;
             float percentageCharged = totalChargedHeight / totalFallenHeight;
-            if (percentageCharged >= chargeJumpMinPercentageNeeded)
+            if (percentageCharged >= chargedJumpMinPercentageNeeded)
             {
                 Debug.Log("DO CHARGE JUMP!");
-                float distToCloudHeight = Mathf.Abs(chargeJumpMaxHeight - transform.position.y);
-                float currentMaxHeight = Mathf.Min(chargeJumpMaxJumpHeight, distToCloudHeight);
+                float distToCloudHeight = Mathf.Abs(chargedJumpMaxHeight - transform.position.y);
+                float currentMaxHeight = Mathf.Min(chargedJumpMaxJumpHeight, distToCloudHeight);
                 StageScript stageScript = collCheck.floor != null ? collCheck.floor.GetComponent<StageScript>() : null;
 
-                bool fixedAmount = stageScript != null ? stageScript.fixedChargeJump : false;
-                if (!fixedAmount)
+                switch (chargedJumpMode)
                 {
-                    float auxChargeJumpCurrentJumpMaxHeight = totalFallenHeight + (totalFallenHeight * percentageCharged * chargeJumpFallenHeightMultiplier);
-                    chargeJumpCurrentJumpMaxHeight = Mathf.Clamp(auxChargeJumpCurrentJumpMaxHeight, jumpHeight, currentMaxHeight);
+                    case ChargedJumpMode.Fixed:
+                        bool isFixedJump = stageScript != null && stageScript.chargeJumpAmount >= 0 ? true : false;
+                        if (!isFixedJump)
+                        {
+                            //Proportional Mode Copy
+                            float auxChargeJumpCurrentJumpMaxHeight1 = totalFallenHeight + (totalFallenHeight * percentageCharged * chargedJumpFallenHeightMultiplier);
+                            chargedJumpCurrentJumpMaxHeight = Mathf.Clamp(auxChargeJumpCurrentJumpMaxHeight1, jumpHeight, currentMaxHeight);
+                        }
+                        else
+                        {
+                            float chargeJumpHeight = stageScript != null && stageScript.chargeJumpAmount >= 0 ? stageScript.chargeJumpAmount : chargedJumpMaxJumpHeight;
+                            chargedJumpCurrentJumpMaxHeight = chargeJumpHeight;
+                        }
+                        break;
+                    case ChargedJumpMode.Proportional:
+                        float auxChargeJumpCurrentJumpMaxHeight2 = totalFallenHeight + (totalFallenHeight * percentageCharged * chargedJumpFallenHeightMultiplier);
+                        chargedJumpCurrentJumpMaxHeight = Mathf.Clamp(auxChargeJumpCurrentJumpMaxHeight2, jumpHeight, currentMaxHeight);
+                        break;
+                    case ChargedJumpMode.Proportional_With_Min:
+                        bool hasMinHeight = stageScript != null && stageScript.chargeJumpAmount >= 0 ? true : false;
+                        float chargedJumpMinJumpHeight = hasMinHeight? stageScript .chargeJumpAmount: jumpHeight;
+
+                        float auxChargeJumpCurrentJumpMaxHeight3 = totalFallenHeight + (totalFallenHeight * percentageCharged * chargedJumpFallenHeightMultiplier);
+                        chargedJumpCurrentJumpMaxHeight = Mathf.Clamp(auxChargeJumpCurrentJumpMaxHeight3, chargedJumpMinJumpHeight, currentMaxHeight);
+                        break;
                 }
-                else
-                {
-                    float chargeJumpHeight = stageScript != null && stageScript.chargeJumpAmount > 0 ? stageScript.chargeJumpAmount : chargeJumpMaxJumpHeight;
-                    chargeJumpCurrentJumpMaxHeight = chargeJumpHeight;
-                }
-                float chargeJumpApexTime = Mathf.Sqrt((2 * chargeJumpCurrentJumpMaxHeight) / Mathf.Abs(currentGravity));
+
+                //bool isFixedJump = stageScript != null && stageScript.chargeJumpAmount>0 ? true : false;
+                //if (!isFixedJump)
+                //{
+                //    float auxChargeJumpCurrentJumpMaxHeight = totalFallenHeight + (totalFallenHeight * percentageCharged * chargedJumpFallenHeightMultiplier);
+                //    chargedJumpCurrentJumpMaxHeight = Mathf.Clamp(auxChargeJumpCurrentJumpMaxHeight, jumpHeight, currentMaxHeight);
+                //}
+                //else
+                //{
+                //    float chargeJumpHeight = stageScript != null && stageScript.chargeJumpAmount > 0 ? stageScript.chargeJumpAmount : chargedJumpMaxJumpHeight;
+                //    chargedJumpCurrentJumpMaxHeight = chargeJumpHeight;
+                //}
+                float chargeJumpApexTime = Mathf.Sqrt((2 * chargedJumpCurrentJumpMaxHeight) / Mathf.Abs(currentGravity));
                 float chargeJumpJumpVelocity = Mathf.Abs(currentGravity * chargeJumpApexTime);
 
                 mover.stickToGround = false;
+                /*if (!disableAllDebugs) */
+                Debug.LogWarning("stickToGround Off");
+
                 collCheck.below = false;
                 currentVel.y = chargeJumpJumpVelocity;
 
                 jumpSt = JumpState.ChargeJumping;
-                Debug.Log("percentageCharged = " + percentageCharged + "; totalFallenHeight = " + totalFallenHeight + "; chargeJumpMaxHeight = " + chargeJumpMaxHeight + "; transform.position.y = "
-                    + transform.position.y + "; distToCloudHeight = " + distToCloudHeight + "; currentMaxHeight = " + currentMaxHeight
-                    + "; chargeJumpCurrentJumpMaxHeight = " + chargeJumpCurrentJumpMaxHeight + "; chargeJumpApexTime = "
-                    + chargeJumpApexTime + "; chargeJumpJumpVelocity = " + chargeJumpJumpVelocity);
+                //Debug.Log("percentageCharged = " + percentageCharged + "; totalFallenHeight = " + totalFallenHeight + "; chargeJumpMaxHeight = " + chargedJumpMaxHeight + "; transform.position.y = "
+                //    + transform.position.y + "; distToCloudHeight = " + distToCloudHeight + "; currentMaxHeight = " + currentMaxHeight
+                //    + "; chargeJumpCurrentJumpMaxHeight = " + chargedJumpCurrentJumpMaxHeight + "; chargeJumpApexTime = "
+                //    + chargeJumpApexTime + "; chargeJumpJumpVelocity = " + chargeJumpJumpVelocity);
             }
             else
             {
-                Debug.LogWarning("Charged Jump-> Failed Jump: Charged less than a " + (chargeJumpMinPercentageNeeded * 100) + "% of the fall");
+                Debug.LogWarning("Charged Jump-> Failed Jump: Charged less than a " + (chargedJumpMinPercentageNeeded * 100) + "% of the fall");
                 StartBounceJump();
             }
         }
@@ -1662,16 +1704,19 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         bool result = false;
         if (!inWater && isFloorBounceJumpable)
         {
-            float totalFallenHeight = chargeJumpLastApexHeight - transform.position.y;
-            chargeJumpCurrentJumpMaxHeight = totalFallenHeight * bounceJumpMultiplier;
-            if (chargeJumpCurrentJumpMaxHeight >= bounceJumpMinHeight)
+            float totalFallenHeight = chargedJumpLastApexHeight - transform.position.y;
+            chargedJumpCurrentJumpMaxHeight = totalFallenHeight * bounceJumpMultiplier;
+            if (chargedJumpCurrentJumpMaxHeight >= bounceJumpMinHeight)
             {
                 /*if (!disableAllDebugs)*/
                 Debug.Log("DO BOUNCE JUMP");
-                float chargeJumpApexTime = Mathf.Sqrt((2 * chargeJumpCurrentJumpMaxHeight) / Mathf.Abs(currentGravity));
+                float chargeJumpApexTime = Mathf.Sqrt((2 * chargedJumpCurrentJumpMaxHeight) / Mathf.Abs(currentGravity));
                 float chargeJumpJumpVelocity = Mathf.Abs(currentGravity * chargeJumpApexTime);
 
                 mover.stickToGround = false;
+                /*if (!disableAllDebugs) */
+                Debug.LogWarning("stickToGround Off");
+
                 collCheck.below = false;
                 currentVel.y = chargeJumpJumpVelocity;
                 jumpSt = JumpState.BounceJumping;
@@ -1703,7 +1748,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
             //myPlayerAnimation_01.dash = true;
             mover.stickToGround = false;
-            if (!disableAllDebugs) Debug.LogWarning("stickToGround Off");
+            /*if (!disableAllDebugs)*/ Debug.LogWarning("stickToGround Off");
             boostCurrentFuel -= boostCapacity * boostFuelLostOnStart;
             boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
             moveSt = MoveState.Boost;
@@ -1766,7 +1811,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         {
             //print("STOP BOOST");
             mover.stickToGround = true;
-            if (!disableAllDebugs) Debug.LogWarning("stickToGround On");
+            /*if (!disableAllDebugs)*/ Debug.LogWarning("stickToGround On");
             moveSt = MoveState.None;
             StartBoostCD();
             myPlayerHUD.StopCamVFX(CameraVFXType.Dash);
@@ -1864,7 +1909,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         }
         currentFacingDir = rotateObj.forward;
         //print("currentFacingDir = " + currentFacingDir + "; currentCamFacingDir = " + currentCamFacingDir);
-
     }
 
     public void RotateCharacter(float rotSpeed = 0)
@@ -1898,23 +1942,26 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 }
                 break;
         }
-        print("current angle = " + rotateObj.rotation.eulerAngles.y + "; currentInputDir = " + currentInputDir);
+        //print("current angle = " + rotateObj.rotation.eulerAngles.y + "; currentInputDir = " + currentInputDir);
     }
 
     void SmoothRotateCharacter()
     {
-        float currentAngle = rotateObj.rotation.eulerAngles.y;
-        //if(currentAngle != targetRotAngle)
-        //{
-        float result1 = currentAngle - targetRotAngle;
-        float result2 = currentAngle - (targetRotAngle + (360 * Mathf.Sign(result1)));
-        bool normal = Mathf.Abs(result1) <= Mathf.Abs(result2);
-        float newAngle = normal ? targetRotAngle : targetRotAngle >= 0 && targetRotAngle < 180 ? targetRotAngle + 360 : targetRotAngle - 360;
-        currentAngle = Mathf.Lerp(currentAngle, newAngle, 0.3f);
-        Debug.Log("currentAngle = " + rotateObj.rotation.eulerAngles.y + "; targetRotAngle = " + targetRotAngle + "; newAngle = " + newAngle +
-            "; result1 = " + result1 + "; result2 = " + result2 + "; normal = " + normal);
-        rotateObj.localRotation = Quaternion.Euler(0, currentAngle, 0);
-        //}
+        if(myCamera.camMode == cameraMode.Free)
+        {
+            float currentAngle = rotateObj.rotation.eulerAngles.y;
+            //if(currentAngle != targetRotAngle)
+            //{
+            float result1 = currentAngle - targetRotAngle;
+            float result2 = currentAngle - (targetRotAngle + (360 * Mathf.Sign(result1)));
+            bool normal = Mathf.Abs(result1) <= Mathf.Abs(result2);
+            float newAngle = normal ? targetRotAngle : targetRotAngle >= 0 && targetRotAngle < 180 ? targetRotAngle + 360 : targetRotAngle - 360;
+            currentAngle = Mathf.Lerp(currentAngle, newAngle, 0.4f);
+            //Debug.Log("currentAngle = " + rotateObj.rotation.eulerAngles.y + "; targetRotAngle = " + targetRotAngle + "; newAngle = " + newAngle +
+            //    "; result1 = " + result1 + "; result2 = " + result2 + "; normal = " + normal);
+            rotateObj.localRotation = Quaternion.Euler(0, currentAngle, 0);
+            //}
+        }
     }
 
     void RotateCharacter(Vector3 dir)
@@ -1928,7 +1975,21 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         targetRotAngle = angle;
         rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
-        Debug.Log(angle);
+        Debug.Log("RotateCharacterInstantly: angle = "+angle);
+    }
+
+    void RotateCharacterInstantly(Vector3 direction)
+    {
+        Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
+        Vector3 lookingDir = wallJumping ? currentInputDir : hardSteerOn ? hardSteerDir : horVel; lookingDir.Normalize();
+        if (lookingDir != Vector3.zero)
+        {
+            float angle = Mathf.Acos(((0 * lookingDir.x) + (1 * lookingDir.z)) / (1 * lookingDir.magnitude)) * Mathf.Rad2Deg;
+            angle = lookingDir.x < 0 ? 360 - angle : angle;
+            targetRotAngle = angle;
+            rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
+            Debug.Log("RotateCharacterInstantly: direction = "+ direction+"; angle = " + angle);
+        }
     }
 
     #endregion

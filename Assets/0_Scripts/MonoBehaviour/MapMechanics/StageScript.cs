@@ -13,7 +13,7 @@ public class StageScript : MonoBehaviour {
 
         [Header(" --- Charge Jump ---")]
     public bool chargeJumpable = false;
-    public bool fixedChargeJump = false;
+    //public bool fixedChargeJump = false;
     public float chargeJumpAmount = -1;
 
     public bool bounceJumpable = true;
