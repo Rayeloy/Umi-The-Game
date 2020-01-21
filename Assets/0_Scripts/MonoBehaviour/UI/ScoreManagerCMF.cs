@@ -9,17 +9,16 @@ public class ScoreManagerCMF : MonoBehaviour
     // Use this for initialization
 
     [Tooltip("Tiempo de juego en segundos")]
-    [SerializeField]
-    private float Tiempo = 120;
-    private float _Tiempo;
+    public float gameTime = 120;
+    private float currentGameTime=0;
 
     [HideInInspector]
     public bool End = false;
 
 
     public int maxScore;
-    private int _blueTeamScore;
-    private int _redTeamScore;
+    private int _teamAScore;
+    private int _teamBScore;
 
     [SerializeField]
     private float tiempoProrroga = 0.0f;
@@ -27,18 +26,18 @@ public class ScoreManagerCMF : MonoBehaviour
     [HideInInspector]
     public bool prorroga = false;
 
-    public GameObject[] orcasRedTeam;
+    public GameObject[] teamAWhales;
     List<int> orcasRedIndex;
-    public GameObject[] orcasBlueTeam;
+    public GameObject[] teamBWhales;
     List<int> orcasBlueIndex;
 
     [Header("Referencias")]
-    public ParticleSystem blueFireworks;
-    public ParticleSystem redFireworks;
+    public ParticleSystem teamAFireworks;
+    public ParticleSystem teamBFireworks;
     [HideInInspector]
-    public List<TextMeshProUGUI> blueTeamScore_Text;
+    public List<TextMeshProUGUI> teamAScore_Text;
     [HideInInspector]
-    public List<TextMeshProUGUI> redTeamScore_Text;
+    public List<TextMeshProUGUI> teamBScore_Text;
     [HideInInspector]
     public List<TextMeshProUGUI> time_Text;
     //public RectTransform[] contador;
@@ -47,10 +46,10 @@ public class ScoreManagerCMF : MonoBehaviour
     public void KonoAwake(GameControllerCMF_FlagMode _gC)
     {
         gC = _gC;
-        blueTeamScore_Text = new List<TextMeshProUGUI>();
-        redTeamScore_Text = new List<TextMeshProUGUI>();
+        teamAScore_Text = new List<TextMeshProUGUI>();
+        teamBScore_Text = new List<TextMeshProUGUI>();
         time_Text = new List<TextMeshProUGUI>();
-        _Tiempo = Tiempo;
+        currentGameTime = gameTime;
         _tiempoProrroga = tiempoProrroga;
         orcasBlueIndex = new List<int>();
         orcasRedIndex = new List<int>();
@@ -59,14 +58,14 @@ public class ScoreManagerCMF : MonoBehaviour
     public void KonoStart()
     {
 
-        for (int i = 0; i < orcasRedTeam.Length; i++)
+        for (int i = 0; i < teamAWhales.Length; i++)
         {
-            orcasRedTeam[i].SetActive(false);
+            teamAWhales[i].SetActive(false);
             orcasRedIndex.Add(i);
         }
-        for (int i = 0; i < orcasBlueTeam.Length; i++)
+        for (int i = 0; i < teamBWhales.Length; i++)
         {
-            orcasBlueTeam[i].SetActive(false);
+            teamBWhales[i].SetActive(false);
             orcasBlueIndex.Add(i);
         }
     }
@@ -77,22 +76,22 @@ public class ScoreManagerCMF : MonoBehaviour
         End = false;
 
         //Tiempos
-        _Tiempo = Tiempo;
+        currentGameTime = gameTime;
         _tiempoProrroga = tiempoProrroga;
         for (int i = 0; i < time_Text.Count; i++)
             time_Text[i].color = Color.white;
 
         //Scores
-        _blueTeamScore = 0;
-        for (int i = 0; i < blueTeamScore_Text.Count; i++)
+        _teamAScore = 0;
+        for (int i = 0; i < teamAScore_Text.Count; i++)
         {
-            blueTeamScore_Text[i].text = _blueTeamScore.ToString();
+            teamAScore_Text[i].text = _teamAScore.ToString();
         }
 
-        _redTeamScore = 0;
-        for (int i = 0; i < redTeamScore_Text.Count; i++)
+        _teamBScore = 0;
+        for (int i = 0; i < teamBScore_Text.Count; i++)
         {
-            redTeamScore_Text[i].text = _redTeamScore.ToString();
+            teamBScore_Text[i].text = _teamBScore.ToString();
         }
 
         nPlayerEliminados = 0;
@@ -110,24 +109,24 @@ public class ScoreManagerCMF : MonoBehaviour
             return;
         }
 
-        _Tiempo -= Time.deltaTime;
+        currentGameTime -= Time.deltaTime;
         for (int i = 0; i < time_Text.Count; i++)
         {
-            time_Text[i].text = timeToString(_Tiempo);
+            time_Text[i].text = timeToString(currentGameTime);
         }
 
 
-        if (_Tiempo <= 0)
+        if (currentGameTime <= 0)
         {
             Team winner;
-            if (_blueTeamScore == _redTeamScore)
+            if (_teamAScore == _teamBScore)
             {
                 //PROGRAMAR EL CASO DE QUE AMBOS ACABEN CON EL MISMO SCORE
                 SetProrroga();
             }
             else
             {
-                winner = _blueTeamScore > _redTeamScore ? Team.A : Team.B;
+                winner = _teamAScore > _teamBScore ? Team.A : Team.B;
                 gC.StartGameOver(winner);
             }
         }
@@ -138,27 +137,29 @@ public class ScoreManagerCMF : MonoBehaviour
         switch (scoringTeam)
         {
             case Team.A:
-                _blueTeamScore++;
+                _teamAScore++;
                 RandomOrcaSpawn(Team.A);
-                blueFireworks.Play(true);
-                for (int i = 0; i < blueTeamScore_Text.Count; i++)
+                if (teamAFireworks != null)
+                    teamAFireworks.Play(true);
+                for (int i = 0; i < teamAScore_Text.Count; i++)
                 {
-                    blueTeamScore_Text[i].text = _blueTeamScore.ToString();
+                    teamAScore_Text[i].text = _teamAScore.ToString();
                 }
-                if (_blueTeamScore >= maxScore || prorroga)
+                if (_teamAScore >= maxScore || prorroga)
                 {
                     gC.StartGameOver(scoringTeam);
                 }
                 break;
             case Team.B:
-                _redTeamScore++;
+                _teamBScore++;
                 RandomOrcaSpawn(Team.B);
-                redFireworks.Play(true);
-                for (int i = 0; i < redTeamScore_Text.Count; i++)//foreach (TextMeshProUGUI tM in redTeamScore_Text)
+                if (teamBFireworks != null)
+                    teamBFireworks.Play(true);
+                for (int i = 0; i < teamBScore_Text.Count; i++)//foreach (TextMeshProUGUI tM in teamBScore_Text)
                 {
-                    redTeamScore_Text[i].text = _redTeamScore.ToString();
+                    teamBScore_Text[i].text = _teamBScore.ToString();
                 }
-                if (_redTeamScore >= maxScore || prorroga)
+                if (_teamBScore >= maxScore || prorroga)
                 {
                     gC.StartGameOver(scoringTeam);
                 }
@@ -177,7 +178,7 @@ public class ScoreManagerCMF : MonoBehaviour
                 }
                 int i = Random.Range(0, orcasBlueIndex.Count - 1);
                 int index = orcasBlueIndex[i];
-                orcasBlueTeam[index].SetActive(true);
+                teamAWhales[index].SetActive(true);
                 orcasBlueIndex.RemoveAt(i);
                 break;
             case Team.B:
@@ -187,7 +188,7 @@ public class ScoreManagerCMF : MonoBehaviour
                 }
                 i = Random.Range(0, orcasRedIndex.Count - 1);
                 index = orcasRedIndex[i];
-                orcasRedTeam[index].SetActive(true);
+                teamBWhales[index].SetActive(true);
                 orcasRedIndex.RemoveAt(i);
                 break;
         }
@@ -198,14 +199,14 @@ public class ScoreManagerCMF : MonoBehaviour
         orcasBlueIndex = new List<int>();
         orcasRedIndex = new List<int>();
 
-        for (int i = 0; i < orcasRedTeam.Length; i++)
+        for (int i = 0; i < teamBWhales.Length; i++)
         {
-            orcasRedTeam[i].SetActive(false);
+            teamBWhales[i].SetActive(false);
             orcasRedIndex.Add(i);
         }
-        for (int i = 0; i < orcasBlueTeam.Length; i++)
+        for (int i = 0; i < teamAWhales.Length; i++)
         {
-            orcasBlueTeam[i].SetActive(false);
+            teamAWhales[i].SetActive(false);
             orcasBlueIndex.Add(i);
         }
     }

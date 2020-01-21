@@ -728,8 +728,9 @@ public class PlayerHUDCMF : MonoBehaviour
     {
         if (gC.gameMode == GameMode.CaptureTheFlag)
         {
-            //Debug.Log("FLAGHOME ARROW UPDATE:  flagCurrentOwner= "+ flagCurrentOwner + "; flagCurrentOwner.team = "+ flagCurrentOwner.team + "; myPlayerMov.team = " + myPlayerMov.team);
-            if (flag.currentOwner != null && flag.currentOwner.GetComponent<PlayerMovement>().team == myPlayerMov.team)
+            //if(flagCurrentOwner!=null)   Debug.Log("FLAGHOME ARROW UPDATE:  flagCurrentOwner= "+ flagCurrentOwner + "; flagCurrentOwner.team = "+ flagCurrentOwner.team + "; myPlayerMov.team = " + myPlayerMov.team);
+            //Debug.Log("Flag.currentOwner = " + flag.currentOwner);
+            if (flag.currentOwner != null && flag.currentOwner.GetComponent<PlayerMovementCMF>().team == myPlayerMov.team)
             {
                 //Debug.Log("FLAGHOME ARROW UPDATE:  flagCurrentOwner= " + flagCurrentOwner + "; flagCurrentOwner.team = " + flagCurrentOwner.team + "; myPlayerMov.team = " + myPlayerMov.team);
                 flagHomeArrowFlagHomePos = flagHomeTransform.position + Vector3.up * 3;
@@ -896,16 +897,16 @@ public class PlayerHUDCMF : MonoBehaviour
         {
             case FlagArrowState.activated_OffScreen:
                 //if (!flagHomeArrowArrow.gameObject.activeInHierarchy) flagHomeArrowArrow.gameObject.SetActive(true);
-                flagHomeArrowArrow.GetComponent<Image>().color = flag.currentOwner.GetComponent<PlayerMovement>().team == Team.A ?
+                flagHomeArrowArrow.GetComponent<Image>().color = flag.currentOwner.GetComponent<PlayerMovementCMF>().team == Team.A ?
                         arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
-                flagHomeArrowIcon.GetComponent<Image>().color = flag.currentOwner.GetComponent<PlayerMovement>().team == Team.A ?
+                flagHomeArrowIcon.GetComponent<Image>().color = flag.currentOwner.GetComponent<PlayerMovementCMF>().team == Team.A ?
 arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
                 //flagArrowPickFlagGlowAnim.rect.GetComponent<Image>().color = flag.currentOwner.GetComponent<PlayerMovement>().team == Team.A ?
                 //    arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
                 break;
             case FlagArrowState.activated_OnScreen:
                 //if (flagHomeArrowArrow.gameObject.activeInHierarchy) flagArrowFixedRing.gameObject.SetActive(false);
-                flagHomeArrowIcon.GetComponent<Image>().color = flag.currentOwner.GetComponent<PlayerMovement>().team == Team.A ?
+                flagHomeArrowIcon.GetComponent<Image>().color = flag.currentOwner.GetComponent<PlayerMovementCMF>().team == Team.A ?
 arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
                 break;
         }

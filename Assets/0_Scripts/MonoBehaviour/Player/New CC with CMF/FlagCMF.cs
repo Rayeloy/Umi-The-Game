@@ -373,7 +373,7 @@ public class FlagCMF : MonoBehaviour
         //solo se puede poner away si se pierde en el agua o se marca un punto
         if (currentOwner != null)
         {
-            currentOwner.GetComponent<PlayerMovement>().LoseFlag();
+            currentOwner.GetComponent<PlayerMovementCMF>().LoseFlag();
             currentOwner = null;
         }
 

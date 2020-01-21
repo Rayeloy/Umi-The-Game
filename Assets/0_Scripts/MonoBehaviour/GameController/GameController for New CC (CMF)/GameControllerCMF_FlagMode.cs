@@ -49,9 +49,9 @@ public class GameControllerCMF_FlagMode : GameControllerCMF
         base.CreatePlayer(playerNumber);
         //if (!online)//Eloy: para Juan: en online habrá que solamente referenciar en el score manager a su player, no los de todos.
         //{
-        myScoreManager.blueTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().blueTeamScoreText);
-        myScoreManager.redTeamScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().redTeamScoreText);
-        myScoreManager.time_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUD>().timeText);
+        myScoreManager.teamAScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUDCMF>().blueTeamScoreText);
+        myScoreManager.teamBScore_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUDCMF>().redTeamScoreText);
+        myScoreManager.time_Text.Add(allCanvas[allCanvas.Count - 1].GetComponent<PlayerHUDCMF>().timeText);
         //}
         //else
         //{
@@ -65,8 +65,8 @@ public class GameControllerCMF_FlagMode : GameControllerCMF
         base.RemovePlayer(_pM);
         //if (!online)//Eloy: para Juan: como solo se referencia el nuestro propio, no hace falta borrar cosas del score manager cuando se borra a otro player. Solo borramos cuando nos borramos a nosotros.
         //{
-        myScoreManager.blueTeamScore_Text.RemoveAt(index);
-        myScoreManager.redTeamScore_Text.RemoveAt(index);
+        myScoreManager.teamAScore_Text.RemoveAt(index);
+        myScoreManager.teamBScore_Text.RemoveAt(index);
         myScoreManager.time_Text.RemoveAt(index);
         //}
     }
@@ -116,7 +116,7 @@ public class GameControllerCMF_FlagMode : GameControllerCMF
     {
         print("RESPAWN FLAG");
         Transform flag = StoringManager.instance.LookForObjectStoredTag("Flag");
-        Vector3 respawnPos = flag.GetComponent<Flag>().respawnPos;
+        Vector3 respawnPos = flag.GetComponent<FlagCMF>().respawnPos;
         RespawnFlagIssho(respawnPos);
     }
 
