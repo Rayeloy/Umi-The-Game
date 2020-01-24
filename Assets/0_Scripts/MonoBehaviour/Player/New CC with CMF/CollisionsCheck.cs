@@ -503,7 +503,7 @@ sphereCollBottom.transform.position : sphereCollMiddle.transform.position;
                 auxPlatformMovement.y = 0;
                 rb.position += auxPlatformMovement;
             }
-            Debug.LogWarning("platformMovement = " + platformMovement.ToString("F8")+"; newPos = "+platformNewWorldPoint.ToString("F8") + "; current pos = "+rb.position.ToString("F8"));
+            //Debug.LogWarning("platformMovement = " + platformMovement.ToString("F8")+"; newPos = "+platformNewWorldPoint.ToString("F8") + "; current pos = "+rb.position.ToString("F8"));
         }
         return platformMovement;
     }
