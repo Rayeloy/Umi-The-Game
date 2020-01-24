@@ -15,6 +15,7 @@ namespace AwesomeFolders
 		{
 			public string Name { get; set; }
 			public int Id { get; set; }
+			public Texture2D VeryHighResTex { get; set; }
 			public Texture2D HighResTex { get; set; }
 			public Texture2D LowResTex { get; set; }
 
@@ -58,7 +59,7 @@ namespace AwesomeFolders
 				id = int.Parse(key.Substring(0, hashIndex));
 			}
 
-			if (tex.width == 24 || tex.width == 10)
+			if (tex.width == 48 || tex.width == 24 || tex.width == 10)
 			{
 				return new IconElement(iconName, id);
 			}
@@ -68,7 +69,11 @@ namespace AwesomeFolders
 
 		public override void OnElementFound(GridElement element, Texture2D tex)
 		{
-			if (tex.width == 24)
+			if (tex.width == 48)
+			{
+				((IconElement)element).VeryHighResTex = tex;
+			}
+			else if (tex.width == 24)
 			{
 				((IconElement)element).HighResTex = tex;
 			}
