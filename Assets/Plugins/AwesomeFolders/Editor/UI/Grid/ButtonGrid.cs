@@ -14,7 +14,7 @@ namespace AwesomeFolders
 		protected string path;
 		protected float size;
 		protected float offset;
-		protected List<GridElement> elementList;
+		public List<GridElement> elementList;
 
 		/// <summary>
 		/// Represent a grid element (button) with a texture and a name
@@ -104,12 +104,14 @@ namespace AwesomeFolders
 		public ButtonAction DrawGrid()
 		{
 			EditorGUILayout.BeginVertical();
-			int perRow = (int)((EditorGUIUtility.currentViewWidth - 26 - offset) / (size + 2));
+
+			int perRow = (int)((EditorGUIUtility.currentViewWidth - offset * 2) / (size + 2));
 			int end = (int)Mathf.Ceil(elementList.Count / (float)perRow);
-			float remainingSpace = EditorGUIUtility.currentViewWidth - 26 - offset - (perRow * (size + 2));
+			float remainingSpace = EditorGUIUtility.currentViewWidth - offset * 2 - (perRow * (size + 2));
 			float additionnalSpace = remainingSpace / perRow;
-			
+
 			Rect rect = EditorGUILayout.GetControlRect();
+
 			float rectY = rect.y;
 			for (int y = 0; y < end; y++)
 			{
@@ -120,9 +122,8 @@ namespace AwesomeFolders
 					{
 						break;
 					}
-
 					
-					rect.x = x * (size + 2 + additionnalSpace) + 18 + offset + additionnalSpace * 0.5F;
+					rect.x = x * (size + 2 + additionnalSpace) + offset;
 					rect.y = y * (size + 2) + rectY;
 					rect.width = size;
 					rect.height = size;
@@ -138,6 +139,8 @@ namespace AwesomeFolders
 							return new ButtonAction(elementList[index], false);
 						}
 					}
+
+					OnButtonDrawn(elementList[index], rect);
 				}
 			}
 			GUILayout.Space(end * (size + 2) - 16);
@@ -151,5 +154,7 @@ namespace AwesomeFolders
 		public abstract void OnElementFound(GridElement element, Texture2D tex);
 
 		public abstract void OnAllElementFound();
+
+		public virtual void OnButtonDrawn(GridElement element, Rect rect) { }
 	}
 }

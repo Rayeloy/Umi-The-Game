@@ -37,6 +37,8 @@ namespace AwesomeFolders
 		private static MethodInfo postAssetIconEventRemove2;
 		private static MethodInfo onPostIconDrawMethod2;
 
+		private static GUIStyle iconBackgroundStyle;
+
 		// Data
 		private static object lastFolderTreeController;
 		private static object lastAssetTreeController;
@@ -56,8 +58,9 @@ namespace AwesomeFolders
 		static void CheckInitialized()
 		{
 			PreferencesUI.InitPreferences();
+			PreferencesUI.AutoConvertAssets();
 
-			if (!EditorPrefs.GetBool("ext_" + ResourceUtil.ExtensionName + "_enabled"))
+			if (!PreferencesUI.folderIconEnabled)
 			{
 				return;
 			}
@@ -167,6 +170,18 @@ namespace AwesomeFolders
 			if(folderIcon != null)
 			{
 				Rect newRect = (Rect) ActualImageDrawPosition.Invoke(null, new object[] { iconRect, folderIcon.width, folderIcon.height });
+
+				// Draw rectangle to cover previous icons
+				if (!isListMode)
+				{
+					if (iconBackgroundStyle == null)
+					{
+						iconBackgroundStyle = "ProjectBrowserIconAreaBg";
+					}
+
+					GUI.Label(iconRect, GUIContent.none, iconBackgroundStyle);
+				}
+
 				GUI.DrawTexture(newRect, folderIcon, ScaleMode.ScaleToFit);
 			}
 		}
@@ -199,7 +214,7 @@ namespace AwesomeFolders
 				if (guids.Length == 2)
 				{
 					Texture2D folderIcon = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[highRes ? 1 : 0]), typeof(Texture2D));
-					if(EditorPrefs.GetBool("ext_" + ResourceUtil.ExtensionName + "_enabled"))
+					if(PreferencesUI.folderIconEnabled)
 					{
 						return folderIcon;
 					}

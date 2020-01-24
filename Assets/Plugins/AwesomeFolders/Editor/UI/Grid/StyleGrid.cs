@@ -46,7 +46,7 @@ namespace AwesomeFolders
 		/// </summary>
 		/// <param name="path">Path to search for texture</param>
 		/// <param name="size">Button size</param>
-		public StyleGrid(string path, float size) : base(path, size) {}
+		public StyleGrid(string path, float size, float offset) : base(path, size, offset) {}
 
 		public override GridElement GetElementForTexture(Texture2D tex, string key, string texPath)
 		{
@@ -61,19 +61,34 @@ namespace AwesomeFolders
 
 		public override void OnElementFound(GridElement element, Texture2D tex)
 		{
-			if (tex.width == 64)
-			{
-				((StyleElement)element).HighResTex = tex;
-			}
-			else if (tex.width == 16)
+			if (tex.name.EndsWith("_16"))
 			{
 				((StyleElement)element).LowResTex = tex;
+			}
+			else
+			{
+				((StyleElement)element).HighResTex = tex;
 			}
 		}
 
 		public override void OnAllElementFound()
 		{
 			//elementList.Sort((a, b) => ((StyleElement)a).CreationDate.CompareTo(((StyleElement)b).CreationDate));
+		}
+
+		public override void OnButtonDrawn(GridElement element, Rect rect)
+		{
+			Rect smallRect = rect;
+			smallRect.size = new Vector2(16, 16);
+			smallRect.x += 9;
+			smallRect.y += 53;
+			if (PreferencesUI.settings.useNewUI)
+			{
+				GUI.DrawTexture(smallRect, ((StyleElement)element).LowResTex, ScaleMode.ScaleToFit, true, 1.0f, Color.black, 0, 0);
+			}
+			smallRect.x--;
+			smallRect.y--;
+			GUI.DrawTexture(smallRect, ((StyleElement)element).LowResTex);
 		}
 	}
 }
