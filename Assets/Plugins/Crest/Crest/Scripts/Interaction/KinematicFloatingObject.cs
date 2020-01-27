@@ -13,8 +13,6 @@ namespace Crest
     public class KinematicFloatingObject : FloatingObjectBase
     {
         public float gravity = 0.05f;
-        public float maxFloatingYSpeed = 10;
-
 
         [Header("Buoyancy Force")]
         [Tooltip("Offsets center of object to raise it (or lower it) in the water."), SerializeField]
@@ -22,7 +20,7 @@ namespace Crest
         [Tooltip("Strength of buoyancy force per meter of submersion in water."), SerializeField]
         float _buoyancyCoeff = 3f;
         [Tooltip("Strength of torque applied to match boat orientation to water normal."), SerializeField]
-        float _boyancyTorque = 8f;
+        public float buoyancyRotationSpeed = 0.02f;
 
         [Header("Wave Response")]
         [Tooltip("Diameter of object, for physics purposes. The larger this value, the more filtered/smooth the wave response will be."), SerializeField]
@@ -30,12 +28,10 @@ namespace Crest
         public override float ObjectWidth { get { return _objectWidth; } }
 
         [Header("Drag")]
-        [Tooltip("Vertical offset for where drag force should be applied."), SerializeField]
-        float _forceHeightOffset = -0.3f;
+
         [SerializeField] float _dragInWaterUp = 3f;
         [SerializeField] float _dragInWaterRight = 2f;
         [SerializeField] float _dragInWaterForward = 1f;
-        [SerializeField] float _dragInWaterRotational = 0.2f;
 
         [Header("Debug")]
         [SerializeField]
@@ -50,7 +46,7 @@ namespace Crest
 
         public override Vector3 Velocity => currentVelocity;
 
-        //Rigidbody _rb;
+        Rigidbody _rb;
         Vector3 currentVelocity;
 
         SamplingData _samplingData = new SamplingData();
@@ -59,7 +55,7 @@ namespace Crest
 
         void Start()
         {
-            //_rb = GetComponent<Rigidbody>();
+            _rb = GetComponent<Rigidbody>();
 
             if (OceanRenderer.Instance == null)
             {
@@ -70,9 +66,9 @@ namespace Crest
 
         void FixedUpdate()
         {
-            Debug.Log("KinFloatObject (" + name + "): currentVelocity PRE MOVE = " + currentVelocity.ToString("F6") + "; currentPos = " + transform.position.ToString("F6"));
-            transform.position += currentVelocity * Time.deltaTime;
-            Debug.Log("KinFloatObject (" + name + "): movement applied = " + (currentVelocity * Time.deltaTime).ToString("F6") + "; currentPos = " + transform.position.ToString("F6"));
+            //Debug.Log("KinFloatObject (" + name + "): currentVelocity PRE MOVE = " + currentVelocity.ToString("F6") + "; currentPos = " + transform.position.ToString("F6"));
+            transform.position += currentVelocity * Time.fixedDeltaTime;
+            //Debug.Log("KinFloatObject (" + name + "): movement applied = " + (currentVelocity * Time.deltaTime).ToString("F6") + "; currentPos = " + transform.position.ToString("F6"));
 
             AddForce(Vector3.down * gravity);
 
@@ -143,15 +139,21 @@ namespace Crest
                         new Color(1, 1, 1, 0.6f));
                 }
 
-                var velocityRelativeToWater = (currentVelocity * Time.deltaTime) - waterSurfaceVel;
+                var velocityRelativeToWater = currentVelocity - waterSurfaceVel;
 
                 var dispPos = undispPos + _displacementToObject;
                 if (_debugDraw) DebugDrawCross(dispPos, 4f, Color.white);
 
                 float height = dispPos.y;
 
-                float bottomDepth = height - transform.position.y + _raiseObject;
+                float bottomDepth = height - (transform.position.y + _raiseObject);
 
+                Vector3 waterSufacePos = new Vector3(transform.position.x, dispPos.y, transform.position.z);
+                Vector3 floatingObjectPos = new Vector3(transform.position.x, transform.position.y + _raiseObject, transform.position.z);
+
+                Debug.DrawLine(waterSufacePos, floatingObjectPos, Color.red);
+                //Debug.Log("KinematicFloatingObject " + name + " : Checking if inWater -> bottomDepth = " + bottomDepth.ToString("F6")+ "; waterHeight = "+ height.ToString("F6")+
+                //    "; object pos = " +(transform.position.y + _raiseObject).ToString("F6"));
                 _inWater = bottomDepth > 0f;
                 if (_inWater)
                 {
@@ -159,15 +161,21 @@ namespace Crest
                     //buoyancy.y = Mathf.Clamp(buoyancy.y, float.MinValue, maxFloatingYSpeed);
 
                     AddForce(buoyancy);
-
+                    //Debug.Log("KinematicFloatingObject " + name + " : After buoyancy -> currentVelocity = " + currentVelocity.ToString("F6") + "; buoyancy = " + buoyancy.ToString("F6"));
 
                     // apply drag relative to water
-                    var forcePosition = transform.position + _forceHeightOffset * Vector3.up;
-                    AddForce(Vector3.up * Vector3.Dot(Vector3.up, -velocityRelativeToWater) * _dragInWaterUp);
-                    //_rb.AddForceAtPosition(transform.right * Vector3.Dot(transform.right, -velocityRelativeToWater) * _dragInWaterRight, forcePosition, ForceMode.Acceleration);
-                    //_rb.AddForceAtPosition(transform.forward * Vector3.Dot(transform.forward, -velocityRelativeToWater) * _dragInWaterForward, forcePosition, ForceMode.Acceleration);
+                    Vector3 verticalDrag = Vector3.up * Vector3.Dot(Vector3.up, -velocityRelativeToWater) * _dragInWaterUp;
+                    Vector3 sidewaysDrag = transform.right * Vector3.Dot(transform.right, -velocityRelativeToWater) * _dragInWaterRight;
+                    Vector3 fowardDrag = transform.forward * Vector3.Dot(transform.forward, -velocityRelativeToWater) * _dragInWaterForward;
 
-                    //FixedUpdateOrientation(collProvider, undispPos);
+                    AddForce(verticalDrag);
+                    AddForce(sidewaysDrag);
+                    AddForce(fowardDrag);
+
+                    //Debug.Log("KinematicFloatingObject " + name + " : After vertical drag -> currentVelocity = " + currentVelocity.ToString("F6") + "; verticalDrag = " + verticalDrag.ToString("F6"));
+
+
+                    FixedUpdateOrientation(collProvider, undispPos);
 
                     collProvider.ReturnSamplingData(_samplingData);
 
@@ -180,7 +188,7 @@ namespace Crest
 
         void AddForce(Vector3 force)
         {
-            currentVelocity += force;
+            currentVelocity += force*Time.fixedDeltaTime;
         }
 
         /// <summary>
@@ -197,9 +205,7 @@ namespace Crest
 
             if (_debugDraw) Debug.DrawLine(transform.position, transform.position + 5f * normal, Color.green);
 
-            var torqueWidth = Vector3.Cross(transform.up, normal);
-            //_rb.AddTorque(torqueWidth * _boyancyTorque, ForceMode.Acceleration);
-            //_rb.AddTorque(-_dragInWaterRotational * _rb.angularVelocity);
+            transform.up = Vector3.Lerp(transform.up, normal, buoyancyRotationSpeed);
         }
 
 #if UNITY_EDITOR

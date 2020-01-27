@@ -65,6 +65,7 @@ namespace Crest
 
         void FixedUpdate()
         {
+            Debug.LogWarning("SimpleFloatingObject "+ name +" : START -> RB.Velocity = "+_rb.velocity.ToString("F6"));
             UnityEngine.Profiling.Profiler.BeginSample("BoatAlignNormal.FixedUpdate");
 
             if (OceanRenderer.Instance == null)
@@ -144,19 +145,30 @@ namespace Crest
 
             float bottomDepth = height - transform.position.y + _raiseObject;
 
+            Vector3 waterSufacePos = new Vector3(transform.position.x, dispPos.y, transform.position.z);
+            Vector3 floatingObjectPos = new Vector3(transform.position.x, transform.position.y + _raiseObject, transform.position.z);
+
+            Debug.DrawLine(waterSufacePos, floatingObjectPos, Color.red);
+            //Debug.Log("SimpleFloatingObject " + name + " : Checking if inWater -> bottomDepth = " + bottomDepth.ToString("F6") + "; waterHeight = " + height.ToString("F6") +
+            //        "; object pos = " + (transform.position.y + _raiseObject).ToString("F6"));
+
             _inWater = bottomDepth > 0f;
             if (!_inWater)
             {
                 return;
             }
 
-            var buoyancy = -Physics.gravity.normalized * _buoyancyCoeff * bottomDepth * bottomDepth * bottomDepth;
+            var buoyancy = Vector3.up * _buoyancyCoeff * bottomDepth * bottomDepth * bottomDepth;
             _rb.AddForce(buoyancy, ForceMode.Acceleration);
+            //Debug.Log("SimpleFloatingObject " + name + " : After buoyancy -> RB.Velocity = " + _rb.velocity.ToString("F6")+"; buoyancy = "+buoyancy.ToString("F6"));
+
 
 
             // apply drag relative to water
             var forcePosition = _rb.position + _forceHeightOffset * Vector3.up;
-            _rb.AddForceAtPosition(Vector3.up * Vector3.Dot(Vector3.up, -velocityRelativeToWater) * _dragInWaterUp, forcePosition, ForceMode.Acceleration);
+            Vector3 verticalDrag = Vector3.up * Vector3.Dot(Vector3.up, -velocityRelativeToWater) * _dragInWaterUp;
+            _rb.AddForceAtPosition(verticalDrag, forcePosition, ForceMode.Acceleration);
+            //Debug.Log("SimpleFloatingObject " + name + " : After vertical drag -> RB.Velocity = " + _rb.velocity.ToString("F6") + "; verticalDrag = " + verticalDrag.ToString("F6"));
             _rb.AddForceAtPosition(transform.right * Vector3.Dot(transform.right, -velocityRelativeToWater) * _dragInWaterRight, forcePosition, ForceMode.Acceleration);
             _rb.AddForceAtPosition(transform.forward * Vector3.Dot(transform.forward, -velocityRelativeToWater) * _dragInWaterForward, forcePosition, ForceMode.Acceleration);
 
