@@ -171,7 +171,7 @@ public class PlayerAnimationCMF : MonoBehaviour
 
         animator.SetBool("Air", !myPlayerMovement.collCheck.below);
 
-        animator.SetBool("Water", myPlayerMovement.inWater);
+        animator.SetBool("Water", myPlayerMovement.vertMovSt == VerticalMovementState.FloatingInWater);
 
         if (noControl)
         {
@@ -259,7 +259,7 @@ public class PlayerAnimationCMF : MonoBehaviour
             if (toGround) { toGround = false; animator.SetBool(toGroundHash, toGround); }
             if (falling) { falling = false; animator.SetBool(fallingHash, falling); }
         }
-        if (swimming && !myPlayerMovement.inWater)
+        if (swimming && myPlayerMovement.vertMovSt != VerticalMovementState.FloatingInWater)
         {
             swimming = false;
             animator.SetBool(swimmingHash, swimming);
@@ -269,7 +269,7 @@ public class PlayerAnimationCMF : MonoBehaviour
             idle_01 = false;
             animator.SetBool(idleHash, idle_01);
         }
-        if (idleW && !myPlayerMovement.inWater)
+        if (idleW && myPlayerMovement.vertMovSt != VerticalMovementState.FloatingInWater)
         {
             idleW = false;
             animator.SetBool(idleWHash, idleW);
@@ -296,13 +296,13 @@ public class PlayerAnimationCMF : MonoBehaviour
     {
         stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
-        if (!ground && myPlayerMovement.collCheck.below && !myPlayerMovement.inWater && !noControl)
+        if (!ground && myPlayerMovement.collCheck.below && myPlayerMovement.vertMovSt != VerticalMovementState.FloatingInWater && !noControl)
         {
             ground = true;
             animator.SetBool(groundHash, ground);
         }
 
-        if (ground && myPlayerMovement.collCheck.below && myPlayerMovement.inWater && !noControl)
+        if (ground && myPlayerMovement.collCheck.below && myPlayerMovement.vertMovSt == VerticalMovementState.FloatingInWater && !noControl)
         {
 
             ground = false;
@@ -318,7 +318,7 @@ public class PlayerAnimationCMF : MonoBehaviour
             animator.SetBool(startJumpHash, startJump);
         }
 
-        if (!ground && !air && !myPlayerMovement.inWater && !noControl)
+        if (!ground && !air && myPlayerMovement.vertMovSt != VerticalMovementState.FloatingInWater && !noControl)
         {
             air = true;
             animator.SetBool(airHash, air);
@@ -495,7 +495,7 @@ public class PlayerAnimationCMF : MonoBehaviour
             exitWater = false;
         }
 
-        if (myPlayerMovement.collCheck.below && myPlayerMovement.currentSpeed == 0 && !myPlayerMovement.inWater)
+        if (myPlayerMovement.collCheck.below && myPlayerMovement.currentSpeed == 0 && myPlayerMovement.vertMovSt != VerticalMovementState.FloatingInWater)
         {
             idle_01 = true;
             animator.SetBool(idleHash, idle_01);
@@ -558,13 +558,13 @@ public class PlayerAnimationCMF : MonoBehaviour
         if ((myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.collCheck.below && timeToLand <= maxTimeToLand)
     || (falling && myPlayerMovement.collCheck.below))
 
-            if (myPlayerMovement.inWater && myPlayerMovement.currentSpeed > 0)
+            if (myPlayerMovement.vertMovSt == VerticalMovementState.FloatingInWater && myPlayerMovement.currentSpeed > 0)
             {
 
                 swimming = true;
                 animator.SetBool(swimmingHash, swimming);
             }
-            else if (myPlayerMovement.inWater && myPlayerMovement.currentSpeed == 0)
+            else if (myPlayerMovement.vertMovSt == VerticalMovementState.FloatingInWater && myPlayerMovement.currentSpeed == 0)
             {
                 if (swimming)
                 {

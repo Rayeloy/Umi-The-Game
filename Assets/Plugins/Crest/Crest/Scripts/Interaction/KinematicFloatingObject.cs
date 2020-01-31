@@ -146,7 +146,7 @@ namespace Crest
 
                 float height = dispPos.y;
 
-                float bottomDepth = height - (transform.position.y + _raiseObject);
+                float bottomDepth = height - transform.position.y + _raiseObject;
 
                 Vector3 waterSufacePos = new Vector3(transform.position.x, dispPos.y, transform.position.z);
                 Vector3 floatingObjectPos = new Vector3(transform.position.x, transform.position.y + _raiseObject, transform.position.z);

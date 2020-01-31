@@ -134,7 +134,7 @@ public class Dummy : MonoBehaviour
 
     //SALTO
     [HideInInspector]
-    public JumpState jumpSt = JumpState.None;
+    public VerticalMovementState jumpSt = VerticalMovementState.None;
     //[HideInInspector]
     //public bool wallJumpAnim = false;
 
@@ -214,7 +214,7 @@ public class Dummy : MonoBehaviour
         noInput = false;
         hardSteerAcc = Mathf.Clamp(hardSteerAcc, hardSteerAcc, breakAcc);
         airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airHardSteerAcc, airBreakAcc);
-        jumpSt = JumpState.None;
+        jumpSt = VerticalMovementState.None;
     }
 
     #endregion
@@ -511,7 +511,7 @@ public class Dummy : MonoBehaviour
     {
         switch (jumpSt)
         {
-            case JumpState.None:
+            case VerticalMovementState.None:
                 currentVel.y += gravity * Time.deltaTime;
                 break;
         }
@@ -746,7 +746,7 @@ public class Dummy : MonoBehaviour
     public void ResetPlayer()
     {
         ExitWater();
-        jumpSt = JumpState.None;
+        jumpSt = VerticalMovementState.None;
     }
 
     public float SignedRelativeAngle(Vector3 referenceForward, Vector3 newDirection, Vector3 referenceUp)

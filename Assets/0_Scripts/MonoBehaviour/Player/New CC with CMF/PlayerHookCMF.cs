@@ -133,7 +133,7 @@ public class PlayerHookCMF : MonoBehaviour
             FinishAutoGrapple();
         }
         UpdateHookPoints();
-        if (canAutoGrapple && myPlayerMov.actions.R1.WasPressed && !myPlayerMov.inWater)
+        if (canAutoGrapple && myPlayerMov.actions.R1.WasPressed && myPlayerMov.vertMovSt != VerticalMovementState.FloatingInWater)
         {
             CheckStartAutoGrapple();
         }

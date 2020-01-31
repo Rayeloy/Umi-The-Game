@@ -33,7 +33,7 @@ public class HitboxHookBigCMF : MonoBehaviour
                         PlayerMovementCMF otherPlayer = col.GetComponent<PlayerBodyCMF>().myPlayerMov;
                         if (myPlayerMov.team != otherPlayer.team)// IF ENEMY
                         {
-                            if (!otherPlayer.inWater)// OUTSIDE WATER
+                            if (otherPlayer.vertMovSt != VerticalMovementState.FloatingInWater)// OUTSIDE WATER
                             {
                                 Debug.Log("HOOK PLAYER: is an enemy!");
                                 myPlayerHook.HookPlayer(otherPlayer);
@@ -41,7 +41,7 @@ public class HitboxHookBigCMF : MonoBehaviour
                         }
                         else
                         {
-                            if (otherPlayer.inWater)//IF ALLY IN WATER
+                            if (otherPlayer.vertMovSt == VerticalMovementState.FloatingInWater)//IF ALLY IN WATER
                             {
                                 myPlayerHook.HookPlayer(otherPlayer);
                             }

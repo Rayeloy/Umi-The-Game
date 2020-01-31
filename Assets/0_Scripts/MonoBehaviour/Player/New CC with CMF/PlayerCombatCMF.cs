@@ -34,7 +34,7 @@ public class PlayerCombatCMF : MonoBehaviour
     {
         get
         {
-            return !aiming && !myPlayerMovement.noInput && !myPlayerMovement.inWater && myPlayerMovement.moveSt != MoveState.Boost && attackStg == AttackPhaseType.ready &&
+            return !aiming && !myPlayerMovement.noInput && myPlayerMovement.vertMovSt != VerticalMovementState.FloatingInWater && myPlayerMovement.moveSt != MoveState.Boost && attackStg == AttackPhaseType.ready &&
                 !myPlayerMovement.wallJumping && !myPlayerMovement.hooked;
         }
     }
@@ -178,7 +178,7 @@ public class PlayerCombatCMF : MonoBehaviour
             }
 
             //HOOK INPUT CHECK
-            if (!myPlayerMovement.noInput && !myPlayerMovement.inWater && (attackStg == AttackPhaseType.ready)
+            if (!myPlayerMovement.noInput && myPlayerMovement.vertMovSt != VerticalMovementState.FloatingInWater && (attackStg == AttackPhaseType.ready)
                 && aiming && myPlayerMovement.actions.R2.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
             {
                 myHook.StartHook();

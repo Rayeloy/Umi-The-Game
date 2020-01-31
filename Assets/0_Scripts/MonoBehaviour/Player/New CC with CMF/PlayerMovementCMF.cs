@@ -4,35 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 #region ----[ PUBLIC ENUMS ]----
-//public enum Team
-//{
-//    A = 1,// Blue - Green
-//    B = 2,// Red - Pink
-//    none = 0
-//}
-//public enum MoveState
-//{
-//    None = 0,
-//    Moving = 1,
-//    NotMoving = 2,//Not stunned, breaking
-//    Knockback = 3,//Stunned
-//    MovingBreaking = 4,//Moving but reducing speed by breakAcc till maxMovSpeed
-//    Hooked = 5,
-//    Boost = 6,
-//    FixedJump = 7,
-//    NotBreaking = 8,
-//    Impulse = 9
-//}
-//public enum JumpState
-//{
-//    None,
-//    Jumping,
-//    Breaking,//Emergency stop
-//    Falling,
-//    WallJumping,
-//    ChargeJumping,
-//    BounceJumping
-//}
+//All enums are in PlayerMovement
 
 public enum ChargedJumpMode
 {
@@ -130,7 +102,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         get
         {
-            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !boostCDStarted && !haveFlag && !inWater);
+            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !boostCDStarted && !haveFlag && vertMovSt!= VerticalMovementState.FloatingInWater);
         }
     }
     Vector3 boostDir;
@@ -220,7 +192,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         get
         {
             bool result = false;
-            result = collCheck.below && chargedJumpChargingJump && isFloorChargeJumpable && (jumpSt == JumpState.Falling || jumpSt == JumpState.None);
+            result = collCheck.below && chargedJumpChargingJump && isFloorChargeJumpable && (vertMovSt == VerticalMovementState.Falling || vertMovSt == VerticalMovementState.None);
             if (!disableAllDebugs) Debug.LogWarning("isChargeJump = " + result);
             return result;
         }
@@ -247,7 +219,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             float totalFallenHeight = chargedJumpLastApexHeight - transform.position.y;
             float auxBounceJumpCurrentMaxHeight = totalFallenHeight * bounceJumpMultiplier;
             result = collCheck.below && isFloorBounceJumpable && auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight
-                && jumpSt == JumpState.Falling;
+                && vertMovSt == VerticalMovementState.Falling;
             if (!disableAllDebugs) Debug.LogWarning("isBounceJump = " + result + "; currentFloor = " + collCheck.floor + "; collCheck.below = " + collCheck.below
                 + "; auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight = " + (auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight));
             return result;
@@ -336,7 +308,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     //JUMP
     [HideInInspector]
-    public JumpState jumpSt = JumpState.None;
+    public VerticalMovementState vertMovSt = VerticalMovementState.None;
     [HideInInspector]
     public bool wallJumpAnim = false;
 
@@ -345,10 +317,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     public bool haveFlag = false;
     [HideInInspector]
     public FlagCMF flag = null;
-
-    //WATER
-    [HideInInspector]
-    public bool inWater = false;
 
     #endregion
 
@@ -536,7 +504,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         collCheck.ResetVariables();
         ResetMovementVariables();
 
-        collCheck.UpdateCollisionVariables(mover, jumpSt);
+        collCheck.UpdateCollisionVariables(mover, vertMovSt);
 
         collCheck.UpdateCollisionChecks(currentVel);
 
@@ -565,6 +533,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         //Debug.Log("currentVel B4 mover = " + currentVel.ToString("F6"));
         mover.SetVelocity(finalVel, platformMovement);
         //Debug.Log("Mover SetVel Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
+
+
+        //Ocean Renderer floating
+        myPlayerBody.KonoFixedUpdate();
 
         // RESET InputsInfo class to get new possible inputs during the next Update frames
         inputsInfo.ResetInputs();
@@ -786,7 +758,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
             #region ------------------------------ Max Move Speed ------------------------------
             currentMaxMoveSpeed = myPlayerCombatNew.attackStg != AttackPhaseType.ready && myPlayerCombatNew.landedSinceAttackStarted ? maxAttackingMoveSpeed : maxMoveSpeed;//maxAttackingMoveSpeed == maxMoveSpeed if not attacking
-            ProcessWater();//only apply if the new max move speed is lower
+            ProcessWaterMaxSpeed();//only apply if the new max move speed is lower
             ProcessAiming();//only apply if the new max move speed is lower
             ProcessHooking();//only apply if the new max move speed is lower
             if (currentSpeed > (currentMaxMoveSpeed + 0.1f) && (moveSt == MoveState.Moving || moveSt == MoveState.NotMoving) && !knockbackDone && !impulseDone)
@@ -801,10 +773,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
             #region ------------------------------- Acceleration -------------------------------
             float finalAcc = 0;
-            float finalBreakAcc = collCheck.below ? breakAcc : jumpSt == JumpState.WallJumped ? wallJumpBreakAcc : airBreakAcc;
-            float finalHardSteerAcc = collCheck.below ? hardSteerAcc : jumpSt == JumpState.WallJumped ? wallJumpHardSteerAcc : airHardSteerAcc;
-            float finalInitialAcc = collCheck.below ? initialAcc : jumpSt == JumpState.WallJumped ? wallJumpInitialAcc : airInitialAcc;
-            finalMovingAcc = (collCheck.below ? movingAcc : jumpSt == JumpState.WallJumped ? wallJumpMovingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
+            float finalBreakAcc = collCheck.below ? breakAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpBreakAcc : airBreakAcc;
+            float finalHardSteerAcc = collCheck.below ? hardSteerAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpHardSteerAcc : airHardSteerAcc;
+            float finalInitialAcc = collCheck.below ? initialAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpInitialAcc : airInitialAcc;
+            finalMovingAcc = (collCheck.below ? movingAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpMovingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
             //if (!disableAllDebugs && rotationRestrictedPercentage!=1) Debug.LogWarning("finalMovingAcc = " + finalMovingAcc+ "; rotationRestrictedPercentage = " + rotationRestrictedPercentage+
             //    "; attackStg = " + myPlayerCombatNew.attackStg);
             //finalBreakAcc = currentSpeed < 0 ? -finalBreakAcc : finalBreakAcc;
@@ -904,7 +876,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         if (!disableAllDebugs && currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
             "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + collCheck.below + "; horVel.magnitude = " + horVel.magnitude);
         //print("CurrentVel 1.3= " + currentVel.ToString("F6")+ "MoveState = " + moveSt);
-        if (jumpSt != JumpState.WallJumping || (jumpSt == JumpState.WallJumping && moveSt == MoveState.Knockback))
+        if (vertMovSt != VerticalMovementState.WallJumping || (vertMovSt == VerticalMovementState.WallJumping && moveSt == MoveState.Knockback))
         {
             horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
             switch (moveSt)
@@ -1090,7 +1062,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         //Debug.Log("Vert Mov Inicio: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
 
-        if (!jumpedOutOfWater && !inWater && collCheck.below)
+        if (!jumpedOutOfWater && vertMovSt != VerticalMovementState.FloatingInWater && collCheck.below)
         {
             jumpedOutOfWater = true;
 
@@ -1110,24 +1082,24 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
         if (moveSt != MoveState.Boost)
         {
-            if (jumpSt == JumpState.None || jumpSt == JumpState.Falling)
+            if (vertMovSt == VerticalMovementState.None || vertMovSt == VerticalMovementState.Falling)
             {
                 ProcessChargingChargedJump();
             }
 
-            switch (jumpSt)
+            switch (vertMovSt)
             {
-                case JumpState.None:
+                case VerticalMovementState.None:
                     if (currentVel.y < 0 && (!collCheck.below || collCheck.sliping))
                     {
                         if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
-                        jumpSt = JumpState.Falling;
+                        vertMovSt = VerticalMovementState.Falling;
                         chargedJumpLastApexHeight = transform.position.y;
                         //Debug.Log("START FALLING");
                     }
                     currentVel.y += gravity * Time.deltaTime;
                     break;
-                case JumpState.Falling:
+                case VerticalMovementState.Falling:
 
                     if (!chargedJumpChargingJump && collCheck.below && !collCheck.sliping)
                     {
@@ -1139,12 +1111,12 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     {
                         //Debug.Log("STOP FALLING");
                         if (!disableAllDebugs) Debug.Log("JumpSt = None");
-                        jumpSt = JumpState.None;
+                        vertMovSt = VerticalMovementState.None;
                     }
 
                     currentVel.y += gravity * Time.deltaTime;
                     break;
-                case JumpState.Jumping:
+                case VerticalMovementState.Jumping:
                     currentVel.y += gravity * Time.deltaTime;
                     timePressingJump += Time.deltaTime;
                     if (timePressingJump >= maxTimePressingJump)
@@ -1155,45 +1127,52 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     {
                         if (inputsInfo.JumpWasReleased || !actions.A.IsPressed)//This condition is actually correct, first one is for release stored on buffer from Update. Second one is for when you tap too fast the jump button
                         {
-                            jumpSt = JumpState.Breaking;
+                            vertMovSt = VerticalMovementState.JumpBreaking;
                         }
                     }
                     break;
-                case JumpState.Breaking:
+                case VerticalMovementState.JumpBreaking:
                     if (currentVel.y <= 0)
                     {
                         ResetJumpState();
                     }
                     currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
                     break;
-                case JumpState.WallJumping:
+                case VerticalMovementState.WallJumping:
                     currentVel.y += wallJumpSlidingAcc * Time.deltaTime;
                     break;
-                case JumpState.WallJumped:
+                case VerticalMovementState.WallJumped:
                     if (currentVel.y <= 0 && (!collCheck.below || collCheck.sliping))
                     {
                         ResetJumpState();
                     }
                     currentVel.y += gravity * Time.deltaTime;
                     break;
-                case JumpState.ChargeJumping:
+                case VerticalMovementState.ChargeJumping:
                     if (currentVel.y <= 0)
                     {
                         ResetJumpState();
                     }
                     currentVel.y += currentGravity * Time.deltaTime;
                     break;
-                case JumpState.BounceJumping:
+                case VerticalMovementState.BounceJumping:
                     if (currentVel.y <= 0)
                     {
                         ResetJumpState();
                     }
                     currentVel.y += currentGravity * Time.deltaTime;
+                    break;
+                case VerticalMovementState.FloatingInWater:
+                    currentVel.y += currentGravity * Time.deltaTime;
+                    currentVel += myPlayerBody.buoyancy * Time.fixedDeltaTime;
+                    //Debug.Log("KinematicFloatingObject " + name + " : After buoyancy -> currentVelocity = " + currentVelocity.ToString("F6") + "; buoyancy = " + buoyancy.ToString("F6"));
+                    // apply drag relative to water
+                    currentVel += myPlayerBody.verticalDrag * Time.fixedDeltaTime;
                     break;
             }
         }
 
-        if (inWater)
+        if (vertMovSt == VerticalMovementState.FloatingInWater)
         {
             currentVel.y = Mathf.Clamp(currentVel.y, -maxVerticalSpeedInWater, float.MaxValue);
         }
@@ -1218,7 +1197,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     void ResetJumpState()
     {
         if (!disableAllDebugs) Debug.Log("JumpSt = None");
-        jumpSt = JumpState.None;
+        vertMovSt = VerticalMovementState.None;
         mover.stickToGround = true;
         /*if (!disableAllDebugs) */Debug.LogWarning("stickToGround On");
     }
@@ -1285,9 +1264,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         bool result = false;
         if (!noInput && moveSt != MoveState.Boost)
         {
-            if (!disableAllDebugs) Debug.Log("START JUMP: below = " + collCheck.below + "; jumpInsurance = " + jumpInsurance + "; sliding = " + collCheck.sliping + "; inWater = " + inWater);
+            if (!disableAllDebugs) Debug.Log("START JUMP: below = " + collCheck.below + "; jumpInsurance = " + jumpInsurance + "; sliding = " + collCheck.sliping + "; inWater = " + (vertMovSt == VerticalMovementState.FloatingInWater));
             if (((collCheck.below && !collCheck.sliping) || jumpInsurance) && !isChargedJump && !isBounceJump &&
-                (!inWater || (inWater /*&& controller.collisions.around*/ &&
+                (vertMovSt != VerticalMovementState.FloatingInWater || (vertMovSt == VerticalMovementState.FloatingInWater /*&& controller.collisions.around*/ &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameControllerCMF_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
                 if (!disableAllDebugs) Debug.LogWarning("JUMP!");
@@ -1297,7 +1276,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 myPlayerAnimation.SetJump(true);
                 result = true;
                 currentVel.y = jumpVelocity;
-                jumpSt = JumpState.Jumping;
+                vertMovSt = VerticalMovementState.Jumping;
                 timePressingJump = 0;
                 collCheck.StartJump();
                 StopBufferedInput(PlayerInput.WallJump);
@@ -1320,7 +1299,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         myPlayerAnimation.SetJump(false);
         if (!disableAllDebugs) Debug.Log("JumpSt = None");
-        jumpSt = JumpState.None;
+        vertMovSt = VerticalMovementState.None;
         timePressingJump = 0;
         mover.stickToGround = true;
         /*if (!disableAllDebugs)*/ Debug.LogWarning("stickToGround On");
@@ -1332,8 +1311,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         {
             //Debug.LogWarning(" collCheck.lastBelow = " + (collCheck.lastBelow) + "; collCheck.below = " + (collCheck.below) +
             //   "; jumpSt = " + jumpSt+"; jumpedOutOfWater = "+jumpedOutOfWater);
-            if ((collCheck.lastBelow && !collCheck.lastSliping) && (!collCheck.below || collCheck.sliping) && (jumpSt == JumpState.None || jumpSt == JumpState.Falling) &&
-                (jumpSt != JumpState.BounceJumping && jumpSt != JumpState.ChargeJumping) && jumpedOutOfWater)
+            if ((collCheck.lastBelow && !collCheck.lastSliping) && (!collCheck.below || collCheck.sliping) && (vertMovSt == VerticalMovementState.None || vertMovSt == VerticalMovementState.Falling) &&
+                (vertMovSt != VerticalMovementState.BounceJumping && vertMovSt != VerticalMovementState.ChargeJumping) && jumpedOutOfWater)
             {
                 //print("Jump Insurance");
                 jumpInsurance = true;
@@ -1343,7 +1322,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         else
         {
             timeJumpInsurance += Time.deltaTime;
-            if (timeJumpInsurance >= maxTimeJumpInsurance || jumpSt == JumpState.Jumping)
+            if (timeJumpInsurance >= maxTimeJumpInsurance || vertMovSt == VerticalMovementState.Jumping)
             {
                 jumpInsurance = false;
             }
@@ -1366,7 +1345,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         float slopeAngle = collCheck.wallSlopeAngle;
         bool goodWallAngle = !(slopeAngle >= 110 && slopeAngle <= 180);
         wallJumpCurrentWall = collCheck.wall;
-        if (!collCheck.below && !inWater && jumpedOutOfWater && wallJumpCurrentWall != null && goodWallAngle &&
+        if (!collCheck.below && vertMovSt != VerticalMovementState.FloatingInWater && jumpedOutOfWater && wallJumpCurrentWall != null && goodWallAngle &&
             (!firstWallJumpDone || lastWallAngle != collCheck.wallAngle || (lastWallAngle == collCheck.wallAngle &&
             lastWall != collCheck.wall)) && wallJumpCurrentWall.tag == "Stage")
         {
@@ -1376,7 +1355,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 /*if (!disableAllDebugs)*/
                 Debug.Log("Wall jumping start");
                 //PARA ORTU: PlayerAnimation_01.startJump = true;
-                jumpSt = JumpState.WallJumping;
+                vertMovSt = VerticalMovementState.WallJumping;
                 result = true;
                 //wallJumped = true;
                 stopWallTime = 0;
@@ -1484,7 +1463,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         lastWall = wallJumpCurrentWall;
         wallJumping = false;
         wallJumpAnim = true;
-        jumpSt = JumpState.WallJumped;
+        vertMovSt = VerticalMovementState.WallJumped;
         //CALCULATE JUMP DIR
         //LEFT OR RIGHT ORIENTATION?
         //Angle
@@ -1508,7 +1487,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         //if (!disableAllDebugs) print("STOP WALLJUMP");
         wallJumping = false;
         wallJumpAnim = true;
-        jumpSt = JumpState.None;
+        vertMovSt = VerticalMovementState.None;
     }
     #endregion
 
@@ -1517,7 +1496,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         bool result = false;
         //Debug.Log("Start Charging Charge Jump ? chargeJumpChargingJump = " + chargedJumpChargingJump);
-        if (!chargedJumpChargingJump && !chargedJumpButtonReleased && jumpSt == JumpState.Falling && !inWater && !noInput && !jumpInsurance)
+        if (!chargedJumpChargingJump && !chargedJumpButtonReleased && vertMovSt == VerticalMovementState.Falling && vertMovSt != VerticalMovementState.FloatingInWater && !noInput && !jumpInsurance)
         {
             result = true;
             chargedJumpChargingJump = true;
@@ -1619,7 +1598,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     void StartChargedJump()
     {
         //Debug.Log("Start Charge Jump?");
-        if (isFloorChargeJumpable && !inWater && !noInput)
+        if (isFloorChargeJumpable && vertMovSt != VerticalMovementState.FloatingInWater && !noInput)
         {
             float totalFallenHeight = chargedJumpLastApexHeight - transform.position.y;
             if (totalFallenHeight == 0) Debug.LogError("Charge Jump Error: totalFallenHeight = 0");
@@ -1682,7 +1661,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 collCheck.below = false;
                 currentVel.y = chargeJumpJumpVelocity;
 
-                jumpSt = JumpState.ChargeJumping;
+                vertMovSt = VerticalMovementState.ChargeJumping;
                 //Debug.Log("percentageCharged = " + percentageCharged + "; totalFallenHeight = " + totalFallenHeight + "; chargeJumpMaxHeight = " + chargedJumpMaxHeight + "; transform.position.y = "
                 //    + transform.position.y + "; distToCloudHeight = " + distToCloudHeight + "; currentMaxHeight = " + currentMaxHeight
                 //    + "; chargeJumpCurrentJumpMaxHeight = " + chargedJumpCurrentJumpMaxHeight + "; chargeJumpApexTime = "
@@ -1702,7 +1681,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         Debug.Log("Start Bounce Jump");
         bool result = false;
-        if (!inWater && isFloorBounceJumpable)
+        if (vertMovSt != VerticalMovementState.FloatingInWater && isFloorBounceJumpable)
         {
             float totalFallenHeight = chargedJumpLastApexHeight - transform.position.y;
             chargedJumpCurrentJumpMaxHeight = totalFallenHeight * bounceJumpMultiplier;
@@ -1719,7 +1698,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
                 collCheck.below = false;
                 currentVel.y = chargeJumpJumpVelocity;
-                jumpSt = JumpState.BounceJumping;
+                vertMovSt = VerticalMovementState.BounceJumping;
                 StopBufferedInput(PlayerInput.Jump);
                 StopBufferedInput(PlayerInput.WallJump);
 
@@ -1741,7 +1720,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     void StartBoost()
     {
-        if (!noInput && boostReady && !inWater && myPlayerCombatNew.attackStg == AttackPhaseType.ready)
+        if (!noInput && boostReady && vertMovSt != VerticalMovementState.FloatingInWater && myPlayerCombatNew.attackStg == AttackPhaseType.ready)
         {
             //noInput = true;
             //PARA ORTU: Variable para empezar boost
@@ -2263,7 +2242,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         {
             noInput = true;
             hooked = true;
-            if (jumpSt == JumpState.WallJumping)
+            if (vertMovSt == VerticalMovementState.WallJumping)
             {
                 StopWallJump();
             }
@@ -2386,10 +2365,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void EnterWater(Collider waterTrigger = null)
     {
-        if (!inWater)
+        if (vertMovSt != VerticalMovementState.FloatingInWater)
         {
             myPlayerAnimation.enterWater = true;
-            inWater = true;
+            vertMovSt = VerticalMovementState.FloatingInWater;
             jumpedOutOfWater = false;
             maxTimePressingJump = 0f;
             myPlayerWeap.AttachWeaponToBack();
@@ -2416,9 +2395,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         }
     }
 
-    void ProcessWater()
+    void ProcessWaterMaxSpeed()
     {
-        if (inWater)
+        if (vertMovSt == VerticalMovementState.FloatingInWater)
         {
             //TO REDO
             //controller.AroundCollisions();
@@ -2431,10 +2410,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void ExitWater(Collider waterTrigger = null)
     {
-        if (inWater)
+        if (vertMovSt == VerticalMovementState.FloatingInWater)
         {
             myPlayerAnimation.exitWater = true;
-            inWater = false;
+            //vertMovSt = ;
             myPlayerWeap.AttatchWeapon();
             myPlayerVFX.DeactivateEffect(PlayerVFXType.SwimmingEffect);
             if (waterTrigger != null)
@@ -2566,7 +2545,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     public void ResetPlayer()
     {
         ExitWater();
-        jumpSt = JumpState.None;
+        vertMovSt = VerticalMovementState.None;
         myPlayerHook.ResetHook();
         if (haveFlag)
         {

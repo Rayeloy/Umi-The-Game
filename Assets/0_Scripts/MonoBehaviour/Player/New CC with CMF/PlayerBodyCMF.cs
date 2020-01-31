@@ -1,16 +1,43 @@
-﻿using System.Collections;
+﻿using Crest;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerBodyCMF : MonoBehaviour
 {
+    public bool debugAllRaycasts = false;
 
     public PlayerMovementCMF myPlayerMov;
     PlayerWeaponsCMF myPlayerWeapons;
 
+    //OCEAN RENDERER FOR 
+    [Header("Ocean Renderer")]
+    public float bodyWidth = 4;
+    [Tooltip("Offsets center of object to raise it (or lower it) in the water."), SerializeField]
+    float raiseBody = -2f;
+    public float buoyancyCoeff =4.5f;
+    public float dragInWaterUp = 9f;
+    [HideInInspector]
+    public float waterSurfaceHeight = 0;
+    Vector3 displacementToObject = Vector3.zero;
+
+    SamplingData samplingData = new SamplingData();
+    SamplingData samplingDataFlow = new SamplingData();
+
+    [HideInInspector]
+    public Vector3 buoyancy;
+    [HideInInspector]
+    public Vector3 verticalDrag;
+
+
     public void KonoAwake()
     {
         myPlayerWeapons = myPlayerMov.myPlayerWeap;
+    }
+
+    public void KonoFixedUpdate()
+    {
+        ProcessInWater();
     }
 
     #region  TRIGGER COLLISIONS ---------------------------------------------
@@ -42,7 +69,7 @@ public class PlayerBodyCMF : MonoBehaviour
         switch (col.tag)
         {
             case "KillTrigger":
-               // Debug.LogError("PLAYER DEATH");
+                // Debug.LogError("PLAYER DEATH");
                 myPlayerMov.Die();
                 break;
             case "FlagHome":
@@ -88,4 +115,106 @@ public class PlayerBodyCMF : MonoBehaviour
     }
 
     #endregion
+
+    #region Enter Water / Exit Water
+    void ProcessInWater()
+    {
+        if (OceanRenderer.Instance != null)
+        {
+            // Trigger processing of displacement textures that have come back this frame. This will be processed
+            // anyway in Update(), but FixedUpdate() is earlier so make sure it's up to date now.
+            if (OceanRenderer.Instance._simSettingsAnimatedWaves.CollisionSource == SimSettingsAnimatedWaves.CollisionSources.OceanDisplacementTexturesGPU && GPUReadbackDisps.Instance)
+            {
+                GPUReadbackDisps.Instance.ProcessRequests();
+            }
+
+            var collProvider = OceanRenderer.Instance.CollisionProvider;
+            var position = transform.position;
+
+            var thisRect = new Rect(transform.position.x, transform.position.z, 0f, 0f);
+            if (!collProvider.GetSamplingData(ref thisRect, bodyWidth, samplingData))
+            {
+                // No collision coverage for the sample area, in this case use the null provider.
+                collProvider = CollProviderNull.Instance;
+            }
+
+            if (debugAllRaycasts)
+            {
+                var result = collProvider.CheckAvailability(ref position, samplingData);
+                if (result != AvailabilityResult.DataAvailable)
+                {
+                    Debug.LogWarning("Validation failed: " + result.ToString() + ". See comments on the AvailabilityResult enum.", this);
+                }
+            }
+
+            Vector3 undispPos;
+            if (!collProvider.ComputeUndisplacedPosition(ref position, samplingData, out undispPos))
+            {
+                // If we couldn't get wave shape, assume flat water at sea level
+                undispPos = position;
+                undispPos.y = OceanRenderer.Instance.SeaLevel;
+            }
+            if (!myPlayerMov.disableAllDebugs) DebugDrawCross(undispPos, 1f, Color.red);
+
+            Vector3 waterSurfaceVel, displacement;
+            bool dispValid, velValid;
+            collProvider.SampleDisplacementVel(ref undispPos, samplingData, out displacement, out dispValid, out waterSurfaceVel, out velValid);
+            if (dispValid)
+            {
+                displacementToObject = displacement;
+            }
+
+            if (GPUReadbackFlow.Instance)
+            {
+                GPUReadbackFlow.Instance.ProcessRequests();
+
+                var flowRect = new Rect(position.x, position.z, 0f, 0f);
+                GPUReadbackFlow.Instance.GetSamplingData(ref flowRect, bodyWidth, samplingDataFlow);
+
+                Vector2 surfaceFlow;
+                GPUReadbackFlow.Instance.SampleFlow(ref position, samplingDataFlow, out surfaceFlow);
+                waterSurfaceVel += new Vector3(surfaceFlow.x, 0, surfaceFlow.y);
+
+                GPUReadbackFlow.Instance.ReturnSamplingData(samplingDataFlow);
+            }
+
+            if (debugAllRaycasts)
+            {
+                Debug.DrawLine(transform.position + 5f * Vector3.up, transform.position + 5f * Vector3.up + waterSurfaceVel,
+                    new Color(1, 1, 1, 0.6f));
+            }
+
+            var velocityRelativeToWater = myPlayerMov.currentVel - waterSurfaceVel;
+
+            var dispPos = undispPos + displacementToObject;
+            if (debugAllRaycasts) DebugDrawCross(dispPos, 4f, Color.white);
+
+            float waterHeight = dispPos.y;
+            float waterLevelDif = waterHeight - (transform.position.y);
+            bool inWater = waterLevelDif > 0f;
+            if (myPlayerMov.vertMovSt != VerticalMovementState.FloatingInWater && myPlayerMov.vertMovSt != VerticalMovementState.Jumping  && inWater)
+            {
+                myPlayerMov.EnterWater();
+            }
+            else if (myPlayerMov.vertMovSt == VerticalMovementState.FloatingInWater && myPlayerMov.vertMovSt != VerticalMovementState.Jumping &&!inWater)
+            {
+                myPlayerMov.ExitWater();
+            }
+            waterSurfaceHeight = waterHeight;
+            float bottomDepth = waterHeight + raiseBody;
+            buoyancy = Vector3.up * buoyancyCoeff * bottomDepth * bottomDepth * bottomDepth;
+            // apply drag relative to water
+            verticalDrag = Vector3.up * Vector3.Dot(Vector3.up, -velocityRelativeToWater) * dragInWaterUp;
+
+            collProvider.ReturnSamplingData(samplingData);
+        }
+    }
+    #endregion
+
+    void DebugDrawCross(Vector3 pos, float r, Color col)
+    {
+        Debug.DrawLine(pos - Vector3.up * r, pos + Vector3.up * r, col);
+        Debug.DrawLine(pos - Vector3.right * r, pos + Vector3.right * r, col);
+        Debug.DrawLine(pos - Vector3.forward * r, pos + Vector3.forward * r, col);
+    }
 }

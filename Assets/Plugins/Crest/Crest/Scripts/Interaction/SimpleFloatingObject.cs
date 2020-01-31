@@ -65,7 +65,7 @@ namespace Crest
 
         void FixedUpdate()
         {
-            Debug.LogWarning("SimpleFloatingObject "+ name +" : START -> RB.Velocity = "+_rb.velocity.ToString("F6"));
+            //Debug.LogWarning("SimpleFloatingObject "+ name +" : START -> RB.Velocity = "+_rb.velocity.ToString("F6"));
             UnityEngine.Profiling.Profiler.BeginSample("BoatAlignNormal.FixedUpdate");
 
             if (OceanRenderer.Instance == null)

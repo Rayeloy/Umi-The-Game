@@ -45371,11 +45371,10 @@ MonoBehaviour:
   currentFacingDir: {x: 0, y: 0, z: 1}
   facingAngle: 0
   currentCamFacingDir: {x: 0, y: 0, z: 0}
-  jumpSt: 0
+  vertMovSt: 0
   wallJumpAnim: 0
   haveFlag: 0
   flag: {fileID: 0}
-  inWater: 0
   currentMaxMoveSpeed: 0
   hooked: 0
   aimingAndTouchedGroundOnce: 0
@@ -65517,7 +65516,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97becf028b00afb40b769d0c9526dd7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugAllRaycasts: 1
   myPlayerMov: {fileID: 873758771431004316}
+  bodyWidth: 4
+  raiseBody: 1
+  buoyancyCoeff: 10
+  dragInWaterUp: 9
+  waterSurfaceHeight: 0
+  buoyancy: {x: 0, y: 0, z: 0}
+  verticalDrag: {x: 0, y: 0, z: 0}
 --- !u!114 &7852406728139055613
 MonoBehaviour:
   m_ObjectHideFlags: 0
