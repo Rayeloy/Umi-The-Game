@@ -133,17 +133,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravity: 9.8
-  maxFloatingYSpeed: 10
-  buoyancyRotationSpeed: 0.1
-  _raiseObject: -1
+  _raiseObject: 1
   _buoyancyCoeff: 4.5
-  _boyancyTorque: 8
+  buoyancyRotationSpeed: 0.1
   _objectWidth: 10.58
-  _forceHeightOffset: -0.3
   _dragInWaterUp: 9
   _dragInWaterRight: 10
   _dragInWaterForward: 10
-  _dragInWaterRotational: 170
   _debugDraw: 1
   _debugValidateCollision: 1
 --- !u!1 &87968363
@@ -345,17 +341,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravity: 0.5
-  maxFloatingYSpeed: 10
-  buoyancyRotationSpeed: 1
   _raiseObject: 1
   _buoyancyCoeff: 4.25
-  _boyancyTorque: 8
+  buoyancyRotationSpeed: 1
   _objectWidth: 7
-  _forceHeightOffset: -0.3
   _dragInWaterUp: 3
   _dragInWaterRight: 2
   _dragInWaterForward: 1
-  _dragInWaterRotational: 0.2
   _debugDraw: 0
   _debugValidateCollision: 0
 --- !u!1001 &349015266
@@ -1923,6 +1915,11 @@ PrefabInstance:
     - target: {fileID: 15985890617300779, guid: 6db9117d4df26494a8873799cc3754b6,
         type: 3}
       propertyPath: m_textInfo.pageCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5343397813460922311, guid: 6db9117d4df26494a8873799cc3754b6,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

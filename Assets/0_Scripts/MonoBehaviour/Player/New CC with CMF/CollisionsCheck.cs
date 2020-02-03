@@ -17,7 +17,6 @@ public class CollisionsCheck : MonoBehaviour
     public bool collideWithTriggers = false;
     QueryTriggerInteraction qTI;
     public LayerMask collisionMask;
-    public LayerMask collisionMaskAround;
     public float maxSlopeAngle = 60;//in the future, take the value from "mover" script
     public float FloorMaxDistanceCheck = 5;
     Color purple = new Color(0.749f, 0.380f, 1f);
@@ -94,6 +93,12 @@ public class CollisionsCheck : MonoBehaviour
 
     Collider Goodcol = new Collider();
     Collider oldcol = new Collider();
+
+    [Header(" -- Around Collisions --")]
+    public LayerMask collisionMaskAround;
+    public float aroundSphereRadius = 2;
+    [HideInInspector]
+    public bool around = false;
 
     public void KonoAwake(Collider _collider)
     {
@@ -196,6 +201,9 @@ public class CollisionsCheck : MonoBehaviour
         wall = null;
         wallAngle = wallSlopeAngle = 0;
         wallNormal = Vector3.zero;
+
+        //Around
+        around = false;
     }
     #endregion
 
@@ -215,7 +223,7 @@ public class CollisionsCheck : MonoBehaviour
 
     #region --- COLLISIONS (RAYCASTS FUNCTIONS) --- 
 
-    #region -- VERTICAL COLLISIONS --
+    #region --- VERTICAL COLLISIONS ---
 
     void VerticalCollisionsDistanceCheck(ref Vector3 vel)
     {
@@ -435,6 +443,22 @@ sphereCollBottom.transform.position : sphereCollMiddle.transform.position;
     //    a = new Plane(rig.velocity, origin.position);
     //    colliderFinal = DetectWallCollision();
     //}
+    #endregion
+
+    #region --- AROUND COLLISIONS ---
+    public void AroundCollisions()
+    {
+        hitColliders = new Collider[maxHitColliders];
+        hitColliders = Physics.OverlapSphere(transform.position, aroundSphereRadius, collisionMaskAround);
+        //for (int i = 0; i < hitColliders.Length; i++)
+        //{
+        //}
+        if (hitColliders.Length > 0)
+        {
+            around = true;
+            //Debug.Log("COLLISIONS AROUND TRUE");
+        }
+    }
     #endregion
 
     #endregion

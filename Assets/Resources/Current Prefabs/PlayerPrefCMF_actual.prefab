@@ -45184,9 +45184,6 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 17920
-  collisionMaskAround:
-    serializedVersion: 2
-    m_Bits: 512
   maxSlopeAngle: 60
   FloorMaxDistanceCheck: 5
   coll: {fileID: 820385934952834849}
@@ -45218,6 +45215,11 @@ MonoBehaviour:
   maxHitColliders: 10
   colliderFinal: {fileID: 0}
   finalNormal: {x: 0, y: 0, z: 0}
+  collisionMaskAround:
+    serializedVersion: 2
+    m_Bits: 512
+  aroundSphereRadius: 2.5
+  around: 0
 --- !u!114 &873758771431004316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45254,7 +45256,7 @@ MonoBehaviour:
   maxHookingSpeed: 3.5
   maxGrapplingSpeed: 3.5
   maxSpeedInWater: 5
-  maxVerticalSpeedInWater: 3
+  maxVerticalSpeedInWater: 40
   airImpulsePercentage: 0.5
   maxImpulseAngle: 60
   boostSpeed: 30
@@ -65520,7 +65522,7 @@ MonoBehaviour:
   myPlayerMov: {fileID: 873758771431004316}
   bodyWidth: 4
   raiseBody: 1
-  buoyancyCoeff: 10
+  buoyancyCoeff: 15
   dragInWaterUp: 9
   waterSurfaceHeight: 0
   buoyancy: {x: 0, y: 0, z: 0}

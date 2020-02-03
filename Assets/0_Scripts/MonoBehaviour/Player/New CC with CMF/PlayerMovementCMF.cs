@@ -71,7 +71,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     public float maxHookingSpeed = 3.5f;
     public float maxGrapplingSpeed = 3.5f;
     public float maxSpeedInWater = 5f;
-    public float maxVerticalSpeedInWater = 3f;
+    public float maxVerticalSpeedInWater = 10f;
 
     [Header(" - IMPULSE - ")]
     [Range(0, 1)]
@@ -102,7 +102,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         get
         {
-            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !boostCDStarted && !haveFlag && vertMovSt!= VerticalMovementState.FloatingInWater);
+            return ((boostCurrentFuel > boostCapacity * boostMinFuelNeeded) && !boostCDStarted && !haveFlag && vertMovSt != VerticalMovementState.FloatingInWater);
         }
     }
     Vector3 boostDir;
@@ -507,6 +507,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         collCheck.UpdateCollisionVariables(mover, vertMovSt);
 
         collCheck.UpdateCollisionChecks(currentVel);
+
+        if (vertMovSt == VerticalMovementState.FloatingInWater) collCheck.AroundCollisions();
 
         if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4"));
 
@@ -1090,6 +1092,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             switch (vertMovSt)
             {
                 case VerticalMovementState.None:
+                    if (!mover.stickToGround && currentVel.y <= 0)
+                    {
+                        mover.stickToGround = true;
+                    }
                     if (currentVel.y < 0 && (!collCheck.below || collCheck.sliping))
                     {
                         if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
@@ -1125,7 +1131,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     }
                     else
                     {
-                        if (inputsInfo.JumpWasReleased || !actions.A.IsPressed)//This condition is actually correct, first one is for release stored on buffer from Update. Second one is for when you tap too fast the jump button
+                        //This condition is actually correct, first one is for release stored on buffer from Update.
+                        //Second one is for when you tap too fast the jump button
+                        if (inputsInfo.JumpWasReleased || !actions.A.IsPressed)                          
                         {
                             vertMovSt = VerticalMovementState.JumpBreaking;
                         }
@@ -1164,8 +1172,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     break;
                 case VerticalMovementState.FloatingInWater:
                     currentVel.y += currentGravity * Time.deltaTime;
-                    currentVel += myPlayerBody.buoyancy * Time.fixedDeltaTime;
-                    //Debug.Log("KinematicFloatingObject " + name + " : After buoyancy -> currentVelocity = " + currentVelocity.ToString("F6") + "; buoyancy = " + buoyancy.ToString("F6"));
+                    //Debug.Log("FloatingCharacter " + name + " : After gravity -> currentVelocity = " + currentVel.ToString("F6"));
+                    currentVel += myPlayerBody.buoyancy * Time.deltaTime;
+                    //Debug.Log("FloatingCharacter " + name + " : After buoyancy -> currentVelocity = " + currentVel.ToString("F6") + "; buoyancy = " + myPlayerBody.buoyancy.ToString("F6") 
+                    //    + "; gravity = "+(Vector3.up * currentGravity));
                     // apply drag relative to water
                     currentVel += myPlayerBody.verticalDrag * Time.fixedDeltaTime;
                     break;
@@ -1199,7 +1209,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         if (!disableAllDebugs) Debug.Log("JumpSt = None");
         vertMovSt = VerticalMovementState.None;
         mover.stickToGround = true;
-        /*if (!disableAllDebugs) */Debug.LogWarning("stickToGround On");
+        /*if (!disableAllDebugs) */
+        Debug.LogWarning("stickToGround On");
     }
 
     Vector3 finalVel;
@@ -1265,14 +1276,15 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         if (!noInput && moveSt != MoveState.Boost)
         {
             if (!disableAllDebugs) Debug.Log("START JUMP: below = " + collCheck.below + "; jumpInsurance = " + jumpInsurance + "; sliding = " + collCheck.sliping + "; inWater = " + (vertMovSt == VerticalMovementState.FloatingInWater));
-            if (((collCheck.below && !collCheck.sliping) || jumpInsurance) && !isChargedJump && !isBounceJump &&
-                (vertMovSt != VerticalMovementState.FloatingInWater || (vertMovSt == VerticalMovementState.FloatingInWater /*&& controller.collisions.around*/ &&
+            if ((vertMovSt != VerticalMovementState.FloatingInWater && ((collCheck.below && !collCheck.sliping) || jumpInsurance) && !isChargedJump && !isBounceJump) ||
+                ((vertMovSt == VerticalMovementState.FloatingInWater && collCheck.around &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameControllerCMF_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
                 if (!disableAllDebugs) Debug.LogWarning("JUMP!");
+                ExitWater();
                 mover.stickToGround = false;
-                /*if (!disableAllDebugs) */Debug.LogWarning("stickToGround Off");
-                //PlayerAnimation_01.startJump = true;
+                /*if (!disableAllDebugs) */
+                //Debug.LogWarning("stickToGround Off");
                 myPlayerAnimation.SetJump(true);
                 result = true;
                 currentVel.y = jumpVelocity;
@@ -1280,15 +1292,56 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 timePressingJump = 0;
                 collCheck.StartJump();
                 StopBufferedInput(PlayerInput.WallJump);
-                //myPlayerAnimation.SetJump(true);
+            }
+            #region Jump debug
+            else
+            {
+                string reason = "";
+                if (vertMovSt != VerticalMovementState.FloatingInWater)
+                {
+                    if (!((collCheck.below && !collCheck.sliping) || jumpInsurance))
+                    {
+                        reason += "((collCheck.below && !collCheck.sliping) || jumpInsurance) results in false, when it should be true. collCheck.below = "
+                            + collCheck.below + "; collCheck.sliping = " + collCheck.sliping + "; jumpInsurance = " + jumpInsurance;
+                    }
+                    else if (isChargedJump)
+                    {
+                        reason += "isChargedJump is true, and it should be false";
+                    }
+                    else if (isBounceJump)
+                    {
+                        reason += "isBounceJump is true, and it should be false";
+                    }
+                    else
+                    {
+                        reason += "This makes no sense. If you are reading this the world has gone mad.";
+                    }
+                }
+                else if (!collCheck.around)
+                {
+                    reason += "; collCheck.around is false, and it should be true";
+                }
+                else if (!((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameControllerCMF_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))
+                {
+                    if (gC.gameMode == GameMode.CaptureTheFlag && (gC as GameControllerCMF_FlagMode).myScoreManager.prorroga)
+                    {
+                        reason += "We are in Game Mode Capture The Flag and we have entered the overtime!";
+                    }
+                    else
+                    {
+                        reason += "This makes no sense. If you are reading this the world has gone mad.";
+                    }
+                }
+                Debug.Log("Jump failed because reason: " + reason);
             }
         }
         else
         {
             if (!disableAllDebugs) Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + (moveSt != MoveState.Boost) + ")");
         }
+        #endregion
 
-        if (!result && !calledFromBuffer /*&& (jumpSt != JumpState.Falling || (jumpSt == JumpState.Falling) && jumpInsurance)*/)
+        if (!result && !calledFromBuffer)
         {
             BufferInput(PlayerInput.Jump);
         }
@@ -1301,8 +1354,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         if (!disableAllDebugs) Debug.Log("JumpSt = None");
         vertMovSt = VerticalMovementState.None;
         timePressingJump = 0;
-        mover.stickToGround = true;
-        /*if (!disableAllDebugs)*/ Debug.LogWarning("stickToGround On");
     }
 
     void ProcessJumpInsurance()
@@ -1377,11 +1428,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         else
         {
             /*if (!disableAllDebugs)*/
-//            Debug.Log("Couldn't wall jump because:  !collCheck.below (" + !collCheck.below + ") && !inWater(" + !inWater + ") &&" +
-//" jumpedOutOfWater(" + jumpedOutOfWater + ") && goodWallAngle(" + goodWallAngle + ") && wallJumpCurrentWall != null(" + (wallJumpCurrentWall != null) + ") && " +
-//"(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ") || " +
-//"(lastWallAngle == collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ")&& " +
-//"lastWall != collCheck.wall(" + (lastWall != collCheck.wall) + ")))");
+            //            Debug.Log("Couldn't wall jump because:  !collCheck.below (" + !collCheck.below + ") && !inWater(" + !inWater + ") &&" +
+            //" jumpedOutOfWater(" + jumpedOutOfWater + ") && goodWallAngle(" + goodWallAngle + ") && wallJumpCurrentWall != null(" + (wallJumpCurrentWall != null) + ") && " +
+            //"(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ") || " +
+            //"(lastWallAngle == collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ")&& " +
+            //"lastWall != collCheck.wall(" + (lastWall != collCheck.wall) + ")))");
         }
         if (!result && !calledFromBuffer)
         {
@@ -1633,7 +1684,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         break;
                     case ChargedJumpMode.Proportional_With_Min:
                         bool hasMinHeight = stageScript != null && stageScript.chargeJumpAmount >= 0 ? true : false;
-                        float chargedJumpMinJumpHeight = hasMinHeight? stageScript .chargeJumpAmount: jumpHeight;
+                        float chargedJumpMinJumpHeight = hasMinHeight ? stageScript.chargeJumpAmount : jumpHeight;
 
                         float auxChargeJumpCurrentJumpMaxHeight3 = totalFallenHeight + (totalFallenHeight * percentageCharged * chargedJumpFallenHeightMultiplier);
                         chargedJumpCurrentJumpMaxHeight = Mathf.Clamp(auxChargeJumpCurrentJumpMaxHeight3, chargedJumpMinJumpHeight, currentMaxHeight);
@@ -1727,7 +1778,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
             //myPlayerAnimation_01.dash = true;
             mover.stickToGround = false;
-            /*if (!disableAllDebugs)*/ Debug.LogWarning("stickToGround Off");
+            /*if (!disableAllDebugs)*/
+            Debug.LogWarning("stickToGround Off");
             boostCurrentFuel -= boostCapacity * boostFuelLostOnStart;
             boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
             moveSt = MoveState.Boost;
@@ -1790,7 +1842,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         {
             //print("STOP BOOST");
             mover.stickToGround = true;
-            /*if (!disableAllDebugs)*/ Debug.LogWarning("stickToGround On");
+            /*if (!disableAllDebugs)*/
+            Debug.LogWarning("stickToGround On");
             moveSt = MoveState.None;
             StartBoostCD();
             myPlayerHUD.StopCamVFX(CameraVFXType.Dash);
@@ -1926,7 +1979,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     void SmoothRotateCharacter()
     {
-        if(myCamera.camMode == cameraMode.Free)
+        if (myCamera.camMode == cameraMode.Free)
         {
             float currentAngle = rotateObj.rotation.eulerAngles.y;
             //if(currentAngle != targetRotAngle)
@@ -1954,7 +2007,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         targetRotAngle = angle;
         rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
-        Debug.Log("RotateCharacterInstantly: angle = "+angle);
+        Debug.Log("RotateCharacterInstantly: angle = " + angle);
     }
 
     void RotateCharacterInstantly(Vector3 direction)
@@ -1967,7 +2020,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             angle = lookingDir.x < 0 ? 360 - angle : angle;
             targetRotAngle = angle;
             rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
-            Debug.Log("RotateCharacterInstantly: direction = "+ direction+"; angle = " + angle);
+            Debug.Log("RotateCharacterInstantly: direction = " + direction + "; angle = " + angle);
         }
     }
 
@@ -2363,10 +2416,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     #region  WATER ---------------------------------------------
 
-    public void EnterWater(Collider waterTrigger = null)
+    public void EnterWater()
     {
         if (vertMovSt != VerticalMovementState.FloatingInWater)
         {
+            Debug.Log("ENTER WATER");
             myPlayerAnimation.enterWater = true;
             vertMovSt = VerticalMovementState.FloatingInWater;
             jumpedOutOfWater = false;
@@ -2383,13 +2437,12 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 (gC as GameControllerCMF_FlagMode).myScoreManager.PlayerEliminado();
             }
             myPlayerVFX.ActivateEffect(PlayerVFXType.SwimmingEffect);
-            if (waterTrigger != null)
-            {
-                Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;//.y = waterTrigger.bounds.max.y;
-                waterSplashPos.y = waterTrigger.bounds.max.y - 0.5f;
-                myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
-            }
+
+            Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;
+            waterSplashPos.y = myPlayerBody.waterSurfaceHeight;
+            myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
             myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
+
             myPlayerCombatNew.StopDoingCombat();
             myPlayerHook.StopHook();
         }
@@ -2408,20 +2461,20 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         }
     }
 
-    public void ExitWater(Collider waterTrigger = null)
+    public void ExitWater()
     {
         if (vertMovSt == VerticalMovementState.FloatingInWater)
         {
+            Debug.Log("EXIT WATER");
+            vertMovSt = VerticalMovementState.None;
             myPlayerAnimation.exitWater = true;
             //vertMovSt = ;
             myPlayerWeap.AttatchWeapon();
             myPlayerVFX.DeactivateEffect(PlayerVFXType.SwimmingEffect);
-            if (waterTrigger != null)
-            {
-                Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;//.y = waterTrigger.bounds.max.y;
-                waterSplashPos.y = waterTrigger.bounds.max.y - 0.5f;
-                myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
-            }
+
+            Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;
+            waterSplashPos.y = myPlayerBody.waterSurfaceHeight;
+            myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
             myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
         }
     }

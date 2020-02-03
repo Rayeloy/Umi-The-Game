@@ -10,7 +10,7 @@ public class PlayerBodyCMF : MonoBehaviour
     public PlayerMovementCMF myPlayerMov;
     PlayerWeaponsCMF myPlayerWeapons;
 
-    //OCEAN RENDERER FOR 
+    //OCEAN RENDERER FOR FLOATING
     [Header("Ocean Renderer")]
     public float bodyWidth = 4;
     [Tooltip("Offsets center of object to raise it (or lower it) in the water."), SerializeField]
@@ -50,11 +50,11 @@ public class PlayerBodyCMF : MonoBehaviour
                 float waterSurface = col.GetComponent<Collider>().bounds.max.y;
                 if (transform.position.y <= waterSurface)
                 {
-                    myPlayerMov.EnterWater(col);
+                    myPlayerMov.EnterWater();
                 }
                 else
                 {
-                    myPlayerMov.ExitWater(col);
+                    myPlayerMov.ExitWater();
                 }
                 break;
             case "Flag":
@@ -170,7 +170,7 @@ public class PlayerBodyCMF : MonoBehaviour
 
                 var flowRect = new Rect(position.x, position.z, 0f, 0f);
                 GPUReadbackFlow.Instance.GetSamplingData(ref flowRect, bodyWidth, samplingDataFlow);
-
+                
                 Vector2 surfaceFlow;
                 GPUReadbackFlow.Instance.SampleFlow(ref position, samplingDataFlow, out surfaceFlow);
                 waterSurfaceVel += new Vector3(surfaceFlow.x, 0, surfaceFlow.y);
@@ -190,22 +190,34 @@ public class PlayerBodyCMF : MonoBehaviour
             if (debugAllRaycasts) DebugDrawCross(dispPos, 4f, Color.white);
 
             float waterHeight = dispPos.y;
-            float waterLevelDif = waterHeight - (transform.position.y);
+            float stayInWaterOffter = myPlayerMov.vertMovSt == VerticalMovementState.FloatingInWater ?0.5f:0;
+            float waterLevelDif = waterHeight - transform.position.y + stayInWaterOffter;
+            Vector3 playerPos = transform.position + (Vector3.down * raiseBody);
             bool inWater = waterLevelDif > 0f;
-            if (myPlayerMov.vertMovSt != VerticalMovementState.FloatingInWater && myPlayerMov.vertMovSt != VerticalMovementState.Jumping  && inWater)
+            Debug.DrawLine(playerPos, dispPos, inWater ? Color.green:Color.red);
+            VerticalMovementState vertState = myPlayerMov.vertMovSt;
+            if (vertState != VerticalMovementState.FloatingInWater && myPlayerMov.currentVel.y<=0 && inWater)
             {
                 myPlayerMov.EnterWater();
             }
-            else if (myPlayerMov.vertMovSt == VerticalMovementState.FloatingInWater && myPlayerMov.vertMovSt != VerticalMovementState.Jumping &&!inWater)
+            else if (myPlayerMov.vertMovSt == VerticalMovementState.FloatingInWater && myPlayerMov.vertMovSt != VerticalMovementState.Jumping &&!inWater)//TO CHANGE
             {
                 myPlayerMov.ExitWater();
             }
-            waterSurfaceHeight = waterHeight;
-            float bottomDepth = waterHeight + raiseBody;
-            buoyancy = Vector3.up * buoyancyCoeff * bottomDepth * bottomDepth * bottomDepth;
-            // apply drag relative to water
-            verticalDrag = Vector3.up * Vector3.Dot(Vector3.up, -velocityRelativeToWater) * dragInWaterUp;
+            if (inWater)
+            {
+                float bottomDepth = waterHeight - transform.position.y + raiseBody;
+                buoyancy = Vector3.up * buoyancyCoeff * bottomDepth * bottomDepth * bottomDepth;
+                // apply drag relative to water
+                verticalDrag = Vector3.up * Vector3.Dot(Vector3.up, -velocityRelativeToWater) * dragInWaterUp;
+            }
+            else
+            {
+                buoyancy = Vector3.zero;
+                verticalDrag = Vector3.zero;
+            }
 
+            waterSurfaceHeight = waterHeight;
             collProvider.ReturnSamplingData(samplingData);
         }
     }
