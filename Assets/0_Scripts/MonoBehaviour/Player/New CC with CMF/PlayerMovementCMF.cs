@@ -256,9 +256,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     public Gradient StinrayGradient;
     public Gradient OktiromeGradient;
 
-    [Header("----- ONLINE VARIABLES ----")]
-    [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
-    public static GameObject LocalPlayerInstance;
     #endregion
 
     #region ----[ PROPERTIES ]----
@@ -268,11 +265,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     [HideInInspector]
     public PlayerHUDCMF myPlayerHUD;
 
-    ////ONLINE
-    //[HideInInspector]
-    //public bool online = false;
-
-    //Eloy: FOR ONLINE
     [HideInInspector]
     public int playerNumber; //from 0 to maxPlayers
 
@@ -458,7 +450,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         myPlayerHUD.KonoAwake();
         myPlayerCombatNew.KonoAwake();
-        //myPlayerAnimation.KonoAwake();
         myPlayerAnimation.KonoAwake();
         myPlayerHook.KonoAwake();
         myPlayerWeap.KonoAwake();

@@ -45059,13 +45059,13 @@ GameObject:
   - component: {fileID: 2655243504092265548}
   - component: {fileID: 4826634726855863062}
   - component: {fileID: 873758771431004316}
-  - component: {fileID: 8719508589324532801}
   - component: {fileID: 9217598655678958731}
   - component: {fileID: 5164337253723804911}
   - component: {fileID: 3492127030470539752}
   - component: {fileID: 1681186807962953373}
   - component: {fileID: 852548598361810586}
   - component: {fileID: 3862377399671146882}
+  - component: {fileID: 994047453282244108}
   m_Layer: 10
   m_Name: PlayerPrefCMF_actual_online
   m_TagString: Player
@@ -45232,10 +45232,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcb1f6fd1a158a74f9c7f9580017ee6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllDebugs: 1
+  disableAllDebugs: 0
   collCheck: {fileID: 4826634726855863062}
   mover: {fileID: 2655243504092265548}
-  myPlayerCombatNew: {fileID: 8719508589324532801}
+  myPlayerCombatNew: {fileID: 994047453282244108}
   myPlayerWeap: {fileID: 5164337253723804911}
   myPlayerAnimation: {fileID: 3492127030470539752}
   myPlayerHook: {fileID: 9217598655678958731}
@@ -45382,38 +45382,7 @@ MonoBehaviour:
   aimingAndTouchedGroundOnce: 0
   hookingAndTouchedGroundOnce: 0
   jumpedOutOfWater: 1
---- !u!114 &8719508589324532801
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5233746851346624046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 300e5e0114c9a4e4296d3361ccce336f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myPlayerMovement: {fileID: 0}
-  myPlayerHUD: {fileID: 0}
-  hitboxMats:
-  - {fileID: 2100000, guid: 2700333b147dd394c8452531278051f7, type: 2}
-  - {fileID: 2100000, guid: 8ef3e573ffcdc814aa37206d968bffe3, type: 2}
-  - {fileID: 2100000, guid: 3413d7cda6a31384ca2d10421fac8256, type: 2}
-  - {fileID: 2100000, guid: b005bf027cdb3d64d88cd0db2ead83d9, type: 2}
-  hitboxesParent: {fileID: 7735381457242634366}
-  weaponEdge: {fileID: 0}
-  weaponHandle: {fileID: 0}
-  currentWeapon: {fileID: 0}
-  invulnerable: 0
-  attackStg: 0
-  currentAttack: {fileID: 0}
-  landedSinceAttackStarted: 0
-  autocomboStarted: 0
-  autocomboIndex: 255
-  currentHitboxes: []
-  parryStarted: 0
-  aiming: 0
+  online_isLocal: 0
 --- !u!114 &9217598655678958731
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45464,7 +45433,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myPlayerAnim: {fileID: 3492127030470539752}
   myPlayerMovement: {fileID: 873758771431004316}
-  myPlayerCombatNew: {fileID: 8719508589324532801}
+  myPlayerCombatNew: {fileID: 994047453282244108}
   myPlayerModel: {fileID: 4362105476637428943}
   startingWeaponTeamA: {fileID: 11400000, guid: 34c19bb7b66fdae4399b358c4b2337ba,
     type: 2}
@@ -45536,7 +45505,7 @@ MonoBehaviour:
   _updateRate: 1
   _autoFreezeProxyFrames: 0
   _clientPredicted: 1
-  _allowInstantiateOnClient: 1
+  _allowInstantiateOnClient: 0
   _persistThroughSceneLoads: 0
   _sceneObjectDestroyOnDetach: 1
   _sceneObjectAutoAttach: 1
@@ -45547,6 +45516,38 @@ MonoBehaviour:
   _entityBehaviourQueryOption: 0
   _entityPriorityCalculatorQueryOption: 0
   _entityReplicationFilterQueryOption: 0
+--- !u!114 &994047453282244108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5233746851346624046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 300e5e0114c9a4e4296d3361ccce336f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myPlayerMovement: {fileID: 0}
+  myPlayerHUD: {fileID: 0}
+  hitboxMats:
+  - {fileID: 2100000, guid: 2700333b147dd394c8452531278051f7, type: 2}
+  - {fileID: 2100000, guid: 8ef3e573ffcdc814aa37206d968bffe3, type: 2}
+  - {fileID: 2100000, guid: 3413d7cda6a31384ca2d10421fac8256, type: 2}
+  - {fileID: 2100000, guid: b005bf027cdb3d64d88cd0db2ead83d9, type: 2}
+  hitboxesParent: {fileID: 7735381457242634366}
+  weaponEdge: {fileID: 0}
+  weaponHandle: {fileID: 0}
+  currentWeapon: {fileID: 0}
+  invulnerable: 0
+  attackStg: 0
+  currentAttack: {fileID: 0}
+  landedSinceAttackStarted: 0
+  autocomboStarted: 0
+  autocomboIndex: 255
+  currentHitboxes: []
+  parryStarted: 0
+  aiming: 0
 --- !u!1 &5332663455968376455
 GameObject:
   m_ObjectHideFlags: 0

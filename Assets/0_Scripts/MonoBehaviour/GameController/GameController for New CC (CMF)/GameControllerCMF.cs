@@ -417,7 +417,7 @@ public class GameControllerCMF : Bolt.GlobalEventListener
         //{
         for (int i = 0; i < allPlayers.Count; i++)
         {
-            if (i < playerNum)
+            if (i < playerNum && !MasterManager.GameSettings.online)
             {
                 //LE DAMOS AL JUGADOR SUS CONTROLES (Mando/teclado) y SU EQUIPO
                 if (allPlayers.Count == 1)
@@ -430,85 +430,82 @@ public class GameControllerCMF : Bolt.GlobalEventListener
                 {
                     allPlayers[i].actions = GameInfo.instance.playerActionsList[i];
                 }
+                    if (GameInfo.instance.playerTeamList[i] == Team.none)
+                    {
+                        GameInfo.instance.playerTeamList[i] = GameInfo.instance.NoneTeamSelect();
+                    }
 
-                if (GameInfo.instance.playerTeamList[i] == Team.none)
+                    allPlayers[i].team = GameInfo.instance.playerTeamList[i];
+            }
+        }
+            if (recordMode)
+            {
+                switch (playerNum)
                 {
-                    GameInfo.instance.playerTeamList[i] = GameInfo.instance.NoneTeamSelect();
+                    case 1:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1f, 1f);
+                        allUICameras[0].rect = new Rect(0, 0, 0, 0);
+                        break;
+                    case 2:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1, 0.5f);
+                        allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
+                        allUICameras[0].rect = new Rect(0, 0, 0, 0);
+                        allUICameras[1].rect = new Rect(0, 0, 0, 0);
+                        break;
+                    case 3:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                        allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                        allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
+                        allUICameras[0].rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                        allUICameras[1].rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                        allUICameras[2].rect = new Rect(0, 0, 1, 0.5f);
+                        break;
+                    case 4:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0f, 0f, 0.8f, 0.8f);
+                        allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.8f, 0, 0.2f, 0.2f);
+                        allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0.8f, 0.2f, 0.2f, 0.2f);
+                        allCameraBases[3].myCamera.GetComponent<Camera>().rect = new Rect(0.8f, 0.4f, 0.2f, 0.2f);
+                        allCameraBases[0].myCamera.GetComponent<Camera>().depth = 1;
+                        allUICameras[0].rect = new Rect(0, 0, 0, 0);
+                        allUICameras[1].rect = new Rect(0, 0, 0, 0);
+                        allUICameras[2].rect = new Rect(0, 0, 0, 0);
+                        allUICameras[3].rect = new Rect(0, 0, 0, 0);
+                        break;
                 }
-
-                allPlayers[i].team = GameInfo.instance.playerTeamList[i];
             }
-        }
-        //SETUP CAMERAS
-
-        if (recordMode)
-        {
-            switch (playerNum)
+            else
             {
-                case 1:
-                    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1f, 1f);
-                    allUICameras[0].rect = new Rect(0, 0, 0, 0);
-                    break;
-                case 2:
-                    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1, 0.5f);
-                    allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
-                    allUICameras[0].rect = new Rect(0, 0, 0, 0);
-                    allUICameras[1].rect = new Rect(0, 0, 0, 0);
-                    break;
-                case 3:
-                    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
-                    allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
-                    allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
-                    allUICameras[0].rect = new Rect(0, 0.5f, 0.5f, 0.5f);
-                    allUICameras[1].rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
-                    allUICameras[2].rect = new Rect(0, 0, 1, 0.5f);
-                    break;
-                case 4:
-                    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0f, 0f, 0.8f, 0.8f);
-                    allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.8f, 0, 0.2f, 0.2f);
-                    allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0.8f, 0.2f, 0.2f, 0.2f);
-                    allCameraBases[3].myCamera.GetComponent<Camera>().rect = new Rect(0.8f, 0.4f, 0.2f, 0.2f);
-                    allCameraBases[0].myCamera.GetComponent<Camera>().depth = 1;
-                    allUICameras[0].rect = new Rect(0, 0, 0, 0);
-                    allUICameras[1].rect = new Rect(0, 0, 0, 0);
-                    allUICameras[2].rect = new Rect(0, 0, 0, 0);
-                    allUICameras[3].rect = new Rect(0, 0, 0, 0);
-                    break;
-            }
-        }
-        else
-        {
-            switch (playerNum)
-            {
-                case 1:
-                    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-                    allUICameras[0].rect = new Rect(0, 0, 1f, 1);
-                    break;
-                case 2:
-                    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1, 0.5f);
-                    allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
-                    allUICameras[0].rect = new Rect(0, 0.5f, 1, 0.5f);
-                    allUICameras[1].rect = new Rect(0, 0, 1, 0.5f);
-                    break;
-                case 3:
-                    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
-                    allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
-                    allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
-                    allUICameras[0].rect = new Rect(0, 0.5f, 0.5f, 0.5f);
-                    allUICameras[1].rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
-                    allUICameras[2].rect = new Rect(0, 0, 1, 0.5f);
-                    break;
-                case 4:
-                    allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
-                    allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
-                    allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 0.5f);
-                    allCameraBases[3].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 0.5f);
-                    allUICameras[0].rect = new Rect(0, 0.5f, 0.5f, 0.5f);
-                    allUICameras[1].rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
-                    allUICameras[2].rect = new Rect(0, 0, 0.5f, 0.5f);
-                    allUICameras[3].rect = new Rect(0.5f, 0, 0.5f, 0.5f);
-                    break;
-            }
+                switch (playerNum)
+                {
+                    case 1:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+                        allUICameras[0].rect = new Rect(0, 0, 1f, 1);
+                        break;
+                    case 2:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1, 0.5f);
+                        allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
+                        allUICameras[0].rect = new Rect(0, 0.5f, 1, 0.5f);
+                        allUICameras[1].rect = new Rect(0, 0, 1, 0.5f);
+                        break;
+                    case 3:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                        allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                        allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 0.5f);
+                        allUICameras[0].rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                        allUICameras[1].rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                        allUICameras[2].rect = new Rect(0, 0, 1, 0.5f);
+                        break;
+                    case 4:
+                        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                        allCameraBases[1].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                        allCameraBases[2].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 0.5f);
+                        allCameraBases[3].myCamera.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 0.5f);
+                        allUICameras[0].rect = new Rect(0, 0.5f, 0.5f, 0.5f);
+                        allUICameras[1].rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
+                        allUICameras[2].rect = new Rect(0, 0, 0.5f, 0.5f);
+                        allUICameras[3].rect = new Rect(0.5f, 0, 0.5f, 0.5f);
+                        break;
+                }
             //}
             SetSpawnPositions(allPlayers.Count);
         }
@@ -1128,33 +1125,34 @@ public class GameControllerCMF : Bolt.GlobalEventListener
         GameObject newPlayerCanvas;
         CameraControllerCMF newPlayerCamera;
         Camera newPlayerUICamera;
+        CheckValidInputsBuffer();
+        myGameInterface.gameObject.SetActive(true);
         newPlayer = BoltNetwork.Instantiate(BoltPrefabs.PlayerPrefCMF_actual_online).GetComponent<PlayerMovementCMF>();
         newPlayer.online_isLocal = true;
-        allPlayers.Add(newPlayer);
-        newPlayer.mySpawnInfo = new PlayerSpawnInfo();
         newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
         newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();
         newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
         InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
         myGameInterface.gameObject.SetActive(true);
-        AllAwakes();
-        StartGame(newPlayer);
-    }
-
-    void StartGame(PlayerMovementCMF newPlayer)
-    {
+        newPlayer.mySpawnInfo = new PlayerSpawnInfo();
         GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
         Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
         allPlayers[0].actions = GameInfo.instance.myControls;
-        CheckValidInputsBuffer();
-        newPlayer.KonoStart();
-        newPlayer.SetVelocity(Vector3.zero);
-        newPlayer.myCamera.InstantPositioning();
-        newPlayer.myCamera.InstantRotation();
-        newPlayer.ResetPlayer();
-        newPlayer.myPlayerAnimation.RestartAnimation();
-        playing = true;
-        gamePaused = false;
+        allCanvas[0].GetComponent<PlayerHUDCMF>().AdaptCanvasHeightScale();
+        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+        myGameInterface.KonoAwake(this);
+        allCameraBases[0].KonoAwake();
+        allPlayers[0].KonoAwake(true);
+        PlayersSetup();
+        OnlineStartGame();
+    }
+
+    void OnlineStartGame()
+    {
+        allPlayers[0].SetVelocity(Vector3.zero);
+        allPlayers[0].myPlayerAnimation.RestartAnimation();
+        allPlayers[0].myCamera.InstantPositioning();
+        StartGame();
     }
     #endregion
 
