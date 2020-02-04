@@ -1146,7 +1146,9 @@ public class GameControllerCMF : Bolt.GlobalEventListener
         PlayersSetup();
         OnlineStartGame();
     }
+    #endregion
 
+    #region ----[ NETWORK FUNCTIONS ]----
     void OnlineStartGame()
     {
         allPlayers[0].SetVelocity(Vector3.zero);
@@ -1154,8 +1156,5 @@ public class GameControllerCMF : Bolt.GlobalEventListener
         allPlayers[0].myCamera.InstantPositioning();
         StartGame();
     }
-    #endregion
-
-    #region ----[ NETWORK FUNCTIONS ]----
     #endregion
 }

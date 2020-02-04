@@ -407,7 +407,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void KonoAwake(bool isMyCharacter = false)
     {
-        if (online_isLocal)
+        if (online_isLocal || !MasterManager.GameSettings.online)
         {
             mover = GetComponent<Mover>();
             collCheck.KonoAwake(mover.capsuleCollider);//we use capsule collider in our example
