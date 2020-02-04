@@ -16,7 +16,9 @@ public class PlayerBodyCMF : MonoBehaviour
     [Tooltip("Offsets center of object to raise it (or lower it) in the water."), SerializeField]
     float raiseBody = -2f;
     public float buoyancyCoeff =4.5f;
+    public float maxBuoyancyAcceleration = 20;
     public float dragInWaterUp = 9f;
+    public float floatingSlack = 0.7f;
     [HideInInspector]
     public float waterSurfaceHeight = 0;
     Vector3 displacementToObject = Vector3.zero;
@@ -116,7 +118,7 @@ public class PlayerBodyCMF : MonoBehaviour
 
     #endregion
 
-    #region Enter Water / Exit Water
+    #region FLOATING SYSTEM FOR CREST OCEAN
     void ProcessInWater()
     {
         if (OceanRenderer.Instance != null)
@@ -190,8 +192,8 @@ public class PlayerBodyCMF : MonoBehaviour
             if (debugAllRaycasts) DebugDrawCross(dispPos, 4f, Color.white);
 
             float waterHeight = dispPos.y;
-            float stayInWaterOffter = myPlayerMov.vertMovSt == VerticalMovementState.FloatingInWater ?0.5f:0;
-            float waterLevelDif = waterHeight - transform.position.y + stayInWaterOffter;
+            float stayInWaterOffset = myPlayerMov.vertMovSt == VerticalMovementState.FloatingInWater ? floatingSlack:0;
+            float waterLevelDif = waterHeight - transform.position.y + stayInWaterOffset;
             Vector3 playerPos = transform.position + (Vector3.down * raiseBody);
             bool inWater = waterLevelDif > 0f;
             Debug.DrawLine(playerPos, dispPos, inWater ? Color.green:Color.red);
@@ -208,6 +210,7 @@ public class PlayerBodyCMF : MonoBehaviour
             {
                 float bottomDepth = waterHeight - transform.position.y + raiseBody;
                 buoyancy = Vector3.up * buoyancyCoeff * bottomDepth * bottomDepth * bottomDepth;
+                buoyancy.y = Mathf.Clamp(buoyancy.y, float.MinValue, maxBuoyancyAcceleration);
                 // apply drag relative to water
                 verticalDrag = Vector3.up * Vector3.Dot(Vector3.up, -velocityRelativeToWater) * dragInWaterUp;
             }

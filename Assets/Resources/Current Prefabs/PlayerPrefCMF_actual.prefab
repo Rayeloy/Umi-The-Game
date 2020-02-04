@@ -45256,7 +45256,7 @@ MonoBehaviour:
   maxHookingSpeed: 3.5
   maxGrapplingSpeed: 3.5
   maxSpeedInWater: 5
-  maxVerticalSpeedInWater: 40
+  maxFloatingSpeed: 40
   airImpulsePercentage: 0.5
   maxImpulseAngle: 60
   boostSpeed: 30
@@ -65521,9 +65521,11 @@ MonoBehaviour:
   debugAllRaycasts: 1
   myPlayerMov: {fileID: 873758771431004316}
   bodyWidth: 4
-  raiseBody: 2
-  buoyancyCoeff: 1
+  raiseBody: 8.4
+  buoyancyCoeff: 0.05
+  maxBuoyancyAcceleration: 50
   dragInWaterUp: 9
+  floatingSlack: 0.7
   waterSurfaceHeight: 0
   buoyancy: {x: 0, y: 0, z: 0}
   verticalDrag: {x: 0, y: 0, z: 0}

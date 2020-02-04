@@ -71,7 +71,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     public float maxHookingSpeed = 3.5f;
     public float maxGrapplingSpeed = 3.5f;
     public float maxSpeedInWater = 5f;
-    public float maxVerticalSpeedInWater = 10f;
+    //public float maxVerticalSpeedInWater = 10f; 
+    public float maxFloatingSpeed = 2f;
 
     [Header(" - IMPULSE - ")]
     [Range(0, 1)]
@@ -1172,20 +1173,18 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     break;
                 case VerticalMovementState.FloatingInWater:
                     currentVel.y += currentGravity * Time.deltaTime;
-                    //Debug.Log("FloatingCharacter " + name + " : After gravity -> currentVelocity = " + currentVel.ToString("F6"));
                     currentVel += myPlayerBody.buoyancy * Time.deltaTime;
-                    //Debug.Log("FloatingCharacter " + name + " : After buoyancy -> currentVelocity = " + currentVel.ToString("F6") + "; buoyancy = " + myPlayerBody.buoyancy.ToString("F6") 
-                    //    + "; gravity = "+(Vector3.up * currentGravity));
                     // apply drag relative to water
                     currentVel += myPlayerBody.verticalDrag * Time.fixedDeltaTime;
+                    currentVel.y = Mathf.Clamp(currentVel.y, float.MinValue, maxFloatingSpeed);
                     break;
             }
         }
 
-        if (vertMovSt == VerticalMovementState.FloatingInWater)
-        {
-            currentVel.y = Mathf.Clamp(currentVel.y, -maxVerticalSpeedInWater, float.MaxValue);
-        }
+        //if (vertMovSt == VerticalMovementState.FloatingInWater)
+        //{
+        //    currentVel.y = Mathf.Clamp(currentVel.y, -maxVerticalSpeedInWater, float.MaxValue);
+        //}
 
         ProcessJumpInsurance();
 
