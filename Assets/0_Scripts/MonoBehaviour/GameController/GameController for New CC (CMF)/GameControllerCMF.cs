@@ -299,17 +299,11 @@ public class GameControllerCMF : Bolt.GlobalEventListener
     {
         if (!MasterManager.GameSettings.online)
         {
-            //if (playerNum == 1)
-            //{
-            //    allPlayers[0].Actions = GameInfo.instance.myControls;
-            //}
-            //if (scoreManager.End) return;
             SlowMotion();
-            SwitchLockMouse();
         }
+        SwitchLockMouse();
         if (!gamePaused)
         {
-
             if (playing)
             {
                 UpdatePlayers();
@@ -362,9 +356,19 @@ public class GameControllerCMF : Bolt.GlobalEventListener
 
     void UpdatePlayers()
     {
-        for (int i = 0; i < playerNum; i++)
+        if (!MasterManager.GameSettings.online)
         {
-            allPlayers[i].KonoUpdate();
+            for (int i = 0; i < playerNum; i++)
+            {
+                allPlayers[i].KonoUpdate();
+            }
+        }
+        else
+        {
+            if (allPlayers.Count == 1)
+            {
+                allPlayers[0].KonoUpdate();
+            }
         }
     }
 
@@ -379,18 +383,28 @@ public class GameControllerCMF : Bolt.GlobalEventListener
         }
         else
         {
-            for (int i = 0; i < allPlayers.Count; i++)
+            if(allPlayers.Count==1)
             {
-                allPlayers[i].KonoFixedUpdate();
+                allPlayers[0].KonoFixedUpdate();
             }
         }
     }
 
     void LateUpdatePlayers()
     {
-        for (int i = 0; i < playerNum; i++)
+        if (!MasterManager.GameSettings.online)
         {
-            allPlayers[i].KonoLateUpdate();
+            for (int i = 0; i < playerNum; i++)
+            {
+                allPlayers[i].KonoLateUpdate();
+            }
+        }
+        else
+        {
+            if (allPlayers.Count == 1)
+            {
+                allPlayers[0].KonoLateUpdate();
+            }
         }
     }
 
@@ -669,26 +683,6 @@ public class GameControllerCMF : Bolt.GlobalEventListener
         //ignore this
         contador.Add(playerHUD.contador);
         powerUpPanel.Add(playerHUD.powerUpPanel);
-    }
-
-    //actualmente en desuso
-    public virtual void RemovePlayer(PlayerMovementCMF _pM)//solo para online
-    {
-        for (int i = 0; i < allPlayers.Count; i++)
-        {
-            if (allPlayers[i] == _pM)
-            {
-                allPlayers.Remove(_pM);
-                allCanvas.Remove(_pM.myPlayerHUD.gameObject);
-                allCameraBases.Remove(_pM.myCamera);
-                allUICameras.Remove(_pM.myUICamera);
-
-                Destroy(allPlayers[i].gameObject);
-                Destroy(allCanvas[i]);
-                Destroy(allCameraBases[i].gameObject);
-                Destroy(allUICameras[i].gameObject);
-            }
-        }
     }
 
     PlayerSpawnInfo GetSpawnPosition(int playerNumber)
@@ -1125,6 +1119,7 @@ public class GameControllerCMF : Bolt.GlobalEventListener
         GameObject newPlayerCanvas;
         CameraControllerCMF newPlayerCamera;
         Camera newPlayerUICamera;
+        DeactivatePlayerComponents();
         CheckValidInputsBuffer();
         myGameInterface.gameObject.SetActive(true);
         newPlayer = BoltNetwork.Instantiate(BoltPrefabs.PlayerPrefCMF_actual_online).GetComponent<PlayerMovementCMF>();
@@ -1133,13 +1128,11 @@ public class GameControllerCMF : Bolt.GlobalEventListener
         newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();
         newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
         InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
-        myGameInterface.gameObject.SetActive(true);
         newPlayer.mySpawnInfo = new PlayerSpawnInfo();
         GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
         Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
         allPlayers[0].actions = GameInfo.instance.myControls;
         allCanvas[0].GetComponent<PlayerHUDCMF>().AdaptCanvasHeightScale();
-        allCameraBases[0].myCamera.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
         myGameInterface.KonoAwake(this);
         allCameraBases[0].KonoAwake();
         allPlayers[0].KonoAwake(true);
@@ -1151,9 +1144,10 @@ public class GameControllerCMF : Bolt.GlobalEventListener
     #region ----[ NETWORK FUNCTIONS ]----
     void OnlineStartGame()
     {
-        allPlayers[0].SetVelocity(Vector3.zero);
-        allPlayers[0].myPlayerAnimation.RestartAnimation();
         allPlayers[0].myCamera.InstantPositioning();
+        allPlayers[0].myCamera.InstantRotation();
+        allPlayers[0].KonoStart();
+        allPlayers[0].SetVelocity(Vector3.zero);
         StartGame();
     }
     #endregion

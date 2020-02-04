@@ -492,6 +492,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     #region UPDATE
     public void KonoUpdate()
     {
+        Debug.LogWarning("PLAYER UPDATE ");
         if (actions.Start.WasPressed) gC.PauseGame(actions);
 
         //POLL INPUTS

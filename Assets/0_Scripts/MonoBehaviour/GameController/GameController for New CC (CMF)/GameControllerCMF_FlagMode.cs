@@ -59,18 +59,6 @@ public class GameControllerCMF_FlagMode : GameControllerCMF
         //}
     }
 
-    public override void RemovePlayer(PlayerMovementCMF _pM)
-    {
-        int index = allPlayers.IndexOf(_pM);
-        base.RemovePlayer(_pM);
-        //if (!online)//Eloy: para Juan: como solo se referencia el nuestro propio, no hace falta borrar cosas del score manager cuando se borra a otro player. Solo borramos cuando nos borramos a nosotros.
-        //{
-        myScoreManager.blueTeamScore_Text.RemoveAt(index);
-        myScoreManager.redTeamScore_Text.RemoveAt(index);
-        myScoreManager.time_Text.RemoveAt(index);
-        //}
-    }
-
     public override void StartGameOver(Team _winnerTeam)
     {
         base.StartGameOver(_winnerTeam);

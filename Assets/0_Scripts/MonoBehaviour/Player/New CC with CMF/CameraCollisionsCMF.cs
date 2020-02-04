@@ -15,18 +15,17 @@ public class CameraCollisionsCMF : MonoBehaviour
     float distance;
     public LayerMask collisionMask;
 
-    private void Awake()
+    public void KonoAwake()
     {
         myCamController = transform.parent.GetComponent<CameraControllerCMF>();
-    }
-    private void Start()
-    {
         ResetData();
     }
+
 
     public void ResetData()
     {
         maxDistance = myCamController.targetMyCamPos.magnitude;
+        Debug.Log("TARGETmycampos = " + myCamController.targetMyCamPos.ToString("F6"));
         dollyDir = myCamController.targetMyCamPos.normalized;
         distance = transform.localPosition.magnitude;
     }
@@ -48,6 +47,7 @@ public class CameraCollisionsCMF : MonoBehaviour
             distance = maxDistance;
         }
         myCamController.targetMyCamPos = dollyDir * distance;
+        Debug.Log("TargetMyCamPos vale : " + myCamController.targetMyCamPos.ToString("F6")+"; distance = "+distance.ToString("F6")+"; dollyDir = "+dollyDir.ToString("F6"));
 
     }
 

@@ -104,6 +104,7 @@ public class CameraControllerCMF : MonoBehaviour
                 transform.localRotation = myPlayerMov.rotateObj.localRotation;
                 //print("I'm " + gameObject.name + " and my local rotation = " + transform.localRotation.eulerAngles);
                 myCamera.localPosition = originalCamPosFree;
+                Debug.Log("Cam konoAwake, new postion :" + myCamera.localPosition);
                 break;
             case cameraMode.FixedFree:
                 break;
@@ -113,9 +114,12 @@ public class CameraControllerCMF : MonoBehaviour
                 myCamera.localPosition = originalPos;
                 break;
         }
-        currentMyCamPos = targetMyCamPos = myCamera.localPosition;
+        currentMyCamPos = targetMyCamPos = originalCamPosFree;
+        Debug.Log("Awake: targetMyCamPos = " + targetMyCamPos.ToString("F6"));
         currentCamPos = targetCamPos = transform.position;
         currentCamRot = targetCamRot = transform.rotation.eulerAngles;
+
+        myCamera.GetComponent<CameraCollisionsCMF>().KonoAwake();
 
     }
     // Use this for initialization
@@ -275,6 +279,7 @@ public class CameraControllerCMF : MonoBehaviour
             SmoothCameraMove();
             //print("I'm " + gameObject.name + " and my local rotation = " + transform.localRotation.eulerAngles);
         }
+        Debug.Log("Cam new postion :" + myCamera.localPosition);
     }
     #endregion
 
@@ -324,6 +329,7 @@ public class CameraControllerCMF : MonoBehaviour
         currentMyCamPos.y = Mathf.SmoothDamp(currentMyCamPos.y, targetMyCamPos.y, ref smoothMyCamY, smoothCamMoveTime);
         currentMyCamPos.z = Mathf.SmoothDamp(currentMyCamPos.z, targetMyCamPos.z, ref smoothMyCamZ, smoothCamMoveTime);
         myCamera.localPosition = currentMyCamPos;
+        Debug.Log("UwU : " + targetMyCamPos);
     }
     #endregion
 
