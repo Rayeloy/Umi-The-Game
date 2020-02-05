@@ -129,11 +129,12 @@ public class CollisionsCheck : MonoBehaviour
 
     #region FixedUpdate
     //RUN IN FIXED UPDATE
-    public void UpdateCollisionVariables(Mover mover, VerticalMovementState jumpSt)
+    public void UpdateCollisionVariables(Mover mover, VerticalMovementState jumpSt, bool forceFly=false)
     {
         mover.CheckForGround(platformMovement.magnitude > 0.0001f);
         if (jumpSt != VerticalMovementState.Jumping && jumpSt != VerticalMovementState.JumpBreaking)
             below = mover.IsGrounded();
+        if (forceFly) below = false;
         SetSlopeAngle(mover.GetGroundNormal());
         floor = mover.GetGroundCollider() != null ? mover.GetGroundCollider().gameObject : null;
 

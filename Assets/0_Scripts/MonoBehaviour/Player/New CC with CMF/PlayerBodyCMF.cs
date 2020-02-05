@@ -67,7 +67,7 @@ public class PlayerBodyCMF : MonoBehaviour
 
     private void OnTriggerEnter(Collider col)
     {
-        //Debug.Log("Player Body Colliding with " + col.transform.name);
+        Debug.Log("Player Body Colliding with " + col.transform.name);
         switch (col.tag)
         {
             case "KillTrigger":
@@ -102,6 +102,11 @@ public class PlayerBodyCMF : MonoBehaviour
                         }
                     }
                 }
+                break;
+            case "UmiCannon":
+                UmiCannon cannon = col.GetComponent<UmiCannon>();
+                Vector3 dir = cannon.CalculateVelocity(transform.position, myPlayerMov.currentGravity);
+                myPlayerMov.StartFixedJump(dir, cannon.timeToReach * cannon.noInputPercentage, cannon.timeToReach);
                 break;
         }
     }

@@ -45270,18 +45270,22 @@ MonoBehaviour:
   initialAcc: 90
   airInitialAcc: 40
   wallJumpInitialAcc: 20
+  fixedJumpInitialAcc: 20
   breakAcc: -45
   airBreakAcc: -22.5
   wallJumpBreakAcc: -5
+  fixedJumpBreakAcc: -2.5
   hardSteerAcc: -90
   airHardSteerAcc: -45
   wallJumpHardSteerAcc: -10
+  fixedJumpHardSteerAcc: -5
   movingAcc: 11.5
   airMovingAcc: 5
   wallJumpMovingAcc: 0.5
+  fixedJumpMovingAcc: 1
   hardBreakAcc: -90
   knockbackBreakAcc: -45
-  gravity: 0
+  currentGravity: 0
   jumpHeight: 2.5
   jumpApexTime: 0.4
   breakJumpForce: 2

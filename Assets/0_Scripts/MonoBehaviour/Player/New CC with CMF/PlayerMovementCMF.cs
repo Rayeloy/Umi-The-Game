@@ -112,23 +112,27 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     public float initialAcc = 30;
     public float airInitialAcc = 30;
     public float wallJumpInitialAcc = 30;
+    public float fixedJumpInitialAcc = 20f;
     public float breakAcc = -30;
     public float airBreakAcc = -5;
     public float wallJumpBreakAcc = -5;
+    public float fixedJumpBreakAcc = -2.5f;
     public float hardSteerAcc = -60;
     public float airHardSteerAcc = -10;
     public float wallJumpHardSteerAcc = -10;
+    public float fixedJumpHardSteerAcc = -5f;
     public float movingAcc = 2.0f;
     public float airMovingAcc = 0.5f;
     public float wallJumpMovingAcc = 0.5f;
+    public float fixedJumpMovingAcc = 0.25f;
     [Tooltip("Acceleration used when breaking from a boost.")]
     public float hardBreakAcc = -120f;
     [Tooltip("Breaking negative acceleration that is used under the effects of a knockback (stunned). Value is clamped to not be higher than breakAcc.")]
     public float knockbackBreakAcc = -30f;
     //public float breakAccOnHit = -2.0f;
+    float gravity;
     [HideInInspector]
-    public float gravity;
-    float currentGravity;
+    public float currentGravity;
 
     [Header(" --- JUMP --- ")]
     public float jumpHeight = 4f;
@@ -367,6 +371,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     //FIXED JUMPS (Como el trampolín)
     bool fixedJumping;
     bool fixedJumpDone;
+    float fixedJumpMaxTime;
     float noMoveMaxTime;
     float noMoveTime;
 
@@ -505,7 +510,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         collCheck.ResetVariables();
         ResetMovementVariables();
 
-        collCheck.UpdateCollisionVariables(mover, vertMovSt);
+        collCheck.UpdateCollisionVariables(mover, vertMovSt, (fixedJumping && noInput));
 
         collCheck.UpdateCollisionChecks(currentVel);
 
@@ -748,7 +753,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         ProcessBoost();
         #endregion
         #region //----------------------------------------------------- Efecto interno --------------------------------------------
-        if (!hooked && !fixedJumping && moveSt != MoveState.Boost && moveSt != MoveState.Knockback && moveSt != MoveState.Impulse)
+        if (!hooked && moveSt != MoveState.Boost && moveSt != MoveState.Knockback && moveSt != MoveState.Impulse && moveSt != MoveState.FixedJump && moveSt != MoveState.NotBreaking)
         {
             //------------------------------------------------ Direccion Joystick, aceleracion, maxima velocidad y velocidad ---------------------------------
             //------------------------------- Joystick Direction -------------------------------
@@ -776,10 +781,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
             #region ------------------------------- Acceleration -------------------------------
             float finalAcc = 0;
-            float finalBreakAcc = collCheck.below ? breakAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpBreakAcc : airBreakAcc;
-            float finalHardSteerAcc = collCheck.below ? hardSteerAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpHardSteerAcc : airHardSteerAcc;
-            float finalInitialAcc = collCheck.below ? initialAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpInitialAcc : airInitialAcc;
-            finalMovingAcc = (collCheck.below ? movingAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpMovingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
+            float finalBreakAcc = collCheck.below ? breakAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpBreakAcc : fixedJumping ? fixedJumpBreakAcc : airBreakAcc;
+            float finalHardSteerAcc = collCheck.below ? hardSteerAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpHardSteerAcc : fixedJumping ? fixedJumpHardSteerAcc : airHardSteerAcc;
+            float finalInitialAcc = collCheck.below ? initialAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpInitialAcc : fixedJumping ? fixedJumpInitialAcc : airInitialAcc;
+            finalMovingAcc = (collCheck.below ? movingAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpMovingAcc : fixedJumping ? fixedJumpMovingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
             //if (!disableAllDebugs && rotationRestrictedPercentage!=1) Debug.LogWarning("finalMovingAcc = " + finalMovingAcc+ "; rotationRestrictedPercentage = " + rotationRestrictedPercentage+
             //    "; attackStg = " + myPlayerCombatNew.attackStg);
             //finalBreakAcc = currentSpeed < 0 ? -finalBreakAcc : finalBreakAcc;
@@ -825,59 +830,62 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             #endregion
 
             #region ----------------------------------- Speed ---------------------------------- 
-            switch (moveSt)
+            if (!fixedJumping)
             {
-                case MoveState.Moving:
-                    if (hardSteerOn && Mathf.Sign(currentSpeed) == 1)//hard Steer
-                    {
-                        if (!hardSteerStarted)
+                switch (moveSt)
+                {
+                    case MoveState.Moving:
+                        if (hardSteerOn && Mathf.Sign(currentSpeed) == 1)//hard Steer
                         {
-                            hardSteerStarted = true;
-                            //Debug.Log("Current speed: Moving: angleDiff > instantRotationMinAngle -> Calculate velNeg" + "; currentInputDir = " + currentInputDir.ToString("F6"));
-                            float angle = 180 - hardSteerAngleDiff;
-                            float hardSteerInitialSpeed = Mathf.Cos(angle * Mathf.Deg2Rad) * horizontalVel.magnitude;//cos(angle) = velNeg /horizontalVel.magnitude;
-                            currentSpeed = hardSteerInitialSpeed;
+                            if (!hardSteerStarted)
+                            {
+                                hardSteerStarted = true;
+                                //Debug.Log("Current speed: Moving: angleDiff > instantRotationMinAngle -> Calculate velNeg" + "; currentInputDir = " + currentInputDir.ToString("F6"));
+                                float angle = 180 - hardSteerAngleDiff;
+                                float hardSteerInitialSpeed = Mathf.Cos(angle * Mathf.Deg2Rad) * horizontalVel.magnitude;//cos(angle) = velNeg /horizontalVel.magnitude;
+                                currentSpeed = hardSteerInitialSpeed;
+                            }
                         }
-                    }
-                    break;
-                case MoveState.NotMoving:
-                    break;
+                        break;
+                    case MoveState.NotMoving:
+                        break;
+                }
+                if (!disableAllDebugs && currentSpeed != 0) Debug.Log("CurrentSpeed 1.2 = " + currentSpeed.ToString("F4") + "; finalAcc = " + finalAcc + "; moveSt = " + moveSt +
+                    "; currentSpeed =" + currentSpeed.ToString("F4"));
+                float currentSpeedB4 = currentSpeed;
+                currentSpeed = currentSpeed + finalAcc * Time.deltaTime;
+                if (moveSt == MoveState.NotMoving && Mathf.Sign(currentSpeedB4) != Mathf.Sign(currentSpeed))
+                {
+                    currentSpeed = 0;
+                }
+                if (moveSt == MoveState.Moving && Mathf.Sign(currentSpeed) < 0 && hardSteerOn)
+                {
+                    currentSpeed = -currentSpeed;
+                    horizontalVel = hardSteerDir * currentSpeed;
+                    currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
+                }
+                //Debug.Log("CurrentSpeed 1.2 = " + currentSpeed);
+                float maxSpeedClamp = knockbackDone || impulseDone ? maxKnockbackSpeed : finalMaxMoveSpeed;
+                float minSpeedClamp = (lastJoystickSens > joystickSens && moveSt == MoveState.Moving) ? (joystickSens / 1) * currentMaxMoveSpeed : 0;
+                currentSpeed = Mathf.Clamp(currentSpeed, minSpeedClamp, maxSpeedClamp);
+                if (hardSteerStarted && !hardSteerOn)
+                {
+                    hardSteerStarted = false;
+                }
+                if (knockbackDone && currentSpeed <= maxMoveSpeed)
+                {
+                    knockbackDone = false;
+                    startBeingHitAnimation = false;
+                }
             }
-            if (!disableAllDebugs && currentSpeed != 0) Debug.Log("CurrentSpeed 1.2 = " + currentSpeed.ToString("F4") + "; finalAcc = " + finalAcc + "; moveSt = " + moveSt +
-                "; currentSpeed =" + currentSpeed.ToString("F4"));
-            float currentSpeedB4 = currentSpeed;
-            currentSpeed = currentSpeed + finalAcc * Time.deltaTime;
-            if (moveSt == MoveState.NotMoving && Mathf.Sign(currentSpeedB4) != Mathf.Sign(currentSpeed))
-            {
-                currentSpeed = 0;
-            }
-            if (moveSt == MoveState.Moving && Mathf.Sign(currentSpeed) < 0 && hardSteerOn)
-            {
-                currentSpeed = -currentSpeed;
-                horizontalVel = hardSteerDir * currentSpeed;
-                currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
-            }
-            //Debug.Log("CurrentSpeed 1.2 = " + currentSpeed);
-            float maxSpeedClamp = knockbackDone || impulseDone ? maxKnockbackSpeed : finalMaxMoveSpeed;
-            float minSpeedClamp = (lastJoystickSens > joystickSens && moveSt == MoveState.Moving) ? (joystickSens / 1) * currentMaxMoveSpeed : 0;
-            currentSpeed = Mathf.Clamp(currentSpeed, minSpeedClamp, maxSpeedClamp);
-            if (hardSteerStarted && !hardSteerOn)
-            {
-                hardSteerStarted = false;
-            }
-            if (knockbackDone && currentSpeed <= maxMoveSpeed)
-            {
-                knockbackDone = false;
-                startBeingHitAnimation = false;
-            }
-        }
+        } 
         #endregion
         #endregion
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
         Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
-        if (!disableAllDebugs && currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
-            "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + collCheck.below + "; horVel.magnitude = " + horVel.magnitude);
+        if (/*!disableAllDebugs &&*/ currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
+            "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + collCheck.below + "; horVel.magnitude = " + horVel.magnitude+ "; finalMovingAcc = " + finalMovingAcc.ToString("F4"));
         //print("CurrentVel 1.3= " + currentVel.ToString("F6")+ "MoveState = " + moveSt);
         if (vertMovSt != VerticalMovementState.WallJumping || (vertMovSt == VerticalMovementState.WallJumping && moveSt == MoveState.Knockback))
         {
@@ -947,10 +955,14 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     currentSpeed = horizontalVel.magnitude;
                     break;
                 case MoveState.FixedJump:
+                    Debug.Log("FIXED JUMP DO");
                     currentVel = knockback;
                     horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
                     currentSpeed = horizontalVel.magnitude;
                     currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
+                    fixedJumpDone = true;
+
+                    moveSt = MoveState.NotBreaking;
                     break;
                 case MoveState.NotBreaking:
                     currentSpeed = horizontalVel.magnitude;
@@ -2242,14 +2254,19 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     #region FIXED JUMP ---------------------------------------------------
 
-    public void StartFixedJump(Vector3 vel, float _noMoveMaxTime)
+    public void StartFixedJump(Vector3 vel, float _noMoveMaxTime, float maxTime)
     {
+        Debug.Log("FIXED JUMP START");
         fixedJumping = true;
         fixedJumpDone = false;
         noInput = true;
         noMoveMaxTime = _noMoveMaxTime;
+        fixedJumpMaxTime = maxTime;
         noMoveTime = 0;
         knockback = vel;
+
+        moveSt = MoveState.FixedJump;
+
         StopBoost();
         myPlayerCombatNew.StopDoingCombat();
     }
@@ -2260,18 +2277,24 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         {
             if (!fixedJumpDone)
             {
-                moveSt = MoveState.FixedJump;
-                fixedJumpDone = true;
+                Debug.Log("ProcessFixedJump: fixedJumpDone = false");
+                collCheck.below = false;
+                mover.stickToGround = false;
             }
             else
             {
-                //print("notBreaking on");
-                moveSt = MoveState.NotBreaking;
-            }
-            noMoveTime += Time.deltaTime;
-            if (noMoveTime >= noMoveMaxTime)
-            {
-                StopFixedJump();
+                noMoveTime += Time.deltaTime;
+                if (noInput && (noMoveTime >= noMoveMaxTime))
+                {
+                    noInput = false;
+                    moveSt = MoveState.None;
+                }
+                Debug.Log("ProcessFixedJump: noMoveTime = " + noMoveTime + "; fixedJumpMaxTime = " + fixedJumpMaxTime+ "; collCheck.below = "+ collCheck.below +
+                    "; (vertMovSt == VerticalMovementState.FloatingInWater) = " +(vertMovSt == VerticalMovementState.FloatingInWater));
+                if (noMoveTime >= fixedJumpMaxTime || collCheck.below || vertMovSt == VerticalMovementState.FloatingInWater)
+                {
+                    StopFixedJump();
+                }
             }
         }
     }
@@ -2280,8 +2303,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         if (fixedJumping)
         {
+            Debug.Log("STOP FIXED JUMP");
             fixedJumping = false;
             noInput = false;
+            moveSt = MoveState.None;
         }
     }
 
