@@ -23,8 +23,8 @@ public class PlayerBodyCMF : MonoBehaviour
     public float waterSurfaceHeight = 0;
     Vector3 displacementToObject = Vector3.zero;
 
-    SamplingData samplingData = new SamplingData();
-    SamplingData samplingDataFlow = new SamplingData();
+    SampleHeightHelper _sampleHeightHelper = new SampleHeightHelper();
+    SampleFlowHelper _sampleFlowHelper = new SampleFlowHelper();
 
     [HideInInspector]
     public Vector3 buoyancy;
@@ -126,6 +126,8 @@ public class PlayerBodyCMF : MonoBehaviour
     #region FLOATING SYSTEM FOR CREST OCEAN
     void ProcessInWater()
     {
+        UnityEngine.Profiling.Profiler.BeginSample("SimpleFloatingObject.FixedUpdate");
+
         if (OceanRenderer.Instance != null)
         {
             // Trigger processing of displacement textures that have come back this frame. This will be processed
@@ -138,63 +140,28 @@ public class PlayerBodyCMF : MonoBehaviour
             var collProvider = OceanRenderer.Instance.CollisionProvider;
             var position = transform.position;
 
-            var thisRect = new Rect(transform.position.x, transform.position.z, 0f, 0f);
-            if (!collProvider.GetSamplingData(ref thisRect, bodyWidth, samplingData))
-            {
-                // No collision coverage for the sample area, in this case use the null provider.
-                collProvider = CollProviderNull.Instance;
-            }
+            var normal = Vector3.up; var waterSurfaceVel = Vector3.zero;
+            _sampleHeightHelper.Init(transform.position, bodyWidth);
+            _sampleHeightHelper.Sample(ref displacementToObject, ref normal, ref waterSurfaceVel);
 
-            if (debugAllRaycasts)
-            {
-                var result = collProvider.CheckAvailability(ref position, samplingData);
-                if (result != AvailabilityResult.DataAvailable)
-                {
-                    Debug.LogWarning("Validation failed: " + result.ToString() + ". See comments on the AvailabilityResult enum.", this);
-                }
-            }
+            var undispPos = transform.position - displacementToObject;
+            undispPos.y = OceanRenderer.Instance.SeaLevel;
 
-            Vector3 undispPos;
-            if (!collProvider.ComputeUndisplacedPosition(ref position, samplingData, out undispPos))
-            {
-                // If we couldn't get wave shape, assume flat water at sea level
-                undispPos = position;
-                undispPos.y = OceanRenderer.Instance.SeaLevel;
-            }
-            if (!myPlayerMov.disableAllDebugs) DebugDrawCross(undispPos, 1f, Color.red);
+            if (debugAllRaycasts) VisualiseCollisionArea.DebugDrawCross(undispPos, 1f, Color.red);
 
-            Vector3 waterSurfaceVel, displacement;
-            bool dispValid, velValid;
-            collProvider.SampleDisplacementVel(ref undispPos, samplingData, out displacement, out dispValid, out waterSurfaceVel, out velValid);
-            if (dispValid)
+            if (QueryFlow.Instance)
             {
-                displacementToObject = displacement;
-            }
+                _sampleFlowHelper.Init(transform.position, bodyWidth);
 
-            if (GPUReadbackFlow.Instance)
-            {
-                GPUReadbackFlow.Instance.ProcessRequests();
-
-                var flowRect = new Rect(position.x, position.z, 0f, 0f);
-                GPUReadbackFlow.Instance.GetSamplingData(ref flowRect, bodyWidth, samplingDataFlow);
-                
-                Vector2 surfaceFlow;
-                GPUReadbackFlow.Instance.SampleFlow(ref position, samplingDataFlow, out surfaceFlow);
+                Vector2 surfaceFlow = Vector2.zero;
+                _sampleFlowHelper.Sample(ref surfaceFlow);
                 waterSurfaceVel += new Vector3(surfaceFlow.x, 0, surfaceFlow.y);
-
-                GPUReadbackFlow.Instance.ReturnSamplingData(samplingDataFlow);
-            }
-
-            if (debugAllRaycasts)
-            {
-                Debug.DrawLine(transform.position + 5f * Vector3.up, transform.position + 5f * Vector3.up + waterSurfaceVel,
-                    new Color(1, 1, 1, 0.6f));
             }
 
             var velocityRelativeToWater = myPlayerMov.currentVel - waterSurfaceVel;
 
             var dispPos = undispPos + displacementToObject;
-            if (debugAllRaycasts) DebugDrawCross(dispPos, 4f, Color.white);
+            if (debugAllRaycasts) VisualiseCollisionArea.DebugDrawCross(dispPos, 4f, Color.white);
 
             float waterHeight = dispPos.y;
             float stayInWaterOffset = myPlayerMov.vertMovSt == VerticalMovementState.FloatingInWater ? floatingSlack:0;
@@ -226,15 +193,13 @@ public class PlayerBodyCMF : MonoBehaviour
             }
 
             waterSurfaceHeight = waterHeight;
-            collProvider.ReturnSamplingData(samplingData);
+            UnityEngine.Profiling.Profiler.EndSample();
+        }
+        else
+        {
+            UnityEngine.Profiling.Profiler.EndSample();
+
         }
     }
     #endregion
-
-    void DebugDrawCross(Vector3 pos, float r, Color col)
-    {
-        Debug.DrawLine(pos - Vector3.up * r, pos + Vector3.up * r, col);
-        Debug.DrawLine(pos - Vector3.right * r, pos + Vector3.right * r, col);
-        Debug.DrawLine(pos - Vector3.forward * r, pos + Vector3.forward * r, col);
-    }
 }

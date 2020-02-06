@@ -20,8 +20,6 @@ namespace Crest
         public override void UseSettings(SimSettingsBase settings) { }
 
         bool _targetsClear = false;
-        private static int sp_SliceViewProjMatrices = Shader.PropertyToID("_SliceViewProjMatrices");
-        private static int sp_CurrentLodCount = Shader.PropertyToID("_CurrentLodCount");
 
         public const string ShaderName = "Crest/Inputs/Depth/Cached Depths";
 
@@ -29,7 +27,7 @@ namespace Crest
         {
             base.BuildCommandBuffer(ocean, buf);
 
-            // if there is nothing in the scene tagged up for depth rendering, and we have cleared the RTs, then we can early out
+            // If there is nothing in the scene tagged up for depth rendering, and we have cleared the RTs, then we can early out
             var drawList = RegisterLodDataInputBase.GetRegistrar(GetType());
             if (drawList.Count == 0 && _targetsClear)
             {
@@ -40,15 +38,12 @@ namespace Crest
             {
                 buf.SetRenderTarget(_targets, 0, CubemapFace.Unknown, lodIdx);
                 buf.ClearRenderTarget(false, true, Color.white * 1000f);
-                buf.SetGlobalFloat(OceanRenderer.sp_LD_SliceIndex, lodIdx);
+                buf.SetGlobalInt(sp_LD_SliceIndex, lodIdx);
                 SubmitDraws(lodIdx, buf);
             }
 
-            // targets have now been cleared, we can early out next time around
-            if (drawList.Count == 0)
-            {
-                _targetsClear = true;
-            }
+            // Targets are only clear if nothing was drawn
+            _targetsClear = drawList.Count == 0;
         }
 
         public static string TextureArrayName = "_LD_TexArray_SeaFloorDepth";

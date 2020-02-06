@@ -31,6 +31,9 @@ namespace Crest
 
         public RenderTexture DataTexture { get { return _targets; } }
 
+        public static int sp_LD_SliceIndex = Shader.PropertyToID("_LD_SliceIndex");
+        protected static int sp_LODChange = Shader.PropertyToID("_LODChange");
+
         // shape texture resolution
         int _shapeRes = -1;
 
@@ -67,7 +70,7 @@ namespace Crest
 
             Debug.Assert(OceanRenderer.Instance.CurrentLodCount <= MAX_LOD_COUNT);
 
-            int resolution = OceanRenderer.Instance.LodDataResolution;
+            var resolution = OceanRenderer.Instance.LodDataResolution;
             var desc = new RenderTextureDescriptor(resolution, resolution, TextureFormat, 0);
             _targets = CreateLodDataTextures(desc, SimName, NeedToReadWriteTextureData);
         }
@@ -85,6 +88,8 @@ namespace Crest
                 _targets.Release();
                 _targets.width = _targets.height = _shapeRes;
                 _targets.Create();
+
+                _shapeRes = width;
             }
 
             // determine if this LOD has changed scale and by how much (in exponent of 2)
@@ -149,11 +154,11 @@ namespace Crest
         {
         }
 
-        protected void SwapRTs(ref RenderTexture o_a, ref RenderTexture o_b)
+        public static void Swap<T>(ref T a, ref T b)
         {
-            var temp = o_a;
-            o_a = o_b;
-            o_b = temp;
+            var temp = b;
+            b = a;
+            a = temp;
         }
 
         public interface IDrawFilter

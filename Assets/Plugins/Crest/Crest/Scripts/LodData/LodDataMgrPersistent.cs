@@ -26,7 +26,7 @@ namespace Crest
 
         float _substepDtPrevious = 1f / 60f;
 
-        static int sp_SimDeltaTime = Shader.PropertyToID("_SimDeltaTime");
+        public static int sp_SimDeltaTime = Shader.PropertyToID("_SimDeltaTime");
         static int sp_SimDeltaTimePrev = Shader.PropertyToID("_SimDeltaTimePrev");
 
         protected override void Start()
@@ -89,7 +89,7 @@ namespace Crest
 
             for (int stepi = 0; stepi < numSubsteps; stepi++)
             {
-                SwapRTs(ref _sources, ref _targets);
+                Swap(ref _sources, ref _targets);
 
                 _renderSimProperties.Initialise(buf, _shader, krnl_ShaderSim);
 
@@ -109,7 +109,7 @@ namespace Crest
 
                 SetAdditionalSimParams(_renderSimProperties);
 
-                buf.SetGlobalFloat(OceanRenderer.sp_LODChange, srcDataIdxChange);
+                buf.SetGlobalFloat(sp_LODChange, srcDataIdxChange);
 
                 _renderSimProperties.SetTexture(
                     sp_LD_TexArray_Target,

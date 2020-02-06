@@ -138,7 +138,12 @@ namespace Crest
         /// </summary>
         public float ViewerHeightAboveWater { get; private set; }
 
-        SamplingData _samplingData = new SamplingData();
+        SampleHeightHelper _sampleHeightHelper = new SampleHeightHelper();
+        
+        static int sp_crestTime = Shader.PropertyToID("_CrestTime");
+        static int sp_texelsPerWave = Shader.PropertyToID("_TexelsPerWave");
+        static int sp_oceanCenterPosWorld = Shader.PropertyToID("_OceanCenterPosWorld");
+
 
         void Awake()
         {
@@ -225,8 +230,8 @@ namespace Crest
         void LateUpdate()
         {
             // set global shader params
-            Shader.SetGlobalFloat("_TexelsPerWave", MinTexelsPerWave);
-            Shader.SetGlobalFloat("_CrestTime", CurrentTime);
+            Shader.SetGlobalFloat(sp_texelsPerWave, MinTexelsPerWave);
+            Shader.SetGlobalFloat(sp_crestTime, CurrentTime);
 
             if (_viewpoint == null)
             {
@@ -252,7 +257,7 @@ namespace Crest
 
             transform.position = pos;
 
-            Shader.SetGlobalVector("_OceanCenterPosWorld", transform.position);
+            Shader.SetGlobalVector(sp_oceanCenterPosWorld, transform.position);
         }
 
         void LateUpdateScale()
@@ -283,17 +288,12 @@ namespace Crest
 
         void LateUpdateViewerHeight()
         {
-            var pos = Viewpoint.position;
-            var rect = new Rect(pos.x, pos.z, 0f, 0f);
+            _sampleHeightHelper.Init(Viewpoint.position, 0f);
 
-            float waterHeight;
-            if (CollisionProvider.GetSamplingData(ref rect, 0f, _samplingData)
-                && CollisionProvider.SampleHeight(ref pos, _samplingData, out waterHeight))
-            {
-                ViewerHeightAboveWater = pos.y - waterHeight;
-            }
+            float waterHeight = 0f;
+            _sampleHeightHelper.Sample(ref waterHeight);
 
-            CollisionProvider.ReturnSamplingData(_samplingData);
+            ViewerHeightAboveWater = Viewpoint.position.y - waterHeight;
         }
 
         void LateUpdateLods()
@@ -350,9 +350,6 @@ namespace Crest
         public float MaxVertDisplacement { get { return _maxVertDispFromShape; } }
 
         public static OceanRenderer Instance { get; private set; }
-
-        public static int sp_LD_SliceIndex = Shader.PropertyToID("_LD_SliceIndex");
-        public static int sp_LODChange = Shader.PropertyToID("_LODChange");
 
         /// <summary>
         /// Provides ocean shape to CPU.
