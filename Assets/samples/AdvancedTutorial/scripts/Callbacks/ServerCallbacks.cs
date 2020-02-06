@@ -74,18 +74,6 @@ namespace Bolt.AdvancedTutorial
 			connection.SetStreamBandwidth(1024 * 1024);
 		}
 
-		public override void SceneLoadRemoteDone(BoltConnection connection)
-		{
-			connection.GetPlayer().InstantiateEntity();
-		}
-
-		public override void SceneLoadLocalDone(string scene)
-		{
-			if (Player.serverIsPlaying)
-			{
-				Player.serverPlayer.InstantiateEntity();
-			}
-		}
 
 		public override void SceneLoadLocalBegin(string scene)
 		{

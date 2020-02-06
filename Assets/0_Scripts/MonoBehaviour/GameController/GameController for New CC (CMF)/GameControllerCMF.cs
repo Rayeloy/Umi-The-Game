@@ -1120,9 +1120,6 @@ public class GameControllerCMF : Bolt.GlobalEventListener
         GameObject newPlayerCanvas;
         CameraControllerCMF newPlayerCamera;
         Camera newPlayerUICamera;
-        DeactivatePlayerComponents();
-        CheckValidInputsBuffer();
-        myGameInterface.gameObject.SetActive(true);
         newPlayer = entity.GetComponent<PlayerMovementCMF>();
         newPlayer.online_isLocal = true;
         newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
@@ -1132,9 +1129,9 @@ public class GameControllerCMF : Bolt.GlobalEventListener
         newPlayer.mySpawnInfo = new PlayerSpawnInfo();
         GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
         Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
+        CheckValidInputsBuffer();
         allPlayers[0].actions = GameInfo.instance.myControls;
         allCanvas[0].GetComponent<PlayerHUDCMF>().AdaptCanvasHeightScale();
-        myGameInterface.KonoAwake(this);
         allCameraBases[0].KonoAwake();
         allPlayers[0].KonoAwake(true);
         PlayersSetup();

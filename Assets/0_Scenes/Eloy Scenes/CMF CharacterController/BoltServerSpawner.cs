@@ -9,8 +9,8 @@ public class BoltServerSpawner : Bolt.GlobalEventListener
     {
         if (connection != null)
         {
-            BoltEntity clientServer = BoltNetwork.Instantiate(BoltPrefabs.PlayerPrefCMF_actual_online);
-            clientServer.AssignControl(connection);
+            BoltEntity client = BoltNetwork.Instantiate(BoltPrefabs.PlayerPrefCMF_actual_online);
+            client.AssignControl(connection);
         }
     }
 }

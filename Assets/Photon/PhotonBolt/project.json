@@ -15,6 +15,7 @@
             "$type": "Bolt.Compiler.PropertyTypeTransform, bolt.compiler",
             "PositionSelection": 14,
             "RotationSelection": 14,
+            "ExtrapolationVelocityMode": 1,
             "PositionCompression": [
               {
                 "MinValue": -1024,
@@ -80,28 +81,11 @@
           },
           "AssetSettings": {
             "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
-            "SmoothingAlgorithm": 2,
-            "ExtrapolationErrorTolerance": 0.25,
+            "SmoothingAlgorithm": 1,
+            "ExtrapolationErrorTolerance": 0.2,
             "_ExtrapolationCorrectionFrames": 6,
-            "ExtrapolationMaxFrames": 9,
+            "ExtrapolationMaxFrames": 8,
             "SnapMagnitude": 10.0
-          }
-        },
-        {
-          "Name": "name",
-          "Enabled": true,
-          "ReplicationMode": 1,
-          "Comment": "",
-          "Priority": 1,
-          "PropertyType": {
-            "$type": "Bolt.Compiler.PropertyTypeString, bolt.compiler",
-            "MaxLength": 16
-          },
-          "AssetSettings": {
-            "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
-            "ExtrapolationErrorTolerance": 0.1,
-            "_ExtrapolationCorrectionFrames": 3,
-            "ExtrapolationMaxFrames": 9
           }
         }
       ],

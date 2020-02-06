@@ -47,22 +47,6 @@ namespace Bolt.AdvancedTutorial
 			// while we have a team difference of more then 1 player
 
 		}
-
-		public void InstantiateEntity()
-		{
-			entity = BoltNetwork.Instantiate(BoltPrefabs.Player, new TestToken(), RandomSpawn(), Quaternion.identity);
-
-			state.name = name;
-
-			if (isServer)
-			{
-				entity.TakeControl(new TestToken());
-			}
-			else
-			{
-				entity.AssignControl(connection, new TestToken());
-			}
-		}
 	}
 
 	partial class Player

@@ -560,10 +560,13 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     Vector3 lastPos;
     public void KonoLateUpdate()
     {
+        if (online_isLocal)
+        {
             if (!disableAllDebugs) Debug.LogWarning(" --- NEW LATE UPDATE ---");
             Vector3 currentTotalMovement = transform.position - lastPos;
             //Debug.Log("rb velocity = " + GetComponent<Rigidbody>().velocity.ToString("F8") + "; currentTotalMovement = "+ currentTotalMovement.ToString("F8"));
             myPlayerAnimation.KonoUpdate();
+        }
     }
     #endregion
 
@@ -679,60 +682,63 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void CalculateMoveDir()
     {
-        if (!noInput)
+        if(online_isLocal)
         {
-            float horiz = actions.LeftJoystick.X;//Input.GetAxisRaw(contName + "H");
-            float vert = actions.LeftJoystick.Y;//-Input.GetAxisRaw(contName + "V");
-                                                // Check that they're not BOTH zero - otherwise dir would reset because the joystick is neutral.
-                                                //if (horiz != 0 || vert != 0)Debug.Log("actions.LeftJoystick.X = "+ actions.LeftJoystick.X+ "actions.LeftJoystick.Y" + actions.LeftJoystick.Y);
-            Vector3 temp = new Vector3(horiz, 0, vert);
-            lastJoystickSens = joystickSens;
-            joystickSens = temp.magnitude;
-            //print("temp.magnitude = " + temp.magnitude);
-            if (temp.magnitude >= deadzone)
+            if (!noInput)
             {
-                joystickSens = joystickSens >= 0.88f ? 1 : joystickSens;//Eloy: esto evita un "bug" por el que al apretar el joystick 
-                                                                        //contra las esquinas no da un valor total de 1, sino de 0.9 o así
-                moveSt = MoveState.Moving;
-                currentInputDir = temp;
-                currentInputDir.Normalize();
-                switch (myCamera.camMode)
+                float horiz = actions.LeftJoystick.X;//Input.GetAxisRaw(contName + "H");
+                float vert = actions.LeftJoystick.Y;//-Input.GetAxisRaw(contName + "V");
+                                                    // Check that they're not BOTH zero - otherwise dir would reset because the joystick is neutral.
+                                                    //if (horiz != 0 || vert != 0)Debug.Log("actions.LeftJoystick.X = "+ actions.LeftJoystick.X+ "actions.LeftJoystick.Y" + actions.LeftJoystick.Y);
+                Vector3 temp = new Vector3(horiz, 0, vert);
+                lastJoystickSens = joystickSens;
+                joystickSens = temp.magnitude;
+                //print("temp.magnitude = " + temp.magnitude);
+                if (temp.magnitude >= deadzone)
                 {
-                    case cameraMode.Fixed:
-                        currentInputDir = RotateVector(-facingAngle, temp);
-                        break;
-                    case cameraMode.Shoulder:
-                        currentInputDir = RotateVector(-facingAngle, temp);
-                        break;
-                    case cameraMode.Free:
-                        Vector3 camDir = (transform.position - myCamera.transform.GetChild(0).position).normalized;
-                        camDir.y = 0;
-                        // ANGLE OF JOYSTICK
-                        joystickAngle = Mathf.Acos(((0 * currentInputDir.x) + (1 * currentInputDir.z)) / (1 * currentInputDir.magnitude)) * Mathf.Rad2Deg;
-                        joystickAngle = (horiz > 0) ? -joystickAngle : joystickAngle;
-                        //rotate camDir joystickAngle degrees
-                        currentInputDir = RotateVector(joystickAngle, camDir);
-                        //HARD STEER CHECK
-                        //if(!disableAllDebugs)Debug.LogError(" hardSteerOn = "+ hardSteerOn + "; isRotationRestricted = " + myPlayerCombatNew.isRotationRestricted);
-                        if (!(!hardSteerOn && myPlayerCombatNew.isRotationRestricted))
-                        {
-                            Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
-                            hardSteerAngleDiff = Vector3.Angle(horizontalVel, currentInputDir);//hard Steer si > 90
-                            hardSteerOn = hardSteerAngleDiff > instantRotationMinAngle ? true : false;
-                            if (hardSteerOn && !hardSteerStarted)
+                    joystickSens = joystickSens >= 0.88f ? 1 : joystickSens;//Eloy: esto evita un "bug" por el que al apretar el joystick 
+                                                                            //contra las esquinas no da un valor total de 1, sino de 0.9 o así
+                    moveSt = MoveState.Moving;
+                    currentInputDir = temp;
+                    currentInputDir.Normalize();
+                    switch (myCamera.camMode)
+                    {
+                        case cameraMode.Fixed:
+                            currentInputDir = RotateVector(-facingAngle, temp);
+                            break;
+                        case cameraMode.Shoulder:
+                            currentInputDir = RotateVector(-facingAngle, temp);
+                            break;
+                        case cameraMode.Free:
+                            Vector3 camDir = (transform.position - myCamera.transform.GetChild(0).position).normalized;
+                            camDir.y = 0;
+                            // ANGLE OF JOYSTICK
+                            joystickAngle = Mathf.Acos(((0 * currentInputDir.x) + (1 * currentInputDir.z)) / (1 * currentInputDir.magnitude)) * Mathf.Rad2Deg;
+                            joystickAngle = (horiz > 0) ? -joystickAngle : joystickAngle;
+                            //rotate camDir joystickAngle degrees
+                            currentInputDir = RotateVector(joystickAngle, camDir);
+                            //HARD STEER CHECK
+                            //if(!disableAllDebugs)Debug.LogError(" hardSteerOn = "+ hardSteerOn + "; isRotationRestricted = " + myPlayerCombatNew.isRotationRestricted);
+                            if (!(!hardSteerOn && myPlayerCombatNew.isRotationRestricted))
                             {
-                                //if (!disableAllDebugs && hardSteerOn) Debug.LogError("HARD STEER ON: STARTED");
-                                hardSteerDir = currentInputDir;
+                                Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                                hardSteerAngleDiff = Vector3.Angle(horizontalVel, currentInputDir);//hard Steer si > 90
+                                hardSteerOn = hardSteerAngleDiff > instantRotationMinAngle ? true : false;
+                                if (hardSteerOn && !hardSteerStarted)
+                                {
+                                    //if (!disableAllDebugs && hardSteerOn) Debug.LogError("HARD STEER ON: STARTED");
+                                    hardSteerDir = currentInputDir;
+                                }
                             }
-                        }
-                        RotateCharacter();
-                        break;
+                            RotateCharacter();
+                            break;
+                    }
                 }
-            }
-            else
-            {
-                joystickSens = 1;//no estoy seguro de que esté bien
-                moveSt = MoveState.NotMoving;
+                else
+                {
+                    joystickSens = 1;//no estoy seguro de que esté bien
+                    moveSt = MoveState.NotMoving;
+                }
             }
         }
     }
@@ -1073,177 +1079,183 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     void VerticalMovement()
     {
-        //Debug.Log("Vert Mov Inicio: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
-
-        if (!jumpedOutOfWater && !inWater && collCheck.below)
+        if (online_isLocal)
         {
-            jumpedOutOfWater = true;
+            //Debug.Log("Vert Mov Inicio: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
 
-            maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
-        }
-
-        if (lastWallAngle != -500 && collCheck.below)//RESET WALL JUMP VARIABLE TO MAKE IT READY
-        {
-            lastWallAngle = -500;
-            lastWall = null;
-        }
-
-        if (inputsInfo.JumpWasPressed)//Input.GetButtonDown(contName + "A"))
-        {
-            PressA();
-        }
-
-        if (moveSt != MoveState.Boost)
-        {
-            if (jumpSt == JumpState.None || jumpSt == JumpState.Falling)
+            if (!jumpedOutOfWater && !inWater && collCheck.below)
             {
-                ProcessChargingChargeJump();
+                jumpedOutOfWater = true;
+
+                maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
             }
 
-            switch (jumpSt)
+            if (lastWallAngle != -500 && collCheck.below)//RESET WALL JUMP VARIABLE TO MAKE IT READY
             {
-                case JumpState.None:
-                    if (currentVel.y < 0 && (!collCheck.below || collCheck.sliping))
-                    {
-                        if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
-                        jumpSt = JumpState.Falling;
-                        chargeJumpLastApexHeight = transform.position.y;
-                        //Debug.Log("START FALLING");
-                    }
-                    currentVel.y += gravity * Time.deltaTime;
-                    break;
-                case JumpState.Falling:
+                lastWallAngle = -500;
+                lastWall = null;
+            }
 
-                    if (!chargeJumpChargingJump && collCheck.below && !collCheck.sliping)
-                    {
-                        if (StartBounceJump())
-                            break;
-                    }
+            if (inputsInfo.JumpWasPressed)//Input.GetButtonDown(contName + "A"))
+            {
+                PressA();
+            }
 
-                    if (currentVel.y >= 0 || (collCheck.below && !collCheck.sliping))
-                    {
-                        //Debug.Log("STOP FALLING");
-                        if (!disableAllDebugs) Debug.Log("JumpSt = None");
-                        jumpSt = JumpState.None;
-                    }
+            if (moveSt != MoveState.Boost)
+            {
+                if (jumpSt == JumpState.None || jumpSt == JumpState.Falling)
+                {
+                    ProcessChargingChargeJump();
+                }
 
-                    currentVel.y += gravity * Time.deltaTime;
-                    break;
-                case JumpState.Jumping:
-                    currentVel.y += gravity * Time.deltaTime;
-                    timePressingJump += Time.deltaTime;
-                    if (timePressingJump >= maxTimePressingJump)
-                    {
-                        StopJump();
-                    }
-                    else
-                    {
-                        if (inputsInfo.JumpWasReleased || !actions.A.IsPressed)//Input.GetButtonUp(contName + "A"))
+                switch (jumpSt)
+                {
+                    case JumpState.None:
+                        if (currentVel.y < 0 && (!collCheck.below || collCheck.sliping))
                         {
-                            jumpSt = JumpState.Breaking;
+                            if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
+                            jumpSt = JumpState.Falling;
+                            chargeJumpLastApexHeight = transform.position.y;
+                            //Debug.Log("START FALLING");
                         }
-                    }
-                    break;
-                case JumpState.Breaking:
-                    currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
-                    if (currentVel.y <= 0)
-                    {
-                        if (!disableAllDebugs) Debug.Log("JumpSt = None");
-                        jumpSt = JumpState.None;
-                        mover.stickToGround = true;
-                        if (!disableAllDebugs) Debug.LogWarning("stickToGround On");
-                    }
-                    break;
-                case JumpState.WallJumping:
-                    currentVel.y += wallJumpSlidingAcc * Time.deltaTime;
-                    break;
-                case JumpState.WallJumped:
-                    if (currentVel.y < 0 && (!collCheck.below || collCheck.sliping))
-                    {
-                        if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
-                        jumpSt = JumpState.Falling;
-                        chargeJumpLastApexHeight = transform.position.y;
-                        //Debug.Log("START FALLING");
-                    }
-                    currentVel.y += gravity * Time.deltaTime;
-                    break;
-                case JumpState.ChargeJumping:
-                    if (currentVel.y <= 0)
-                    {
-                        if (!disableAllDebugs) Debug.Log("JumpSt = None");
-                        jumpSt = JumpState.None;
-                    }
-                    currentVel.y += currentGravity * Time.deltaTime;
-                    break;
-                case JumpState.BounceJumping:
-                    if (currentVel.y <= 0)
-                    {
-                        if (!disableAllDebugs) Debug.Log("JumpSt = None");
-                        jumpSt = JumpState.None;
-                    }
-                    currentVel.y += currentGravity * Time.deltaTime;
-                    break;
+                        currentVel.y += gravity * Time.deltaTime;
+                        break;
+                    case JumpState.Falling:
+
+                        if (!chargeJumpChargingJump && collCheck.below && !collCheck.sliping)
+                        {
+                            if (StartBounceJump())
+                                break;
+                        }
+
+                        if (currentVel.y >= 0 || (collCheck.below && !collCheck.sliping))
+                        {
+                            //Debug.Log("STOP FALLING");
+                            if (!disableAllDebugs) Debug.Log("JumpSt = None");
+                            jumpSt = JumpState.None;
+                        }
+
+                        currentVel.y += gravity * Time.deltaTime;
+                        break;
+                    case JumpState.Jumping:
+                        currentVel.y += gravity * Time.deltaTime;
+                        timePressingJump += Time.deltaTime;
+                        if (timePressingJump >= maxTimePressingJump)
+                        {
+                            StopJump();
+                        }
+                        else
+                        {
+                            if (inputsInfo.JumpWasReleased || !actions.A.IsPressed)//Input.GetButtonUp(contName + "A"))
+                            {
+                                jumpSt = JumpState.Breaking;
+                            }
+                        }
+                        break;
+                    case JumpState.Breaking:
+                        currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
+                        if (currentVel.y <= 0)
+                        {
+                            if (!disableAllDebugs) Debug.Log("JumpSt = None");
+                            jumpSt = JumpState.None;
+                            mover.stickToGround = true;
+                            if (!disableAllDebugs) Debug.LogWarning("stickToGround On");
+                        }
+                        break;
+                    case JumpState.WallJumping:
+                        currentVel.y += wallJumpSlidingAcc * Time.deltaTime;
+                        break;
+                    case JumpState.WallJumped:
+                        if (currentVel.y < 0 && (!collCheck.below || collCheck.sliping))
+                        {
+                            if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
+                            jumpSt = JumpState.Falling;
+                            chargeJumpLastApexHeight = transform.position.y;
+                            //Debug.Log("START FALLING");
+                        }
+                        currentVel.y += gravity * Time.deltaTime;
+                        break;
+                    case JumpState.ChargeJumping:
+                        if (currentVel.y <= 0)
+                        {
+                            if (!disableAllDebugs) Debug.Log("JumpSt = None");
+                            jumpSt = JumpState.None;
+                        }
+                        currentVel.y += currentGravity * Time.deltaTime;
+                        break;
+                    case JumpState.BounceJumping:
+                        if (currentVel.y <= 0)
+                        {
+                            if (!disableAllDebugs) Debug.Log("JumpSt = None");
+                            jumpSt = JumpState.None;
+                        }
+                        currentVel.y += currentGravity * Time.deltaTime;
+                        break;
+                }
             }
+
+            if (inWater)
+            {
+                currentVel.y = Mathf.Clamp(currentVel.y, -maxVerticalSpeedInWater, float.MaxValue);
+            }
+
+            ProcessJumpInsurance();
+
+            if (currentVel.y < 0)
+            {
+                currentVel.y = Mathf.Clamp(currentVel.y, -maxFallSpeed, maxFallSpeed);
+            }
+
+            //TO REDO
+            if ((/*controller.collisions.above ||*/ collCheck.below) && !hooked && !collCheck.sliping)
+            {
+                currentVel.y = 0;
+                //if (controller.collisions.above) StopJump();
+            }
+
+            //Debug.Log("Vert Mov Fin: currentVel = " + currentVel.ToString("F6") + "; below = "+collCheck.below);
         }
-
-        if (inWater)
-        {
-            currentVel.y = Mathf.Clamp(currentVel.y, -maxVerticalSpeedInWater, float.MaxValue);
-        }
-
-        ProcessJumpInsurance();
-
-        if (currentVel.y < 0)
-        {
-            currentVel.y = Mathf.Clamp(currentVel.y, -maxFallSpeed, maxFallSpeed);
-        }
-
-        //TO REDO
-        if ((/*controller.collisions.above ||*/ collCheck.below) && !hooked && !collCheck.sliping)
-        {
-            currentVel.y = 0;
-            //if (controller.collisions.above) StopJump();
-        }
-
-        //Debug.Log("Vert Mov Fin: currentVel = " + currentVel.ToString("F6") + "; below = "+collCheck.below);
     }
 
     Vector3 finalVel;
     void HandleSlopes()
     {
-        if (collCheck.sliping)
+        if (online_isLocal)
         {
-            // HORIZONTAL VELOCITY
-            Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
-            //Vector3 wallNormal = mover.GetGroundNormal();
-            //wallNormal.y = 0;
-            //wallNormal = -wallNormal.normalized;
-            //float angle = Vector3.Angle(wallNormal, horVel);
-            //float a = Mathf.Sin(angle * Mathf.Deg2Rad) * horVel.magnitude;
-            //Vector3 slideVel = Vector3.Cross(wallNormal, Vector3.up).normalized;
-            //Debug.DrawRay(mover.GetGroundPoint(), slideVel * 2, Color.green);
-            ////LEFT OR RIGHT ORIENTATION?
-            //float ang = Vector3.Angle(slideVel, horVel);
-            //slideVel = ang > 90 ? -slideVel : slideVel;
-            ////print("SLIDE ANGLE= " + angle + "; vel = " + vel + "; slideVel = " + slideVel.ToString("F4") + "; a = " + a + "; wallAngle = " + wallAngle + "; distanceToWall = " + rayCast.distance);
-            //slideVel *= a;
-
-            //horVel = new Vector3(slideVel.x, 0, slideVel.z);
-
-            //VERTICAL VELOCITY
-            //Apply slide gravity along ground normal, if controller is sliding;
-            if (currentVel.y < 0)
+            if (collCheck.sliping)
             {
-                Vector3 _slideDirection = Vector3.ProjectOnPlane(-Vector3.up, mover.GetGroundNormal()).normalized;
-                Debug.DrawRay(mover.GetGroundPoint(), _slideDirection * 2, Color.yellow);
-                Vector3 slipVel = _slideDirection * -currentVel.y;
-                finalVel = slipVel + horVel;
+                // HORIZONTAL VELOCITY
+                Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
+                //Vector3 wallNormal = mover.GetGroundNormal();
+                //wallNormal.y = 0;
+                //wallNormal = -wallNormal.normalized;
+                //float angle = Vector3.Angle(wallNormal, horVel);
+                //float a = Mathf.Sin(angle * Mathf.Deg2Rad) * horVel.magnitude;
+                //Vector3 slideVel = Vector3.Cross(wallNormal, Vector3.up).normalized;
+                //Debug.DrawRay(mover.GetGroundPoint(), slideVel * 2, Color.green);
+                ////LEFT OR RIGHT ORIENTATION?
+                //float ang = Vector3.Angle(slideVel, horVel);
+                //slideVel = ang > 90 ? -slideVel : slideVel;
+                ////print("SLIDE ANGLE= " + angle + "; vel = " + vel + "; slideVel = " + slideVel.ToString("F4") + "; a = " + a + "; wallAngle = " + wallAngle + "; distanceToWall = " + rayCast.distance);
+                //slideVel *= a;
+
+                //horVel = new Vector3(slideVel.x, 0, slideVel.z);
+
+                //VERTICAL VELOCITY
+                //Apply slide gravity along ground normal, if controller is sliding;
+                if (currentVel.y < 0)
+                {
+                    Vector3 _slideDirection = Vector3.ProjectOnPlane(-Vector3.up, mover.GetGroundNormal()).normalized;
+                    Debug.DrawRay(mover.GetGroundPoint(), _slideDirection * 2, Color.yellow);
+                    Vector3 slipVel = _slideDirection * -currentVel.y;
+                    finalVel = slipVel + horVel;
+                }
+                Debug.Log("Handle Slopes Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
             }
-            Debug.Log("Handle Slopes Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
-        }
-        else
-        {
-            finalVel = currentVel;
+            else
+            {
+                finalVel = currentVel;
+            }
         }
     }
     #endregion
@@ -2561,6 +2573,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     #endregion
 
     #region ----[ BOLT CALLBACKS ]----
+    public override void Attached()
+    {
+        state.SetTransforms(state.transform, transform);
+        state.SetAnimator(GetComponentInChildren<Animator>());
+    }
 
     #endregion
 
