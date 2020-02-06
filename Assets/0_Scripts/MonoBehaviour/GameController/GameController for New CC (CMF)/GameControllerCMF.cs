@@ -5,9 +5,9 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
+[BoltGlobalBehaviour(BoltNetworkModes.Client)]
 #region ----[ PUBLIC ENUMS ]----
 #endregion
-
 public class GameControllerCMF : Bolt.GlobalEventListener
 {
 
@@ -1113,7 +1113,8 @@ public class GameControllerCMF : Bolt.GlobalEventListener
     #endregion
 
     #region ----[ BOLT CALLBACKS ]----
-    public override void SceneLoadLocalDone(string Scenename)
+
+    public override void ControlOfEntityGained(BoltEntity entity)
     {
         PlayerMovementCMF newPlayer;
         GameObject newPlayerCanvas;
@@ -1122,7 +1123,7 @@ public class GameControllerCMF : Bolt.GlobalEventListener
         DeactivatePlayerComponents();
         CheckValidInputsBuffer();
         myGameInterface.gameObject.SetActive(true);
-        newPlayer = BoltNetwork.Instantiate(BoltPrefabs.PlayerPrefCMF_actual_online).GetComponent<PlayerMovementCMF>();
+        newPlayer = entity.GetComponent<PlayerMovementCMF>();
         newPlayer.online_isLocal = true;
         newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
         newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();

@@ -397,8 +397,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     public bool jumpedOutOfWater = true;
 
     BufferedInput[] inputsBuffer;//Eloy: para Juan: esta variable iría aquí? o a "Variables", JUAN: A variables mejor
-    [HideInInspector]
-    public bool online_isLocal = false;
+    public bool online_isLocal = true;
     #endregion
 
     #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
@@ -407,7 +406,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void KonoAwake(bool isMyCharacter = false)
     {
-        if (online_isLocal || !MasterManager.GameSettings.online)
+        if (online_isLocal)
         {
             mover = GetComponent<Mover>();
             collCheck.KonoAwake(mover.capsuleCollider);//we use capsule collider in our example
@@ -439,10 +438,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
             PlayerAwakes();
         }
-        else
-        {
-            enabled = false;
-        }
     }
 
     //todos los konoAwakes
@@ -461,22 +456,25 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     #region START
     public void KonoStart()
     {
-        gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
-        currentGravity = gravity;
-        jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
-        maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
-        wallJumpRadius = Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad) * walJumpConeHeight;
-        print("wallJumpRaduis = " + wallJumpRadius + "; tan(wallJumpAngle)= " + Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad));
-        wallJumpMinHorizAngle = Mathf.Clamp(wallJumpMinHorizAngle, 0, 90);
-        print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
+        if (online_isLocal || !MasterManager.GameSettings.online)
+        {
+            gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
+            currentGravity = gravity;
+            jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
+            maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
+            wallJumpRadius = Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad) * walJumpConeHeight;
+            print("wallJumpRaduis = " + wallJumpRadius + "; tan(wallJumpAngle)= " + Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad));
+            wallJumpMinHorizAngle = Mathf.Clamp(wallJumpMinHorizAngle, 0, 90);
+            print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
 
-        finalMaxMoveSpeed = currentMaxMoveSpeed = maxMoveSpeed;
-        knockbackBreakAcc = Mathf.Clamp(knockbackBreakAcc, -float.MaxValue, breakAcc);//menos de break Acc lo haría ver raro
+            finalMaxMoveSpeed = currentMaxMoveSpeed = maxMoveSpeed;
+            knockbackBreakAcc = Mathf.Clamp(knockbackBreakAcc, -float.MaxValue, breakAcc);//menos de break Acc lo haría ver raro
 
-        ShowFlagFlow();
-        //EquipWeaponAtStart();
+            ShowFlagFlow();
+            //EquipWeaponAtStart();
 
-        PlayerStarts();
+            PlayerStarts();
+        }
     }
     private void PlayerStarts()
     {
@@ -492,74 +490,80 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     #region UPDATE
     public void KonoUpdate()
     {
-        Debug.LogWarning("PLAYER UPDATE ");
-        if (actions.Start.WasPressed) gC.PauseGame(actions);
+        if (online_isLocal)
+        {
+            Debug.LogWarning("PLAYER UPDATE ");
+            if (actions.Start.WasPressed) gC.PauseGame(actions);
 
-        //POLL INPUTS
-        inputsInfo.PollInputs();
+            //POLL INPUTS
+            inputsInfo.PollInputs();
 
-        myPlayerCombatNew.KonoUpdate();
+            myPlayerCombatNew.KonoUpdate();
 
-        myPlayerWeap.KonoUpdate();
-        myPlayerHook.KonoUpdate();
+            myPlayerWeap.KonoUpdate();
+            myPlayerHook.KonoUpdate();
+        }
     }
 
     public void KonoFixedUpdate()
     {
-        if (!disableAllDebugs) Debug.LogWarning("PLAYER FIXED UPDATE: ");
-        //Debug.LogWarning("Current pos = " + transform.position.ToString("F8"));
-        lastPos = transform.position;
-
-        
-        Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
-
-        collCheck.ResetVariables();
-        ResetMovementVariables();
-
-        collCheck.UpdateCollisionVariables(mover, jumpSt);
-
-        collCheck.UpdateCollisionChecks(currentVel);
-
-        if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4"));
+        if (online_isLocal)
+        {
+            if (!disableAllDebugs) Debug.LogWarning("PLAYER FIXED UPDATE: ");
+            //Debug.LogWarning("Current pos = " + transform.position.ToString("F8"));
+            lastPos = transform.position;
 
 
-        frameCounter++;
-        UpdateFlagLightBeam();
-        ProcessInputsBuffer();
+            Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
 
-        #region --- Calculate Movement ---
+            collCheck.ResetVariables();
+            ResetMovementVariables();
 
-        HorizontalMovement();
+            collCheck.UpdateCollisionVariables(mover, jumpSt);
 
-        UpdateFacingDir();
+            collCheck.UpdateCollisionChecks(currentVel);
 
-        VerticalMovement();
+            if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4"));
 
-        HandleSlopes();
 
-        ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "mover.SetVelocity"
+            frameCounter++;
+            UpdateFlagLightBeam();
+            ProcessInputsBuffer();
 
-        #endregion
-        //Debug.Log("Movement Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
-        //If the character is grounded, extend ground detection sensor range;
-        mover.SetExtendSensorRange(collCheck.below);
-        //Set mover velocity;
-        mover.SetVelocity(finalVel, platformMovement);
-        //Debug.Log("Mover SetVel Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
+            #region --- Calculate Movement ---
 
-        // RESET InputsInfo class to get new possible inputs during the next Update frames
-        inputsInfo.ResetInputs();
+            HorizontalMovement();
 
-        collCheck.SavePlatformPoint();
+            UpdateFacingDir();
+
+            VerticalMovement();
+
+            HandleSlopes();
+
+            ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "mover.SetVelocity"
+
+            #endregion
+            //Debug.Log("Movement Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
+            //If the character is grounded, extend ground detection sensor range;
+            mover.SetExtendSensorRange(collCheck.below);
+            //Set mover velocity;
+            mover.SetVelocity(finalVel, platformMovement);
+            //Debug.Log("Mover SetVel Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
+
+            // RESET InputsInfo class to get new possible inputs during the next Update frames
+            inputsInfo.ResetInputs();
+
+            collCheck.SavePlatformPoint();
+        }
     }
 
     Vector3 lastPos;
     public void KonoLateUpdate()
     {
-        if (!disableAllDebugs) Debug.LogWarning(" --- NEW LATE UPDATE ---");
-        Vector3 currentTotalMovement = transform.position - lastPos;
-        //Debug.Log("rb velocity = " + GetComponent<Rigidbody>().velocity.ToString("F8") + "; currentTotalMovement = "+ currentTotalMovement.ToString("F8"));
-        myPlayerAnimation.KonoUpdate();
+            if (!disableAllDebugs) Debug.LogWarning(" --- NEW LATE UPDATE ---");
+            Vector3 currentTotalMovement = transform.position - lastPos;
+            //Debug.Log("rb velocity = " + GetComponent<Rigidbody>().velocity.ToString("F8") + "; currentTotalMovement = "+ currentTotalMovement.ToString("F8"));
+            myPlayerAnimation.KonoUpdate();
     }
     #endregion
 
