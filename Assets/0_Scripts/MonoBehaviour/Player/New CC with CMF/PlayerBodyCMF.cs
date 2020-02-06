@@ -106,7 +106,7 @@ public class PlayerBodyCMF : MonoBehaviour
             case "UmiCannon":
                 UmiCannon cannon = col.GetComponent<UmiCannon>();
                 Vector3 dir = cannon.CalculateVelocity(transform.position, myPlayerMov.currentGravity);
-                myPlayerMov.StartFixedJump(dir, cannon.timeToReach * cannon.noInputPercentage, cannon.timeToReach);
+                myPlayerMov.StartFixedJump(dir, cannon.timeToReach * cannon.noInputPercentage, cannon.timeToReach, cannon.bounceEnabled);
                 break;
         }
     }

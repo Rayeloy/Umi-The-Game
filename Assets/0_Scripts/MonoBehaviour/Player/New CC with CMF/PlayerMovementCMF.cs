@@ -374,6 +374,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     float fixedJumpMaxTime;
     float noMoveMaxTime;
     float noMoveTime;
+    bool fixedJumpBounceEnabled = false;
 
     //HOOK
     [HideInInspector]
@@ -884,8 +885,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
         Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
-        if (/*!disableAllDebugs &&*/ currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
-            "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + collCheck.below + "; horVel.magnitude = " + horVel.magnitude+ "; finalMovingAcc = " + finalMovingAcc.ToString("F4"));
+        //if (/*!disableAllDebugs &&*/ currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
+        //    "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + collCheck.below + "; horVel.magnitude = " + horVel.magnitude+ "; finalMovingAcc = " + finalMovingAcc.ToString("F4"));
         //print("CurrentVel 1.3= " + currentVel.ToString("F6")+ "MoveState = " + moveSt);
         if (vertMovSt != VerticalMovementState.WallJumping || (vertMovSt == VerticalMovementState.WallJumping && moveSt == MoveState.Knockback))
         {
@@ -1101,7 +1102,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             {
                 ProcessChargingChargedJump();
             }
-
+            Debug.Log("Vel y pre = " + currentVel.y.ToString("F6"));
             switch (vertMovSt)
             {
                 case VerticalMovementState.None:
@@ -1113,10 +1114,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     {
                         if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
                         vertMovSt = VerticalMovementState.Falling;
+                        if(!(fixedJumping && !fixedJumpBounceEnabled))
                         chargedJumpLastApexHeight = transform.position.y;
-                        //Debug.Log("START FALLING");
+                        Debug.Log("START FALLING");
                     }
-                    currentVel.y += gravity * Time.deltaTime;
+                    currentVel.y += currentGravity * Time.deltaTime;
                     break;
                 case VerticalMovementState.Falling:
 
@@ -1133,10 +1135,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         vertMovSt = VerticalMovementState.None;
                     }
 
-                    currentVel.y += gravity * Time.deltaTime;
+                    currentVel.y += currentGravity * Time.deltaTime;
                     break;
                 case VerticalMovementState.Jumping:
-                    currentVel.y += gravity * Time.deltaTime;
+                    currentVel.y += currentGravity * Time.deltaTime;
                     timePressingJump += Time.deltaTime;
                     if (timePressingJump >= maxTimePressingJump)
                     {
@@ -1157,7 +1159,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     {
                         ResetJumpState();
                     }
-                    currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
+                    currentVel.y += (currentGravity * breakJumpForce) * Time.deltaTime;
                     break;
                 case VerticalMovementState.WallJumping:
                     currentVel.y += wallJumpSlidingAcc * Time.deltaTime;
@@ -1200,7 +1202,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
         ProcessJumpInsurance();
 
-        if (currentVel.y < 0)
+        if (currentVel.y < 0 && !fixedJumping)
         {
             currentVel.y = Mathf.Clamp(currentVel.y, -maxFallSpeed, maxFallSpeed);
         }
@@ -1213,6 +1215,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         }
 
         //Debug.Log("Vert Mov Fin: currentVel = " + currentVel.ToString("F6") + "; below = "+collCheck.below);
+        Debug.Log("Vel y post = " + currentVel.y.ToString("F6"));
     }
 
     void ResetJumpState()
@@ -1809,6 +1812,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             myPlayerVFX.ActivateEffect(PlayerVFXType.DashTrail);
             myPlayerCombatNew.StopDoingCombat();
             StopImpulse();
+            StopFixedJump();
         }
         else
         {
@@ -2139,6 +2143,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             StopBoost();
             myPlayerCombatNew.StopDoingCombat();
             StopImpulse();
+            StopFixedJump();
 
             sufferingEffect = effect;
             switch (effect)
@@ -2254,7 +2259,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     #region FIXED JUMP ---------------------------------------------------
 
-    public void StartFixedJump(Vector3 vel, float _noMoveMaxTime, float maxTime)
+    public void StartFixedJump(Vector3 vel, float _noMoveMaxTime, float maxTime, bool _bounceEnabled=false)
     {
         Debug.Log("FIXED JUMP START");
         fixedJumping = true;
@@ -2263,6 +2268,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         noMoveMaxTime = _noMoveMaxTime;
         fixedJumpMaxTime = maxTime;
         noMoveTime = 0;
+        fixedJumpBounceEnabled = _bounceEnabled;
         knockback = vel;
 
         moveSt = MoveState.FixedJump;
@@ -2330,6 +2336,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             //Stop attacking
             myPlayerCombatNew.StopDoingCombat();
             StopImpulse();
+            StopFixedJump();
             return true;
         }
         else
@@ -2621,6 +2628,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void ResetPlayer()
     {
+        //Stop doing everything (only stopped a few things, I don't know which more I need to stop)
+        StopBoost();
+        StopImpulse();
+        StopFixedJump();
+        
         ExitWater();
         vertMovSt = VerticalMovementState.None;
         myPlayerHook.ResetHook();
