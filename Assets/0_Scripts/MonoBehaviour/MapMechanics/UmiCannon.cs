@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
+[ExecuteAlways]
 public class UmiCannon : MonoBehaviour
 {
     [Header(" --- GIZMOS --- ")]
@@ -15,6 +15,7 @@ public class UmiCannon : MonoBehaviour
     [Header(" --- CANNON PARAMETERS ---")]
     public Transform targetPosition;
     [Tooltip("The smaller the time, the fastest the shot, and the flatter the parabole.")]
+    [Range(0.2f, 15)]
     public float timeToReach;
     [Tooltip("How much percentage of the parabole's X (length) is the character blocked from inputing anything. 1 -> blocked all the parabole.")]
     [Range(0, 1)]

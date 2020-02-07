@@ -67,7 +67,7 @@ public class PlayerBodyCMF : MonoBehaviour
 
     private void OnTriggerEnter(Collider col)
     {
-        Debug.Log("Player Body Colliding with " + col.transform.name);
+        //Debug.Log("Player Body Colliding with " + col.transform.name);
         switch (col.tag)
         {
             case "KillTrigger":

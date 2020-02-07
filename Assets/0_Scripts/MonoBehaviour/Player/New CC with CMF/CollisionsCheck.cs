@@ -360,6 +360,8 @@ sphereCollBottom.transform.position : sphereCollMiddle.transform.position;
         //At least one walljumpable wall
         if (wallCollHit.collider != null)
         {
+            //TO DO: throw some raycasts around collision point and calculate average normal to "smoothen" walls.
+
             wall = wallCollHit.collider.gameObject;
             wallSlopeAngle = wallCollHit.slopeAngle;
             wallNormal = wallCollHit.hit.normal;

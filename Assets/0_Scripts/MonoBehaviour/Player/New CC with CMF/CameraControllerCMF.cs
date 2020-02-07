@@ -85,7 +85,7 @@ public class CameraControllerCMF : MonoBehaviour
 
     #endregion
 
-    #region Funciones de MonoBehaviour
+    #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
     public void KonoAwake()
     {
         originalPos = myCamera.localPosition;
@@ -278,7 +278,8 @@ public class CameraControllerCMF : MonoBehaviour
     }
     #endregion
 
-    #region Funciones
+    #region ----[ CLASS FUNCTIONS ]----
+
 
     #region Instant Position/Rotation
     public void InstantPositioning()
