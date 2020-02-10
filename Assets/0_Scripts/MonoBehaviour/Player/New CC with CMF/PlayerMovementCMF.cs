@@ -406,6 +406,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void KonoAwake(bool isMyCharacter = false)
     {
+        SwitchTeam(team);
         if (online_isLocal)
         {
             mover = GetComponent<Mover>();
@@ -437,6 +438,14 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             auxLM = LayerMask.GetMask("Stage");
 
             PlayerAwakes();
+        }
+        else
+        {
+            myPlayerAnimation.KonoAwake();
+            myPlayerWeap.KonoAwake();
+            myPlayerBody.KonoAwake();
+            myPlayerVFX.KonoAwake();
+            GetComponent<Rigidbody>().isKinematic = true;
         }
     }
 
@@ -474,6 +483,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             //EquipWeaponAtStart();
 
             PlayerStarts();
+        }
+        else
+        {
+            myPlayerWeap.KonoStart();
+            myPlayerVFX.KonoStart();
         }
     }
     private void PlayerStarts()
@@ -560,13 +574,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     Vector3 lastPos;
     public void KonoLateUpdate()
     {
-        if (online_isLocal)
-        {
             if (!disableAllDebugs) Debug.LogWarning(" --- NEW LATE UPDATE ---");
             Vector3 currentTotalMovement = transform.position - lastPos;
             //Debug.Log("rb velocity = " + GetComponent<Rigidbody>().velocity.ToString("F8") + "; currentTotalMovement = "+ currentTotalMovement.ToString("F8"));
             myPlayerAnimation.KonoUpdate();
-        }
     }
     #endregion
 
@@ -682,63 +693,60 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void CalculateMoveDir()
     {
-        if(online_isLocal)
+        if (!noInput)
         {
-            if (!noInput)
+            float horiz = actions.LeftJoystick.X;//Input.GetAxisRaw(contName + "H");
+            float vert = actions.LeftJoystick.Y;//-Input.GetAxisRaw(contName + "V");
+                                                // Check that they're not BOTH zero - otherwise dir would reset because the joystick is neutral.
+                                                //if (horiz != 0 || vert != 0)Debug.Log("actions.LeftJoystick.X = "+ actions.LeftJoystick.X+ "actions.LeftJoystick.Y" + actions.LeftJoystick.Y);
+            Vector3 temp = new Vector3(horiz, 0, vert);
+            lastJoystickSens = joystickSens;
+            joystickSens = temp.magnitude;
+            //print("temp.magnitude = " + temp.magnitude);
+            if (temp.magnitude >= deadzone)
             {
-                float horiz = actions.LeftJoystick.X;//Input.GetAxisRaw(contName + "H");
-                float vert = actions.LeftJoystick.Y;//-Input.GetAxisRaw(contName + "V");
-                                                    // Check that they're not BOTH zero - otherwise dir would reset because the joystick is neutral.
-                                                    //if (horiz != 0 || vert != 0)Debug.Log("actions.LeftJoystick.X = "+ actions.LeftJoystick.X+ "actions.LeftJoystick.Y" + actions.LeftJoystick.Y);
-                Vector3 temp = new Vector3(horiz, 0, vert);
-                lastJoystickSens = joystickSens;
-                joystickSens = temp.magnitude;
-                //print("temp.magnitude = " + temp.magnitude);
-                if (temp.magnitude >= deadzone)
+                joystickSens = joystickSens >= 0.88f ? 1 : joystickSens;//Eloy: esto evita un "bug" por el que al apretar el joystick 
+                                                                        //contra las esquinas no da un valor total de 1, sino de 0.9 o así
+                moveSt = MoveState.Moving;
+                currentInputDir = temp;
+                currentInputDir.Normalize();
+                switch (myCamera.camMode)
                 {
-                    joystickSens = joystickSens >= 0.88f ? 1 : joystickSens;//Eloy: esto evita un "bug" por el que al apretar el joystick 
-                                                                            //contra las esquinas no da un valor total de 1, sino de 0.9 o así
-                    moveSt = MoveState.Moving;
-                    currentInputDir = temp;
-                    currentInputDir.Normalize();
-                    switch (myCamera.camMode)
-                    {
-                        case cameraMode.Fixed:
-                            currentInputDir = RotateVector(-facingAngle, temp);
-                            break;
-                        case cameraMode.Shoulder:
-                            currentInputDir = RotateVector(-facingAngle, temp);
-                            break;
-                        case cameraMode.Free:
-                            Vector3 camDir = (transform.position - myCamera.transform.GetChild(0).position).normalized;
-                            camDir.y = 0;
-                            // ANGLE OF JOYSTICK
-                            joystickAngle = Mathf.Acos(((0 * currentInputDir.x) + (1 * currentInputDir.z)) / (1 * currentInputDir.magnitude)) * Mathf.Rad2Deg;
-                            joystickAngle = (horiz > 0) ? -joystickAngle : joystickAngle;
-                            //rotate camDir joystickAngle degrees
-                            currentInputDir = RotateVector(joystickAngle, camDir);
-                            //HARD STEER CHECK
-                            //if(!disableAllDebugs)Debug.LogError(" hardSteerOn = "+ hardSteerOn + "; isRotationRestricted = " + myPlayerCombatNew.isRotationRestricted);
-                            if (!(!hardSteerOn && myPlayerCombatNew.isRotationRestricted))
+                    case cameraMode.Fixed:
+                        currentInputDir = RotateVector(-facingAngle, temp);
+                        break;
+                    case cameraMode.Shoulder:
+                        currentInputDir = RotateVector(-facingAngle, temp);
+                        break;
+                    case cameraMode.Free:
+                        Vector3 camDir = (transform.position - myCamera.transform.GetChild(0).position).normalized;
+                        camDir.y = 0;
+                        // ANGLE OF JOYSTICK
+                        joystickAngle = Mathf.Acos(((0 * currentInputDir.x) + (1 * currentInputDir.z)) / (1 * currentInputDir.magnitude)) * Mathf.Rad2Deg;
+                        joystickAngle = (horiz > 0) ? -joystickAngle : joystickAngle;
+                        //rotate camDir joystickAngle degrees
+                        currentInputDir = RotateVector(joystickAngle, camDir);
+                        //HARD STEER CHECK
+                        //if(!disableAllDebugs)Debug.LogError(" hardSteerOn = "+ hardSteerOn + "; isRotationRestricted = " + myPlayerCombatNew.isRotationRestricted);
+                        if (!(!hardSteerOn && myPlayerCombatNew.isRotationRestricted))
+                        {
+                            Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+                            hardSteerAngleDiff = Vector3.Angle(horizontalVel, currentInputDir);//hard Steer si > 90
+                            hardSteerOn = hardSteerAngleDiff > instantRotationMinAngle ? true : false;
+                            if (hardSteerOn && !hardSteerStarted)
                             {
-                                Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
-                                hardSteerAngleDiff = Vector3.Angle(horizontalVel, currentInputDir);//hard Steer si > 90
-                                hardSteerOn = hardSteerAngleDiff > instantRotationMinAngle ? true : false;
-                                if (hardSteerOn && !hardSteerStarted)
-                                {
-                                    //if (!disableAllDebugs && hardSteerOn) Debug.LogError("HARD STEER ON: STARTED");
-                                    hardSteerDir = currentInputDir;
-                                }
+                                //if (!disableAllDebugs && hardSteerOn) Debug.LogError("HARD STEER ON: STARTED");
+                                hardSteerDir = currentInputDir;
                             }
-                            RotateCharacter();
-                            break;
-                    }
+                        }
+                        RotateCharacter();
+                        break;
                 }
-                else
-                {
-                    joystickSens = 1;//no estoy seguro de que esté bien
-                    moveSt = MoveState.NotMoving;
-                }
+            }
+            else
+            {
+                joystickSens = 1;//no estoy seguro de que esté bien
+                moveSt = MoveState.NotMoving;
             }
         }
     }
@@ -793,7 +801,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
             #region ------------------------------- Acceleration -------------------------------
             float finalAcc = 0;
-            float finalBreakAcc = collCheck.below ? breakAcc : jumpSt == JumpState.WallJumped?wallJumpBreakAcc : airBreakAcc;
+            float finalBreakAcc = collCheck.below ? breakAcc : jumpSt == JumpState.WallJumped ? wallJumpBreakAcc : airBreakAcc;
             float finalHardSteerAcc = collCheck.below ? hardSteerAcc : jumpSt == JumpState.WallJumped ? wallJumpHardSteerAcc : airHardSteerAcc;
             float finalInitialAcc = collCheck.below ? initialAcc : jumpSt == JumpState.WallJumped ? wallJumpInitialAcc : airInitialAcc;
             finalMovingAcc = (collCheck.below ? movingAcc : jumpSt == JumpState.WallJumped ? wallJumpMovingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
@@ -1355,7 +1363,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     bool StartWallJump(bool calledFromBuffer = false)
     {
         if (calledFromBuffer) Debug.Log("TRY WALLJUMP FROM BUFFER");
-        /*if (!disableAllDebugs)*/ Debug.LogWarning("Check Wall jump: wall real normal = " + collCheck.wallSlopeAngle);
+        /*if (!disableAllDebugs)*/
+        Debug.LogWarning("Check Wall jump: wall real normal = " + collCheck.wallSlopeAngle);
         bool result = false;
         float slopeAngle = collCheck.wallSlopeAngle;
         bool goodWallAngle = !(slopeAngle >= 110 && slopeAngle <= 180);
@@ -1367,7 +1376,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             Debug.Log("WallJump Stage script check...");
             if (wallJumpCurrentWall.GetComponent<StageScript>() == null || wallJumpCurrentWall.GetComponent<StageScript>().wallJumpable)
             {
-                /*if (!disableAllDebugs)*/ Debug.Log("Wall jumping start");
+                /*if (!disableAllDebugs)*/
+                Debug.Log("Wall jumping start");
                 //PARA ORTU: PlayerAnimation_01.startJump = true;
                 jumpSt = JumpState.WallJumping;
                 result = true;
@@ -1390,11 +1400,12 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         }
         else
         {
-            /*if (!disableAllDebugs)*/ Debug.Log("Couldn't wall jump because:  !collCheck.below (" + !collCheck.below + ") && !inWater(" + !inWater + ") &&" +
-                " jumpedOutOfWater(" + jumpedOutOfWater + ") && goodWallAngle("+ goodWallAngle + ") && wallJumpCurrentWall != null(" + (wallJumpCurrentWall != null) + ") && " +
-                "(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ") || " +
-                "(lastWallAngle == collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ")&& " +
-                "lastWall != collCheck.wall(" + (lastWall != collCheck.wall) + ")))");
+            /*if (!disableAllDebugs)*/
+            Debug.Log("Couldn't wall jump because:  !collCheck.below (" + !collCheck.below + ") && !inWater(" + !inWater + ") &&" +
+" jumpedOutOfWater(" + jumpedOutOfWater + ") && goodWallAngle(" + goodWallAngle + ") && wallJumpCurrentWall != null(" + (wallJumpCurrentWall != null) + ") && " +
+"(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ") || " +
+"(lastWallAngle == collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ")&& " +
+"lastWall != collCheck.wall(" + (lastWall != collCheck.wall) + ")))");
         }
         if (!result && !calledFromBuffer)
         {
@@ -1469,7 +1480,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     void EndWallJump()
     {
-        /*if (!disableAllDebugs)*/ Debug.Log("End Wall jump");
+        /*if (!disableAllDebugs)*/
+        Debug.Log("End Wall jump");
         if (!firstWallJumpDone) firstWallJumpDone = true;
         lastWallAngle = wallJumpCurrentWallAngle;
         lastWall = wallJumpCurrentWall;
@@ -2575,8 +2587,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     #region ----[ BOLT CALLBACKS ]----
     public override void Attached()
     {
-        state.SetTransforms(state.transform, transform);
-        state.SetAnimator(GetComponentInChildren<Animator>());
+        state.SetTransforms(state.transform_Pos, transform);
+        state.SetTransforms(state.Transform_Rot, rotateObj);
     }
 
     #endregion

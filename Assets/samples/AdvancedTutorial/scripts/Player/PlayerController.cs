@@ -81,7 +81,6 @@ namespace Bolt.AdvancedTutorial
 		{
 
 
-			state.SetTransforms(state.transform, transform);
 			state.SetAnimator(GetComponentInChildren<Animator>());
 
 			// setting layerweights 

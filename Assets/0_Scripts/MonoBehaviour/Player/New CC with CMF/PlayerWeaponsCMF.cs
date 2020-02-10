@@ -68,15 +68,18 @@ public class PlayerWeaponsCMF : MonoBehaviour
     #region Awake
     public void KonoAwake()
     {
-        currentWeaponData = null;
-        currentWeapon = null;
-        currentWeapObject = null;
-        //myPlayerMovement = GetComponent<PlayerMovement>();
-        //myPlayerAnim = myPlayerMovement.myPlayerAnimation_01;
-        //myPlayerCombatNew = myPlayerMovement.myPlayerCombatNew;
-        myPlayerHUD = myPlayerMovement.myPlayerHUD;
-        //myPlayerModel = myPlayerMovement.myPlayerModel;
-        weaponsNearby = new List<Weapon>();
+        if (myPlayerMovement.online_isLocal)
+        {
+            currentWeaponData = null;
+            currentWeapon = null;
+            currentWeapObject = null;
+            //myPlayerMovement = GetComponent<PlayerMovement>();
+            //myPlayerAnim = myPlayerMovement.myPlayerAnimation_01;
+            //myPlayerCombatNew = myPlayerMovement.myPlayerCombatNew;
+            myPlayerHUD = myPlayerMovement.myPlayerHUD;
+            //myPlayerModel = myPlayerMovement.myPlayerModel;
+            weaponsNearby = new List<Weapon>();
+        }
     }
     #endregion
 
@@ -90,11 +93,14 @@ public class PlayerWeaponsCMF : MonoBehaviour
     #region Update
     public void KonoUpdate()
     {
-        if (nearestWeapon != null && myPlayerMovement.actions.X.WasPressed)
+        if (myPlayerMovement.online_isLocal)
         {
-            PickupWeapon(nearestWeapon);
+            if (nearestWeapon != null && myPlayerMovement.actions.X.WasPressed)
+            {
+                PickupWeapon(nearestWeapon);
+            }
+            //UpdateNearestWeapon();
         }
-        //UpdateNearestWeapon();
     }
     #endregion
 

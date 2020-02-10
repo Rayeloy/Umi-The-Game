@@ -5,10 +5,9 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
-[BoltGlobalBehaviour(BoltNetworkModes.Client)]
 #region ----[ PUBLIC ENUMS ]----
 #endregion
-public class GameControllerCMF : Bolt.GlobalEventListener
+public class GameControllerCMF : MonoBehaviour
 {
 
     #region ----[ VARIABLES FOR DESIGNERS ]----
@@ -356,56 +355,26 @@ public class GameControllerCMF : Bolt.GlobalEventListener
 
     void UpdatePlayers()
     {
-        if (!MasterManager.GameSettings.online)
-        {
             for (int i = 0; i < playerNum; i++)
             {
                 allPlayers[i].KonoUpdate();
             }
-        }
-        else
-        {
-            if (allPlayers.Count == 1)
-            {
-                allPlayers[0].KonoUpdate();
-            }
-        }
     }
 
     void FixedUpdatePlayers()
     {
-        if (!MasterManager.GameSettings.online)
-        {
             for (int i = 0; i < playerNum; i++)
             {
                 allPlayers[i].KonoFixedUpdate();
             }
-        }
-        else
-        {
-            if(allPlayers.Count==1)
-            {
-                allPlayers[0].KonoFixedUpdate();
-            }
-        }
     }
 
     void LateUpdatePlayers()
     {
-        if (!MasterManager.GameSettings.online)
-        {
             for (int i = 0; i < playerNum; i++)
             {
                 allPlayers[i].KonoLateUpdate();
             }
-        }
-        else
-        {
-            if (allPlayers.Count == 1)
-            {
-                allPlayers[0].KonoLateUpdate();
-            }
-        }
     }
 
     protected virtual void SpecificUpdate()
@@ -1113,29 +1082,41 @@ public class GameControllerCMF : Bolt.GlobalEventListener
     #endregion
 
     #region ----[ BOLT CALLBACKS ]----
-
-    public override void ControlOfEntityGained(BoltEntity entity)
+    public void EntityReceived(BoltEntity entity)
     {
-        PlayerMovementCMF newPlayer;
-        GameObject newPlayerCanvas;
-        CameraControllerCMF newPlayerCamera;
-        Camera newPlayerUICamera;
-        newPlayer = entity.GetComponent<PlayerMovementCMF>();
-        newPlayer.online_isLocal = true;
-        newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
-        newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();
-        newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
-        InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
-        newPlayer.mySpawnInfo = new PlayerSpawnInfo();
-        GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
-        Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
-        CheckValidInputsBuffer();
-        allPlayers[0].actions = GameInfo.instance.myControls;
-        allCanvas[0].GetComponent<PlayerHUDCMF>().AdaptCanvasHeightScale();
-        allCameraBases[0].KonoAwake();
-        allPlayers[0].KonoAwake(true);
-        PlayersSetup();
-        OnlineStartGame();
+        PlayerMovementCMF player = entity.GetComponent<PlayerMovementCMF>();
+        if (player != null && !player.online_isLocal)
+        {
+            entity.GetComponent<PlayerMovementCMF>().KonoAwake();
+            entity.GetComponent<PlayerMovementCMF>().KonoStart();
+            allPlayers.Add(player);
+        }
+    }
+
+    public void SceneLoadLocalDone(string scene)
+    {
+        if (BoltNetwork.IsClient)
+        {
+            PlayerMovementCMF newPlayer = BoltNetwork.Instantiate(BoltPrefabs.PlayerPrefCMF_actual_online).GetComponent<PlayerMovementCMF>(); ;
+            newPlayer.online_isLocal = true;
+            GameObject newPlayerCanvas;
+            CameraControllerCMF newPlayerCamera;
+            Camera newPlayerUICamera;
+            newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
+            newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();
+            newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
+            InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
+            newPlayer.mySpawnInfo = new PlayerSpawnInfo();
+            GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
+            Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
+            CheckValidInputsBuffer();
+            allPlayers[0].actions = GameInfo.instance.myControls;
+            allCanvas[0].GetComponent<PlayerHUDCMF>().AdaptCanvasHeightScale();
+            allCameraBases[0].KonoAwake();
+            allPlayers[0].KonoAwake(true);
+            PlayersSetup();
+            OnlineStartGame();
+        }
     }
     #endregion
 
@@ -1147,6 +1128,8 @@ public class GameControllerCMF : Bolt.GlobalEventListener
         allPlayers[0].KonoStart();
         allPlayers[0].SetVelocity(Vector3.zero);
         StartGame();
+        playing = true;
+        gamePaused = false;
     }
     #endregion
 }

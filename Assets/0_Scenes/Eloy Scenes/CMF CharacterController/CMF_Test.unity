@@ -4459,11 +4459,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7949138227638706354, guid: 6db9117d4df26494a8873799cc3754b6,
-        type: 3}
-      propertyPath: plane
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 15985891596231604, guid: 6db9117d4df26494a8873799cc3754b6,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -4503,21 +4498,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5342176454986332805, guid: 6db9117d4df26494a8873799cc3754b6,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: c56d663820fd11143b2a10762ae2a1b6, type: 2}
-    - target: {fileID: 5344838402074391105, guid: 6db9117d4df26494a8873799cc3754b6,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 600
-      objectReference: {fileID: 0}
-    - target: {fileID: 5344838402074391105, guid: 6db9117d4df26494a8873799cc3754b6,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 600
       objectReference: {fileID: 0}
     - target: {fileID: 3895171629038303754, guid: 6db9117d4df26494a8873799cc3754b6,
         type: 3}
@@ -4533,6 +4513,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5344838402074391105, guid: 6db9117d4df26494a8873799cc3754b6,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 600
+      objectReference: {fileID: 0}
+    - target: {fileID: 5344838402074391105, guid: 6db9117d4df26494a8873799cc3754b6,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 600
+      objectReference: {fileID: 0}
+    - target: {fileID: 5342176454986332805, guid: 6db9117d4df26494a8873799cc3754b6,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c56d663820fd11143b2a10762ae2a1b6, type: 2}
+    - target: {fileID: 7949138227638706354, guid: 6db9117d4df26494a8873799cc3754b6,
+        type: 3}
+      propertyPath: plane
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6db9117d4df26494a8873799cc3754b6, type: 3}
