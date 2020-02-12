@@ -1,16 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-[BoltGlobalBehaviour(BoltNetworkModes.Server)]
 public class BoltServerSpawner : Bolt.GlobalEventListener
 {
-    /*public override void SceneLoadRemoteDone(BoltConnection connection)
+    public GameControllerCMF Manage;
+
+    public override void SceneLoadRemoteDone(BoltConnection connection)
     {
-        if (connection != null)
+        if (BoltNetwork.IsServer)
         {
-            BoltEntity client = BoltNetwork.Instantiate(BoltPrefabs.PlayerPrefCMF_actual_online);
-            client.AssignControl(connection);
+            Debug.Log("Scene finished loading !");
+            if (connection != null)
+            {
+                BoltEntity client = BoltNetwork.Instantiate(BoltPrefabs.PlayerPrefCMF_actual_online);
+                client.AssignControl(connection);
+            }
         }
-    }*/
+    }
 }

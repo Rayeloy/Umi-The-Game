@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _config:
     framesPerSecond: 60
-    packetSize: 1200
+    packetSize: 1280
     packetMaxEventSize: 512
     maxEntityPriority: 65536
     maxPropertyPriority: 2048
@@ -29,15 +29,15 @@ MonoBehaviour:
     serverDejitterDelay: 6
     serverDejitterDelayMin: 3
     serverDejitterDelayMax: 9
-    serverConnectionLimit: 32
+    serverConnectionLimit: 64
     serverConnectionAcceptMode: 0
     commandQueueSize: 60
     commandRedundancy: 6
     commandPingMultiplier: 1.25
     useNetworkSimulation: 0
-    simulatedLoss: 0.02
-    simulatedPingMean: 200
-    simulatedPingJitter: 10
+    simulatedLoss: 0.01
+    simulatedPingMean: 100
+    simulatedPingJitter: 100
     simulatedRandomFunction: 0
     connectionTimeout: 10000
     connectionRequestTimeout: 500

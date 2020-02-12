@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Bolt;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -441,6 +442,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         }
         else
         {
+            Debug.Log("A new player has been spawned and is running !");
             myPlayerAnimation.KonoAwake();
             myPlayerWeap.KonoAwake();
             myPlayerBody.KonoAwake();
@@ -489,6 +491,20 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             myPlayerWeap.KonoStart();
             myPlayerVFX.KonoStart();
         }
+        if(BoltNetwork.IsServer)
+        {
+            gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
+            currentGravity = gravity;
+            Debug.Log("Gravity defined !");
+            jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
+            maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
+            wallJumpRadius = Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad) * walJumpConeHeight;
+            print("wallJumpRaduis = " + wallJumpRadius + "; tan(wallJumpAngle)= " + Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad));
+            wallJumpMinHorizAngle = Mathf.Clamp(wallJumpMinHorizAngle, 0, 90);
+            print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
+            finalMaxMoveSpeed = currentMaxMoveSpeed = maxMoveSpeed;
+            knockbackBreakAcc = Mathf.Clamp(knockbackBreakAcc, -float.MaxValue, breakAcc);
+        }
     }
     private void PlayerStarts()
     {
@@ -521,7 +537,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void KonoFixedUpdate()
     {
-        if (online_isLocal)
+        if (!MasterManager.GameSettings.online)
         {
             if (!disableAllDebugs) Debug.LogWarning("PLAYER FIXED UPDATE: ");
             //Debug.LogWarning("Current pos = " + transform.position.ToString("F8"));
@@ -2591,12 +2607,81 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         state.SetTransforms(state.Transform_Rot, rotateObj);
     }
 
-    #endregion
+    public override void SimulateController()
+    {
 
-    #region ----[ NETWORK FUNCTIONS ]----
+        IPlayerCommandInput input = PlayerCommand.Create();
+        lastPos = transform.position;
 
-    #endregion
-}
+
+        Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
+
+        collCheck.ResetVariables();
+        ResetMovementVariables();
+
+        collCheck.UpdateCollisionVariables(mover, jumpSt);
+
+        collCheck.UpdateCollisionChecks(currentVel);
+
+        frameCounter++;
+        UpdateFlagLightBeam();
+        ProcessInputsBuffer();
+
+        #region --- Calculate Movement ---
+
+        HorizontalMovement();
+
+        UpdateFacingDir();
+
+        VerticalMovement();
+
+        HandleSlopes();
+
+        ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "mover.SetVelocity"
+
+        #endregion
+        //Debug.Log("Movement Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
+        //If the character is grounded, extend ground detection sensor range;
+        input.colCheckBel = collCheck.below;
+        //mover.SetExtendSensorRange(collCheck.below);
+        //Set mover velocity;
+        input.firstVel = finalVel;
+        input.PlatformMov = platformMovement;
+        //mover.SetVelocity(finalVel, platformMovement);
+        //Debug.Log("Mover SetVel Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
+
+        entity.QueueInput(input);
+        // RESET InputsInfo class to get new possible inputs during the next Update frames
+        inputsInfo.ResetInputs();
+
+        collCheck.SavePlatformPoint();
+
+    }
+
+    public override void ExecuteCommand(Command command, bool resetState)
+    {
+        PlayerCommand cmd = (PlayerCommand)command;
+        if (resetState)
+        {
+            transform.position = cmd.Result.Position;
+            mover.SetVelocity(cmd.Result.velocity, cmd.Result.PlatformMov);
+            mover.SetExtendSensorRange(cmd.Result.colCheckBel);
+        }
+        else
+        {
+            mover.SetVelocity(cmd.Input.firstVel, cmd.Input.PlatformMov);
+            mover.SetExtendSensorRange(cmd.Input.colCheckBel);
+            cmd.Result.Position = transform.position;
+            cmd.Result.velocity = GetComponent<Rigidbody>().velocity;
+            cmd.Result.colCheckBel = collCheck.below;
+        }
+    }
+        #endregion
+
+        #region ----[ NETWORK FUNCTIONS ]----
+
+        #endregion
+    }
 
 #region --- [ STRUCTS & CLASSES ] ---
 public class InputsInfo

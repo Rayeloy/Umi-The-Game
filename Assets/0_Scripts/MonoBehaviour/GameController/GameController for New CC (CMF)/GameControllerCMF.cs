@@ -355,26 +355,57 @@ public class GameControllerCMF : MonoBehaviour
 
     void UpdatePlayers()
     {
+
+        if (!MasterManager.GameSettings.online)
+        {
             for (int i = 0; i < playerNum; i++)
             {
                 allPlayers[i].KonoUpdate();
             }
+        }
+        else
+        {
+            for (int i = 0; i < allPlayers.Count; i++)
+            {
+                allPlayers[i].KonoUpdate();
+            }
+        }
     }
 
     void FixedUpdatePlayers()
     {
+        if (!MasterManager.GameSettings.online)
+        {
             for (int i = 0; i < playerNum; i++)
             {
                 allPlayers[i].KonoFixedUpdate();
             }
+        }
+        else
+        {
+            for (int i = 0; i < allPlayers.Count; i++)
+            {
+                allPlayers[i].KonoFixedUpdate();
+            }
+        }
     }
 
     void LateUpdatePlayers()
     {
+        if (!MasterManager.GameSettings.online)
+        {
             for (int i = 0; i < playerNum; i++)
             {
                 allPlayers[i].KonoLateUpdate();
             }
+        }
+        else
+        {
+            for (int i = 0; i < allPlayers.Count; i++)
+            {
+                allPlayers[i].KonoLateUpdate();
+            }
+        }
     }
 
     protected virtual void SpecificUpdate()
@@ -1082,10 +1113,10 @@ public class GameControllerCMF : MonoBehaviour
     #endregion
 
     #region ----[ BOLT CALLBACKS ]----
-    public void EntityReceived(BoltEntity entity)
+    public void EntityReceivedOrCreated(BoltEntity entity)
     {
         PlayerMovementCMF player = entity.GetComponent<PlayerMovementCMF>();
-        if (player != null && !player.online_isLocal)
+        if (player != null && (allPlayers.Count > 0 && player != allPlayers[0].entity) || BoltNetwork.IsServer)
         {
             entity.GetComponent<PlayerMovementCMF>().KonoAwake();
             entity.GetComponent<PlayerMovementCMF>().KonoStart();
@@ -1093,11 +1124,11 @@ public class GameControllerCMF : MonoBehaviour
         }
     }
 
-    public void SceneLoadLocalDone(string scene)
+    public void ControlOfEntityGained(BoltEntity entity)
     {
         if (BoltNetwork.IsClient)
         {
-            PlayerMovementCMF newPlayer = BoltNetwork.Instantiate(BoltPrefabs.PlayerPrefCMF_actual_online).GetComponent<PlayerMovementCMF>(); ;
+            PlayerMovementCMF newPlayer = entity.GetComponent<PlayerMovementCMF>(); ;
             newPlayer.online_isLocal = true;
             GameObject newPlayerCanvas;
             CameraControllerCMF newPlayerCamera;

@@ -300,6 +300,7 @@ public class Mover : MonoBehaviour {
         /*if (!disableAllDebugs)*/
         if (!disableAllDebugs) Debug.LogWarning("Velocity = " + _velocity.ToString("F6") + "; currentPlatformMovement = " + currentPlatformMovement.ToString("F6") +
 "; currentGroundAdjustmentVelocity = " + currentGroundAdjustmentVelocity.ToString("F8"));
+		Debug.Log("Mover velocity change ! Velocity is " + _velocity);
     }
 
     //Returns 'true' if mover is touching ground and the angle between hte 'up' vector and ground normal is not too steep (e.g., angle < slope_limit);
