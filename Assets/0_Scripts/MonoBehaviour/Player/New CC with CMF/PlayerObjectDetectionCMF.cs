@@ -7,6 +7,8 @@ using UnityEngine;
 #endregion
 public class PlayerObjectDetectionCMF : MonoBehaviour
 {
+    public bool debugModeOn = false;
+
     #region ----[ VARIABLES FOR DESIGNERS ]----
     //Referencias
     public PlayerMovementCMF myPlayerMovement;
@@ -69,7 +71,7 @@ public class PlayerObjectDetectionCMF : MonoBehaviour
                     {
                         if (hookPoints.Contains(hookPoint))
                         {
-                            if (!myPlayerMovement.disableAllDebugs) print("hookpoint removed");
+                            if (debugModeOn) Debug.Log("hookpoint removed");
                             hookPoints.Remove(hookPoint);
                         }
                     }
@@ -98,7 +100,7 @@ public class PlayerObjectDetectionCMF : MonoBehaviour
                         {
                             if (!hookPoints.Contains(hookPoint))
                             {
-                                print("hookpoint added");
+                                if(debugModeOn) Debug.Log("hookpoint added");
                                 hookPoints.Add(hookPoint);
                             }
                         }

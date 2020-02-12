@@ -16,11 +16,11 @@ public class HitboxHookBigCMF : MonoBehaviour
     }
     private void OnTriggerEnter(Collider col)
     {
-        print("Hook: Collision with " + col.name);
+        //print("Hook: Collision with " + col.name);
         if (col.gameObject != myPlayerMov.gameObject)
         {
             /*if(!myPlayerMov.disableAllDebugs)*/
-            Debug.Log("HOOK has hit " + col.tag);
+            //Debug.Log("HOOK has hit " + col.tag);
             if (myPlayerHook.canHookSomething)
             {
                 switch (col.tag)
@@ -29,13 +29,13 @@ public class HitboxHookBigCMF : MonoBehaviour
                         myPlayerHook.HookObject(col.transform);
                         break;
                     case "Player":
-                        if (!myPlayerMov.disableAllDebugs) Debug.Log("HOOK PLAYER: checking team");
+                        if (myPlayerHook.debugModeOn) Debug.Log("HOOK PLAYER: checking team");
                         PlayerMovementCMF otherPlayer = col.GetComponent<PlayerBodyCMF>().myPlayerMov;
                         if (myPlayerMov.team != otherPlayer.team)// IF ENEMY
                         {
                             if (otherPlayer.vertMovSt != VerticalMovementState.FloatingInWater)// OUTSIDE WATER
                             {
-                                Debug.Log("HOOK PLAYER: is an enemy!");
+                                if (myPlayerHook.debugModeOn) Debug.Log("HOOK PLAYER: is an enemy!");
                                 myPlayerHook.HookPlayer(otherPlayer);
                             }
                         }
@@ -72,13 +72,13 @@ public class HitboxHookBigCMF : MonoBehaviour
                         {
                             Debug.LogError("Hook has hit a hitbox that is from an enemy");
 
-                            if (hb.myAttackHitbox.GetEffect(EffectType.parry) != null && hb.myPlayerCombatNew.attackStg == AttackPhaseType.active)
+                            if (hb.myAttackHitbox.GetEffect(EffectType.parry) != null && hb.myPlayerCombat.attackStg == AttackPhaseType.active)
                             {
                                 Debug.LogError("Hook has hit a hitbox that is from an enemy and has a parry effect and is active");
 
-                                int priorityDiff = hb.myPlayerCombatNew.currentAttack.attackPriority - myPlayerHook.hookPriority;
+                                int priorityDiff = hb.myPlayerCombat.currentAttack.attackPriority - myPlayerHook.hookPriority;
                                 priorityDiff = priorityDiff != 0 ? (int)Mathf.Sign(priorityDiff) : 0;
-                                Debug.Log("priorityDiff = " + priorityDiff + "; hb.myPlayerCombatNew.currentAttack.attackPriority = " + hb.myPlayerCombatNew.currentAttack.attackPriority +
+                                Debug.Log("priorityDiff = " + priorityDiff + "; hb.myPlayerCombatNew.currentAttack.attackPriority = " + hb.myPlayerCombat.currentAttack.attackPriority +
                                     "; myPlayerHook.hookPriority = " + myPlayerHook.hookPriority);
                                 switch (priorityDiff)
                                 {

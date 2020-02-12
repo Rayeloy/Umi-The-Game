@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class PlayerHUDCMF : MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
+    public bool debugModeOn = false;
+
     //Referencias
     [Header("Referencias")]
     [HideInInspector]
@@ -963,7 +965,7 @@ arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
 
     void AddHookPointHUD(HookPoint hookPoint)
     {
-        if (!myPlayerMov.disableAllDebugs) print("CREATE NEW hookPointHUDObject");
+        if (debugModeOn) Debug.Log("CREATE NEW hookPointHUDObject");
         GameObject hookPointHUDObject = Instantiate(hookPointHUDPrefab, transform, false);
         hookPointHUDObject.transform.SetParent(hookPointsParent, true);
         HookPointHUDInfo auxHookPointHUDInfo = new HookPointHUDInfo(hookPointHUDObject.GetComponent<HookPointHUD>());
@@ -1015,7 +1017,7 @@ arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
 
     public void SetChosenHookPointHUD(HookPoint hookPoint)
     {
-        if (!myPlayerMov.disableAllDebugs) print("SetChosenHookPointHUD(" + hookPoint.name + ")");
+        if (debugModeOn) print("SetChosenHookPointHUD(" + hookPoint.name + ")");
         for (int i = 0; i < hookPointHUDInfoList.Count; i++)
         {
             if (hookPointHUDInfoList[i].hookPointHUD.myHookPoint == hookPoint && !hookPointHUDInfoList[i].chosenOne)
@@ -1157,7 +1159,7 @@ arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
     {
         if (!dashHUDCantDoAnimStarted)
         {
-            if (!myPlayerMov.disableAllDebugs) print("Start DashHUD Cant Use Animation");
+            if (debugModeOn) Debug.Log("Start DashHUD Cant Use Animation");
             dashHUDCantDoAnimStarted = true;
             dashHUDCantDoAnimTime = 0;
             dashHUDEdges.color = dashHUDEdgesColor[1];

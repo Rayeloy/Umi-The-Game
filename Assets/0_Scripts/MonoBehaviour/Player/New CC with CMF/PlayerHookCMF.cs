@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class PlayerHookCMF : MonoBehaviour
 {
+    public bool debugModeOn = false;
+    public bool charContDebugsOn = false;
     [Header("Referencias")]
     PlayerHUDCMF myPlayerHUD;
     PlayerMovementCMF myPlayerMov;
@@ -109,6 +111,7 @@ public class PlayerHookCMF : MonoBehaviour
     Camera myCamera;
     Plane[] cameraPlanes;
     List<HookPoint> hookPointsInView;
+    public float grappleEndJumpForce = 15f;
 
     public void KonoAwake()
     {
@@ -128,10 +131,12 @@ public class PlayerHookCMF : MonoBehaviour
 
     public void KonoUpdate()
     {
+#if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Keypad1))
         {
-            FinishAutoGrapple();
+            FinishAutoGrapple(true);
         }
+#endif
         UpdateHookPoints();
         if (canAutoGrapple && myPlayerMov.actions.R1.WasPressed && myPlayerMov.vertMovSt != VerticalMovementState.FloatingInWater)
         {
@@ -172,10 +177,12 @@ public class PlayerHookCMF : MonoBehaviour
 
     public void StartGrappling(HookPoint hookPoint, Transform _currentHookPointPos)
     {
-        if (!myPlayerMov.disableAllDebugs) print("START GRAPPLING");
+        if (debugModeOn) print("START GRAPPLING");
         currentGrapplingHookPoint = hookPoint;
         currentHookPointPos = _currentHookPointPos;
         myPlayerMov.StopBoost();
+
+        myPlayerMov.mover.stickToGround = false;
         if (grappleSt == GrappleState.throwing)
         {
             StartGrapplingAutoGrapple();
@@ -190,7 +197,7 @@ public class PlayerHookCMF : MonoBehaviour
         }
     }
 
-    #region --- Hook ---
+#region --- Hook ---
     public void StartHook()
     {
         if (hookSt == HookState.ready && !usingAutoGrapple)
@@ -291,9 +298,13 @@ public class PlayerHookCMF : MonoBehaviour
                 currentHook.transform.position = currentHookPointPos.position;
                 timeGrappling += Time.deltaTime;
                 float lastFrameDist = Mathf.Abs(lastCurrentDistance - currentDistance);
-                if (currentDistance <= hookMinDistance || (lastFrameDist < 0.01f && timeGrappling > 0.1f))//CHECK IF ARRIVED OR STUCK
+                if (currentDistance <= hookMinDistance)//CHECK IF ARRIVED OR STUCK
                 {
                     FinishHook();
+                }
+                else if (lastFrameDist < 0.01f && timeGrappling > 0.1f)
+                {
+                    FinishHook(true);
                 }
                 else
                 {
@@ -386,7 +397,7 @@ public class PlayerHookCMF : MonoBehaviour
     {
         if (usingHook)
         {
-            Debug.Log("STOP HOOK");
+            if(debugModeOn) Debug.Log("STOP HOOK");
             StartReeling();
             if (somethingHooked)
             {
@@ -400,7 +411,7 @@ public class PlayerHookCMF : MonoBehaviour
                 else if (objectHooked)
                 {
                     objectHooked = false;
-                    Debug.LogError("StopHook while reeling an object!");
+                    if(debugModeOn) Debug.LogWarning("StopHook while reeling an object!");
                     //print("DROP OBJECT FROM HOOK");
                     if (hookedObject.tag == "Flag")
                     {
@@ -414,9 +425,9 @@ public class PlayerHookCMF : MonoBehaviour
         }
     }
 
-    public void FinishHook()
+    public void FinishHook(bool abruptEnd = false)
     {
-        //print("FINISH HOOK");
+        if(debugModeOn) Debug.Log("FINISH HOOK");
         switch (hookSt)
         {
             case HookState.reeling:
@@ -434,7 +445,7 @@ public class PlayerHookCMF : MonoBehaviour
                 hookSt = HookState.cd;
                 break;
             case HookState.grappling:
-                FinishHookGrappling();
+                FinishHookGrappling(abruptEnd);
                 break;
         }
         if (myHook != null)
@@ -443,7 +454,7 @@ public class PlayerHookCMF : MonoBehaviour
         }
     }
 
-    void FinishHookGrappling()
+    void FinishHookGrappling(bool abruptEnd = false)
     {
         currentGrapplingHookPoint = null;
         currentHookPointPos = null;
@@ -456,7 +467,7 @@ public class PlayerHookCMF : MonoBehaviour
         {
             myPlayerCombatNew.StartAiming();
         }
-
+        if (!abruptEnd) myPlayerMov.StartVerticalImpulse(grappleEndJumpForce, ForceType.Forced);
     }
 
     void HandinObject()
@@ -486,22 +497,22 @@ public class PlayerHookCMF : MonoBehaviour
             }
         }
     }
-    #endregion
+#endregion
 
-    #region --- Automatic Grapple ---
+#region --- Automatic Grapple ---
     //AUTOMATIC GRAPPLE
     public void CheckStartAutoGrapple()
     {
         if (grappleSt == GrappleState.ready && !usingHook)
         {
-            //Debug.Log("Grapple: Starting Grapple");
+            if(debugModeOn) Debug.Log("Check for StartAutoGrapple");
             originPos = myPlayerMov.rotateObj.transform.TransformPoint(hookLocalOrigin);
 
             //Calculate trayectory
             Vector3 rayOrigin = originPos;
             float dist = (minDistanceToGrapple + 0.1f);
             Vector3 rayEnd = currentHookPointInSight.transform.position;
-            //Debug.Log("Grapple: Checking for walls in the middle; rayOrigin = " + rayOrigin.ToString("F4"));
+            if (debugModeOn) Debug.Log("Grapple: Checking for walls in the middle; rayOrigin = " + rayOrigin.ToString("F4"));
 
             Debug.DrawLine(rayOrigin, rayEnd, Color.white, 5);
             RaycastHit hit;
@@ -510,7 +521,7 @@ public class PlayerHookCMF : MonoBehaviour
                 //print("AUTOGRAPPLE: collided with something in the middle: " + hit.transform.name);
                 if (hit.transform.tag == "Stage")
                 {
-                    Debug.LogWarning("Warning: Can't grapple because there is a wall or something similar in the middle (" + hit.transform.name + ")");
+                    if (debugModeOn) Debug.LogWarning("Warning: Can't grapple because there is a wall or something similar in the middle (" + hit.transform.name + ")");
                     return;
                 }
                 else
@@ -541,9 +552,6 @@ public class PlayerHookCMF : MonoBehaviour
         grappleSt = GrappleState.throwing;
         //currentGrappleDistance = 0;
 
-        //Stop sticking to ground
-        myPlayerMov.mover.stickToGround = false;
-
         lastCurrentDistance = 0;
         hookPos = originPos;
         myPlayerMov.StartHooking();
@@ -573,7 +581,7 @@ public class PlayerHookCMF : MonoBehaviour
             RaycastHit hit;
             if (Physics.Linecast(originPos, hookRopeEndPos, out hit, collisionMask, QueryTriggerInteraction.Ignore))
             {
-                FinishAutoGrapple();
+                FinishAutoGrapple(true);
             }
         }
         Vector3 reelingDir;
@@ -592,11 +600,12 @@ public class PlayerHookCMF : MonoBehaviour
                 }
                 else if (currentDistance >= minDistanceToGrapple)
                 {
-                    FinishAutoGrapple();
+                    FinishAutoGrapple(true);
                 }
 
                 break;
             case GrappleState.grappling:
+                if (debugModeOn) Debug.Log("GRAPPLING: stickToGround = "+myPlayerMov.mover.stickToGround);
                 //print("AUTO GRAPPLING");
                 currentHook.transform.position = currentHookPointPos.position;
                 //UpdateDistance();
@@ -605,10 +614,16 @@ public class PlayerHookCMF : MonoBehaviour
                 timeGrappling += Time.deltaTime;
 
                 float lastFrameDist = Mathf.Abs(lastCurrentDistance - currentDistance);
-                if (currentDistance <= grappleStopMinDistance || (lastFrameDist < 0.01f && timeGrappling > 0.1f))//CHECK IF ARRIVED OR STUCK
+
+                if (currentDistance <= grappleStopMinDistance)//CHECK IF ARRIVED OR STUCK
                 {
-                    if (!myPlayerMov.disableAllDebugs) print("FINISH AUTOGRAPPLE: currentDistance = " + currentDistance + "; grappleStopMinDistance = " + grappleStopMinDistance + "; lastFrameDist = " + lastFrameDist + "; timeGrappling = " + timeGrappling);
                     FinishAutoGrapple();
+                }
+                else if (lastFrameDist < 0.01f && timeGrappling > 0.1f)
+                {
+                    if (debugModeOn) Debug.Log("FINISH AUTOGRAPPLE: currentDistance = " + currentDistance + "; grappleStopMinDistance = " + grappleStopMinDistance +
+    "; lastFrameDist = " + lastFrameDist + "; timeGrappling = " + timeGrappling);
+                    FinishAutoGrapple(true);
                 }
                 else
                 {
@@ -642,14 +657,14 @@ public class PlayerHookCMF : MonoBehaviour
         }
     }
 
-    public void FinishAutoGrapple()
+    public void FinishAutoGrapple(bool abruptEnd = false)
     {
         if (usingAutoGrapple)
         {
-            //print("FINISH AUTOGRAPPLE");
+            /*if(debugModeOn)*/ Debug.Log("FINISH AUTOGRAPPLE");
             //Start sticking to ground
             myPlayerMov.mover.stickToGround = true;
-            /*if (!disableAllDebugs) */Debug.LogWarning("stickToGround On");
+            if (charContDebugsOn && debugModeOn)Debug.LogWarning("stickToGround On");
 
             currentGrapplingHookPoint = null;
             currentHookPointPos = null;
@@ -667,6 +682,7 @@ public class PlayerHookCMF : MonoBehaviour
             {
                 myHook.GetComponent<LineRenderer>().enabled = false;
             }
+            if(!abruptEnd) myPlayerMov.StartVerticalImpulse(grappleEndJumpForce,ForceType.Forced);
         }
 
     }
@@ -739,5 +755,5 @@ public class PlayerHookCMF : MonoBehaviour
             currentHookPointInSight = null;
         }
     }
-    #endregion
+#endregion
 }

@@ -7,7 +7,7 @@ public class HitboxCMF : MonoBehaviour
     [HideInInspector]
     public PlayerMovementCMF myPlayerMov;
     [HideInInspector]
-    public PlayerCombatCMF myPlayerCombatNew;
+    public PlayerCombatCMF myPlayerCombat;
     [HideInInspector]
     public AttackHitbox myAttackHitbox;
 
@@ -20,8 +20,8 @@ public class HitboxCMF : MonoBehaviour
     private void Awake()
     {
         myPlayerMov = transform.GetComponentsInParent<PlayerMovementCMF>()[0];
-        myPlayerCombatNew = transform.GetComponentsInParent<PlayerCombatCMF>()[0];
-        if (!myPlayerMov.disableAllDebugs) Debug.Log(myPlayerMov.gameObject.name + " ->I'm hitbox " + name + " and I'm doing Awake");
+        myPlayerCombat = transform.GetComponentsInParent<PlayerCombatCMF>()[0];
+        if (myPlayerCombat.hitboxDebugsOn) Debug.Log(myPlayerMov.gameObject.name + " ->I'm hitbox " + name + " and I'm doing Awake");
         targetsHit = new List<string>();
         dummiesHit = new List<string>();
         targetsHitWait1Frame = new List<string>();
@@ -29,16 +29,16 @@ public class HitboxCMF : MonoBehaviour
 
     private void OnTriggerEnter(Collider col)
     {
-        if (!myPlayerMov.disableAllDebugs) Debug.Log("HITBOX COLLIDED WITH " + col.name);
+        if (myPlayerCombat.hitboxDebugsOn) Debug.Log("HITBOX COLLIDED WITH " + col.name);
         if (col.gameObject != myPlayerMov.gameObject)
         {
-            if (myPlayerCombatNew.weaponSkillStarted && myPlayerCombatNew.currentWeaponSkill.myWeaponSkillData.weaponSkillType == WeaponSkillType.attack_extend)
+            if (myPlayerCombat.weaponSkillStarted && myPlayerCombat.currentWeaponSkill.myWeaponSkillData.weaponSkillType == WeaponSkillType.attack_extend)
             {
-                if ((myPlayerCombatNew.currentWeaponSkill as WeaponSkillCMF_AttackExtend).attackExtendStg == AttackExtendStage.extending)
+                if ((myPlayerCombat.currentWeaponSkill as WeaponSkillCMF_AttackExtend).attackExtendStg == AttackExtendStage.extending)
                 {
                     if (col.tag == "Stage")//|| col.tag == "Player"
                     {
-                        (myPlayerCombatNew.currentWeaponSkill as WeaponSkillCMF_AttackExtend).StartRetracting();
+                        (myPlayerCombat.currentWeaponSkill as WeaponSkillCMF_AttackExtend).StartRetracting();
                     }
                 }
             }
@@ -47,12 +47,11 @@ public class HitboxCMF : MonoBehaviour
 
     private void OnTriggerStay(Collider col)
     {
-        //Debug.LogWarning("I'm " + gameObject.name);
         if (col.gameObject != myPlayerMov.gameObject)
         {
-            if (myPlayerCombatNew.attackStg == AttackPhaseType.active)//(tag != "HookBigHB" && tag != "HookSmallHB") && 
+            if (myPlayerCombat.attackStg == AttackPhaseType.active)//(tag != "HookBigHB" && tag != "HookSmallHB") && 
             {
-                print("I'm " + myPlayerMov.gameObject.name + " and I collided with " + col.gameObject);
+                if (myPlayerCombat.hitboxDebugsOn) Debug.Log("I'm " + myPlayerMov.gameObject.name + " and I collided with " + col.gameObject);
                 Vector3 resultKnockback = Vector3.zero;
                 EffectType stunLikeEffect = EffectType.none;
                 float maxStunTime = 0;
@@ -62,7 +61,7 @@ public class HitboxCMF : MonoBehaviour
                     #region --- PLAYER ---
                     case "Player":
                         PlayerMovementCMF otherPlayer = col.GetComponent<PlayerBodyCMF>().myPlayerMov;
-                        if (myPlayerMov.team != otherPlayer.team && !myPlayerCombatNew.parryStarted)
+                        if (myPlayerMov.team != otherPlayer.team && !myPlayerCombat.parryStarted)
                         {
                             encontrado = false;
                             for (int i = 0; i < targetsHit.Count && !encontrado; i++)
@@ -74,11 +73,11 @@ public class HitboxCMF : MonoBehaviour
                             }
                             if (encontrado)
                             {
-                                if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Soy " + myPlayerMov.name + " y " + otherPlayer.name + " ya está en nuestra lista de hitboxes añadidas, así que no atacamos");
+                                if (myPlayerCombat.hitboxDebugsOn) Debug.Log("I'm " + myPlayerMov.name + " and " + otherPlayer.name + " is already added to our list of enemies, so we don't attack him.");
                                 return;
                             }
 
-                            if (otherPlayer.myPlayerCombatNew.attackStg == AttackPhaseType.active && otherPlayer.myPlayerCombatNew.currentAttack.HasEffect(EffectType.parry) &&
+                            if (otherPlayer.myPlayerCombat.attackStg == AttackPhaseType.active && otherPlayer.myPlayerCombat.currentAttack.HasEffect(EffectType.parry) &&
                                 !targetsHitWait1Frame.Contains(otherPlayer.name) /*&& !myPlayerMov.online*/)
                             {
                                 targetsHitWait1Frame.Add(otherPlayer.name);
@@ -199,18 +198,9 @@ public class HitboxCMF : MonoBehaviour
                                 {
                                     targetsHitWait1Frame.Remove(otherPlayer.name);
                                 }
-                                if (!myPlayerMov.disableAllDebugs) Debug.Log("Soy " + myPlayerMov.name + " y añado al jugador " + otherPlayer.name + " a la lista de jugadores ya pegados");
-                                //targetsHit.Add(otherPlayer.name);
-                                //if (myPlayerMov.online)
-                                //{
-                                //    Debug.Log("SEND HIT RPC");
-                                //    otherPlayer.photonView.RPC("RPC_StartReceiveHit", Photon.Pun.RpcTarget.All, resultKnockback, (byte)stunLikeEffect, maxStunTime, myPlayerCombatNew.autocomboIndex);
-                                //}
-                                //else
-                                //{
-                                otherPlayer.StartReceiveHit(myPlayerMov, resultKnockback, stunLikeEffect, maxStunTime, myPlayerCombatNew.autocomboIndex);
-                                //}
-                                //print("I'm " + myPlayerMov.gameObject.name + " and I Hit against " + col.gameObject);
+                                if (myPlayerCombat.hitboxDebugsOn) Debug.Log("Soy " + myPlayerMov.name + " y añado al jugador " + otherPlayer.name + " a la lista de jugadores ya pegados");
+
+                                otherPlayer.StartReceiveHit(myPlayerMov, resultKnockback, stunLikeEffect, maxStunTime, myPlayerCombat.autocomboIndex);
                             }
                         }
                         break;
@@ -362,9 +352,9 @@ public class HitboxCMF : MonoBehaviour
 
                                     //QUE TIPO DE EFFECT
 
-                                    if (enemy.myPlayerCombatNew.attackStg == AttackPhaseType.active)
+                                    if (enemy.myPlayerCombat.attackStg == AttackPhaseType.active)
                                     {
-                                        int priorityDiff = myPlayerCombatNew.currentAttack.attackPriority - otherHitbox.myPlayerCombatNew.currentAttack.attackPriority;
+                                        int priorityDiff = myPlayerCombat.currentAttack.attackPriority - otherHitbox.myPlayerCombat.currentAttack.attackPriority;
                                         priorityDiff = priorityDiff != 0 ? (int)Mathf.Sign(priorityDiff) : 0;
                                         AttackEffect parryEffect = myAttackHitbox.GetEffect(EffectType.parry);
                                         switch (priorityDiff)
@@ -373,34 +363,33 @@ public class HitboxCMF : MonoBehaviour
                                                 break;
                                             case 1://TENEMOS MÁS PRIORIDAD
                                                 //targetsHit.Add(enemy.playerNumber);
-                                                if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Soy " + myPlayerMov.name + " y hago efecto parry con mi ataque " + myPlayerCombatNew.currentAttack.attackName + " al jugador " + enemy.name);
-                                                enemy.StartRecieveParry(myPlayerMov, parryEffect);
+                                                if (myPlayerCombat.hitboxDebugsOn) Debug.LogWarning("Soy " + myPlayerMov.name + " y hago efecto parry con mi ataque " + myPlayerCombat.currentAttack.attackName + " al jugador " + enemy.name);
+                                                enemy.StartReceiveParry(myPlayerMov, parryEffect);
                                                 //targetsHit.RemoveAt(targetsHit.Count - 1);
                                                 break;
                                             case 0://TENEMOS IGUAL PRIORIDAD
                                                    //targetsHit.Add(enemy.playerNumber);
-                                                if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Soy " + myPlayerMov.name + " y hago efecto parry MUTUO con mi ataque " + myPlayerCombatNew.currentAttack.attackName + " al jugador " + enemy.name);
-                                                enemy.StartRecieveParry(myPlayerMov);
-                                                myPlayerMov.StartRecieveParry(enemy);
+                                                if (myPlayerCombat.hitboxDebugsOn) Debug.LogWarning("Soy " + myPlayerMov.name + " y hago efecto parry MUTUO con mi ataque " + myPlayerCombat.currentAttack.attackName + " al jugador " + enemy.name);
+                                                enemy.StartReceiveParry(myPlayerMov);
+                                                myPlayerMov.StartReceiveParry(enemy);
                                                 //targetsHit.RemoveAt(targetsHit.Count - 1);
                                                 break;
                                         }
-                                        //Debug.Log("Añadimos al jugador " + enemy.name + " a la lista de jugadores ya pegados");
                                     }
                                     else
                                     {
-                                        if (!myPlayerMov.disableAllDebugs) Debug.Log("Enemy is not in active phase, so we don't collide hitboxes");
+                                        if (myPlayerCombat.hitboxDebugsOn) Debug.Log("Enemy is not in active phase, so we don't collide hitboxes");
                                     }
                                 }
                                 else
                                 {
-                                    if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("Soy " + myPlayerMov.name + " y " + enemy.name + " ya está en nuestra lista de hitboxes añadidas, así que no atacamos");
+                                    if (myPlayerCombat.hitboxDebugsOn) Debug.LogWarning("Soy " + myPlayerMov.name + " y " + enemy.name + " ya está en nuestra lista de hitboxes añadidas, así que no atacamos");
                                 }
                             }
                         }
                         else
                         {
-                            if (!myPlayerMov.disableAllDebugs) Debug.LogError("Couldn't find the hitbox or PlayerMovementCMF scripts");
+                            if (myPlayerCombat.hitboxDebugsOn) Debug.LogError("Couldn't find the hitbox or PlayerMovementCMF scripts");
                         }
                         break;
                         #endregion
@@ -413,7 +402,7 @@ public class HitboxCMF : MonoBehaviour
     {
         if (col.gameObject != myPlayerMov.gameObject)
         {
-            if (myPlayerCombatNew.attackStg == AttackPhaseType.active)//(tag != "HookBigHB" && tag != "HookSmallHB") && 
+            if (myPlayerCombat.attackStg == AttackPhaseType.active)//(tag != "HookBigHB" && tag != "HookSmallHB") && 
             {
                 //print("I'm " + myPlayerMov.gameObject.name + " and I collided with " + col.gameObject);
                 switch (col.tag)
@@ -449,14 +438,14 @@ public class HitboxCMF : MonoBehaviour
                         otherPlayer = col.GetComponent<HitboxCMF>().myPlayerMov;
                         if (myPlayerMov.team != otherPlayer.team)
                         {
-                            if (!myPlayerMov.disableAllDebugs) Debug.Log("" + otherPlayer.name + "'s hitbox has exit our(" + myPlayerMov.name + ") hitbox. Let's check if it was in our list:");
+                            if (myPlayerCombat.hitboxDebugsOn) Debug.Log("" + otherPlayer.name + "'s hitbox has exit our(" + myPlayerMov.name + ") hitbox. Let's check if it was in our list:");
                             bool encontrado = false;
                             for (int i = 0; i < targetsHit.Count && !encontrado; i++)
                             {
                                 if (targetsHit[i] == otherPlayer.name)
                                 {
                                     encontrado = true;
-                                    if (!myPlayerMov.disableAllDebugs) Debug.Log(myPlayerMov.name + " hitting " + otherPlayer + "'s hitbox, and it has exit our hitbox");
+                                    if (myPlayerCombat.hitboxDebugsOn) Debug.Log(myPlayerMov.name + " hitting " + otherPlayer + "'s hitbox, and it has exit our hitbox");
                                     targetsHit.RemoveAt(i);
                                 }
                             }

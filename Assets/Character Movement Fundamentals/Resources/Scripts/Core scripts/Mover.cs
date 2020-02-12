@@ -6,7 +6,8 @@ using System.Collections;
 //It also provides several getter methods for important information (whether the mover is grounded, the current surface normal [...]);
 [ExecuteInEditMode]
 public class Mover : MonoBehaviour {
-    public bool disableAllDebugs = true;
+    public bool debugModeOn = true;
+    public bool movementDebugsOn = false;
     public bool instantGroundAdjustment = true;//if false, it will be "smoothen", or moved little by little in every Update frame in between fixed updates
     public bool instantPlatformMovement = true; //if false, it will be "smoothen", or moved little by little in every Update frame in between fixed updates
 
@@ -26,7 +27,6 @@ public class Mover : MonoBehaviour {
 	public Sensor.CastType sensorType = Sensor.CastType.Raycast;
 	private float sensorRadiusModifier = 0.8f;
 	public LayerMask sensorLayermask  = ~0;
-	public bool isInDebugMode = false;
 	public int sensorArrayRows = 1;
 	public int sensorArrayRayCount = 6;
 	public bool sensorArrayRowsAreOffset = false;
@@ -62,7 +62,6 @@ public class Mover : MonoBehaviour {
 
 	void Awake()
 	{
-        Debug.Log("disableAllDebugs = " + disableAllDebugs);
 		Setup();
 
 		//Initialize sensor;
@@ -207,7 +206,7 @@ public class Mover : MonoBehaviour {
 		sensor.ArrayRows = sensorArrayRows;
 		sensor.arrayRayCount = sensorArrayRayCount;
 		sensor.offsetArrayRows = sensorArrayRowsAreOffset;
-		sensor.isInDebugMode = isInDebugMode;
+		sensor.isInDebugMode = debugModeOn;
 
 		//Set sensor spherecast variables;
 		sensor.calculateRealDistance = true;
@@ -292,13 +291,12 @@ public class Mover : MonoBehaviour {
 	{
         if (!instantPlatformMovement) currentPlatformMovement = platformMovement * (1 / Time.fixedDeltaTime);
         else currentPlatformMovement = Vector3.zero;
-        //Debug.Log("Rigibody.Velocity b4 setvel = " + rig.velocity.ToString("F8"));
+
         rig.velocity = _velocity + currentPlatformMovement;
         if (instantGroundAdjustment && onMovingPlatform) rig.position += currentGroundAdjustmentVelocity;
         else rig.velocity += currentGroundAdjustmentVelocity;
-        //Debug.Log("Rigibody.Velocity after setvel = " + rig.velocity.ToString("F8"));
-        /*if (!disableAllDebugs)*/
-        if (!disableAllDebugs) Debug.LogWarning("Velocity = " + _velocity.ToString("F6") + "; currentPlatformMovement = " + currentPlatformMovement.ToString("F6") +
+
+        if (debugModeOn && movementDebugsOn) Debug.LogWarning("Velocity = " + _velocity.ToString("F6") + "; currentPlatformMovement = " + currentPlatformMovement.ToString("F6") +
 "; currentGroundAdjustmentVelocity = " + currentGroundAdjustmentVelocity.ToString("F8"));
     }
 

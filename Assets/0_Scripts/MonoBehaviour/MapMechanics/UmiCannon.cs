@@ -56,8 +56,9 @@ public class UmiCannon : MonoBehaviour
             //arrow indicator
             if(i+1 == parabolePoints.Length)
             {
-                
-                DrawConeGizmo(parabolePoints[i-1], parabolePoints[i], color, 8, 0.3f);
+                Vector3 coneDir = (parabolePoints[i - 1] - parabolePoints[i]).normalized;
+                Vector3 coneBase = parabolePoints[i] + coneDir * 3;
+                DrawConeGizmo(coneBase, parabolePoints[i], color, 8, 0.3f);
                 //arrowIndicator.localPosition = Vector3.zero;
                 //Vector3 arrowDir = (parabolePoints[i] - parabolePoints[i - 1]).normalized;
                 //arrowIndicator.position += -arrowDir * 0.12f;
@@ -94,7 +95,7 @@ public class UmiCannon : MonoBehaviour
 
         Vector3 result = dirXZ.normalized;
         result *= speedXZ;
-        Debug.Log("SpeedY = " + speedY);
+        //Debug.Log("SpeedY = " + speedY);
         result.y = speedY;
 
         showLastUse = true;

@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class PlayerCombatCMF : MonoBehaviour
 {
+
     #region ----[ VARIABLES FOR DESIGNERS ]----
+    public bool debugModeOn = false;
+    public bool hitboxDebugsOn = false;
     //Referencias
     [HideInInspector] public PlayerMovementCMF myPlayerMovement;
     PlayerWeaponsCMF myPlayerWeap;
@@ -34,8 +37,8 @@ public class PlayerCombatCMF : MonoBehaviour
     {
         get
         {
-            return !aiming && !myPlayerMovement.noInput && myPlayerMovement.vertMovSt != VerticalMovementState.FloatingInWater && myPlayerMovement.moveSt != MoveState.Boost && attackStg == AttackPhaseType.ready &&
-                !myPlayerMovement.wallJumping && !myPlayerMovement.hooked;
+            return !aiming && !myPlayerMovement.noInput && myPlayerMovement.vertMovSt != VerticalMovementState.Sliding && myPlayerMovement.vertMovSt != VerticalMovementState.FloatingInWater 
+                && myPlayerMovement.moveSt != MoveState.Boost && attackStg == AttackPhaseType.ready && !myPlayerMovement.wallJumping && !myPlayerMovement.hooked;
         }
     }
 
@@ -211,7 +214,7 @@ public class PlayerCombatCMF : MonoBehaviour
 
     public void ChangeAttackPhase(AttackPhaseType attackStage)
     {
-        if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " ->Change attack phase to " + attackStage);
+        if (debugModeOn) Debug.Log(myPlayerMovement.gameObject.name + " ->Change attack phase to " + attackStage);
         attackStg = attackStage;
 
         //change HitboxCMF
@@ -261,7 +264,7 @@ public class PlayerCombatCMF : MonoBehaviour
     void ChangeHitboxes(AttackPhaseType att)//hacer después de cambiar de attack stage, no antes!
     {
         //HideAttackHitBox();
-        if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " ->Changing Hitboxes!");
+        if (debugModeOn) Debug.Log(myPlayerMovement.gameObject.name + " ->Changing Hitboxes!");
         switch (attackStg)
         {
             case AttackPhaseType.ready:
@@ -309,7 +312,7 @@ public class PlayerCombatCMF : MonoBehaviour
 
     void AddHitbox(AttackHitbox attackHitbox)
     {
-/*        if (!myPlayerMovement.disableAllDebugs) */Debug.Log(myPlayerMovement.gameObject.name + " ->Adding hitbox of parent type " + attackHitbox.parentType);
+        if (debugModeOn) Debug.Log(myPlayerMovement.gameObject.name + " ->Adding hitbox of parent type " + attackHitbox.parentType);
         GameObject auxHitbox = null;
         switch (attackHitbox.parentType)
         {
@@ -352,7 +355,7 @@ public class PlayerCombatCMF : MonoBehaviour
                     switch (currentWeaponSkill.myWeaponSkillData.skillName)// Change this in the future for an enum
                     {
                         case "QTip_Cannon_Skill"://Q-Tip_Cannon
-                            Debug.Log("currentHitboxes[0] = " + currentHitboxes[0]);
+                            if(debugModeOn) Debug.Log("currentHitboxes[0] = " + currentHitboxes[0]);
                             badHitboxScript = auxHitbox.GetComponent<Hitbox>();
                             if (badHitboxScript != null)
                                 Destroy(badHitboxScript);
@@ -369,7 +372,7 @@ public class PlayerCombatCMF : MonoBehaviour
         }
         //if(attackHitbox.parentType!= HitboxParentType.player_animated)
         //{
-        if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " ->CurrentHitboxes ADD -> " + auxHitbox.name);
+        if (debugModeOn) Debug.Log(myPlayerMovement.gameObject.name + " ->CurrentHitboxes ADD -> " + auxHitbox.name);
         currentHitboxes.Add(auxHitbox);
         HitboxCMF hb = auxHitbox.GetComponent<HitboxCMF>();
         hb.myAttackHitbox = attackHitbox;
@@ -439,7 +442,7 @@ public class PlayerCombatCMF : MonoBehaviour
         bool exito = false;
         if (!autocomboStarted && canDoCombat)
         {
-            if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Started");
+            if (debugModeOn) Debug.Log("Autocombo Started");
             exito = true;
             autocomboStarted = true;
             lastAutocomboAttackFinished = true;
@@ -465,7 +468,7 @@ public class PlayerCombatCMF : MonoBehaviour
 
     public bool StartOrContinueAutocombo(bool calledFromBuffer = false)
     {
-        if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Start or Continue input. calledFromBuffer = " + calledFromBuffer + "; autocomboStarted = " + autocomboStarted);
+        if (debugModeOn) Debug.Log("Autocombo Start or Continue input. calledFromBuffer = " + calledFromBuffer + "; autocomboStarted = " + autocomboStarted);
 
         bool result = false;
 
@@ -480,10 +483,10 @@ public class PlayerCombatCMF : MonoBehaviour
 
         if (!result && !calledFromBuffer)
         {
-            if (!myPlayerMovement.disableAllDebugs) Debug.Log("Autocombo Input was BUFFERED");
+            if (debugModeOn) Debug.Log("Autocombo Input was BUFFERED");
             myPlayerMovement.BufferInput(PlayerInput.Autocombo);
         }
-        if (!myPlayerMovement.disableAllDebugs) Debug.Log("StartOrContinueAutocombo result = " + result);
+        if (debugModeOn) Debug.Log("StartOrContinueAutocombo result = " + result);
         return result;
     }
 
@@ -510,10 +513,10 @@ public class PlayerCombatCMF : MonoBehaviour
     {
         if (autocomboStarted)
         {
-            if (!myPlayerMovement.disableAllDebugs) Debug.LogWarning("Autocombo Stopped");
+            if (debugModeOn) Debug.Log("Autocombo Stopped");
             if (attackStg != AttackPhaseType.ready)
             {
-                if (!myPlayerMovement.disableAllDebugs) Debug.LogWarning("PARAMOS EL ATAQUE PORQUE NOS HAN PEGAO O ALGO");
+                if (debugModeOn) Debug.LogWarning("PARAMOS EL ATAQUE PORQUE NOS HAN PEGAO O ALGO");
                 EndAttack();
             }
             autocomboStarted = false;
@@ -530,7 +533,7 @@ public class PlayerCombatCMF : MonoBehaviour
     {
         if (canDoCombat)
         {
-            if (!myPlayerMovement.disableAllDebugs) Debug.Log(myPlayerMovement.gameObject.name + " -> Starting Attack " + newAttack.attackName);
+            if (debugModeOn) Debug.Log(myPlayerMovement.gameObject.name + " -> Starting Attack " + newAttack.attackName);
             landedSinceAttackStarted = myPlayerMovement.collCheck.below ? true : false; //need change
             currentAttack = newAttack;
             //targetsHit.Clear();
@@ -679,7 +682,7 @@ public class PlayerCombatCMF : MonoBehaviour
     #region --- INVULNERABILTY ---
     public void StartInvulnerability(float maxTime)
     {
-        Debug.LogWarning("START INVULNERABILITY");
+        if(debugModeOn) Debug.LogWarning("START INVULNERABILITY");
         float missingInvulTime = 0;
         if (invulnerable) missingInvulTime = maxInvulTime - invulTime;
 
@@ -716,7 +719,7 @@ public class PlayerCombatCMF : MonoBehaviour
             StopDoingCombat();
             weaponSkillIndex = _weaponSkillIndex;
             skillCurrentTime = 0;
-            if (!myPlayerMovement.disableAllDebugs) Debug.Log("Skill " + currentWeaponSkill.myWeaponSkillData.skillName + " started!");
+            if (debugModeOn) Debug.Log("Skill " + currentWeaponSkill.myWeaponSkillData.skillName + " started!");
             switch (currentWeaponSkill.myWeaponSkillData.weaponSkillType)
             {
                 case WeaponSkillType.attack:
@@ -731,7 +734,7 @@ public class PlayerCombatCMF : MonoBehaviour
         }
         else if (weaponSkillStarted && currentWeaponSkill.myWeaponSkillData.pressAgainToStopSkill && skillCurrentTime >= 0.3f)
         {
-            if (!myPlayerMovement.disableAllDebugs) Debug.LogError("SKILL Y STOPPED!");
+            if (debugModeOn) Debug.LogWarning("SKILL Y STOPPED!");
             StopWeaponSkill();
         }
         else//CANT DO SKILL
@@ -857,7 +860,7 @@ public class PlayerCombatCMF : MonoBehaviour
     {
         if (!aiming && attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput)
         {
-            Debug.Log("Start aiming");
+            if(debugModeOn) Debug.Log("Start aiming");
             aiming = true;
             myPlayerMovement.myCamera.SwitchCamera(cameraMode.Shoulder);
             myPlayerWeap.AttachWeaponToBack();
@@ -872,7 +875,7 @@ public class PlayerCombatCMF : MonoBehaviour
     {
         if (aiming)
         {
-            Debug.Log("Stop aiming");
+            if(debugModeOn) Debug.Log("Stop aiming");
             aiming = false;
             myPlayerMovement.myCamera.SwitchCamera(cameraMode.Free);
             myPlayerWeap.AttatchWeapon();

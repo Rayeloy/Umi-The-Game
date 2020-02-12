@@ -35200,6 +35200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6f2169b9cb8d834db105becc5994148, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugModeOn: 0
   myPlayerMovement: {fileID: 873758771431004316}
   hookPoints: []
 --- !u!1 &4682858307107891492
@@ -45130,7 +45131,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d98ace8715c2a184ca85247b18eb0853, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllDebugs: 1
+  debugModeOn: 1
+  movementDebugsOn: 0
   instantGroundAdjustment: 1
   instantPlatformMovement: 1
   stepHeightRatio: 0.25
@@ -45142,7 +45144,6 @@ MonoBehaviour:
   sensorLayermask:
     serializedVersion: 2
     m_Bits: 16900
-  isInDebugMode: 1
   sensorArrayRows: 1
   sensorArrayRayCount: 5
   sensorArrayRowsAreOffset: 0
@@ -45213,8 +45214,8 @@ MonoBehaviour:
   wallJumpWallMaxAngleWithMovement: 110
   hitColliders: []
   maxHitColliders: 10
-  colliderFinal: {fileID: 0}
-  finalNormal: {x: 0, y: 0, z: 0}
+  wallAverageRays: 10
+  wallAverageRadius: 0.2
   collisionMaskAround:
     serializedVersion: 2
     m_Bits: 512
@@ -45232,10 +45233,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcb1f6fd1a158a74f9c7f9580017ee6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllDebugs: 1
+  disableAllDebugs: 0
+  updateDebugsOn: 0
+  charContDebugsOn: 1
+  horMovementDebugsOn: 0
+  vertMovementDebugsOn: 0
+  waterDebugsOn: 0
   collCheck: {fileID: 4826634726855863062}
   mover: {fileID: 2655243504092265548}
-  myPlayerCombatNew: {fileID: 8719508589324532801}
+  myPlayerCombat: {fileID: 8719508589324532801}
   myPlayerWeap: {fileID: 5164337253723804911}
   myPlayerAnimation: {fileID: 3492127030470539752}
   myPlayerHook: {fileID: 9217598655678958731}
@@ -45284,8 +45290,9 @@ MonoBehaviour:
   airMovingAcc: 5
   wallJumpMovingAcc: 0.5
   fixedJumpMovingAcc: 1
-  hardBreakAcc: -90
+  hardBreakAcc: -600
   knockbackBreakAcc: -45
+  comeFromSlideBreakAcc: -20
   currentGravity: 0
   jumpHeight: 2.5
   jumpApexTime: 0.4
@@ -45307,6 +45314,10 @@ MonoBehaviour:
   chargedJumpMinPercentageNeeded: 0.25
   bounceJumpMultiplier: 0.4
   bounceJumpMinHeight: 3
+  maxSlidingSpeed: 25
+  slideAcc: 0.5
+  slideMovingAcc: 2.5
+  slideInputMovingAcc: 1
   StinrayGradient:
     serializedVersion: 2
     key0: {r: 0.53065217, g: 1, b: 0, a: 1}
@@ -45399,6 +45410,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 300e5e0114c9a4e4296d3361ccce336f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugModeOn: 0
+  hitboxDebugsOn: 0
   myPlayerMovement: {fileID: 0}
   myPlayerHUD: {fileID: 0}
   hitboxMats:
@@ -45431,6 +45444,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a4c82b982cceb54c9d5bbd97ffefb92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugModeOn: 0
+  charContDebugsOn: 0
   myCameraBase: {fileID: 0}
   hookSt: 0
   currentHook: {fileID: 0}
@@ -45455,6 +45470,7 @@ MonoBehaviour:
   minDistanceToGrapple: 23
   hookPointMinDistToCameraCenter: 800
   grappleMaxCDTime: 0.3
+  grappleEndJumpForce: 15
 --- !u!114 &5164337253723804911
 MonoBehaviour:
   m_ObjectHideFlags: 0

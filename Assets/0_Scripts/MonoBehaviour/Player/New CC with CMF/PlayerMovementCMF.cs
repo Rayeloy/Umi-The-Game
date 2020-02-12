@@ -4,7 +4,40 @@ using UnityEngine;
 using UnityEngine.UI;
 
 #region ----[ PUBLIC ENUMS ]----
-//All enums are in PlayerMovement
+public enum Team
+{
+    A = 1,// Blue - Green
+    B = 2,// Red - Pink
+    none = 0
+}
+
+public enum MoveState
+{
+    None = 0,
+    Moving = 1,
+    NotMoving = 2,//Not stunned, breaking
+    Knockback = 3,//Stunned
+    MovingBreaking = 4,//Moving but reducing speed by breakAcc till maxMovSpeed
+    Hooked = 5,
+    Boost = 6,
+    FixedJump = 7,
+    NotBreaking = 8,
+    Impulse = 9
+}
+
+public enum VerticalMovementState
+{
+    None,
+    Jumping,
+    JumpBreaking,//Emergency stop
+    Falling,
+    WallJumping,
+    WallJumped,
+    ChargeJumping,
+    BounceJumping,
+    FloatingInWater,
+    Sliding // on a water Slide
+}
 
 public enum ChargedJumpMode
 {
@@ -12,6 +45,13 @@ public enum ChargedJumpMode
     Proportional,
     Proportional_With_Min
 }
+
+public enum ForceType
+{
+    Additive,
+    Forced
+}
+
 #endregion
 
 #region ----[ REQUIRECOMPONENT ]----
@@ -19,12 +59,19 @@ public enum ChargedJumpMode
 public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
-    [Header(" --- Referencias --- ")]
+    [Header(" --- Debugging ---")]
     public bool disableAllDebugs;
+    public bool updateDebugsOn = false;
+    public bool charContDebugsOn = false;
+    public bool horMovementDebugsOn = false;
+    public bool vertMovementDebugsOn = false;
+    public bool waterDebugsOn = false;
+
+    [Header(" --- Referencias --- ")]
     //public PlayerCombat myPlayerCombat;
     public CollisionsCheck collCheck;
     public Mover mover;
-    public PlayerCombatCMF myPlayerCombatNew;
+    public PlayerCombatCMF myPlayerCombat;
     public PlayerWeaponsCMF myPlayerWeap;
     //public PlayerAnimation myPlayerAnimation;
     public PlayerAnimationCMF myPlayerAnimation;
@@ -123,7 +170,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     public float airHardSteerAcc = -10;
     public float wallJumpHardSteerAcc = -10;
     public float fixedJumpHardSteerAcc = -5f;
-    public float movingAcc = 2.0f;
+    public float movingAcc = 11.5f;
     public float airMovingAcc = 0.5f;
     public float wallJumpMovingAcc = 0.5f;
     public float fixedJumpMovingAcc = 0.25f;
@@ -200,7 +247,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         {
             bool result = false;
             result = collCheck.below && chargedJumpChargingJump && isFloorChargeJumpable && (vertMovSt == VerticalMovementState.Falling || vertMovSt == VerticalMovementState.None);
-            if (!disableAllDebugs) Debug.LogWarning("isChargeJump = " + result);
+            if (!disableAllDebugs && vertMovementDebugsOn) Debug.LogWarning("isChargeJump = " + result);
             return result;
         }
     }
@@ -227,7 +274,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             float auxBounceJumpCurrentMaxHeight = totalFallenHeight * bounceJumpMultiplier;
             result = collCheck.below && isFloorBounceJumpable && auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight
                 && vertMovSt == VerticalMovementState.Falling;
-            if (!disableAllDebugs) Debug.LogWarning("isBounceJump = " + result + "; currentFloor = " + collCheck.floor + "; collCheck.below = " + collCheck.below
+            if (!disableAllDebugs && vertMovementDebugsOn) Debug.LogWarning("isBounceJump = " + result + "; currentFloor = " + collCheck.floor + "; collCheck.below = " + collCheck.below
                 + "; auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight = " + (auxBounceJumpCurrentMaxHeight >= bounceJumpMinHeight));
             return result;
         }
@@ -242,6 +289,17 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             return (stageScript == null || (stageScript != null && stageScript.bounceJumpable));
         }
     }
+
+    [Header(" --- SLIDES ---")]
+    public float comeFromSlideBreakAcc = -20f;
+    float maxSlidingSpeed = 25;
+    bool comeFromSlide = false;
+    //[Range(0, 2)]
+    //public float slideAcc = 0.5f;
+    //[Tooltip("Acceleration that keeps you in the slide's direction. The bigger the value, the more difficult it is to fly out of the slide.")]
+    //public float slideMovingAcc = 2.5f;
+    //public float slideInputMovingAcc = 5f;
+    //public bool slideAlgorithmToggle = true;
 
 
     [Header("TEAM COLORS")]
@@ -287,6 +345,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     [HideInInspector]
     public Vector3 currentVel;
     Vector3 oldCurrentVel;
+    Vector3 finalVel;
+
     [HideInInspector]
     public float currentSpeed = 0;
     //[HideInInspector]
@@ -447,7 +507,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     void PlayerAwakes()
     {
         myPlayerHUD.KonoAwake();
-        myPlayerCombatNew.KonoAwake();
+        myPlayerCombat.KonoAwake();
         //myPlayerAnimation.KonoAwake();
         myPlayerAnimation.KonoAwake();
         myPlayerHook.KonoAwake();
@@ -465,9 +525,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
         maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
         wallJumpRadius = Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad) * walJumpConeHeight;
-        print("wallJumpRaduis = " + wallJumpRadius + "; tan(wallJumpAngle)= " + Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad));
+        if (!disableAllDebugs) Debug.Log("wallJumpRaduis = " + wallJumpRadius + "; tan(wallJumpAngle)= " + Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad));
         wallJumpMinHorizAngle = Mathf.Clamp(wallJumpMinHorizAngle, 0, 90);
-        print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
+        if(!disableAllDebugs) Debug.Log("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
 
         finalMaxMoveSpeed = currentMaxMoveSpeed = maxMoveSpeed;
         knockbackBreakAcc = Mathf.Clamp(knockbackBreakAcc, -float.MaxValue, breakAcc);//menos de break Acc lo haría ver raro
@@ -480,7 +540,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     private void PlayerStarts()
     {
         collCheck.KonoStart();
-        myPlayerCombatNew.KonoStart();
+        myPlayerCombat.KonoStart();
         myPlayerHUD.KonoStart();
         myPlayerWeap.KonoStart();
         myPlayerVFX.KonoStart();
@@ -496,14 +556,14 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         //POLL INPUTS
         inputsInfo.PollInputs();
         SmoothRotateCharacter();
-        myPlayerCombatNew.KonoUpdate();
+        myPlayerCombat.KonoUpdate();
         myPlayerWeap.KonoUpdate();
         myPlayerHook.KonoUpdate();
     }
 
     public void KonoFixedUpdate()
     {
-        if (!disableAllDebugs) Debug.LogWarning("PLAYER FIXED UPDATE: ");
+        if (!disableAllDebugs && updateDebugsOn) Debug.LogWarning("PLAYER FIXED UPDATE: ");
         //Debug.LogWarning("Current pos = " + transform.position.ToString("F8"));
         lastPos = transform.position;
 
@@ -519,7 +579,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
         if (vertMovSt == VerticalMovementState.FloatingInWater) collCheck.AroundCollisions();
 
-        if (!disableAllDebugs && currentSpeed != 0) Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4"));
+        if (!disableAllDebugs && horMovementDebugsOn && currentSpeed != 0) Debug.LogWarning("CurrentVel 0= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4"));
 
 
         frameCounter++;
@@ -527,11 +587,15 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         ProcessInputsBuffer();
 
         #region --- Calculate Movement ---
+        //Debug.Log("Pre Hor Mov: currentVel = " + currentVel.ToString("F6"));
         HorizontalMovement();
+        //Debug.Log("Post Hor Mov: currentVel = " + currentVel.ToString("F6"));
         UpdateFacingDir();
 
         VerticalMovement();
+        //Debug.Log("Post Vert Mov: currentVel = " + currentVel.ToString("F6"));
 
+        finalVel = currentVel;
         HandleSlopes();
 
         ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "mover.SetVelocity"
@@ -542,6 +606,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         mover.SetExtendSensorRange(collCheck.below);
         //Set mover velocity;
         //Debug.Log("currentVel B4 mover = " + currentVel.ToString("F6"));
+
+        //Debug.Log("Pre mover.SetVelocity: finalVel = " + finalVel.ToString("F6"));
         mover.SetVelocity(finalVel, platformMovement);
         //Debug.Log("Mover SetVel Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
 
@@ -558,7 +624,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     Vector3 lastPos;
     public void KonoLateUpdate()
     {
-        if (!disableAllDebugs) Debug.LogWarning(" --- NEW LATE UPDATE ---");
+        if (!disableAllDebugs && updateDebugsOn) Debug.LogWarning(" --- NEW LATE UPDATE ---");
         Vector3 currentTotalMovement = transform.position - lastPos;
         //Debug.Log("rb velocity = " + GetComponent<Rigidbody>().velocity.ToString("F8") + "; currentTotalMovement = "+ currentTotalMovement.ToString("F8"));
         myPlayerAnimation.KonoUpdate();
@@ -577,7 +643,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         //dashTR.endColor = team == Team.A ? StinrayColors [1]: OktiromeColors[1];
     }
 
-    #region INPUTS BUFFERING
+    #region INPUTS BUFFERING -------------------------------------
 
     void SetupInputsBuffer()
     {
@@ -617,7 +683,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         break;
                     case PlayerInput.Autocombo:
                         if (!disableAllDebugs) Debug.Log("Trying to input autocombo from buffer... Time left = " + inputsBuffer[i].time);
-                        if (myPlayerCombatNew.StartOrContinueAutocombo(true))
+                        if (myPlayerCombat.StartOrContinueAutocombo(true))
                         {
                             inputsBuffer[i].StopBuffering();
                         }
@@ -660,6 +726,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     #endregion
 
     #region MOVEMENT -----------------------------------------------
+
+    #region --- HORIZONTAL MOVEMENT ---
     public void SetVelocity(Vector3 vel)
     {
         currentVel = vel;
@@ -711,8 +779,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         //rotate camDir joystickAngle degrees
                         currentInputDir = RotateVector(joystickAngle, camDir);
                         //HARD STEER CHECK
-                        //if(!disableAllDebugs)Debug.LogError(" hardSteerOn = "+ hardSteerOn + "; isRotationRestricted = " + myPlayerCombatNew.isRotationRestricted);
-                        if (!(!hardSteerOn && myPlayerCombatNew.isRotationRestricted))
+                        //if(!disableAllDebugs)Debug.LogError(" hardSteerOn = "+ hardSteerOn + "; isRotationRestricted = " + myPlayerCombat.isRotationRestricted);
+                        if (!(!hardSteerOn && myPlayerCombat.isRotationRestricted))
                         {
                             Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
                             hardSteerAngleDiff = Vector3.Angle(horizontalVel, currentInputDir);//hard Steer si > 90
@@ -762,13 +830,13 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             //------------------------------- Joystick Direction -------------------------------
             CalculateMoveDir();//Movement direction
             //ProcessHardSteer();
-            if (!myPlayerCombatNew.aiming && (inputsInfo.R2WasPressed || actions.R2.IsPressed))//Input.GetButtonDown(contName + "RB"))
+            if (!myPlayerCombat.aiming && (inputsInfo.R2WasPressed || actions.R2.IsPressed))//Input.GetButtonDown(contName + "RB"))
             {
                 StartBoost();
             }
 
             #region ------------------------------ Max Move Speed ------------------------------
-            currentMaxMoveSpeed = myPlayerCombatNew.attackStg != AttackPhaseType.ready && myPlayerCombatNew.landedSinceAttackStarted ? maxAttackingMoveSpeed : maxMoveSpeed;//maxAttackingMoveSpeed == maxMoveSpeed if not attacking
+            currentMaxMoveSpeed = myPlayerCombat.attackStg != AttackPhaseType.ready && myPlayerCombat.landedSinceAttackStarted ? maxAttackingMoveSpeed : maxMoveSpeed;//maxAttackingMoveSpeed == maxMoveSpeed if not attacking
             ProcessWaterMaxSpeed();//only apply if the new max move speed is lower
             ProcessAiming();//only apply if the new max move speed is lower
             ProcessHooking();//only apply if the new max move speed is lower
@@ -778,18 +846,21 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 moveSt = MoveState.MovingBreaking;
             }
 
-            finalMaxMoveSpeed = lastJoystickSens > joystickSens && moveSt == MoveState.Moving ? (lastJoystickSens / 1) * currentMaxMoveSpeed : (joystickSens / 1) * currentMaxMoveSpeed;
+            finalMaxMoveSpeed = comeFromSlide? maxSlidingSpeed : moveSt == MoveState.MovingBreaking? float.MaxValue :
+                //Moving while reducing joystick angle? If not normal parameters.
+                lastJoystickSens > joystickSens && moveSt == MoveState.Moving ? (lastJoystickSens / 1) * currentMaxMoveSpeed : (joystickSens / 1) * currentMaxMoveSpeed;
+
             ProcessImpulse(currentMaxMoveSpeed);
             #endregion
 
             #region ------------------------------- Acceleration -------------------------------
             float finalAcc = 0;
-            float finalBreakAcc = collCheck.below ? breakAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpBreakAcc : fixedJumping ? fixedJumpBreakAcc : airBreakAcc;
+            float finalBreakAcc = comeFromSlide? comeFromSlideBreakAcc : collCheck.below ? breakAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpBreakAcc : fixedJumping ? fixedJumpBreakAcc : airBreakAcc;
             float finalHardSteerAcc = collCheck.below ? hardSteerAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpHardSteerAcc : fixedJumping ? fixedJumpHardSteerAcc : airHardSteerAcc;
             float finalInitialAcc = collCheck.below ? initialAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpInitialAcc : fixedJumping ? fixedJumpInitialAcc : airInitialAcc;
             finalMovingAcc = (collCheck.below ? movingAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpMovingAcc : fixedJumping ? fixedJumpMovingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
             //if (!disableAllDebugs && rotationRestrictedPercentage!=1) Debug.LogWarning("finalMovingAcc = " + finalMovingAcc+ "; rotationRestrictedPercentage = " + rotationRestrictedPercentage+
-            //    "; attackStg = " + myPlayerCombatNew.attackStg);
+            //    "; attackStg = " + myPlayerCombat.attackStg);
             //finalBreakAcc = currentSpeed < 0 ? -finalBreakAcc : finalBreakAcc;
             if (knockbackDone && impulseDone)
             {
@@ -820,7 +891,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         //}
                         break;
                     case MoveState.MovingBreaking:
-                        finalAcc = hardBreakAcc;//breakAcc * 3;
+                        finalAcc = comeFromSlide? comeFromSlideBreakAcc: hardBreakAcc;//breakAcc * 3;
                         break;
                     case MoveState.NotMoving:
                         finalAcc = (currentSpeed == 0) ? 0 : finalBreakAcc;
@@ -833,7 +904,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             #endregion
 
             #region ----------------------------------- Speed ---------------------------------- 
-            if (!fixedJumping)
+            if (!fixedJumping && vertMovSt != VerticalMovementState.Sliding)
             {
                 switch (moveSt)
                 {
@@ -853,10 +924,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     case MoveState.NotMoving:
                         break;
                 }
-                if (!disableAllDebugs && currentSpeed != 0) Debug.Log("CurrentSpeed 1.2 = " + currentSpeed.ToString("F4") + "; finalAcc = " + finalAcc + "; moveSt = " + moveSt +
+                if (!disableAllDebugs && horMovementDebugsOn && currentSpeed != 0) Debug.Log("CurrentSpeed 1.2 = " + currentSpeed.ToString("F4") + "; finalAcc = " + finalAcc + "; moveSt = " + moveSt +
                     "; currentSpeed =" + currentSpeed.ToString("F4"));
                 float currentSpeedB4 = currentSpeed;
                 currentSpeed = currentSpeed + finalAcc * Time.deltaTime;
+                //Hard Steer
                 if (moveSt == MoveState.NotMoving && Mathf.Sign(currentSpeedB4) != Mathf.Sign(currentSpeed))
                 {
                     currentSpeed = 0;
@@ -867,7 +939,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     horizontalVel = hardSteerDir * currentSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
                 }
-                //Debug.Log("CurrentSpeed 1.2 = " + currentSpeed);
+
                 float maxSpeedClamp = knockbackDone || impulseDone ? maxKnockbackSpeed : finalMaxMoveSpeed;
                 float minSpeedClamp = (lastJoystickSens > joystickSens && moveSt == MoveState.Moving) ? (joystickSens / 1) * currentMaxMoveSpeed : 0;
                 currentSpeed = Mathf.Clamp(currentSpeed, minSpeedClamp, maxSpeedClamp);
@@ -880,6 +952,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     knockbackDone = false;
                     startBeingHitAnimation = false;
                 }
+
+                if (currentSpeed != 0) Debug.Log("moveSt = "+moveSt+"; currentSpeed = " + currentSpeed.ToString("F4") +"; finalAcc = " + finalAcc.ToString("F4")+ "; maxSpeedClamp = " + maxSpeedClamp.ToString("F4"));
             }
         } 
         #endregion
@@ -887,10 +961,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
         Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
-        //if (/*!disableAllDebugs &&*/ currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
-        //    "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + collCheck.below + "; horVel.magnitude = " + horVel.magnitude+ "; finalMovingAcc = " + finalMovingAcc.ToString("F4"));
-        //print("CurrentVel 1.3= " + currentVel.ToString("F6")+ "MoveState = " + moveSt);
-        if (vertMovSt != VerticalMovementState.WallJumping || (vertMovSt == VerticalMovementState.WallJumping && moveSt == MoveState.Knockback))
+        if (!disableAllDebugs && horMovementDebugsOn && currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
+            "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + collCheck.below + "; horVel.magnitude = " + horVel.magnitude+ "; finalMovingAcc = " + finalMovingAcc.ToString("F4"));
+        if ((vertMovSt != VerticalMovementState.WallJumping || (vertMovSt == VerticalMovementState.WallJumping && moveSt == MoveState.Knockback)) && vertMovSt != VerticalMovementState.Sliding)
         {
             horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
             switch (moveSt)
@@ -903,29 +976,22 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     }
                     else
                     {
-                        Vector3 oldDir = horizontalVel.magnitude == 0 && myPlayerCombatNew.attackStg != AttackPhaseType.ready ? rotateObj.forward.normalized : horizontalVel.normalized;
+                        Vector3 oldDir = horizontalVel.magnitude == 0 && myPlayerCombat.attackStg != AttackPhaseType.ready ? rotateObj.forward.normalized : horizontalVel.normalized;
                         newDir = oldDir + (currentInputDir * (finalMovingAcc * Time.deltaTime));
                         float auxAngle = Vector3.Angle(oldCurrentVel, newDir);
-                        if (!disableAllDebugs) Debug.LogWarning("MOVING: finalMovingAcc2 = " + finalMovingAcc + ";  auxAngle = " + auxAngle + "; (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude = "
+                        if (!disableAllDebugs && horMovementDebugsOn && currentSpeed!=0) Debug.LogWarning("HorizontalMovement: finalMovingAcc2 = " + finalMovingAcc + ";  auxAngle = " + auxAngle + "; (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude = "
                              + (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude + "; (currentInputDir * finalMovingAcc * Time.deltaTime) = "
                              + (currentInputDir * finalMovingAcc * Time.deltaTime) + "; newDir = " + newDir);
                     }
                     horizontalVel = newDir.normalized * currentSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
-                    if (!disableAllDebugs) Debug.LogWarning("MOVING: CurrentVel.normalized = " + currentVel.normalized.ToString("F6"));
+                    if (!disableAllDebugs && horMovementDebugsOn && currentSpeed != 0) Debug.LogWarning("HorizontalMovement: CurrentVel.normalized = " + currentVel.normalized.ToString("F6"));
                     break;
                 case MoveState.NotMoving: //NOT MOVING JOYSTICK
                     horizontalVel = horizontalVel.normalized * currentSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
                     break;
                 case MoveState.Boost:
-                    //if (wallJumpCurrentWall != null)//BOOST CONTRA PARED
-                    //{
-                    //    WallBoost(collCheck.wall);
-                    //}
-                    //else//BOOST NORMAL
-                    //{
-                    //boostDir: dirección normalizada en la que quieres hacer el boost
                     horizontalVel = new Vector3(boostDir.x, 0, boostDir.z);
                     horizontalVel = horizontalVel.normalized * boostSpeed;
                     SetVelocity(new Vector3(horizontalVel.x, 0, horizontalVel.z));
@@ -958,7 +1024,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     currentSpeed = horizontalVel.magnitude;
                     break;
                 case MoveState.FixedJump:
-                    Debug.Log("FIXED JUMP DO");
+                    if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("FIXED JUMP DO");
                     currentVel = knockback;
                     horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
                     currentSpeed = horizontalVel.magnitude;
@@ -971,7 +1037,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     currentSpeed = horizontalVel.magnitude;
                     break;
                 case MoveState.Impulse:
-                    if (!disableAllDebugs) Debug.LogWarning("DOING IMPULSE");
+                    if (!disableAllDebugs && horMovementDebugsOn) Debug.LogWarning("DOING IMPULSE");
                     impulseDone = true;
                     Vector3 finalImpulse = new Vector3(currentImpulse.impulseVel.x, 0, currentImpulse.impulseVel.z);
                     float maxMag = finalImpulse.magnitude;
@@ -1012,7 +1078,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         rotationRestrictedPercentage = 1;
     }
 
-    #region -- IMPULSE --
+    #region -- Combat Impulse --
     public void StartImpulse(ImpulseInfo _impulse)
     {
         if (_impulse.impulseDistance != 0)
@@ -1035,7 +1101,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             float angle = Mathf.Acos(((0 * currentImpulse.impulseDir.x) + (1 * currentImpulse.impulseDir.z)) / (1 * currentImpulse.impulseDir.magnitude)) * Mathf.Rad2Deg;
             angle = currentImpulse.impulseDir.x < 0 ? 360 - angle : angle;
             RotateCharacterInstantly(angle);
-            if (!disableAllDebugs) Debug.LogWarning("Impulse = " + currentImpulse.impulseVel + "; impulseMaxTime = " + currentImpulse.impulseMaxTime +
+            if (!disableAllDebugs && horMovementDebugsOn) Debug.LogWarning("Impulse = " + currentImpulse.impulseVel + "; impulseMaxTime = " + currentImpulse.impulseMaxTime +
                 "; impulse.impulseInitialVel = " + currentImpulse.impulseInitialSpeed + "; currentImpulse.impulseDistance = " + currentImpulse.impulseDistance);
         }
     }
@@ -1061,7 +1127,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         if (impulseStarted)
         {
-            if (!disableAllDebugs) Debug.LogWarning("STOP IMPULSE: impulseTime = " + impulseTime + "; currentImpulse.impulseMaxTime = " + currentImpulse.impulseMaxTime +
+            if (!disableAllDebugs && horMovementDebugsOn) Debug.LogWarning("STOP IMPULSE: impulseTime = " + impulseTime + "; currentImpulse.impulseMaxTime = " + currentImpulse.impulseMaxTime +
                   ";currentSpeed  = " + currentSpeed + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
             //moveSt = MoveState.NotMoving;
             impulseStarted = false;
@@ -1075,6 +1141,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         return Mathf.Clamp(currentImpulse.impulseMaxTime - impulseTime, 0, float.MaxValue);
     }
     #endregion
+
+    #endregion
+
+    #region --- VERTICAL MOVEMENT ---
 
     void VerticalMovement()
     {
@@ -1098,6 +1168,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             PressA();
         }
 
+        ProcessSlides();
+
         if (moveSt != MoveState.Boost)
         {
             if (vertMovSt == VerticalMovementState.None || vertMovSt == VerticalMovementState.Falling)
@@ -1110,19 +1182,23 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 case VerticalMovementState.None:
                     if (!mover.stickToGround && currentVel.y <= 0)
                     {
+                        if(!disableAllDebugs && charContDebugsOn)Debug.Log("VertMovSt None: StickToGround On");
                         mover.stickToGround = true;
                     }
                     if (currentVel.y < 0 && (!collCheck.below || collCheck.sliping))
                     {
-                        if (!disableAllDebugs) Debug.Log("JumpSt = Falling");
+                        if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("VertMovSt None: JumpSt = Falling");
                         vertMovSt = VerticalMovementState.Falling;
                         if(!(fixedJumping && !fixedJumpBounceEnabled))
                         chargedJumpLastApexHeight = transform.position.y;
-                        Debug.Log("START FALLING");
+                        if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("VertMovSt None: START FALLING");
                     }
                     currentVel.y += currentGravity * Time.deltaTime;
                     break;
                 case VerticalMovementState.Falling:
+                    
+                    //to avoid bounce jump at the end of a slide
+                    if(collCheck.onSlide) chargedJumpLastApexHeight = transform.position.y;
 
                     if (!chargedJumpChargingJump && collCheck.below && !collCheck.sliping)
                     {
@@ -1133,7 +1209,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     if (currentVel.y >= 0 || (collCheck.below && !collCheck.sliping))
                     {
                         //Debug.Log("STOP FALLING");
-                        if (!disableAllDebugs) Debug.Log("JumpSt = None");
+                        if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("VertMovSt Falling: JumpSt = None");
                         vertMovSt = VerticalMovementState.None;
                     }
 
@@ -1194,14 +1270,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     currentVel += myPlayerBody.verticalDrag * Time.fixedDeltaTime;
                     currentVel.y = Mathf.Clamp(currentVel.y, float.MinValue, maxFloatingSpeed);
                     break;
+                case VerticalMovementState.Sliding:
+                    SlideAlgorithm();
+                    break;
             }
         }
-
-        //if (vertMovSt == VerticalMovementState.FloatingInWater)
-        //{
-        //    currentVel.y = Mathf.Clamp(currentVel.y, -maxVerticalSpeedInWater, float.MaxValue);
-        //}
-
         ProcessJumpInsurance();
 
         if (!fixedJumping)
@@ -1210,26 +1283,112 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         }
 
         //TO REDO
-        if ((/*controller.collisions.above ||*/ collCheck.below) && !hooked && !collCheck.sliping && mover.stickToGround)
+        if ((/*controller.collisions.above ||*/ collCheck.below) && !hooked && !collCheck.sliping && mover.stickToGround && !collCheck.onSlide)
         {
             currentVel.y = 0;
             //if (controller.collisions.above) StopJump();
         }
-
-        //Debug.Log("Vert Mov Fin: currentVel = " + currentVel.ToString("F6") + "; below = "+collCheck.below);
-        //Debug.Log("Vel y post = " + currentVel.y.ToString("F6"));
     }
+
+    #region -- Slides --
+
+    void ProcessSlides()
+    {
+        if (comeFromSlide)
+        {
+            if (currentSpeed <= currentMaxMoveSpeed || (moveSt != MoveState.None && moveSt != MoveState.Moving && moveSt != MoveState.MovingBreaking) || hooked)
+            {
+                StopSlides();
+            }
+        }
+
+        if (collCheck.below && collCheck.onSlide && moveSt != MoveState.Boost && moveSt != MoveState.Hooked && moveSt != MoveState.Knockback &&
+            moveSt != MoveState.FixedJump && moveSt != MoveState.Impulse && !hooked)
+        {
+            //noInput = true;
+            vertMovSt = VerticalMovementState.Sliding;
+            comeFromSlide = true;
+        }
+        else if (vertMovSt == VerticalMovementState.Sliding)
+        {
+            //noInput = false;
+            vertMovSt = VerticalMovementState.None;
+        }
+    }
+
+    void StopSlides()
+    {
+        vertMovSt = VerticalMovementState.None;
+        comeFromSlide = false;
+    }
+
+    void SlideAlgorithm()
+    {
+        //if (slideAlgorithmToggle)
+        //{                    
+        //New algorithm
+        UmiSlide slide = collCheck.floor.GetComponentInParent<UmiSlide>();
+        maxSlidingSpeed = slide.maxSlidingSpeed;
+        currentVel.y += currentGravity * Time.deltaTime;
+        Vector3 targetSlideDir = Vector3.ProjectOnPlane(Vector3.down, mover.GetGroundNormal());
+        float gravityMagnitude = targetSlideDir.magnitude * slide.slideAcc;
+        Vector3 currentSlideDir = Vector3.ProjectOnPlane(currentVel, mover.GetGroundNormal());
+        Vector3 finalSlideDir = currentSlideDir.normalized + (targetSlideDir.normalized * slide.slideMovingAcc * Time.deltaTime) + (currentInputDir * (slide.slideInputMovingAcc * Time.deltaTime));
+        finalSlideDir = finalSlideDir.normalized * Mathf.Clamp(currentSlideDir.magnitude + (-gravityMagnitude * Mathf.Sign(currentVel.y)), -slide.maxSlidingSpeed, slide.maxSlidingSpeed);
+        SetVelocity(finalSlideDir);
+
+        Debug.DrawRay(mover.GetGroundPoint(), targetSlideDir.normalized * 2, Color.yellow);
+        Debug.DrawRay(mover.GetGroundPoint(), currentSlideDir.normalized * 2, Color.cyan);
+        Debug.DrawRay(mover.GetGroundPoint(), finalSlideDir.normalized * 2, Color.green);
+        //}
+        //else
+        //{
+        //    //Old Algorithm
+        //    currentVel.y += currentGravity * Time.deltaTime;
+        //    Vector3 targetSlideDir = Vector3.ProjectOnPlane(Vector3.down * -currentGravity * 3 * Time.deltaTime, mover.GetGroundNormal());
+        //    Debug.DrawRay(mover.GetGroundPoint(), targetSlideDir.normalized * 2, Color.yellow);
+        //    Vector3 currentSlideDir = Vector3.ProjectOnPlane(currentVel, mover.GetGroundNormal());
+        //    Debug.DrawRay(mover.GetGroundPoint(), currentSlideDir.normalized * 2, Color.cyan);
+        //    Vector3 finalSlideDir = currentSlideDir + (targetSlideDir);
+        //    float speed = Mathf.Clamp(finalSlideDir.magnitude, 0, maxSlidingSpeed);
+        //    Debug.DrawRay(mover.GetGroundPoint(), finalSlideDir.normalized * 2, Color.green);
+        //    SetVelocity(finalSlideDir.normalized * speed);
+        //    //Debug.Log("targetSlideDir = "+ targetSlideDir.ToString("F6")+ "; currentSlideDir = "+ currentSlideDir.ToString("F6") + "; finalSlideDir = " + finalSlideDir.ToString("F6"));
+        //}
+    }
+
+    #endregion
+
+    #region -- VerticalImpulse --
+
+    public void StartVerticalImpulse(float ySpeed, ForceType forceType)
+    {
+        switch (forceType)
+        {
+            default:
+            case ForceType.Forced:
+                currentVel.y = ySpeed;
+                break;
+            case ForceType.Additive:
+                currentVel.y += ySpeed;
+                break;
+        }
+        mover.stickToGround = false;
+        collCheck.below = false;
+        vertMovSt = VerticalMovementState.None;
+        if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("StartVerticalImpulse: ySpeed = "+ ySpeed + "; forceType = " + forceType+ "; currentVel.y = " + currentVel.y);
+    }
+    #endregion
 
     void ResetJumpState()
     {
-        if (!disableAllDebugs) Debug.Log("JumpSt = None");
+        if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("ResetJumpState: JumpSt = None");
         vertMovSt = VerticalMovementState.None;
         mover.stickToGround = true;
-        /*if (!disableAllDebugs) */
-        Debug.LogWarning("stickToGround On");
+        if (!disableAllDebugs && charContDebugsOn)
+            Debug.LogWarning("stickToGround On");
     }
 
-    Vector3 finalVel;
     void HandleSlopes()
     {
         if (collCheck.sliping)
@@ -1260,26 +1419,25 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 Vector3 slipVel = _slideDirection * -currentVel.y;
                 finalVel = slipVel + horVel;
             }
-            Debug.Log("Handle Slopes Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
-        }
-        else
-        {
-            finalVel = currentVel;
+            if(!disableAllDebugs && horMovementDebugsOn) Debug.Log("Handle Slopes Fin: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
         }
     }
+
+    #endregion
+
     #endregion
 
     #region JUMP ---------------------------------------------------
     void PressA()
     {
-        Debug.Log("TRY JUMP");
+        if(!disableAllDebugs && vertMovementDebugsOn) Debug.Log("TRY JUMP");
         if (!StartJump())
         {
-            Debug.Log("FAILED JUMP... TRY WALLJUMP");
+            if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("FAILED JUMP... TRY WALLJUMP");
             //TO REDO
             if (!StartWallJump())
             {
-                Debug.Log("FAILED WALLJUMP... Try CHARGING CHARGE JUMP ");
+                if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("FAILED WALLJUMP... Try CHARGING CHARGE JUMP ");
                 StartChargingChargedJump();
             }
         }
@@ -1291,12 +1449,12 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         bool result = false;
         if (!noInput && moveSt != MoveState.Boost)
         {
-            if (!disableAllDebugs) Debug.Log("START JUMP: below = " + collCheck.below + "; jumpInsurance = " + jumpInsurance + "; sliding = " + collCheck.sliping + "; inWater = " + (vertMovSt == VerticalMovementState.FloatingInWater));
-            if ((vertMovSt != VerticalMovementState.FloatingInWater && ((collCheck.below && !collCheck.sliping) || jumpInsurance) && !isChargedJump && !isBounceJump) ||
+            if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("START JUMP: below = " + collCheck.below + "; jumpInsurance = " + jumpInsurance + "; sliding = " + collCheck.sliping + "; inWater = " + (vertMovSt == VerticalMovementState.FloatingInWater));
+            if ((vertMovSt != VerticalMovementState.FloatingInWater && ((collCheck.below && !collCheck.sliping) || jumpInsurance) && !collCheck.tooSteepSlope && !isChargedJump && !isBounceJump) ||
                 ((vertMovSt == VerticalMovementState.FloatingInWater && collCheck.around &&
                 ((gC.gameMode == GameMode.CaptureTheFlag && !(gC as GameControllerCMF_FlagMode).myScoreManager.prorroga) || (gC.gameMode != GameMode.CaptureTheFlag)))))
             {
-                if (!disableAllDebugs) Debug.LogWarning("JUMP!");
+                if (!disableAllDebugs && vertMovementDebugsOn) Debug.LogWarning("JUMP!");
                 ExitWater();
                 mover.stickToGround = false;
                 /*if (!disableAllDebugs) */
@@ -1348,12 +1506,12 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         reason += "This makes no sense. If you are reading this the world has gone mad.";
                     }
                 }
-                Debug.Log("Jump failed because reason: " + reason);
+                if(!disableAllDebugs && vertMovementDebugsOn) Debug.Log("Jump failed because reason: " + reason);
             }
         }
         else
         {
-            if (!disableAllDebugs) Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + (moveSt != MoveState.Boost) + ")");
+            if (!disableAllDebugs && vertMovementDebugsOn) Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + (moveSt != MoveState.Boost) + ")");
         }
         #endregion
 
@@ -1367,7 +1525,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     void StopJump()
     {
         myPlayerAnimation.SetJump(false);
-        if (!disableAllDebugs) Debug.Log("JumpSt = None");
+        if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("StopJump: JumpSt = None");
         vertMovSt = VerticalMovementState.None;
         timePressingJump = 0;
     }
@@ -1406,21 +1564,25 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     /// <returns></returns>
     bool StartWallJump(bool calledFromBuffer = false)
     {
-        if (!disableAllDebugs && calledFromBuffer) Debug.Log("TRY WALLJUMP FROM BUFFER");
-        if (!disableAllDebugs) Debug.LogWarning("Check Wall jump: wall real normal = " + collCheck.wallSlopeAngle);
+        if (!disableAllDebugs && vertMovementDebugsOn && calledFromBuffer) Debug.Log("TRY WALLJUMP FROM BUFFER");
+        collCheck.HorizontalCollisions();
+        collCheck.WallJumpCollisions(currentVel);
+
+        if (!disableAllDebugs && vertMovementDebugsOn) Debug.LogWarning("Check Wall jump: wall real normal = " + collCheck.wallSlopeAngle);
         bool result = false;
         float slopeAngle = collCheck.wallSlopeAngle;
         bool goodWallAngle = !(slopeAngle >= 110 && slopeAngle <= 180);
         wallJumpCurrentWall = collCheck.wall;
+
         if (!collCheck.below && vertMovSt != VerticalMovementState.FloatingInWater && jumpedOutOfWater && wallJumpCurrentWall != null && goodWallAngle &&
             (!firstWallJumpDone || lastWallAngle != collCheck.wallAngle || (lastWallAngle == collCheck.wallAngle &&
-            lastWall != collCheck.wall)) && wallJumpCurrentWall.tag == "Stage")
+            lastWall != collCheck.wall)) && (wallJumpCurrentWall.tag == "Stage" || wallJumpCurrentWall.tag == "Slide"))
         {
-            Debug.Log("WallJump Stage script check...");
+            if(!disableAllDebugs && vertMovementDebugsOn) Debug.Log("WallJump Stage script check...");
             if (wallJumpCurrentWall.GetComponent<StageScript>() == null || wallJumpCurrentWall.GetComponent<StageScript>().wallJumpable)
             {
                 /*if (!disableAllDebugs)*/
-                Debug.Log("Wall jumping start");
+                if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("Wall jumping start");
                 //PARA ORTU: PlayerAnimation_01.startJump = true;
                 vertMovSt = VerticalMovementState.WallJumping;
                 result = true;
@@ -1524,7 +1686,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     void EndWallJump()
     {
         /*if (!disableAllDebugs)*/
-        Debug.Log("End Wall jump");
+        if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("End Wall jump Start");
         if (!firstWallJumpDone) firstWallJumpDone = true;
         lastWallAngle = wallJumpCurrentWallAngle;
         lastWall = wallJumpCurrentWall;
@@ -1537,7 +1699,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         Vector3 circleCenter = anchorPoint + Vector3.up * walJumpConeHeight;
         Vector3 circumfPoint = CalculateReflectPoint(wallJumpRadius, wallNormal, circleCenter);
         Vector3 finalDir = (circumfPoint - anchorPoint).normalized;
-        if (!disableAllDebugs) Debug.LogWarning("FINAL DIR= " + finalDir.ToString("F4"));
+        if (!disableAllDebugs && vertMovementDebugsOn) Debug.LogWarning("End Wall Jump: FINAL DIR= " + finalDir.ToString("F4"));
 
         SetVelocity(finalDir * wallJumpVelocity);
         Vector3 newMoveDir = new Vector3(finalDir.x, 0, finalDir.z);
@@ -1552,9 +1714,12 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     public void StopWallJump()
     {
         //if (!disableAllDebugs) print("STOP WALLJUMP");
-        wallJumping = false;
-        wallJumpAnim = true;
-        vertMovSt = VerticalMovementState.None;
+        if(vertMovSt == VerticalMovementState.WallJumping)
+        {
+            wallJumping = false;
+            wallJumpAnim = true;
+            vertMovSt = VerticalMovementState.None;
+        }
     }
     #endregion
 
@@ -1574,7 +1739,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             chargedJumpChargingStartHeight = transform.position.y;
             failedJump = false;
             //StopBufferedInput(PlayerInput.Jump);
-            Debug.Log("Start Charging Jump");
+            if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("Start Charging Jump");
         }
 
         if (!result && !calledFromBuffer)
@@ -1658,7 +1823,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             chargedJumpButtonReleased = false;
             chargedJumpCurrentReleaseTime = 0;
             chargedJumpLandedTime = 0;
-            Debug.Log("Stop Charging Jump");
+            if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("Stop Charging Jump");
         }
     }
 
@@ -1746,7 +1911,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     #region --- Bounce Jump ---
     bool StartBounceJump()//WHEN CHARGEJUMP FAILS
     {
-        Debug.Log("Start Bounce Jump");
+        if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("Check for Start Bounce Jump");
         bool result = false;
         if (vertMovSt != VerticalMovementState.FloatingInWater && isFloorBounceJumpable)
         {
@@ -1755,13 +1920,13 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             if (chargedJumpCurrentJumpMaxHeight >= bounceJumpMinHeight)
             {
                 /*if (!disableAllDebugs)*/
-                Debug.Log("DO BOUNCE JUMP");
+                if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("DO BOUNCE JUMP");
                 float chargeJumpApexTime = Mathf.Sqrt((2 * chargedJumpCurrentJumpMaxHeight) / Mathf.Abs(currentGravity));
                 float chargeJumpJumpVelocity = Mathf.Abs(currentGravity * chargeJumpApexTime);
 
                 mover.stickToGround = false;
                 /*if (!disableAllDebugs) */
-                Debug.LogWarning("stickToGround Off");
+                if (!disableAllDebugs && vertMovementDebugsOn) Debug.LogWarning("stickToGround Off");
 
                 collCheck.below = false;
                 currentVel.y = chargeJumpJumpVelocity;
@@ -1769,12 +1934,12 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 StopBufferedInput(PlayerInput.Jump);
                 StopBufferedInput(PlayerInput.WallJump);
 
-                Debug.Log("JumpSt = BounceJumping" + "; chargeJumpJumpVelocity = " + chargeJumpJumpVelocity);
+                if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("JumpSt = BounceJumping" + "; chargeJumpJumpVelocity = " + chargeJumpJumpVelocity);
                 result = true;
             }
             else
             {
-                if (!disableAllDebugs) Debug.LogWarning("Bounce Jump -> bounceJump height was too low (min = " + bounceJumpMinHeight + ")");
+                if (!disableAllDebugs && vertMovementDebugsOn) Debug.LogWarning("Bounce Jump -> bounceJump height was too low (min = " + bounceJumpMinHeight + ")");
             }
         }
         return result;
@@ -1783,11 +1948,75 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     #endregion
 
+    #region FIXED JUMP ---------------------------------------------------
+
+    public void StartFixedJump(Vector3 vel, float _noMoveMaxTime, float maxTime, bool _bounceEnabled = false)
+    {
+        StopFixedJump();
+
+        if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("FIXED JUMP START");
+        StopBoost();
+        myPlayerCombat.StopDoingCombat();
+        StopSufferingEffect();
+
+        fixedJumping = true;
+        fixedJumpDone = false;
+        noInput = true;
+        noMoveMaxTime = _noMoveMaxTime;
+        fixedJumpMaxTime = maxTime;
+        noMoveTime = 0;
+        fixedJumpBounceEnabled = _bounceEnabled;
+        knockback = vel;
+
+        moveSt = MoveState.FixedJump;
+    }
+
+    void ProcessFixedJump()
+    {
+        if (fixedJumping)
+        {
+            if (!fixedJumpDone)
+            {
+                //Debug.Log("ProcessFixedJump: fixedJumpDone = false");
+                collCheck.below = false;
+                mover.stickToGround = false;
+            }
+            else
+            {
+                noMoveTime += Time.deltaTime;
+                if (noInput && (noMoveTime >= noMoveMaxTime))
+                {
+                    noInput = false;
+                    moveSt = MoveState.None;
+                }
+                //Debug.Log("ProcessFixedJump: noMoveTime = " + noMoveTime + "; fixedJumpMaxTime = " + fixedJumpMaxTime+ "; collCheck.below = "+ collCheck.below +
+                //    "; (vertMovSt == VerticalMovementState.FloatingInWater) = " +(vertMovSt == VerticalMovementState.FloatingInWater));
+                if (noMoveTime >= fixedJumpMaxTime || collCheck.below || vertMovSt == VerticalMovementState.FloatingInWater)
+                {
+                    StopFixedJump();
+                }
+            }
+        }
+    }
+
+    void StopFixedJump()
+    {
+        if (fixedJumping)
+        {
+            if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("STOP FIXED JUMP");
+            fixedJumping = false;
+            noInput = false;
+            moveSt = MoveState.None;
+        }
+    }
+
+    #endregion
+
     #region  DASH ---------------------------------------------
 
     void StartBoost()
     {
-        if (!noInput && boostReady && vertMovSt != VerticalMovementState.FloatingInWater && myPlayerCombatNew.attackStg == AttackPhaseType.ready)
+        if (!noInput && boostReady && vertMovSt != VerticalMovementState.FloatingInWater && myPlayerCombat.attackStg == AttackPhaseType.ready)
         {
             //IMPORTANT: Don't change order, call this first as it changes the moveSt
             StopImpulse();
@@ -1795,7 +2024,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
             mover.stickToGround = false;
             /*if (!disableAllDebugs)*/
-            Debug.LogWarning("stickToGround Off");
+            if (!disableAllDebugs && charContDebugsOn) Debug.LogWarning("stickToGround Off");
             boostCurrentFuel -= boostCapacity * boostFuelLostOnStart;
             boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
             moveSt = MoveState.Boost;
@@ -1812,7 +2041,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             myPlayerHUD.StartCamVFX(CameraVFXType.Dash);
             myPlayerVFX.ActivateEffect(PlayerVFXType.DashWaterImpulse);
             myPlayerVFX.ActivateEffect(PlayerVFXType.DashTrail);
-            myPlayerCombatNew.StopDoingCombat();
+            myPlayerCombat.StopDoingCombat();
         }
         else
         {
@@ -1857,8 +2086,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         {
             //print("STOP BOOST");
             mover.stickToGround = true;
-            /*if (!disableAllDebugs)*/
-            Debug.LogWarning("stickToGround On");
+            if (!disableAllDebugs && charContDebugsOn)
+                Debug.LogWarning("stickToGround On");
             moveSt = MoveState.None;
             StartBoostCD();
             myPlayerHUD.StopCamVFX(CameraVFXType.Dash);
@@ -1928,7 +2157,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     #endregion
 
-    #region  FACING DIR AND ANGLE & BODY ROTATION---------------------------------------------
+    #region  FACING DIR AND ANGLE & BODY ROTATION ------------------------------------
 
     void UpdateFacingDir()//change so that only rotateObj rotates, not whole body
     {
@@ -2022,7 +2251,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         targetRotAngle = angle;
         rotateObj.localRotation = Quaternion.Euler(0, angle, 0);
-        Debug.Log("RotateCharacterInstantly: angle = " + angle);
+        if(!disableAllDebugs && horMovementDebugsOn)Debug.Log("RotateCharacterInstantly: angle = " + angle);
     }
 
     void RotateCharacterInstantly(Vector3 direction)
@@ -2047,18 +2276,19 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     bool stunProtectionOn = false;
     public bool StartReceiveHit(PlayerMovementCMF attacker, Vector3 _knockback, EffectType effect, float _maxTime = 0, byte autocomboIndex = 255)
     {
-        if (!myPlayerCombatNew.invulnerable)
+        if (!myPlayerCombat.invulnerable)
         {
             //Variable para Ortu
             startBeingHitAnimation = true;
 
             if (!disableAllDebugs) print("Recieve hit with knockback= " + _knockback + "; effect = " + effect + "; maxtime = " + _maxTime);
-            myPlayerHook.FinishAutoGrapple();
+            myPlayerHook.FinishAutoGrapple(true);
             myPlayerHook.StopHook();
             StopWallJump();
             StopBoost();
-            myPlayerCombatNew.StopDoingCombat();
+            myPlayerCombat.StopDoingCombat();
             StopImpulse();
+            StopFixedJump();
 
             //if (sufferingEffect == EffectType.stun)
             //{
@@ -2098,7 +2328,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 //case EffectType.knockdown:
                 //    if (disableAllDebugs) Debug.LogError("KNOCKDOWN !!!!!!!!");
                 //    noInput = true;
-                //    //myPlayerCombatNew.StartInvulnerabilty(_maxTime);
+                //    //myPlayerCombat.StartInvulnerabilty(_maxTime);
                 //    break;
                 case EffectType.none:
                     break;
@@ -2131,17 +2361,17 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public bool StartReceiveHit(Vector3 _knockback, EffectType effect, float _maxTime = 0)
     {
-        if (!myPlayerCombatNew.invulnerable)
+        if (!myPlayerCombat.invulnerable)
         {
             //Variable para Ortu
             startBeingHitAnimation = true;
 
             if (!disableAllDebugs) print("Recieve hit with knockback= " + _knockback + "; effect = " + effect + "; maxtime = " + _maxTime);
-            myPlayerHook.FinishAutoGrapple();
+            myPlayerHook.FinishAutoGrapple(true);
             myPlayerHook.StopHook();
             StopWallJump();
             StopBoost();
-            myPlayerCombatNew.StopDoingCombat();
+            myPlayerCombat.StopDoingCombat();
             StopImpulse();
             StopFixedJump();
 
@@ -2179,7 +2409,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     }
 
     //ES RECEIVE
-    public void StartRecieveParry(PlayerMovementCMF enemy, AttackEffect effect = null)
+    public void StartReceiveParry(PlayerMovementCMF enemy, AttackEffect effect = null)
     {
         if (!disableAllDebugs) Debug.Log("PARRY!!!");
         float knockbackMag = effect == null ? 10 : effect.knockbackMagnitude;
@@ -2187,7 +2417,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
         Vector3 enemyPos = enemy.transform.position;
         //Reduce Recovery Time Player 1
-        enemy.myPlayerCombatNew.HitParry();
+        enemy.myPlayerCombat.HitParry();
 
         //StartRecieveParry Player2
         //Knockback outwards
@@ -2257,89 +2487,20 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     #endregion
 
-    #region FIXED JUMP ---------------------------------------------------
-
-    public void StartFixedJump(Vector3 vel, float _noMoveMaxTime, float maxTime, bool _bounceEnabled=false)
-    {
-        if (fixedJumping)
-            StopFixedJump();
-
-        Debug.Log("FIXED JUMP START");
-        StopBoost();
-        myPlayerCombatNew.StopDoingCombat();
-
-        fixedJumping = true;
-        fixedJumpDone = false;
-        noInput = true;
-        noMoveMaxTime = _noMoveMaxTime;
-        fixedJumpMaxTime = maxTime;
-        noMoveTime = 0;
-        fixedJumpBounceEnabled = _bounceEnabled;
-        knockback = vel;
-
-        moveSt = MoveState.FixedJump;
-    }
-
-    void ProcessFixedJump()
-    {
-        if (fixedJumping)
-        {
-            if (!fixedJumpDone)
-            {
-                //Debug.Log("ProcessFixedJump: fixedJumpDone = false");
-                collCheck.below = false;
-                mover.stickToGround = false;
-            }
-            else
-            {
-                noMoveTime += Time.deltaTime;
-                if (noInput && (noMoveTime >= noMoveMaxTime))
-                {
-                    noInput = false;
-                    moveSt = MoveState.None;
-                }
-                //Debug.Log("ProcessFixedJump: noMoveTime = " + noMoveTime + "; fixedJumpMaxTime = " + fixedJumpMaxTime+ "; collCheck.below = "+ collCheck.below +
-                //    "; (vertMovSt == VerticalMovementState.FloatingInWater) = " +(vertMovSt == VerticalMovementState.FloatingInWater));
-                if (noMoveTime >= fixedJumpMaxTime || collCheck.below || vertMovSt == VerticalMovementState.FloatingInWater)
-                {
-                    StopFixedJump();
-                }
-            }
-        }
-    }
-
-    void StopFixedJump()
-    {
-        if (fixedJumping)
-        {
-            Debug.Log("STOP FIXED JUMP");
-            fixedJumping = false;
-            noInput = false;
-            moveSt = MoveState.None;
-        }
-    }
-
-    #endregion
-
     #region HOOKING/HOOKED ---------------------------------------------
     public bool StartHooked()
     {
-        if (!hooked && !myPlayerCombatNew.invulnerable)
+        if (!hooked && !myPlayerCombat.invulnerable)
         {
-            noInput = true;
-            hooked = true;
-            if (vertMovSt == VerticalMovementState.WallJumping)
-            {
-                StopWallJump();
-            }
-            if (moveSt == MoveState.Boost)
-            {
-                StopBoost();
-            }
+            StopWallJump();
+            StopBoost();
             //Stop attacking
-            myPlayerCombatNew.StopDoingCombat();
+            myPlayerCombat.StopDoingCombat();
             StopImpulse();
             StopFixedJump();
+
+            noInput = true;
+            hooked = true;
             return true;
         }
         else
@@ -2372,7 +2533,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         if (!hooking)
         {
             hooking = true;
-            myPlayerCombatNew.StopDoingCombat();
+            myPlayerCombat.StopDoingCombat();
             hookingAndTouchedGroundOnce = false;
             if (collCheck.below) hookingAndTouchedGroundOnce = true;
         }
@@ -2410,7 +2571,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 aimingAndTouchedGroundOnce = true;
             }
         }
-        else if (myPlayerCombatNew.aiming && currentMaxMoveSpeed > maxAimingSpeed)
+        else if (myPlayerCombat.aiming && currentMaxMoveSpeed > maxAimingSpeed)
         {
             currentMaxMoveSpeed = maxAimingSpeed;
         }
@@ -2454,7 +2615,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         if (vertMovSt != VerticalMovementState.FloatingInWater)
         {
-            Debug.Log("ENTER WATER");
+            if(!disableAllDebugs && waterDebugsOn) Debug.Log("ENTER WATER");
             myPlayerAnimation.enterWater = true;
             vertMovSt = VerticalMovementState.FloatingInWater;
             jumpedOutOfWater = false;
@@ -2477,7 +2638,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
             myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
 
-            myPlayerCombatNew.StopDoingCombat();
+            myPlayerCombat.StopDoingCombat();
             myPlayerHook.StopHook();
         }
     }
@@ -2499,7 +2660,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         if (vertMovSt == VerticalMovementState.FloatingInWater)
         {
-            Debug.Log("EXIT WATER");
+            if (!disableAllDebugs && waterDebugsOn) Debug.Log("EXIT WATER");
             vertMovSt = VerticalMovementState.None;
             myPlayerAnimation.exitWater = true;
             //vertMovSt = ;

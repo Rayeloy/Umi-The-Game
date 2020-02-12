@@ -67,7 +67,7 @@ public class MoverInspector : Editor
 
         EditorGUI.BeginChangeCheck();
 
-        mover.disableAllDebugs = EditorGUILayout.Toggle("Disable Debug Logs", mover.disableAllDebugs);
+        mover.debugModeOn = EditorGUILayout.Toggle("Disable Debug Logs", mover.debugModeOn);
         mover.instantGroundAdjustment = EditorGUILayout.Toggle("Instant Ground Adjustment", mover.instantGroundAdjustment);
         mover.instantPlatformMovement = EditorGUILayout.Toggle("Instant Platform Movement", mover.instantPlatformMovement);
 
@@ -92,7 +92,7 @@ public class MoverInspector : Editor
         mover.sensorType = (Sensor.CastType)EditorGUILayout.EnumPopup("Sensor Type", mover.sensorType);
         mover.sensorLayermask = EditorGUILayout.MaskField("Layermask", mover.sensorLayermask, physicsLayers);
 
-        mover.isInDebugMode = EditorGUILayout.Toggle("Debug Mode", mover.isInDebugMode);
+        mover.debugModeOn = EditorGUILayout.Toggle("Debug Mode", mover.debugModeOn);
 
         if (EditorGUI.EndChangeCheck())
         {

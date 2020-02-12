@@ -4,37 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 #region ----[ PUBLIC ENUMS ]----
-public enum Team
-{
-    A = 1,// Blue - Green
-    B = 2,// Red - Pink
-    none = 0
-}
-public enum MoveState
-{
-    None = 0,
-    Moving = 1,
-    NotMoving = 2,//Not stunned, breaking
-    Knockback = 3,//Stunned
-    MovingBreaking = 4,//Moving but reducing speed by breakAcc till maxMovSpeed
-    Hooked = 5,
-    Boost = 6,
-    FixedJump = 7,
-    NotBreaking = 8,
-    Impulse = 9
-}
-public enum VerticalMovementState
-{
-    None,
-    Jumping,
-    JumpBreaking,//Emergency stop
-    Falling,
-    WallJumping,
-    WallJumped,
-    ChargeJumping,
-    BounceJumping,
-    FloatingInWater
-}
+
 #endregion
 
 #region ----[ REQUIRECOMPONENT ]----

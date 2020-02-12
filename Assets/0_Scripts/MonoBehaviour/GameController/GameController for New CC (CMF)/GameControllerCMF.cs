@@ -12,7 +12,7 @@ public class GameControllerCMF : MonoBehaviour
 {
 
     #region ----[ VARIABLES FOR DESIGNERS ]----
-
+    public bool debugModeOn = false;
     //referencias
     [Header(" --- Referencias --- ")]
     public GameInterfaceCMF myGameInterface;
@@ -275,7 +275,7 @@ public class GameControllerCMF : MonoBehaviour
         //    //}
         //}
         Application.targetFrameRate = 60;
-        Debug.Log("GameController Start finished");
+        if(debugModeOn) Debug.Log("GameController Start finished");
     }
 
     //Funcion que llama al Start de los jugadores. Eloy: Juan, ¿solo pantalla dividida?, JUAN: Sí Eloy, sólo pantalla dividida.
@@ -424,7 +424,7 @@ public class GameControllerCMF : MonoBehaviour
                 if (allPlayers.Count == 1)
                 {
                     GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
-                    Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
+                    if (debugModeOn) Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
                     allPlayers[0].actions = GameInfo.instance.myControls;
                 }
                 else
@@ -648,9 +648,9 @@ public class GameControllerCMF : MonoBehaviour
 
         //Añadir a los arrays todos los componentes del jugador
         //guarda jugador
-        Debug.Log("1 allPlayers.Count = " + allPlayers.Count);
+        if (debugModeOn) Debug.Log("1 allPlayers.Count = " + allPlayers.Count);
         allPlayers.Add(player);
-        Debug.Log("2 allPlayers.Count = " + allPlayers.Count);
+        if (debugModeOn) Debug.Log("2 allPlayers.Count = " + allPlayers.Count);
         //if (online)
         //{
         //    if (jugadaGalaxia)
@@ -737,7 +737,7 @@ public class GameControllerCMF : MonoBehaviour
         playerNumACopy = playerNumTeamA = teamAPlayers.Count;
         playerNumBCopy = playerNumTeamB = teamBPlayers.Count;
         //}
-        print("Blue players: " + playerNumACopy + "; Red Players: " + playerNumBCopy);
+        if (debugModeOn) Debug.Log("Blue players: " + playerNumACopy + "; Red Players: " + playerNumBCopy);
 
         //Divide number of players in a team by number of spawns in that team && set spawnRotation of players (because is more efficient to do it here)
         //this is an array where each position is each spawn in the respective team, and the int inside is the number of players of that team that spawn there.
@@ -749,7 +749,7 @@ public class GameControllerCMF : MonoBehaviour
         //BLUE TEAM PLAYERS PER SPAWN
         if (teamASpawns.Length > 0 && playerNumTeamA > 0)
         {
-            print("Blue Team Spawns Players:");
+            if(debugModeOn) Debug.Log("Blue Team Spawns Players:");
             //pps= Players Per Spawn not rounded
             float pps = (float)playerNumTeamA / (float)teamASpawns.Length;
             //we clamp the number so that is minimum 1 and then round it
