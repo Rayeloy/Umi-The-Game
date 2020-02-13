@@ -1116,10 +1116,14 @@ public class GameControllerCMF : MonoBehaviour
     public void EntityReceivedOrCreated(BoltEntity entity)
     {
         PlayerMovementCMF player = entity.GetComponent<PlayerMovementCMF>();
-        if (player != null && (allPlayers.Count > 0 && player != allPlayers[0].entity) || BoltNetwork.IsServer)
+        if (player != null && ((allPlayers.Count > 0 && player != allPlayers[0].entity) || BoltNetwork.IsServer))
         {
-            entity.GetComponent<PlayerMovementCMF>().KonoAwake();
-            entity.GetComponent<PlayerMovementCMF>().KonoStart();
+            Debug.Log("entity \"" + entity + "\" is player and starting !");
+            Debug.Log("entity awake");
+            player.KonoAwake(false);
+            Debug.Log("entity start");
+            player.KonoStart();
+            Debug.Log("entity add to list");
             allPlayers.Add(player);
         }
     }
@@ -1128,7 +1132,7 @@ public class GameControllerCMF : MonoBehaviour
     {
         if (BoltNetwork.IsClient)
         {
-            PlayerMovementCMF newPlayer = entity.GetComponent<PlayerMovementCMF>(); ;
+            PlayerMovementCMF newPlayer = entity.GetComponent<PlayerMovementCMF>();
             newPlayer.online_isLocal = true;
             GameObject newPlayerCanvas;
             CameraControllerCMF newPlayerCamera;

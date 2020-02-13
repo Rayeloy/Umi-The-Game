@@ -15,7 +15,6 @@
             "$type": "Bolt.Compiler.PropertyTypeTransform, bolt.compiler",
             "PositionSelection": 14,
             "ExtrapolationVelocityMode": 1,
-            "Space": 1,
             "PositionCompression": [
               {
                 "MinValue": -1024,
@@ -81,7 +80,7 @@
           },
           "AssetSettings": {
             "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
-            "SmoothingAlgorithm": 2,
+            "SmoothingAlgorithm": 1,
             "ExtrapolationErrorTolerance": 0.2,
             "_ExtrapolationCorrectionFrames": 6,
             "ExtrapolationMaxFrames": 6,

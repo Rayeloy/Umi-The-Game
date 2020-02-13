@@ -407,8 +407,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void KonoAwake(bool isMyCharacter = false)
     {
+        Debug.Log("Awake Called !");
         SwitchTeam(team);
-        if (online_isLocal)
+        if (!BoltNetwork.IsConnected || online_isLocal)
         {
             mover = GetComponent<Mover>();
             collCheck.KonoAwake(mover.capsuleCollider);//we use capsule collider in our example
@@ -442,12 +443,32 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         }
         else
         {
-            Debug.Log("A new player has been spawned and is running !");
-            myPlayerAnimation.KonoAwake();
-            myPlayerWeap.KonoAwake();
-            myPlayerBody.KonoAwake();
-            myPlayerVFX.KonoAwake();
-            GetComponent<Rigidbody>().isKinematic = true;
+            if (BoltNetwork.IsServer)
+            {
+                mover = GetComponent<Mover>();
+                collCheck.KonoAwake(mover.capsuleCollider);
+                maxMoveSpeed = 10;
+                currentSpeed = 0;
+                boostCurrentFuel = boostCapacity;
+                lastWallAngle = 0;
+                hardSteerAcc = Mathf.Clamp(hardSteerAcc, hardSteerAcc, breakAcc);
+                airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airHardSteerAcc, airBreakAcc);
+                wallJumpCheckRaysRows = 5;
+                wallJumpCheckRaysColumns = 5;
+                wallJumpCheckRaysRowsSpacing = (collCheck.myCollider.bounds.size.y * wallJumpMinHeightPercent) / (wallJumpCheckRaysRows - 1);
+                wallJumpCheckRaysColumnsSpacing = collCheck.myCollider.bounds.size.x / (wallJumpCheckRaysColumns - 1);
+                auxLM = LayerMask.GetMask("Stage");
+                myPlayerBody.KonoAwake();
+            }
+            else 
+            {
+                Debug.Log("A new player has been spawned and is running !");
+                myPlayerAnimation.KonoAwake();
+                myPlayerWeap.KonoAwake();
+                myPlayerBody.KonoAwake();
+                myPlayerVFX.KonoAwake();
+                GetComponent<Rigidbody>().isKinematic = true;
+            }
         }
     }
 
@@ -467,7 +488,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     #region START
     public void KonoStart()
     {
-        if (online_isLocal || !MasterManager.GameSettings.online)
+        Debug.Log("Start Called !");
+        if (online_isLocal || !BoltNetwork.IsConnected)
         {
             gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
             currentGravity = gravity;
@@ -488,22 +510,26 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         }
         else
         {
-            myPlayerWeap.KonoStart();
-            myPlayerVFX.KonoStart();
-        }
-        if(BoltNetwork.IsServer)
-        {
-            gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
-            currentGravity = gravity;
-            Debug.Log("Gravity defined !");
-            jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
-            maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
-            wallJumpRadius = Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad) * walJumpConeHeight;
-            print("wallJumpRaduis = " + wallJumpRadius + "; tan(wallJumpAngle)= " + Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad));
-            wallJumpMinHorizAngle = Mathf.Clamp(wallJumpMinHorizAngle, 0, 90);
-            print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
-            finalMaxMoveSpeed = currentMaxMoveSpeed = maxMoveSpeed;
-            knockbackBreakAcc = Mathf.Clamp(knockbackBreakAcc, -float.MaxValue, breakAcc);
+            if (BoltNetwork.IsServer)
+            {
+                Debug.Log("Start Player On server Called !");
+                gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
+                currentGravity = gravity;
+                jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
+                maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
+                wallJumpRadius = Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad) * walJumpConeHeight;
+                print("wallJumpRaduis = " + wallJumpRadius + "; tan(wallJumpAngle)= " + Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad));
+                wallJumpMinHorizAngle = Mathf.Clamp(wallJumpMinHorizAngle, 0, 90);
+                print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
+                finalMaxMoveSpeed = currentMaxMoveSpeed = maxMoveSpeed;
+                knockbackBreakAcc = Mathf.Clamp(knockbackBreakAcc, -float.MaxValue, breakAcc);
+            }
+            else
+            {
+                collCheck.KonoStart();
+                myPlayerWeap.KonoStart();
+                myPlayerVFX.KonoStart();
+            }
         }
     }
     private void PlayerStarts()
@@ -537,7 +563,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void KonoFixedUpdate()
     {
-        if (!MasterManager.GameSettings.online)
+        if (!MasterManager.GameSettings.online || !BoltNetwork.IsConnected)
         {
             if (!disableAllDebugs) Debug.LogWarning("PLAYER FIXED UPDATE: ");
             //Debug.LogWarning("Current pos = " + transform.position.ToString("F8"));
@@ -585,6 +611,14 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
             collCheck.SavePlatformPoint();
         }
+        else
+        {
+            if(BoltNetwork.IsServer)
+            {
+                ResetMovementVariables();
+            }
+        }
+
     }
 
     Vector3 lastPos;
@@ -1103,8 +1137,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     void VerticalMovement()
     {
-        if (online_isLocal)
-        {
             //Debug.Log("Vert Mov Inicio: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
 
             if (!jumpedOutOfWater && !inWater && collCheck.below)
@@ -1238,14 +1270,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             }
 
             //Debug.Log("Vert Mov Fin: currentVel = " + currentVel.ToString("F6") + "; below = "+collCheck.below);
-        }
     }
 
     Vector3 finalVel;
     void HandleSlopes()
     {
-        if (online_isLocal)
-        {
             if (collCheck.sliping)
             {
                 // HORIZONTAL VELOCITY
@@ -1280,7 +1309,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             {
                 finalVel = currentVel;
             }
-        }
     }
     #endregion
 
@@ -2607,6 +2635,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         state.SetTransforms(state.Transform_Rot, rotateObj);
     }
 
+    #endregion
+
+    #region ----[ NETWORK FUNCTIONS ]----
     public override void SimulateController()
     {
 
@@ -2616,12 +2647,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
         Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
 
-        collCheck.ResetVariables();
         ResetMovementVariables();
-
-        collCheck.UpdateCollisionVariables(mover, jumpSt);
-
-        collCheck.UpdateCollisionChecks(currentVel);
 
         frameCounter++;
         UpdateFlagLightBeam();
@@ -2663,12 +2689,16 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         PlayerCommand cmd = (PlayerCommand)command;
         if (resetState)
         {
+            Debug.Log("Reseting to old Pos !");
             transform.position = cmd.Result.Position;
-            mover.SetVelocity(cmd.Result.velocity, cmd.Result.PlatformMov);
+            finalVel = cmd.Result.velocity;
             mover.SetExtendSensorRange(cmd.Result.colCheckBel);
         }
         else
         {
+            collCheck.ResetVariables();
+            collCheck.UpdateCollisionVariables(mover, jumpSt);
+            collCheck.UpdateCollisionChecks(currentVel);
             mover.SetVelocity(cmd.Input.firstVel, cmd.Input.PlatformMov);
             mover.SetExtendSensorRange(cmd.Input.colCheckBel);
             cmd.Result.Position = transform.position;
@@ -2676,12 +2706,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             cmd.Result.colCheckBel = collCheck.below;
         }
     }
-        #endregion
-
-        #region ----[ NETWORK FUNCTIONS ]----
-
-        #endregion
-    }
+    #endregion
+}
 
 #region --- [ STRUCTS & CLASSES ] ---
 public class InputsInfo
