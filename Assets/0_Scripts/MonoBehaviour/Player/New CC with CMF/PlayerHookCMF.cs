@@ -182,6 +182,7 @@ public class PlayerHookCMF : MonoBehaviour
         currentHookPointPos = _currentHookPointPos;
         myPlayerMov.StopBoost();
 
+        if (debugModeOn) Debug.Log("PlayerHook: StickToGround Off");
         myPlayerMov.mover.stickToGround = false;
         if (grappleSt == GrappleState.throwing)
         {
@@ -456,6 +457,7 @@ public class PlayerHookCMF : MonoBehaviour
 
     void FinishHookGrappling(bool abruptEnd = false)
     {
+        myPlayerMov.mover.stickToGround = true;
         currentGrapplingHookPoint = null;
         currentHookPointPos = null;
         hookSt = HookState.cd;

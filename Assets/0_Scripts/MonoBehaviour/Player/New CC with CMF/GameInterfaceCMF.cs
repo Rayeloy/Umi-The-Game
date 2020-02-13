@@ -60,13 +60,20 @@ public class GameInterfaceCMF : MonoBehaviour
         ProcessPressStartToContinue();
     }
 
-    public void StartPressStartToContinue()
+    public void StartPressStartToContinue(bool hasWinner)
     {
         if (!pressStartToContinueStarted)
         {
             pressStartToContinueStarted = true;
-            GameInfo.instance.StartAnimation(victoryImageReduceAnimation, null);
-            victoryImageReduceAnimation.StartAnimation();
+            if (hasWinner)
+            {
+                GameInfo.instance.StartAnimation(victoryImageReduceAnimation, null);
+                victoryImageReduceAnimation.StartAnimation();// Es necesario???
+            }
+            else //Nos saltamos la animación directamente
+            {
+                StopPressStartToContinue();
+            }
         }
     }
 
@@ -132,7 +139,7 @@ public class GameInterfaceCMF : MonoBehaviour
         }
     }
 
-    public void StartGameOver(Team _winnerTeam)
+    public void StartGameOver(Team _winnerTeam = Team.none)
     {
         veil.SetActive(true);
         if (_winnerTeam == Team.A)

@@ -67,6 +67,7 @@ public class GameControllerCMF : MonoBehaviour
 
     #region ----[ PROPERTIES ]----
 
+    Team winner = Team.none;
     [HideInInspector] public int playerNumTeamA = 0, playerNumTeamB = 0;
     private PlayerActions playerActions;
     private PlayerSpawnInfo[] playerSpawnInfoList;
@@ -124,12 +125,6 @@ public class GameControllerCMF : MonoBehaviour
         }
         return false;
     }
-    #endregion
-
-    #region ----[ VARIABLES ]----
-
-
-
     #endregion
 
     #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
@@ -317,14 +312,10 @@ public class GameControllerCMF : MonoBehaviour
         SlowMotion();
         SwitchLockMouse();
 
-        if (!gamePaused)
+        if (!gamePaused && playing)
         {
-
-            if (playing)
-            {
                 UpdatePlayers();
                 UpdateModeExclusiveClasses();
-            }
         }
         else
         {
@@ -356,7 +347,10 @@ public class GameControllerCMF : MonoBehaviour
     private void FixedUpdate()
     {
         //Debug.Log("GAME CONTROLLER FIXED UPDATE");
-        FixedUpdatePlayers();
+        if (!gamePaused && playing)
+        {
+            FixedUpdatePlayers();
+        }
     }
 
     private void LateUpdate()
@@ -955,7 +949,7 @@ public class GameControllerCMF : MonoBehaviour
     {
         if (gameOverStarted)
         {
-            myGameInterface.StartPressStartToContinue();
+            myGameInterface.StartPressStartToContinue(winner != Team.none);
         }
     }
 
@@ -996,8 +990,7 @@ public class GameControllerCMF : MonoBehaviour
     #endregion
 
     #region --- GAME FLOW FUNCTIONS ---
-
-    public virtual void StartGameOver(Team _winnerTeam)
+    public virtual void StartGameOver(Team _winnerTeam = Team.none)
     {
         //print("GAME OVER");
         if (!gameOverStarted /*&& !online*/)
@@ -1010,7 +1003,8 @@ public class GameControllerCMF : MonoBehaviour
             playing = false;
             gamePaused = true;
             gameOverStarted = true;
-            myGameInterface.StartGameOver(_winnerTeam);
+            winner = _winnerTeam;
+            myGameInterface.StartGameOver(winner);
         }
     }
 

@@ -953,7 +953,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     startBeingHitAnimation = false;
                 }
 
-                if (currentSpeed != 0) Debug.Log("moveSt = "+moveSt+"; currentSpeed = " + currentSpeed.ToString("F4") +"; finalAcc = " + finalAcc.ToString("F4")+ "; maxSpeedClamp = " + maxSpeedClamp.ToString("F4"));
+                if (!disableAllDebugs && horMovementDebugsOn && currentSpeed != 0) Debug.Log("moveSt = "+moveSt+"; currentSpeed = " + currentSpeed.ToString("F4") +"; finalAcc = " +
+                    finalAcc.ToString("F4")+ "; maxSpeedClamp = " + maxSpeedClamp.ToString("F4"));
             }
         } 
         #endregion
@@ -1170,7 +1171,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
         ProcessSlides();
 
-        if (moveSt != MoveState.Boost)
+        if (moveSt != MoveState.Boost && !hooked)
         {
             if (vertMovSt == VerticalMovementState.None || vertMovSt == VerticalMovementState.Falling)
             {
@@ -2693,6 +2694,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         Debug.Log("GAME OVER");
         currentSpeed = 0;
         currentVel = Vector3.zero;
+        mover.SetVelocity(currentVel, Vector3.zero);
         //TO REDO
         //controller.Move(currentVel * Time.deltaTime);
     }

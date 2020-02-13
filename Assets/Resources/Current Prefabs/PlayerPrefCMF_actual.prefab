@@ -45180,7 +45180,7 @@ MonoBehaviour:
   myPlayerMov: {fileID: 873758771431004316}
   myCollider: {fileID: 0}
   disableAllDebugs: 1
-  disableAllRays: 0
+  disableAllRays: 1
   collideWithTriggers: 0
   collisionMask:
     serializedVersion: 2
@@ -45292,7 +45292,6 @@ MonoBehaviour:
   fixedJumpMovingAcc: 1
   hardBreakAcc: -600
   knockbackBreakAcc: -45
-  comeFromSlideBreakAcc: -20
   currentGravity: 0
   jumpHeight: 2.5
   jumpApexTime: 0.4
@@ -45314,10 +45313,7 @@ MonoBehaviour:
   chargedJumpMinPercentageNeeded: 0.25
   bounceJumpMultiplier: 0.4
   bounceJumpMinHeight: 3
-  maxSlidingSpeed: 25
-  slideAcc: 0.5
-  slideMovingAcc: 2.5
-  slideInputMovingAcc: 1
+  comeFromSlideBreakAcc: -20
   StinrayGradient:
     serializedVersion: 2
     key0: {r: 0.53065217, g: 1, b: 0, a: 1}
@@ -45444,7 +45440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a4c82b982cceb54c9d5bbd97ffefb92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugModeOn: 0
+  debugModeOn: 1
   charContDebugsOn: 0
   myCameraBase: {fileID: 0}
   hookSt: 0

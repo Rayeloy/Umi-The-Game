@@ -252,7 +252,7 @@ public class UIAnimation
         duration = _duration;
         _cycleStartPoint = Mathf.Clamp01(_cycleStartPoint);
         cycleStartPoint = _cycleStartPoint;
-        StartAnimation();
+        StartAnimation(); // Es necesario???
     }
 
     public void StartAnimation()
