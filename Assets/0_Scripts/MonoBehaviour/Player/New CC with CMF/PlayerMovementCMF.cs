@@ -497,7 +497,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             wallJumpCheckRaysColumns = 5;
             wallJumpCheckRaysRowsSpacing = (collCheck.myCollider.bounds.size.y * wallJumpMinHeightPercent) / (wallJumpCheckRaysRows - 1);
             wallJumpCheckRaysColumnsSpacing = collCheck.myCollider.bounds.size.x / (wallJumpCheckRaysColumns - 1);
-            auxLM = LayerMask.GetMask("Stage");
+            auxLM = LayerMask.GetMask("Stage", "Slide");
 
             PlayerAwakes();
         }
@@ -1576,8 +1576,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         wallJumpCurrentWall = collCheck.wall;
 
         if (!collCheck.below && vertMovSt != VerticalMovementState.FloatingInWater && jumpedOutOfWater && wallJumpCurrentWall != null && goodWallAngle &&
-            (!firstWallJumpDone || lastWallAngle != collCheck.wallAngle || (lastWallAngle == collCheck.wallAngle &&
-            lastWall != collCheck.wall)) && (wallJumpCurrentWall.tag == "Stage" || wallJumpCurrentWall.tag == "Slide"))
+            (!firstWallJumpDone || lastWallAngle != collCheck.wallAngle || lastWall != collCheck.wall) && (wallJumpCurrentWall.tag == "Stage" || wallJumpCurrentWall.tag == "Slide"))
         {
             if(!disableAllDebugs && vertMovementDebugsOn) Debug.Log("WallJump Stage script check...");
             if (wallJumpCurrentWall.GetComponent<StageScript>() == null || wallJumpCurrentWall.GetComponent<StageScript>().wallJumpable)
@@ -1604,14 +1603,42 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             }
 
         }
-        else
+        else if (!disableAllDebugs && vertMovementDebugsOn)
         {
-            /*if (!disableAllDebugs)*/
-            //            Debug.Log("Couldn't wall jump because:  !collCheck.below (" + !collCheck.below + ") && !inWater(" + !inWater + ") &&" +
-            //" jumpedOutOfWater(" + jumpedOutOfWater + ") && goodWallAngle(" + goodWallAngle + ") && wallJumpCurrentWall != null(" + (wallJumpCurrentWall != null) + ") && " +
-            //"(!firstWallJumpDone(" + !firstWallJumpDone + ") || lastWallAngle != collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ") || " +
-            //"(lastWallAngle == collCheck.wallAngle (" + (lastWallAngle != collCheck.wallAngle) + ")&& " +
-            //"lastWall != collCheck.wall(" + (lastWall != collCheck.wall) + ")))");
+            string error = "Couldn't wall jump because:  ";
+            if (collCheck.below)
+            {
+                error += "We are grounded (below = true); ";
+            }
+            else if(vertMovSt == VerticalMovementState.FloatingInWater)
+            {
+                error += "We are in the water (vertMovSt == VerticalMovementState.FloatingInWater); ";
+            }else if (!jumpedOutOfWater)
+            {
+                error += "jumpedOutOfWater = false; ";
+            }
+            else if (wallJumpCurrentWall == null)
+            {
+                error += "wallJumpCurrentWall = "+ wallJumpCurrentWall+"; ";
+            }
+            else if (!goodWallAngle)
+            {
+                error += "Wall angle is not adecuate for walljumping (goodWallAngle = false); ";
+            }
+            else if (!(!firstWallJumpDone || lastWallAngle != collCheck.wallAngle || lastWall != collCheck.wall))
+            {
+                if(firstWallJumpDone) error += "firstWallJumpDone = "+ firstWallJumpDone + "; ";
+                if (lastWallAngle == collCheck.wallAngle) error += "Wall Angle is different (lastWallAngle == collCheck.wallAngle); ";
+                if (lastWall == collCheck.wall) error += "Wall Object is different (lastWall == collcheck.wall); ";
+            }else if (!(wallJumpCurrentWall.tag == "Stage" || wallJumpCurrentWall.tag == "Slide"))
+            {
+                error+= "wallJumpCurrentWall.tag = "+ wallJumpCurrentWall.tag+", when it should be either Stage or Slide; ";
+            }
+            else
+            {
+                error += "Something is wrong, this shouldn't be happening; ";
+            }
+            Debug.Log(error);
         }
         if (!result && !calledFromBuffer)
         {
@@ -1637,8 +1664,18 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 return;
             }
 
-            #region --- WALL JUMP CHECK RAYS ---
-            //Check continuously if we are still attached to wall
+            #region --- WALL JUMP CHECK COLLISSION ---
+            bool success = false;
+            collCheck.HorizontalCollisions();
+            for(int i = 0; i < collCheck.horizontalCollHits.Count && !success; i++)
+            {
+                if (collCheck.horizontalCollHits[i].collider.gameObject == wallJumpCurrentWall)
+                    success = true;
+            }
+            #endregion
+
+            #region --- WALL JUMP CHECK RAYS OLD --- (Deprecated)
+            /*//Check continuously if we are still attached to wall
             float rayLength = collCheck.myCollider.bounds.extents.x + 0.5f;
             RaycastHit hit;
 
@@ -1648,36 +1685,35 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             Vector3 rowsOrigin = new Vector3(collCheck.myCollider.bounds.center.x, collCheck.myCollider.bounds.min.y, collCheck.myCollider.bounds.center.z);
             rowsOrigin -= paralelToWall * collCheck.myCollider.bounds.extents.x;
             Vector3 dir = -wallNormal.normalized;
-            bool success = false;
             for (int i = 0; i < wallJumpCheckRaysRows && !success; i++)
             {
                 Vector3 rowOrigin = rowsOrigin + Vector3.up * wallJumpCheckRaysRowsSpacing * i;
                 for (int j = 0; j < wallJumpCheckRaysColumns && !success; j++)
                 {
                     Vector3 rayOrigin = rowOrigin + paralelToWall * wallJumpCheckRaysColumnsSpacing * j;
-                    //Debug.Log("WallJump: Ray[" + i + "," + j + "] with origin = " + rayOrigin.ToString("F4") + "; rayLength =" + rayLength);
-                    //Debug.DrawRay(rayOrigin, dir * rayLength, Color.blue, 3);
+                    Debug.Log("WallJump: Ray[" + i + "," + j + "] with origin = " + rayOrigin.ToString("F4") + "; rayLength =" + rayLength);
+                    Debug.DrawRay(rayOrigin, dir * rayLength, Color.blue, 3);
 
                     if (Physics.Raycast(rayOrigin, dir, out hit, rayLength, auxLM, QueryTriggerInteraction.Ignore))
                     {
                         if (hit.transform.gameObject == wallJumpCurrentWall)
                         {
                             success = true;
-                            //if(!disableAllDebugs)Debug.Log("WallJump: Success! still walljumping!");
+                            if(!disableAllDebugs)Debug.Log("WallJump: Success! still walljumping!");
                         }
                         else
                         {
-                            //if (!disableAllDebugs) Debug.Log("WallJump: this wall (" + hit.transform.gameObject + ")is not the same wall that I started walljumping from " +
-                            //    "(" + wallJumpCurrentWall + ").");
+                            if (!disableAllDebugs) Debug.Log("WallJump: this wall (" + hit.transform.gameObject + ")is not the same wall that I started walljumping from " +
+                                "(" + wallJumpCurrentWall + ").");
                         }
                     }
                 }
-            }
+            }*/
             #endregion
 
             if (!success)
             {
-                //if (!disableAllDebugs) Debug.LogError("STOPPED WALLJUMPING DUE TO NOT DETECTING THE WALL ANYMORE. wallJumpCheckRaysRows = " + wallJumpCheckRaysRows);
+                if (!disableAllDebugs) Debug.LogError("STOPPED WALLJUMPING DUE TO NOT DETECTING THE WALL ANYMORE. wallJumpCheckRaysRows = " + wallJumpCheckRaysRows);
                 StopWallJump();
             }
         }
@@ -1714,9 +1750,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void StopWallJump()
     {
-        //if (!disableAllDebugs) print("STOP WALLJUMP");
         if(vertMovSt == VerticalMovementState.WallJumping)
         {
+            if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("STOP WALLJUMP");
             wallJumping = false;
             wallJumpAnim = true;
             vertMovSt = VerticalMovementState.None;

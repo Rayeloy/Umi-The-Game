@@ -87,7 +87,8 @@ public class CollisionsCheck : MonoBehaviour
     public float wallSlopeAngle, wallAngle;
     public float wallJumpWallMaxAngleWithMovement = 110f;
 
-    List<WallCollisionHit> horizontalCollHits;
+    [HideInInspector]
+    public List<WallCollisionHit> horizontalCollHits;
     List<WallCollisionHit> horizontalCollHitsTop;
     List<WallCollisionHit> horizontalCollHitsMiddle;
     List<WallCollisionHit> horizontalCollHitsBottom;
@@ -781,7 +782,7 @@ sphereCollBottom.transform.position : sphereCollMiddle.transform.position;
         Bottom
     }
 
-    struct WallCollisionHit
+    public struct WallCollisionHit
     {
         public SpherePosition spherePos;
         public Collider collider;
