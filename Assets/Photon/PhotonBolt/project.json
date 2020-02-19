@@ -170,6 +170,7 @@
       "PacketMaxBits": 512,
       "PacketMaxProperties": 16,
       "InitialPositionCompression": {
+        "Selection": 14,
         "Compression": [
           {
             "MinValue": -1024,
@@ -201,6 +202,7 @@
         ]
       },
       "InitialRotationCompression": {
+        "Selection": 14,
         "EulerCompression": [
           {
             "MaxValue": 360,
@@ -234,7 +236,7 @@
           "BitsRequired": 8
         }
       },
-      "Name": "PlayerState",
+      "Name": "UmiPlayerState",
       "Guid": "d9c5e788-3119-431f-a329-d0cf9b074721",
       "Comment": "",
       "Groups": [
@@ -245,9 +247,53 @@
       "$type": "Bolt.Compiler.CommandDefinition, bolt.compiler",
       "Input": [
         {
-          "Name": "firstVel",
+          "Name": "Joystick",
           "Enabled": true,
-          "Expanded": true,
+          "ReplicationMode": 1,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeVector, bolt.compiler",
+            "Selection": 6,
+            "Compression": [
+              {
+                "MinValue": -1,
+                "MaxValue": 1,
+                "Accuracy": 0.01,
+                "Enabled": true,
+                "Pack": 100.0,
+                "Read": 0.01,
+                "Shift": 1.0,
+                "BitsRequired": 8
+              },
+              {
+                "MinValue": -1,
+                "MaxValue": 1,
+                "Accuracy": 0.01,
+                "Enabled": true,
+                "Pack": 100.0,
+                "Read": 0.01,
+                "Shift": 1.0,
+                "BitsRequired": 8
+              },
+              {
+                "MinValue": -1024,
+                "MaxValue": 1024,
+                "Accuracy": 0.01,
+                "Enabled": true,
+                "Pack": 100.0,
+                "Read": 0.01,
+                "Shift": 1024.0,
+                "BitsRequired": 18
+              }
+            ]
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyCommandSettings, bolt.compiler"
+          }
+        },
+        {
+          "Name": "Cam",
+          "Enabled": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
@@ -288,56 +334,42 @@
           }
         },
         {
-          "Name": "PlatformMov",
-          "Enabled": true,
-          "Expanded": true,
-          "ReplicationMode": 1,
-          "Priority": 1,
-          "PropertyType": {
-            "$type": "Bolt.Compiler.PropertyTypeVector, bolt.compiler",
-            "Selection": 14,
-            "Compression": [
-              {
-                "MinValue": -1024,
-                "MaxValue": 1024,
-                "Accuracy": 0.01,
-                "Pack": 100.0,
-                "Read": 0.01,
-                "Shift": 1024.0,
-                "BitsRequired": 18
-              },
-              {
-                "MinValue": -1024,
-                "MaxValue": 1024,
-                "Accuracy": 0.01,
-                "Pack": 100.0,
-                "Read": 0.01,
-                "Shift": 1024.0,
-                "BitsRequired": 18
-              },
-              {
-                "MinValue": -1024,
-                "MaxValue": 1024,
-                "Accuracy": 0.01,
-                "Pack": 100.0,
-                "Read": 0.01,
-                "Shift": 1024.0,
-                "BitsRequired": 18
-              }
-            ]
-          },
-          "AssetSettings": {
-            "$type": "Bolt.Compiler.PropertyCommandSettings, bolt.compiler"
-          }
-        },
-        {
-          "Name": "colCheckBel",
+          "Name": "R2Pressed",
           "Enabled": true,
           "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
             "$type": "Bolt.Compiler.PropertyTypeBool, bolt.compiler"
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyCommandSettings, bolt.compiler"
+          }
+        },
+        {
+          "Name": "JumpPressed",
+          "Enabled": true,
+          "Expanded": true,
+          "ReplicationMode": 1,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeBool, bolt.compiler"
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyCommandSettings, bolt.compiler"
+          }
+        },
+        {
+          "Name": "camMode",
+          "Enabled": true,
+          "Expanded": true,
+          "ReplicationMode": 1,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeInteger, bolt.compiler",
+            "MinValue": 1,
+            "MaxValue": 3,
+            "CompressionEnabled": true
           },
           "AssetSettings": {
             "$type": "Bolt.Compiler.PropertyCommandSettings, bolt.compiler"
@@ -485,7 +517,7 @@
       ],
       "SmoothFrames": 30,
       "Properties": [],
-      "Name": "PlayerCommand",
+      "Name": "UmiPlayerCommand",
       "Guid": "b6ba9fb7-9408-4281-821f-88772beb18a1",
       "Groups": [
         "samples"
