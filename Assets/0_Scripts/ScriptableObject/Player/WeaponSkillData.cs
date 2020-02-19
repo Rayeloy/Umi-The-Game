@@ -12,7 +12,7 @@ public enum WeaponSkillType
 
 }
 
-[CreateAssetMenu(fileName = "New weapon skill", menuName = "Weapon Skill")]
+[CreateAssetMenu(fileName = "New weapon skill", menuName = "Combat/Weapon Skill")]
 public class WeaponSkillData : ScriptableObject
 {
     public string skillName;

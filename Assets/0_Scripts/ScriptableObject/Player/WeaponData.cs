@@ -13,7 +13,7 @@ public enum WeaponType
     Donut
 }
 
-[CreateAssetMenu(fileName = "New weapon", menuName = "Weapon")]
+[CreateAssetMenu(fileName = "New weapon", menuName = "Combat/Weapon")]
 [ExecuteInEditMode]
 public class WeaponData : ScriptableObject
 {

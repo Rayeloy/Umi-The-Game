@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 
 [ExecuteInEditMode]
-[CreateAssetMenu(fileName = "New attack", menuName = "Attack")]
+[CreateAssetMenu(fileName = "New attack", menuName = "Combat/Attack")]
 public class AttackData : ScriptableObject
 {
     public string attackName;

@@ -307,10 +307,18 @@ MonoBehaviour:
     name: 
     amount: 1
     unit: 0
-  myLevel1:
-    row1: 010000
-    row2: 000000
-    row3: 000000
+  levelRows: 6
+  levelColumns: 6
+  myLevel:
+    spaces:
+    - row: 000000000001
+    - row: 000000000001
+    - row: 000100010100
+    - row: 000000000100
+    - row: 000100010100
+    - row: 000000000000
+    rows: 6
+    columns: 6
 --- !u!4 &1293052540
 Transform:
   m_ObjectHideFlags: 0
