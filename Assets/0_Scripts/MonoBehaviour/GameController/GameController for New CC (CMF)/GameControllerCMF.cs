@@ -287,7 +287,6 @@ public class GameControllerCMF : MonoBehaviour
         allPlayers[n].KonoStart();
     }
 
-
     //Funcion que se llama al comenzar la partida, que inicicia las variables necesarias, y que posiciona a los jugadores y ¿bandera?
     public virtual void StartGame()
     {

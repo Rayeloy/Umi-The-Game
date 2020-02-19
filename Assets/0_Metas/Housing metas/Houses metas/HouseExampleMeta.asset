@@ -13,14 +13,33 @@ MonoBehaviour:
   m_Name: HouseExampleMeta
   m_EditorClassIdentifier: 
   houseName: HouseExampleMeta
+  housingSlotSize: 1
   door:
+    prefab: {fileID: 0}
     x: 0
-    y: 0
-    height: 0
+    z: 0
+    height: 2
+    width: 1
+    orientation: 2
+  windows:
+  - prefab: {fileID: 0}
+    x: 5
+    z: 2
+    y: 1
+    height: 1
+    width: 1
+    orientation: 1
+  - prefab: {fileID: 0}
+    x: 0
+    z: 2
+    y: 1
+    height: 1
+    width: 1
     orientation: 0
   width: 6
   depth: 6
-  height: 4
+  height: 3
+  reset: 0
   houseSpace:
     houseLevels:
     - width: 6
@@ -50,15 +69,6 @@ MonoBehaviour:
       - row: 010101010101
       - row: 010101010101
       - row: 010101010101
-    - width: 6
-      depth: 6
-      houseLevelRows:
-      - row: 010101010101
-      - row: 010101010101
-      - row: 010101010101
-      - row: 010101010101
-      - row: 010101010101
-      - row: 010101010101
-    height: 4
+    height: 3
     width: 6
     depth: 6

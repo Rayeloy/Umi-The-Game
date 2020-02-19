@@ -16,14 +16,17 @@ public enum Direction
 public class HousingHouseData : ScriptableObject
 {
     public string houseName;
+    public float housingSlotSize = 1;
 
     public HouseDoor door;
+    public HouseWindow[] windows;
 
     [Header(" --- House Space ---")]
     public int width = 10;
     public int depth = 10;
     public int height = 10;
 
+    public bool reset = false;
     public HouseSpace houseSpace;
     public bool validHouseSpacing
     {
@@ -36,6 +39,13 @@ public class HousingHouseData : ScriptableObject
     HouseSpace oldHouseSpace;
     private void OnValidate()
     {
+        if (reset)
+        {
+            reset = false;
+            houseSpace = new HouseSpace(height, depth, width);
+            oldHouseSpace = new HouseSpace(height, depth, width);
+            CopyHouseSpace(houseSpace, ref oldHouseSpace);
+        }
         //CHECK IF houseSpacing CHANGED
         bool houseSpacingChanging = (oldHouseSpace != null && oldHouseSpace.houseLevels.Length != height);
 
@@ -54,6 +64,60 @@ public class HousingHouseData : ScriptableObject
             houseSpace = new HouseSpace(height, depth, width);
             CopyHouseSpace(oldHouseSpace, ref houseSpace);
         }
+
+        #region --- Door and Windows Check ---
+        //Door and Windows
+        bool wrongDoor = false;
+        if(door != null && door.validDoor && door.x < width && door.z < depth && door.height <= height)
+        {
+            for (int i = 0; i < door.height && !wrongDoor; i++)
+            {
+                for (int j = 0; j < door.width && !wrongDoor; j++)
+                {
+                    int doorXExtension = door.orientation == Direction.Up ? +j : door.orientation == Direction.Down ? -j : 0;
+                    int doorZExtension = door.orientation == Direction.Right ? +j : door.orientation == Direction.Left ? -j : 0;
+                    if (!houseSpace.houseLevels[i].houseLevelRows[door.x + doorXExtension].row[door.z + doorZExtension])
+                    {
+                        Debug.LogError("HousingHouseData -> Error: The door can't be placed in (" + door.x + "," + door.z + ") in level"+i+" !");
+                        door.x = -1;
+                        door.z = -1;
+                        wrongDoor = true;
+                    }
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError("HousingHouseData -> Error: door is not valid");
+        }
+
+        bool wrongWindow = false;
+        for (int w = 0; w < windows.Length && !wrongWindow; w++)
+        {
+            if (windows[w].validWindow && windows[w].x < width && windows[w].z < depth && windows[w].y < height && windows[w].height <= height && windows[w].width <= width)
+            {
+                for (int i = windows[w].y; i < (windows[w].y + windows[w].height) && !wrongWindow; i++)
+                {
+                    for (int j = 0; j < windows[w].width && !wrongWindow; j++)
+                    {
+                        int windowXExtension = windows[w].orientation == Direction.Up ? +j :windows[w].orientation == Direction.Down ? -j : 0;
+                        int windowZExtension = windows[w].orientation == Direction.Right ? +j : windows[w].orientation== Direction.Left ? -j : 0;
+                        if (!houseSpace.houseLevels[i].houseLevelRows[windows[w].x + windowXExtension].row[windows[w].z + windowZExtension])
+                        {
+                            Debug.LogError("HousingHouseData -> Error: The window "+w+" can't be placed in (" + windows[w].x + "," + windows[w].z + ") in level "+(windows[w].y + i) +" !");
+                            windows[w].x = -1;
+                            windows[w].z = -1;
+                            wrongWindow = true;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogError("HousingHouseData -> Error: window "+w+" is not valid");
+            }
+        }
+        #endregion
 
         //STORE COPY
         oldHouseSpace = new HouseSpace(height, depth, width);
@@ -136,16 +200,59 @@ public class HouseLevel
 [System.Serializable]
 public class HouseDoor
 {
+    public GameObject prefab;
     public int x = 0;
-    public int y = 0;
+    public int z = 0;
     public int height = 2;
-    public Direction orientation;
+    public int width = 1;
+    public Direction orientation = Direction.Up;
 
-    public HouseDoor(int _x=0, int _y=0, int _height = 2, Direction _orientation = Direction.Up)
+    public HouseDoor(GameObject _prefab, int _x = 0, int _z = 0, int _height = 2, int _width = 1,  Direction _orientation = Direction.Up)
     {
+        prefab = _prefab;
         x = _x;
+        z = _z;
+        height = _height;
+        width = _width;
+        orientation = _orientation;
+    }
+
+    public bool validDoor
+    {
+        get
+        {
+            return x>=0 && z>=0 && height>=2 && width>=1;
+        }
+    }
+}
+
+[System.Serializable]
+public class HouseWindow
+{
+    public GameObject prefab;
+    public int x = 0;
+    public int z = 0;
+    public int y = 1;
+    public int height = 1;
+    public int width = 1;
+    public Direction orientation = Direction.Up;
+
+    public HouseWindow(GameObject _prefab, int _x = 0, int _z = 0, int _y = 1, int _height = 2, int _width = 1, Direction _orientation = Direction.Up)
+    {
+        prefab = _prefab;
+        x = _x;
+        z = _z;
         y = _y;
         height = _height;
+        width = _width;
         orientation = _orientation;
+    }
+
+    public bool validWindow
+    {
+        get
+        {
+            return x>=0 && z >=0 && y >= 0 && height>=1 && width >=1;
+        }
     }
 }
