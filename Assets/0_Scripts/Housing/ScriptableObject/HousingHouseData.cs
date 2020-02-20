@@ -61,6 +61,10 @@ public class HousingHouseData : ScriptableObject
         //CREATE NEW SPACE INFO, AND COPY , IF POSSIBLE, PREVIOUS DATA
         if (houseSpacingChanging)
         {
+            height = Mathf.Clamp(height, 0, 15);
+            depth = Mathf.Clamp(depth, 0, 100);
+            width = Mathf.Clamp(width, 0, 100);
+
             houseSpace = new HouseSpace(height, depth, width);
             CopyHouseSpace(oldHouseSpace, ref houseSpace);
         }
@@ -98,10 +102,26 @@ public class HousingHouseData : ScriptableObject
             {
                 for (int i = windows[w].y; i < (windows[w].y + windows[w].height) && !wrongWindow; i++)
                 {
+                    if (i >= houseSpace.houseLevels.Length)
+                    {
+                        Debug.LogError("HousingHouseData -> Error: The window " + w + " can't be placed in (" + windows[w].x + "," + windows[w].z + ") in level " + (windows[w].y + i) + " !");
+                        continue;
+                    }
                     for (int j = 0; j < windows[w].width && !wrongWindow; j++)
                     {
                         int windowXExtension = windows[w].orientation == Direction.Up ? +j :windows[w].orientation == Direction.Down ? -j : 0;
                         int windowZExtension = windows[w].orientation == Direction.Right ? +j : windows[w].orientation== Direction.Left ? -j : 0;
+                        if(windows[w].x + windowXExtension >= houseSpace.houseLevels[i].houseLevelRows.Length)
+                        {
+                            Debug.LogError("HousingHouseData -> Error: The window " + w + " can't be placed in (" + windows[w].x + "," + windows[w].z + ") in level " + (windows[w].y + i) + " !");
+                            continue;
+                        }
+
+                        if(windows[w].z + windowZExtension >= houseSpace.houseLevels[i].houseLevelRows[windows[w].x + windowXExtension].row.Length)
+                        {
+                            Debug.LogError("HousingHouseData -> Error: The window " + w + " can't be placed in (" + windows[w].x + "," + windows[w].z + ") in level " + (windows[w].y + i) + " !");
+                            continue;
+                        }
                         if (!houseSpace.houseLevels[i].houseLevelRows[windows[w].x + windowXExtension].row[windows[w].z + windowZExtension])
                         {
                             Debug.LogError("HousingHouseData -> Error: The window "+w+" can't be placed in (" + windows[w].x + "," + windows[w].z + ") in level "+(windows[w].y + i) +" !");

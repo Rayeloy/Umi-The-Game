@@ -5,21 +5,20 @@ using UnityEngine;
 public class HousingGrid : MonoBehaviour
 {
     HousingHouseData myHouseMeta;
-    public float slotSize;
 
     public int width;
     public int depth;
     public int height;
     GameObject slotPrefab;
+    GameObject wallPrefab;
     Vector3 housePos = Vector3.zero;
 
     HousingSlot[,,] slots;
 
-    public void KonoAwake(HousingHouseData _myHouseMeta, GameObject _slotPrefab, Vector3 _housePos, float _slotSize =1)
+    public void KonoAwake(HousingHouseData _myHouseMeta, GameObject _slotPrefab, GameObject _wallPrefab, Vector3 _housePos)
     {
         myHouseMeta = _myHouseMeta;
 
-        slotSize = _slotSize;
         width = myHouseMeta.width;
         depth = myHouseMeta.depth;
         height = myHouseMeta.height;
@@ -27,10 +26,11 @@ public class HousingGrid : MonoBehaviour
         slots = new HousingSlot[height, depth, width];
 
         slotPrefab = _slotPrefab;
+        wallPrefab = _wallPrefab;
         housePos = _housePos;
     }
 
-    public void CreateGrid()
+    public void CreateGrid(bool showSlotMeshes = false)
     {
         if (myHouseMeta == null) return;
 
@@ -46,7 +46,7 @@ public class HousingGrid : MonoBehaviour
             for (int i = 0; i < slots.GetLength(1); i++)//for every row
             {
                 //Instantiate row's empty parent
-                Vector3 newRowParentPos = new Vector3(newLevelParentPos.x, newLevelParentPos.y, newLevelParentPos.z + (slotSize * i));
+                Vector3 newRowParentPos = new Vector3(newLevelParentPos.x, newLevelParentPos.y, newLevelParentPos.z - (slotSize * i));
                 Transform newRowParent = new GameObject("Row " + (i + 1)).transform;
                 newRowParent.position = newRowParentPos; newRowParent.rotation = Quaternion.identity; newRowParent.parent = newLevelParent;
                 for (int j = 0; j < slots.GetLength(2); j++)//for every column
@@ -59,6 +59,7 @@ public class HousingGrid : MonoBehaviour
                         newSlotObject.name = "Slot " + j;
                         newSlotObject.transform.localScale = new Vector3(slotSize, slotSize, slotSize);
                         HousingSlot newSlot = newSlotObject.GetComponent<HousingSlot>();
+                        newSlotObject.GetComponent<MeshRenderer>().enabled = showSlotMeshes;
                         HousingGridCoordinates coord = new HousingGridCoordinates(k, i, j);
 
                         #region -- Slot Type --
@@ -68,13 +69,13 @@ public class HousingGrid : MonoBehaviour
                         bool ceiling = k == height - 1;
                         bool wallLeft, wallRight, wallUp, wallDown;
                         //check for wall left
-                        wallLeft = (i - 1) > 0 && !myHouseMeta.houseSpace.houseLevels[k].houseLevelRows[i - 1].row[j];
+                        wallLeft = (j - 1) > 0 && !myHouseMeta.houseSpace.houseLevels[k].houseLevelRows[i].row[j-1];
                         //check for wall right
-                        wallRight = (i + 1) < width && !myHouseMeta.houseSpace.houseLevels[k].houseLevelRows[i + 1].row[j];
+                        wallRight = (j + 1) < width && !myHouseMeta.houseSpace.houseLevels[k].houseLevelRows[i].row[j+1];
                         //check for wall Up
-                        wallUp = (j - 1) > 0 && !myHouseMeta.houseSpace.houseLevels[k].houseLevelRows[i].row[j - 1];
+                        wallUp = (i - 1) > 0 && !myHouseMeta.houseSpace.houseLevels[k].houseLevelRows[i - 1].row[j];
                         //check for wall Down
-                        wallDown = (j + 1) < depth && !myHouseMeta.houseSpace.houseLevels[k].houseLevelRows[i].row[j + 1];
+                        wallDown = (i + 1) < depth && !myHouseMeta.houseSpace.houseLevels[k].houseLevelRows[i + 1].row[j];
 
                         bool wall = wallLeft || wallRight || wallUp || wallDown;
                         slotType = wall ? (floor ? HousingSlotType.WallAndFloor : HousingSlotType.Wall) : floor ? HousingSlotType.Floor : HousingSlotType.None;
@@ -89,6 +90,93 @@ public class HousingGrid : MonoBehaviour
                     else
                     {
                         slots[k, i, j] = null;
+                    }
+                }
+            }
+        }
+    }
+
+    public void CreateWalls()
+    {
+        if (myHouseMeta == null) return;
+
+        float wallDist = (myHouseMeta.housingSlotSize / 2) + (wallPrefab.transform.lossyScale.z/2)/*GetComponent<Collider>().bounds.extents.z*/;
+        HouseLevel[] houseLevels = myHouseMeta.houseSpace.houseLevels;
+
+        for (int k = 0; k < houseLevels.Length; k++)//for every level
+        {
+            for (int i = 0; i < houseLevels[k].houseLevelRows.Length; i++)//for every row
+            {
+                for (int j = 0; j < houseLevels[k].houseLevelRows[i].row.Length; j++)//for every column
+                {
+                    if (slots[k, i, j] == null) continue;
+
+                    Debug.Log("Create House Walls: ("+k+","+i+","+j+")");
+                    //LEFT
+                    if (j-1 <0 || (j-1 >= 0 && !houseLevels[k].houseLevelRows[i].row[j-1]))
+                    {
+                        Transform parentSlot = slots[k,i,j].transform;
+                        Vector3 wallPos = new Vector3(parentSlot.transform.position.x - wallDist, parentSlot.transform.position.y, parentSlot.transform.position.z);
+                        GameObject wallObject = Instantiate(wallPrefab, wallPos, Quaternion.Euler(0,270,0), null);
+                        wallObject.name = "LeftWall";
+                        wallObject.transform.localScale = new Vector3(myHouseMeta.housingSlotSize, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z);
+                        wallObject.transform.parent = parentSlot;
+                    }
+
+                    //RIGHT
+                    if (j+1 >= houseLevels[k].houseLevelRows[i].row.Length || (j + 1 < houseLevels[k].houseLevelRows[i].row.Length && !houseLevels[k].houseLevelRows[i].row[j + 1]))
+                    {
+                        Transform parentSlot = slots[k, i, j].transform;
+                        Vector3 wallPos = new Vector3(parentSlot.transform.position.x + wallDist, parentSlot.transform.position.y, parentSlot.transform.position.z);
+                        GameObject wallObject = Instantiate(wallPrefab, wallPos, Quaternion.Euler(0, 90, 0), null);
+                        wallObject.name = "RightWall";
+                        wallObject.transform.localScale = new Vector3(myHouseMeta.housingSlotSize, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z);
+                        wallObject.transform.parent = parentSlot;
+                    }
+
+                    //FRONT
+                    if (i - 1 < 0 || (i - 1 >= 0 && !houseLevels[k].houseLevelRows[i-1].row[j]))
+                    {
+                        Transform parentSlot = slots[k, i, j].transform;
+                        Vector3 wallPos = new Vector3(parentSlot.transform.position.x, parentSlot.transform.position.y, parentSlot.transform.position.z + wallDist);
+                        GameObject wallObject = Instantiate(wallPrefab, wallPos, Quaternion.Euler(0, 0, 0), null);
+                        wallObject.name = "FrontWall";
+                        wallObject.transform.localScale = new Vector3(myHouseMeta.housingSlotSize, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z);
+                        wallObject.transform.parent = parentSlot;
+                    }
+
+                    //BACK
+                    if (i + 1 >= houseLevels[k].houseLevelRows.Length || (i + 1 < houseLevels[k].houseLevelRows.Length && !houseLevels[k].houseLevelRows[i + 1].row[j]))
+                    {
+                        Transform parentSlot = slots[k, i, j].transform;
+                        Vector3 wallPos = new Vector3(parentSlot.transform.position.x, parentSlot.transform.position.y, parentSlot.transform.position.z - wallDist);
+                        GameObject wallObject = Instantiate(wallPrefab, wallPos, Quaternion.Euler(0, 180, 0), null);
+                        wallObject.name = "BackWall";
+                        wallObject.transform.localScale = new Vector3(myHouseMeta.housingSlotSize, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z);
+                        wallObject.transform.parent = parentSlot;
+                    }
+
+                    //Floor
+                    if (k-1 < 0 || (k - 1 >= 0 && !houseLevels[k - 1].houseLevelRows[i].row[j]))
+                    {
+                        Transform parentSlot = slots[k, i, j].transform;
+                        Vector3 wallPos = new Vector3(parentSlot.transform.position.x, parentSlot.transform.position.y-wallDist, parentSlot.transform.position.z);
+                        GameObject wallObject = Instantiate(wallPrefab, wallPos, Quaternion.Euler(90, 0, 0), null);
+                        wallObject.name = "FloorTile";
+                        wallObject.transform.localScale = new Vector3(myHouseMeta.housingSlotSize, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z);
+                        Debug.Log("Wall " + wallObject.name + " localScale =  " + wallObject.transform.localScale + "; slotSize = " + myHouseMeta.housingSlotSize);
+                        wallObject.transform.parent = parentSlot;
+                    }
+
+                    //Ceiling
+                    if (k + 1 >= houseLevels.Length || (k + 1 < houseLevels.Length && !houseLevels[k + 1].houseLevelRows[i].row[j]))
+                    {
+                        Transform parentSlot = slots[k, i, j].transform;
+                        Vector3 wallPos = new Vector3(parentSlot.transform.position.x, parentSlot.transform.position.y + wallDist, parentSlot.transform.position.z);
+                        GameObject wallObject = Instantiate(wallPrefab, wallPos, Quaternion.Euler(-90, 0, 0), null);
+                        wallObject.name = "CeilingTile";
+                        wallObject.transform.localScale = new Vector3(myHouseMeta.housingSlotSize, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z);
+                        wallObject.transform.parent = parentSlot;
                     }
                 }
             }

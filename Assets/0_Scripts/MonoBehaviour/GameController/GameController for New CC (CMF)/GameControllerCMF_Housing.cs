@@ -5,9 +5,11 @@ using UnityEngine;
 public class GameControllerCMF_Housing : GameControllerCMF
 {
     [Header("--- HOUSING ---")]
+    public bool showSlotMeshes = false;
     public Transform housingParent;
     public GameObject housingGridPrefab;
     public GameObject housingSlotPrefab;
+    public GameObject housingWall;
     public HousingHouseData houseMeta;
     public Vector3 houseSpawnPos = Vector3.zero;
     GameObject currentGridObject;
@@ -20,7 +22,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
 
         currentGridObject = Instantiate(housingGridPrefab, houseSpawnPos, Quaternion.identity, housingParent);
         currentGrid = currentGridObject.GetComponent<HousingGrid>();
-        currentGrid.KonoAwake(houseMeta, housingSlotPrefab, houseSpawnPos);
+        currentGrid.KonoAwake(houseMeta, housingSlotPrefab, housingWall, houseSpawnPos);
         //Spawn House
         SpawnHouse(houseMeta);
     }
@@ -29,7 +31,8 @@ public class GameControllerCMF_Housing : GameControllerCMF
     {
         if(currentGrid != null)
         {
-            currentGrid.CreateGrid();
+            currentGrid.CreateGrid(showSlotMeshes);
+            currentGrid.CreateWalls();
         }
     }
 }

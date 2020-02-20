@@ -15,7 +15,7 @@ MonoBehaviour:
   debugModeOn: 0
   myGameInterface: {fileID: 4295667806075351006}
   gameMode: 5
-  slowMoButtonOn: 0
+  slowMoButtonOn: 1
   recordMode: 0
   playerPrefab: {fileID: 5233746851346624046, guid: 3608bac3943d1b44db8c10a3777339a6,
     type: 3}
@@ -46,10 +46,13 @@ MonoBehaviour:
   playerNum: 1
   gamePaused: 0
   playing: 0
+  showSlotMeshes: 0
   housingParent: {fileID: 6839287188731262034}
   housingGridPrefab: {fileID: 2001836290882039728, guid: b8fb1ad2f687cc343bb80bfa436a6e8a,
     type: 3}
   housingSlotPrefab: {fileID: 7147764749764032367, guid: 7967cded87a63a9438538a932bed315e,
+    type: 3}
+  housingWall: {fileID: 2111863855635486765, guid: aa2ce429967ff8f44a06258466fcaa21,
     type: 3}
   houseMeta: {fileID: 11400000, guid: ed3e8c7bbcf9b0047af60e2535b39f61, type: 2}
   houseSpawnPos: {x: 0, y: 2, z: 0}
@@ -77,7 +80,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8604259467457358534}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 634.55, y: 501.00003, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7548669343834102187}
@@ -150,8 +153,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 5727753658902507015, guid: 6db9117d4df26494a8873799cc3754b6, type: 3}
+    - target: {fileID: 5727753658902507009, guid: 6db9117d4df26494a8873799cc3754b6,
+        type: 3}
+      propertyPath: m_Name
+      value: GameControllerCMF_Housing
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6db9117d4df26494a8873799cc3754b6, type: 3}
 --- !u!4 &7548669343834102187 stripped
 Transform:
