@@ -11,7 +11,9 @@ public enum GameMode
     None,
     CaptureTheFlag,
     AirPump,
-    Tutorial
+    Tutorial,
+    Hub,
+    Housing
 }
 #endregion
 

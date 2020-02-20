@@ -276,6 +276,7 @@ public class GameControllerCMF : MonoBehaviour
     //Funcion que llama al Start de los jugadores. Eloy: Juan, ¿solo pantalla dividida?, JUAN: Sí Eloy, sólo pantalla dividida.
     void StartPlayers()
     {
+        if (debugModeOn) Debug.Log("GameControllerCMF -> StartPlayers");
         for (int i = 0; i < playerNum; i++)
         {
             StartPlayer(i);
@@ -284,6 +285,7 @@ public class GameControllerCMF : MonoBehaviour
 
     void StartPlayer(int n)
     {
+        if(debugModeOn) Debug.Log("GameControllerCMF -> StartPlayer " + n);
         allPlayers[n].KonoStart();
     }
 

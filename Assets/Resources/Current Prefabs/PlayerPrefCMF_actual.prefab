@@ -45235,9 +45235,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   disableAllDebugs: 0
   updateDebugsOn: 0
-  charContDebugsOn: 1
+  startDebugsOn: 1
+  charContDebugsOn: 0
   horMovementDebugsOn: 0
-  vertMovementDebugsOn: 1
+  vertMovementDebugsOn: 0
   waterDebugsOn: 0
   collCheck: {fileID: 4826634726855863062}
   mover: {fileID: 2655243504092265548}
@@ -45406,7 +45407,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 300e5e0114c9a4e4296d3361ccce336f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugModeOn: 0
+  debugModeOn: 1
   hitboxDebugsOn: 0
   myPlayerMovement: {fileID: 0}
   myPlayerHUD: {fileID: 0}

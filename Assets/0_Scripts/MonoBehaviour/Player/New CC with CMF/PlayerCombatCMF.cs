@@ -133,6 +133,7 @@ public class PlayerCombatCMF : MonoBehaviour
         currentHitboxes = new List<GameObject>();
         attackStg = AttackPhaseType.ready;
         attackTime = 0;
+        Debug.Log("PlayerCombatCMF -> KonoAwake: Creating new equipedWeaponSkills");
         equipedWeaponSkills = new WeaponSkillCMF[2];
 
     }
@@ -796,6 +797,7 @@ public class PlayerCombatCMF : MonoBehaviour
 
     public void InitializeCombatSystem(WeaponData weaponData)
     {
+        if (debugModeOn) Debug.Log("InitializeCombatSystem Start");
         weaponEdge = myPlayerWeap.currentWeapon.weaponEdge;
         weaponHandle = myPlayerWeap.currentWeapon.weaponHandle;
 
@@ -820,8 +822,12 @@ public class PlayerCombatCMF : MonoBehaviour
         //Skills
         for (int i = 0; i < currentWeapon.allWeaponSkills.Length; i++)
         {
+            if (debugModeOn) Debug.Log("Adding skill " + i + " of type " + currentWeapon.allWeaponSkills[i].weaponSkillType);
             switch (currentWeapon.allWeaponSkills[i].weaponSkillType)
             {
+                default:
+                    Debug.LogError("PlayerCombatCMF -> InitializeCombatSystem : Error: weaponSkillType not valid");
+                    break;
                 case WeaponSkillType.attack:
                     equipedWeaponSkills[i] = new WeaponSkillCMF(this, currentWeapon.allWeaponSkills[i]);
                     break;
@@ -831,7 +837,8 @@ public class PlayerCombatCMF : MonoBehaviour
             }
             equipedWeaponSkills[i].skillIndex = i;
         }
-
+        if (debugModeOn) Debug.Log("EquipedWeaponSkills[0] = " + equipedWeaponSkills[0]);
+        if (debugModeOn) Debug.Log("EquipedWeaponSkills[1] = " + equipedWeaponSkills[1]);
         myPlayerHUD.SetupSkillsHUD(equipedWeaponSkills);
     }
 

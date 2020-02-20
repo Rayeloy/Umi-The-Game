@@ -155,6 +155,7 @@ public class PlayerWeaponsCMF : MonoBehaviour
 
     public void PickupWeapon(WeaponData weaponData)
     {
+        Debug.Log("PickupWeapon Start");
         //if (!hasWeapon)
         //{
         //    //print("SET PLAYER LAYER TO GO THROUGH SPAWN WALLS");
@@ -228,6 +229,7 @@ public class PlayerWeaponsCMF : MonoBehaviour
 
     public void SetTeamWeapon(Team team)
     {
+        Debug.Log("SetTeamWeapon Start");
         switch (team)
         {
             case Team.A:

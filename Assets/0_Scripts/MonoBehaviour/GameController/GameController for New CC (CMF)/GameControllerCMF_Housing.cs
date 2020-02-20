@@ -19,6 +19,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
         currentGridCoord = new HousingGridCoordinates();
 
         currentGridObject = Instantiate(housingGridPrefab, houseSpawnPos, Quaternion.identity, housingParent);
+        currentGrid = currentGridObject.GetComponent<HousingGrid>();
         currentGrid.KonoAwake(houseMeta, housingSlotPrefab, houseSpawnPos);
         //Spawn House
         SpawnHouse(houseMeta);

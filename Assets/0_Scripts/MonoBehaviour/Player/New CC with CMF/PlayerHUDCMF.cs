@@ -1260,6 +1260,13 @@ arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
         for (int i = 0; i < myPlayerCombat.equipedWeaponSkills.Length; i++)
         {
             WeaponSkillCMF skill = myPlayerCombat.equipedWeaponSkills[i];
+            if(skill == null)
+            {
+                Debug.LogError("PlayerHUDCMF -> ProcessSkillsCD : Error: couldn't find equipedWeaponSkill " + i + "; myPlayerCombat = "+ myPlayerCombat);
+                /*if (debugModeOn)*/ Debug.Log("EquipedWeaponSkills[0] = " + myPlayerCombat.equipedWeaponSkills[0]);
+                /*if (debugModeOn)*/ Debug.Log("EquipedWeaponSkills[1] = " + myPlayerCombat.equipedWeaponSkills[1]);
+                return;
+            }
             switch (skill.weaponSkillSt)
             {
                 case WeaponSkillState.cd:

@@ -62,6 +62,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     [Header(" --- Debugging ---")]
     public bool disableAllDebugs;
     public bool updateDebugsOn = false;
+    public bool startDebugsOn = false;
     public bool charContDebugsOn = false;
     public bool horMovementDebugsOn = false;
     public bool vertMovementDebugsOn = false;
@@ -520,6 +521,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     #region START
     public void KonoStart()
     {
+        if (!disableAllDebugs && startDebugsOn) Debug.Log("PlayerMovementCMF ("+name+")-> KonoStart Start");
         gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
         currentGravity = gravity;
         jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
