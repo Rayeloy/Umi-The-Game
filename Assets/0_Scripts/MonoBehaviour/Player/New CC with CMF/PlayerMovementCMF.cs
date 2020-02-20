@@ -38,7 +38,7 @@ using UnityEngine.UI;
 
 #region ----[ REQUIRECOMPONENT ]----
 #endregion
-public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
+public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     [Header(" --- Referencias --- ")]
@@ -460,8 +460,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 wallJumpCheckRaysColumnsSpacing = collCheck.myCollider.bounds.size.x / (wallJumpCheckRaysColumns - 1);
                 auxLM = LayerMask.GetMask("Stage");
                 myPlayerBody.KonoAwake();
+                myPlayerCombatNew.KonoAwake();
             }
-            else 
+            else
             {
                 Debug.Log("A new player has been spawned and is running !");
                 myPlayerAnimation.KonoAwake();
@@ -524,6 +525,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 print("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
                 finalMaxMoveSpeed = currentMaxMoveSpeed = maxMoveSpeed;
                 knockbackBreakAcc = Mathf.Clamp(knockbackBreakAcc, -float.MaxValue, breakAcc);
+                collCheck.KonoStart();
+                myPlayerCombatNew.KonoStart();
             }
             else
             {
@@ -560,7 +563,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             myPlayerWeap.KonoUpdate();
             myPlayerHook.KonoUpdate();
         }
+    if(BoltNetwork.IsServer)
+    {
+            myPlayerCombatNew.KonoUpdate();
     }
+}
 
     public void KonoFixedUpdate()
     {
@@ -715,11 +722,14 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void StopBufferedInput(PlayerInput _inputType)
     {
-        for (int i = 0; i < inputsBuffer.Length; i++)
+        if (!BoltNetwork.IsConnected || BoltNetwork.IsClient)
         {
-            if (inputsBuffer[i].input.inputType == _inputType)
+            for (int i = 0; i < inputsBuffer.Length; i++)
             {
-                inputsBuffer[i].StopBuffering();
+                if (inputsBuffer[i].input.inputType == _inputType)
+                {
+                    inputsBuffer[i].StopBuffering();
+                }
             }
         }
     }
@@ -1357,7 +1367,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             if (!disableAllDebugs) Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + (moveSt != MoveState.Boost) + ")");
         }
 
-        if (!result && !calledFromBuffer /*&& (jumpSt != JumpState.Falling || (jumpSt == JumpState.Falling) && jumpInsurance)*/)
+        if (!result && !calledFromBuffer /*&& (jumpSt != JumpState.Falling || (jumpSt == JumpState.Falling) && jumpInsurance)*/ && BoltNetwork.IsClient)
         {
             BufferInput(PlayerInput.Jump);
         }
@@ -1390,7 +1400,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         }
         else
         {
-            timeJumpInsurance += Time.deltaTime;
+            timeJumpInsurance += TimePlus.betterTime();
             if (timeJumpInsurance >= maxTimeJumpInsurance || jumpSt == JumpState.Jumping)
             {
                 jumpInsurance = false;
@@ -1454,7 +1464,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         }
         if (!result && !calledFromBuffer)
         {
-            BufferInput(PlayerInput.WallJump);
+            if (BoltNetwork.IsClient)
+            {
+                BufferInput(PlayerInput.WallJump);
+            }
         }
         return result;
     }
@@ -1463,7 +1476,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         if (wallJumping)
         {
-            stopWallTime += Time.deltaTime;
+            stopWallTime += TimePlus.betterTime();
             if (actions.A.WasReleased || !actions.A.IsPressed)
             {
                 EndWallJump();
@@ -1577,7 +1590,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             Debug.Log("Start Charging Jump");
         }
 
-        if (!result && !calledFromBuffer)
+        if (!result && !calledFromBuffer && BoltNetwork.IsClient)
         {
             BufferInput(PlayerInput.StartChargingChargeJump);
         }
@@ -1630,7 +1643,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     return;
                 }
 
-                chargeJumpCurrentReleaseTime += Time.deltaTime;
+                chargeJumpCurrentReleaseTime += TimePlus.betterTime();
             }
 
             //FAIL?
@@ -1644,7 +1657,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     return;
                 }
                 Debug.Log("chargeJumpLandedTime  = " + chargeJumpLandedTime);
-                chargeJumpLandedTime += Time.deltaTime;
+                chargeJumpLandedTime += TimePlus.betterTime();
             }
         }
     }
@@ -1753,15 +1766,21 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 Vector3 newMoveDir = boostDir = new Vector3(currentCamFacingDir.x, 0, currentCamFacingDir.z);//nos movemos en la dirección en la que mire la cámara
                 RotateCharacter(newMoveDir);
             }
-            myPlayerHUD.StartCamVFX(CameraVFXType.Dash);
-            myPlayerVFX.ActivateEffect(PlayerVFXType.DashWaterImpulse);
-            myPlayerVFX.ActivateEffect(PlayerVFXType.DashTrail);
+            if (BoltNetwork.IsConnected && BoltNetwork.IsClient)
+            {
+                myPlayerHUD.StartCamVFX(CameraVFXType.Dash);
+                myPlayerVFX.ActivateEffect(PlayerVFXType.DashWaterImpulse);
+                myPlayerVFX.ActivateEffect(PlayerVFXType.DashTrail);
+            }
             myPlayerCombatNew.StopDoingCombat();
             StopImpulse();
         }
         else
         {
-            myPlayerHUD.StartDashHUDCantDoAnimation();
+            if (BoltNetwork.IsConnected && BoltNetwork.IsClient)
+            {
+                myPlayerHUD.StartDashHUDCantDoAnimation();
+            }
         }
 
     }
@@ -1805,9 +1824,12 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             if (!disableAllDebugs) Debug.LogWarning("stickToGround On");
             moveSt = MoveState.None;
             StartBoostCD();
-            myPlayerHUD.StopCamVFX(CameraVFXType.Dash);
-            myPlayerVFX.DeactivateEffect(PlayerVFXType.DashWaterImpulse);
-            myPlayerVFX.DeactivateEffect(PlayerVFXType.DashTrail);
+            if (BoltNetwork.IsClient)
+            {
+                myPlayerHUD.StopCamVFX(CameraVFXType.Dash);
+                myPlayerVFX.DeactivateEffect(PlayerVFXType.DashWaterImpulse);
+                myPlayerVFX.DeactivateEffect(PlayerVFXType.DashTrail);
+            }
         }
         //noInput = false;
         //PARA ORTU: Variable para terminar boost
@@ -1819,7 +1841,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         if (moveSt != MoveState.Boost && boostCurrentFuel < boostCapacity)
         {
-            boostCurrentFuel += boostRechargingSpeed * Time.deltaTime;
+            boostCurrentFuel += boostRechargingSpeed * TimePlus.betterTime();
             boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
         }
     }
@@ -1837,7 +1859,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         if (boostCDStarted)
         {
-            boostCDTime += Time.deltaTime;
+            boostCDTime += TimePlus.betterTime();
             if (boostCDTime >= boostCDMaxTime)
             {
                 StopBoostCD();
@@ -2345,27 +2367,34 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             inWater = true;
             jumpedOutOfWater = false;
             maxTimePressingJump = 0f;
-            myPlayerWeap.AttachWeaponToBack();
-            if (haveFlag)
+            if (BoltNetwork.IsClient)
+            {
+                myPlayerWeap.AttachWeaponToBack();
+            
+            if (haveFlag) 
             {
                 //gC.RespawnFlag(flag.GetComponent<Flag>());
                 flag.SetAway(false);
+            }
             }
             //Desactivar al jugadro si se esta en la prorroga.
             if (gC.gameMode == GameMode.CaptureTheFlag)
             {
                 (gC as GameControllerCMF_FlagMode).myScoreManager.PlayerEliminado();
             }
-            myPlayerVFX.ActivateEffect(PlayerVFXType.SwimmingEffect);
-            if (waterTrigger != null)
+            if (BoltNetwork.IsClient)
             {
-                Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;//.y = waterTrigger.bounds.max.y;
-                waterSplashPos.y = waterTrigger.bounds.max.y - 0.5f;
-                myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
+                myPlayerVFX.ActivateEffect(PlayerVFXType.SwimmingEffect);
+                if (waterTrigger != null)
+                {
+                    Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;//.y = waterTrigger.bounds.max.y;
+                    waterSplashPos.y = waterTrigger.bounds.max.y - 0.5f;
+                    myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
+                }
+                myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
+                myPlayerCombatNew.StopDoingCombat();
+                myPlayerHook.StopHook();
             }
-            myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
-            myPlayerCombatNew.StopDoingCombat();
-            myPlayerHook.StopHook();
         }
     }
 
@@ -2386,10 +2415,12 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         if (inWater)
         {
-            myPlayerAnimation.exitWater = true;
             inWater = false;
-            myPlayerWeap.AttatchWeapon();
-            myPlayerVFX.DeactivateEffect(PlayerVFXType.SwimmingEffect);
+            if (BoltNetwork.IsClient)
+            {
+                myPlayerAnimation.exitWater = true;
+                myPlayerWeap.AttatchWeapon();
+                myPlayerVFX.DeactivateEffect(PlayerVFXType.SwimmingEffect);
             if (waterTrigger != null)
             {
                 Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;//.y = waterTrigger.bounds.max.y;
@@ -2397,6 +2428,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
             }
             myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
+            }
         }
     }
     #endregion
@@ -2642,12 +2674,13 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     public override void SimulateController()
     {
 
-        IPlayerCommandInput input = PlayerCommand.Create();
+        IUmiPlayerCommandInput input = UmiPlayerCommand.Create();
 
         input.Joystick = actions.LeftJoystick;
         input.Cam = (transform.position - myCamera.transform.GetChild(0).position).normalized;
         input.R2Pressed = inputsInfo.R2WasPressed;
         input.JumpPressed = inputsInfo.JumpWasPressed;
+        input.JumpReleased = inputsInfo.JumpWasReleased || !actions.A.IsPressed;
         switch (myCamera.camMode)
         {
             case cameraMode.Fixed:
@@ -2675,41 +2708,44 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public override void ExecuteCommand(Command command, bool resetState)
     {
-        PlayerCommand cmd = (PlayerCommand)command;
-        Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
+        UmiPlayerCommand cmd = (UmiPlayerCommand)command;
         lastPos = transform.position;
         frameCounter++;
 
         if (resetState)
         {
             transform.position = cmd.Result.Position;
-            HandleSlopes();
-            ProcessWallJump();
+            Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
+            collCheck.ResetVariables();
+            collCheck.UpdateCollisionChecks(cmd.Result.velocity);
             mover.SetVelocity(cmd.Result.velocity, platformMovement);
+            mover.SetExtendSensorRange(collCheck.below);
         }
         else
         {
-
+            Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
             #region --- Calculate Movement ---
 
             HorizontalOnlineMovement(cmd.Input.Joystick, cmd.Input.Cam, cmd.Input.R2Pressed, cmd.Input.camMode);
 
-            VerticalOnlineMovement(cmd.Input.JumpPressed);
+            VerticalOnlineMovement(cmd.Input.JumpPressed, cmd.Input.JumpReleased);
 
             HandleSlopes();
 
-            ProcessWallJump();//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "mover.SetVelocity"
+            OnlineProcessWallJump(cmd.Input.JumpReleased);//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "mover.SetVelocity"
 
             #endregion
             collCheck.ResetVariables();
             collCheck.UpdateCollisionVariables(mover, jumpSt);
+
             collCheck.UpdateCollisionChecks(currentVel);
             mover.SetVelocity(currentVel, platformMovement);
             mover.SetExtendSensorRange(collCheck.below);
+
             cmd.Result.Position = transform.position;
             cmd.Result.velocity = currentVel;
-            collCheck.SavePlatformPoint();
         }
+        collCheck.SavePlatformPoint();
     }
 
     void HorizontalOnlineMovement(Vector3 joystick, Vector3 camDir, bool R2, int camMode)
@@ -2731,7 +2767,40 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         {
             ProcessFixedJump();
         }
-        ProcessBoost();
+        if (moveSt == MoveState.Boost)
+        {
+            //print("PROCESS BOOST: boostTime = " + boostCurrentFuel + "; boostDuration = "+ boostCapacity);
+            if (BoltNetwork.IsServer)
+            {
+                boostCurrentFuel -= boostDepletingSpeed * TimePlus.betterTime();
+                boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
+                state.boostFuel = boostCurrentFuel;
+            }
+            else
+            {
+                boostCurrentFuel = state.boostFuel;
+            }
+            if (boostCurrentFuel > 0)
+            {
+                if (R2)
+                {
+                    StopBoost();
+                }
+                //moveSt = MoveState.Boost;
+            }
+            else
+            {
+                StopBoost();
+            }
+        }
+        else
+        {
+            if (boostCurrentFuel < boostCapacity)
+            {
+                ProcessBoostRecharge();
+            }
+            ProcessBoostCD();
+        }
         #endregion
         #region //----------------------------------------------------- Efecto interno --------------------------------------------
         if (!hooked && !fixedJumping && moveSt != MoveState.Boost && moveSt != MoveState.Knockback && moveSt != MoveState.Impulse)
@@ -2832,7 +2901,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             if (!disableAllDebugs && currentSpeed != 0) Debug.Log("CurrentSpeed 1.2 = " + currentSpeed.ToString("F4") + "; finalAcc = " + finalAcc + "; moveSt = " + moveSt +
                 "; currentSpeed =" + currentSpeed.ToString("F4"));
             float currentSpeedB4 = currentSpeed;
-            currentSpeed = currentSpeed + finalAcc * Time.deltaTime;
+            currentSpeed = currentSpeed + finalAcc * TimePlus.betterTime();
             if (moveSt == MoveState.NotMoving && Mathf.Sign(currentSpeedB4) != Mathf.Sign(currentSpeed))
             {
                 currentSpeed = 0;
@@ -2879,11 +2948,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     else
                     {
                         Vector3 oldDir = horizontalVel.magnitude == 0 && myPlayerCombatNew.attackStg != AttackPhaseType.ready ? rotateObj.forward.normalized : horizontalVel.normalized;
-                        newDir = oldDir + (currentInputDir * (finalMovingAcc * Time.deltaTime));
+                        newDir = oldDir + (currentInputDir * (finalMovingAcc * TimePlus.betterTime()));
                         float auxAngle = Vector3.Angle(oldCurrentVel, newDir);
-                        if (!disableAllDebugs) Debug.LogWarning("MOVING: finalMovingAcc2 = " + finalMovingAcc + ";  auxAngle = " + auxAngle + "; (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude = "
-                             + (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude + "; (currentInputDir * finalMovingAcc * Time.deltaTime) = "
-                             + (currentInputDir * finalMovingAcc * Time.deltaTime) + "; newDir = " + newDir);
+                        if (!disableAllDebugs) Debug.LogWarning("MOVING: finalMovingAcc2 = " + finalMovingAcc + ";  auxAngle = " + auxAngle +
+                             + (currentInputDir * finalMovingAcc * TimePlus.betterTime()).magnitude
+                             + (currentInputDir * finalMovingAcc * TimePlus.betterTime()) + "; newDir = " + newDir);
                     }
                     horizontalVel = newDir.normalized * currentSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
@@ -2925,7 +2994,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     //print("vel.y = " + currentVel.y);
                     break;
                 case MoveState.MovingBreaking://FRENADA FUERTE
-                    newDir = horizontalVel.normalized + (currentInputDir * finalMovingAcc * Time.deltaTime);
+                    newDir = horizontalVel.normalized + (currentInputDir * finalMovingAcc * TimePlus.betterTime());
                     horizontalVel = newDir.normalized * currentSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
                     break;
@@ -2961,7 +3030,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         #endregion
     }
 
-    void VerticalOnlineMovement(bool Jump)
+    void VerticalOnlineMovement(bool jumpPressed, bool jumpRelease)
     {
         //Debug.Log("Vert Mov Inicio: currentVel = " + currentVel.ToString("F6") + "; below = " + collCheck.below);
 
@@ -2978,8 +3047,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             lastWall = null;
         }
 
-        if (Jump)//Input.GetButtonDown(contName + "A"))
+        if (jumpPressed)//Input.GetButtonDown(contName + "A"))
         {
+            Debug.Log(noInput + " " + moveSt);
             PressA();
         }
 
@@ -2987,7 +3057,67 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         {
             if (jumpSt == JumpState.None || jumpSt == JumpState.Falling)
             {
-                ProcessChargingChargeJump();
+                if (chargeJumpChargingJump)
+                {
+                    if (jumpRelease)
+                    {
+                        chargeJumpButtonReleased = true;
+                    }
+
+                    if (!chargeJumpLanded && collCheck.below)
+                    {
+                        if (!isFloorChargeJumpable)
+                        {
+                            StopChargingChargeJump();
+                            StartBounceJump();
+                            return;
+                        }
+                        chargeJumpLanded = true;
+                    }
+
+                    //Debug.Log("charging jump: button released = " + chargeJumpButtonReleased);
+                    if (chargeJumpButtonReleased)
+                    {
+                        //Debug.Log("charging jump: chargeJumpLanded = " + chargeJumpLanded);
+                        if (chargeJumpLanded)
+                        {
+                            StopChargingChargeJump();
+                            if (failedJump)
+                            {
+                                StartBounceJump();
+                            }
+                            else
+                            {
+                                StartChargeJump();
+                            }
+                            return;
+                        }
+
+                        //FAIL?
+                        if (chargeJumpCurrentReleaseTime >= chargeJumpReleaseTimeBeforeLand)//FAIL: Released too early
+                        {
+                            //Debug.LogWarning("Charged Jump-> FAILED JUMP: RELEASED TOO EARLY");
+                            failedJump = true;
+                            return;
+                        }
+
+                        chargeJumpCurrentReleaseTime += TimePlus.betterTime();
+                    }
+
+                    //FAIL?
+                    if (chargeJumpLanded && !chargeJumpButtonReleased)
+                    {
+                        if (chargeJumpLandedTime >= chargeJumpReleaseTimeAfterLand)//FAIL: Released too late
+                        {
+                            Debug.LogWarning("Charged Jump-> FAILED JUMP: RELEASED TOO LATE");
+                            StopChargingChargeJump();
+                            StartBounceJump();
+                            return;
+                        }
+                        Debug.Log("chargeJumpLandedTime  = " + chargeJumpLandedTime);
+                        chargeJumpLandedTime += TimePlus.betterTime();
+                    }
+                }
             }
 
             switch (jumpSt)
@@ -3000,7 +3130,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         chargeJumpLastApexHeight = transform.position.y;
                         //Debug.Log("START FALLING");
                     }
-                    currentVel.y += gravity * Time.deltaTime;
+                    currentVel.y += gravity * TimePlus.betterTime();
                     break;
                 case JumpState.Falling:
 
@@ -3017,25 +3147,25 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         jumpSt = JumpState.None;
                     }
 
-                    currentVel.y += gravity * Time.deltaTime;
+                    currentVel.y += gravity * TimePlus.betterTime();
                     break;
                 case JumpState.Jumping:
-                    currentVel.y += gravity * Time.deltaTime;
-                    timePressingJump += Time.deltaTime;
+                    currentVel.y += gravity * TimePlus.betterTime();
+                    timePressingJump += TimePlus.betterTime();
                     if (timePressingJump >= maxTimePressingJump)
                     {
                         StopJump();
                     }
                     else
                     {
-                        if (inputsInfo.JumpWasReleased || !actions.A.IsPressed)//Input.GetButtonUp(contName + "A"))
+                        if (jumpRelease)//Input.GetButtonUp(contName + "A"))
                         {
                             jumpSt = JumpState.Breaking;
                         }
                     }
                     break;
                 case JumpState.Breaking:
-                    currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
+                    currentVel.y += (gravity * breakJumpForce) * TimePlus.betterTime();
                     if (currentVel.y <= 0)
                     {
                         if (!disableAllDebugs) Debug.Log("JumpSt = None");
@@ -3045,7 +3175,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     }
                     break;
                 case JumpState.WallJumping:
-                    currentVel.y += wallJumpSlidingAcc * Time.deltaTime;
+                    currentVel.y += wallJumpSlidingAcc * TimePlus.betterTime();
                     break;
                 case JumpState.WallJumped:
                     if (currentVel.y < 0 && (!collCheck.below || collCheck.sliping))
@@ -3055,7 +3185,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         chargeJumpLastApexHeight = transform.position.y;
                         //Debug.Log("START FALLING");
                     }
-                    currentVel.y += gravity * Time.deltaTime;
+                    currentVel.y += gravity * TimePlus.betterTime();
                     break;
                 case JumpState.ChargeJumping:
                     if (currentVel.y <= 0)
@@ -3063,7 +3193,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         if (!disableAllDebugs) Debug.Log("JumpSt = None");
                         jumpSt = JumpState.None;
                     }
-                    currentVel.y += currentGravity * Time.deltaTime;
+                    currentVel.y += currentGravity * TimePlus.betterTime();
                     break;
                 case JumpState.BounceJumping:
                     if (currentVel.y <= 0)
@@ -3071,7 +3201,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         if (!disableAllDebugs) Debug.Log("JumpSt = None");
                         jumpSt = JumpState.None;
                     }
-                    currentVel.y += currentGravity * Time.deltaTime;
+                    currentVel.y += currentGravity * TimePlus.betterTime();
                     break;
             }
         }
@@ -3158,6 +3288,70 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 moveSt = MoveState.NotMoving;
             }
         }
+    }
+
+    void OnlineProcessWallJump(bool jump)//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "MOVE"
+    {
+        if (wallJumping)
+        {
+            stopWallTime += TimePlus.betterTime();
+            if (jump)
+            {
+                EndWallJump();
+                return;
+            }
+
+            if (stopWallTime >= stopWallMaxTime)
+            {
+                StopWallJump();
+                return;
+            }
+
+            #region --- WALL JUMP CHECK RAYS ---
+            //Check continuously if we are still attached to wall
+            float rayLength = collCheck.myCollider.bounds.extents.x + 0.5f;
+            RaycastHit hit;
+
+            //calculamos el origen de todos los rayos y columnas: esquina inferior (izda o dcha,no sé)
+            //del personaje. 
+            Vector3 paralelToWall = new Vector3(-wallNormal.z, 0, wallNormal.x).normalized;
+            Vector3 rowsOrigin = new Vector3(collCheck.myCollider.bounds.center.x, collCheck.myCollider.bounds.min.y, collCheck.myCollider.bounds.center.z);
+            rowsOrigin -= paralelToWall * collCheck.myCollider.bounds.extents.x;
+            Vector3 dir = -wallNormal.normalized;
+            bool success = false;
+            for (int i = 0; i < wallJumpCheckRaysRows && !success; i++)
+            {
+                Vector3 rowOrigin = rowsOrigin + Vector3.up * wallJumpCheckRaysRowsSpacing * i;
+                for (int j = 0; j < wallJumpCheckRaysColumns && !success; j++)
+                {
+                    Vector3 rayOrigin = rowOrigin + paralelToWall * wallJumpCheckRaysColumnsSpacing * j;
+                    //Debug.Log("WallJump: Ray[" + i + "," + j + "] with origin = " + rayOrigin.ToString("F4") + "; rayLength =" + rayLength);
+                    //Debug.DrawRay(rayOrigin, dir * rayLength, Color.blue, 3);
+
+                    if (Physics.Raycast(rayOrigin, dir, out hit, rayLength, auxLM, QueryTriggerInteraction.Ignore))
+                    {
+                        if (hit.transform.gameObject == wallJumpCurrentWall)
+                        {
+                            success = true;
+                            //if(!disableAllDebugs)Debug.Log("WallJump: Success! still walljumping!");
+                        }
+                        else
+                        {
+                            //if (!disableAllDebugs) Debug.Log("WallJump: this wall (" + hit.transform.gameObject + ")is not the same wall that I started walljumping from " +
+                            //    "(" + wallJumpCurrentWall + ").");
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            if (!success)
+            {
+                //if (!disableAllDebugs) Debug.LogError("STOPPED WALLJUMPING DUE TO NOT DETECTING THE WALL ANYMORE. wallJumpCheckRaysRows = " + wallJumpCheckRaysRows);
+                StopWallJump();
+            }
+        }
+
     }
     #endregion
 }

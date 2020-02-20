@@ -8,7 +8,6 @@
         {
           "Name": "transform_Pos",
           "Enabled": true,
-          "Expanded": true,
           "Comment": "This is my transform! yay",
           "Priority": 2,
           "PropertyType": {
@@ -90,7 +89,6 @@
         {
           "Name": "Transform_Rot",
           "Enabled": true,
-          "Expanded": true,
           "Priority": 1,
           "PropertyType": {
             "$type": "Bolt.Compiler.PropertyTypeTransform, bolt.compiler",
@@ -160,6 +158,32 @@
           "AssetSettings": {
             "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
             "SmoothingAlgorithm": 1,
+            "ExtrapolationErrorTolerance": 0.25,
+            "_ExtrapolationCorrectionFrames": 6,
+            "ExtrapolationMaxFrames": 9,
+            "SnapMagnitude": 10.0
+          }
+        },
+        {
+          "Name": "boostFuel",
+          "Enabled": true,
+          "Expanded": true,
+          "ReplicationMode": 2,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeFloat, bolt.compiler",
+            "Compression": {
+              "MinValue": -2048,
+              "MaxValue": 2048,
+              "Accuracy": 0.01,
+              "Pack": 100.0,
+              "Read": 0.01,
+              "Shift": 2048.0,
+              "BitsRequired": 19
+            }
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
             "ExtrapolationErrorTolerance": 0.25,
             "_ExtrapolationCorrectionFrames": 6,
             "ExtrapolationMaxFrames": 9,
@@ -334,6 +358,21 @@
           }
         },
         {
+          "Name": "camMode",
+          "Enabled": true,
+          "ReplicationMode": 1,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeInteger, bolt.compiler",
+            "MinValue": 1,
+            "MaxValue": 3,
+            "CompressionEnabled": true
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyCommandSettings, bolt.compiler"
+          }
+        },
+        {
           "Name": "R2Pressed",
           "Enabled": true,
           "Expanded": true,
@@ -360,16 +399,12 @@
           }
         },
         {
-          "Name": "camMode",
+          "Name": "JumpReleased",
           "Enabled": true,
-          "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
-            "$type": "Bolt.Compiler.PropertyTypeInteger, bolt.compiler",
-            "MinValue": 1,
-            "MaxValue": 3,
-            "CompressionEnabled": true
+            "$type": "Bolt.Compiler.PropertyTypeBool, bolt.compiler"
           },
           "AssetSettings": {
             "$type": "Bolt.Compiler.PropertyCommandSettings, bolt.compiler"

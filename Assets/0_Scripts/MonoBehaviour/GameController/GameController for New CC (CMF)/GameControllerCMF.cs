@@ -1125,6 +1125,7 @@ public class GameControllerCMF : MonoBehaviour
             player.KonoStart();
             Debug.Log("entity add to list");
             allPlayers.Add(player);
+            player.gC = this;
         }
     }
 
