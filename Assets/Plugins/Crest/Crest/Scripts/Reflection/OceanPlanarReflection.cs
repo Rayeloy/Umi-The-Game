@@ -101,8 +101,35 @@ namespace Crest
         private long _lastRefreshOnFrame = -1;
         float[] _cullDistances;
 
+        private void Awake()
+        {
+            if (OceanRenderer.Instance == null)
+            {
+                this.enabled = false;
+                Debug.LogWarning("Planar Reflections deactivated due to OceanRenderer not being instanced");
+                return;
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (OceanRenderer.Instance == null)
+            {
+                this.enabled = false;
+                Debug.LogWarning("Planar Reflections deactivated due to OceanRenderer not being instanced");
+                return;
+            }
+        }
+
         private void Start()
         {
+            if (OceanRenderer.Instance == null)
+            {
+                this.enabled = false;
+                Debug.LogWarning("Planar Reflections deactivated due to OceanRenderer not being instanced");
+                return;
+            }
+
             _camViewpoint = GetComponent<Camera>();
             if (!_camViewpoint)
             {
@@ -138,6 +165,13 @@ namespace Crest
 
         private void OnPreRender()
         {
+            if (OceanRenderer.Instance == null)
+            {
+                this.enabled = false;
+                Debug.LogWarning("Planar Reflections deactivated due to OceanRenderer not being instanced");
+                return;
+            }
+
             if (!RequestRefresh(Time.renderedFrameCount))
                 return; // Skip if not need to refresh on this frame
 

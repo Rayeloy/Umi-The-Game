@@ -47,11 +47,33 @@ public class HousingSlot : MonoBehaviour
         size = _size;
         myWalls = new HousingSlotWall[4];
         myWalls[0] = new HousingSlotWall(Direction.Left, leftWall);
-        myWalls[0] = new HousingSlotWall(Direction.Right, rightWall);
-        myWalls[0] = new HousingSlotWall(Direction.Up, upWall);
-        myWalls[0] = new HousingSlotWall(Direction.Down, downWall);
+        myWalls[1] = new HousingSlotWall(Direction.Right, rightWall);
+        myWalls[2] = new HousingSlotWall(Direction.Up, upWall);
+        myWalls[3] = new HousingSlotWall(Direction.Down, downWall);
 
         myFurnitureObject = null;
+    }
+
+    public HousingSlotWall GetWall(Direction _orientation)
+    {
+        for (int i = 0; i < myWalls.Length; i++)
+        {
+            if(myWalls[i].orientation == _orientation)
+            {
+                return myWalls[i];
+            }
+        }
+        return null;
+    }
+
+    public bool SetWallObject (HousingFurnitureData furnitureMeta, GameObject _gO)
+    {
+        bool result = false;
+        if (!thickness)
+        {
+            //TO DO: set to false other walls if has thickness & set this wall 
+        }
+        return result;
     }
 }
 

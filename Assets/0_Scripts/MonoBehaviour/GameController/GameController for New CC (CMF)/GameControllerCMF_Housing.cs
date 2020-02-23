@@ -33,6 +33,11 @@ public class GameControllerCMF_Housing : GameControllerCMF
         {
             currentGrid.CreateGrid(showSlotMeshes);
             currentGrid.CreateWalls();
+            Vector3 playerSpawnPos; Quaternion playerSpawnRot;
+            if (currentGrid.CreateDoor(out playerSpawnPos, out playerSpawnRot))//Change spawn to the result pos of this, and tp players to here.)
+            {
+
+            }
         }
     }
 }

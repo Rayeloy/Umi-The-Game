@@ -26,7 +26,7 @@ public class HouseSpacePD : PropertyDrawer
                 lines++;
                 continue;
             }
-            lines += 4;//space for Level label, instant column switches, and copy up and copy down switches
+            lines += 5;//space for Level label, instant column switches, and copy up and copy down switches
             SerializedProperty houseLevelRows = houseLevels.GetArrayElementAtIndex(k).FindPropertyRelative("houseLevelRows");
             for (int i = 0; i < houseLevelRows.arraySize; i++)//For every house level's row
             {
@@ -55,7 +55,7 @@ public class HouseSpacePD : PropertyDrawer
             {
                 bool[] levelFoldoutCopy = levelFoldout;
                 levelFoldout = new bool[height];
-                for (int i = 0; i < levelFoldout.Length; i++)
+                for (int i = 0; i < levelFoldout.Length && i < levelFoldoutCopy.Length; i++)
                 {
                     levelFoldout[i] = levelFoldoutCopy[i];
                 }
@@ -230,7 +230,8 @@ public class HouseSpacePD : PropertyDrawer
                                 rowsInstaSwitch[k, i] = EditorGUI.Toggle(switchRect, rowsInstaSwitch[k, i]);
                             }
                         }
-                        if(i== width - 1)
+
+                        if(i== depth - 1)
                         {
                             currentHeight += EditorGUIUtility.singleLineHeight;
                             //COPY DOWN SWITCH

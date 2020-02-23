@@ -182,4 +182,45 @@ public class HousingGrid : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// Returns the spawn position for the house.
+    /// </summary>
+    public bool CreateDoor(out Vector3 playerSpawnPos, out Quaternion playerSpawnRot)
+    {
+        HouseDoor door = myHouseMeta.door;
+        float slotSize = myHouseMeta.housingSlotSize;
+        Transform slotTrans = slots[0, door.x, door.z].transform;
+        GameObject doorObject = Instantiate(door.doorMeta.prefab, Vector3.zero, Quaternion.identity, slotTrans);
+        Vector3 slotPos = slotTrans.position;
+        Collider col = doorObject.GetComponentInChildren<Collider>();
+        if(col == null)
+        {
+            Debug.LogError("HousingGrid -> CreateDoor -> Error: Can't find the collider of the door.");
+            playerSpawnPos = Vector3.zero; playerSpawnRot = Quaternion.identity;
+            return false;
+        }
+        float y = slotPos.y - (slotSize / 2) + col.bounds.extents.y;
+        float x = slotPos.x + (door.doorMeta.orientation == Direction.Left? -slotSize /2: door.doorMeta.orientation == Direction.Right ?+slotSize/2:0);
+        float z = slotPos.z + (door.doorMeta.orientation == Direction.Up ? +slotSize/2: door.doorMeta.orientation == Direction.Down ? -slotSize/2 : 0);
+        Vector3 doorPos = new Vector3(x, y, z);
+        Quaternion doorRot = Quaternion.Euler(0, door.doorMeta.orientation == Direction.Up ? 0: door.doorMeta.orientation == Direction.Down ?180:
+            door.doorMeta.orientation == Direction.Left ?270: door.doorMeta.orientation == Direction.Right ?90 : 0, 0);
+        doorObject.transform.position = doorPos;
+        doorObject.transform.rotation = doorRot;
+
+        for (int k = 0; k < door.doorMeta.height; k++)
+        {
+            for (int i = 0; i < door.doorMeta.width; i++)
+            {
+                slots[k, door.x, door.z].GetWall(door.doorMeta.orientation).gO = doorObject;
+                slots[k, door.x, door.z].SetWallObject(door.doorMeta, doorObject);
+            }
+        }
+
+        playerSpawnPos = slots[1, door.x, door.z].transform.position;
+        playerSpawnRot = Quaternion.Euler(0, door.doorMeta.orientation == Direction.Up ? 180 : door.doorMeta.orientation == Direction.Down ? 0 :
+            door.doorMeta.orientation == Direction.Left ? 90 : door.doorMeta.orientation == Direction.Right ? 270 : 0, 0);
+        return true;
+    }
 }

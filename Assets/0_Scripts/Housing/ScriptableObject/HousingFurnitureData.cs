@@ -22,8 +22,6 @@ public class HousingFurnitureData : ScriptableObject
 {
     public string furnitureName;
     public FurnitureType furnitureType = FurnitureType.None;
-    [Tooltip("Only for wall furniture.")]
-    public bool thickness = false;
     public GameObject prefab;
     [Header(" --- Furniture Space --- ")]
     public int rows = 3;
@@ -33,6 +31,11 @@ public class HousingFurnitureData : ScriptableObject
         " Every element in this array represents a top view of the furniture at every height level.")]
     public FurnitureLevel[] furnitureSpace;
     FurnitureLevel[] furnitureSpaceOld;
+
+    [Header(" -- WALL FURNITURE -- ")]
+    [Tooltip("Only for wall furniture.")]
+    public bool thickness = false;
+    public Direction orientation = Direction.Up;
 
 
     public bool validFurnitureSpace
@@ -94,14 +97,14 @@ public class HousingFurnitureData : ScriptableObject
             return auxMaxX;
         }
     }
-    public int minY
+    public int minZ
     {
         get
         {
-            int auxMinY = -1;
+            int auxMinZ = -1;
             if (validFurnitureSpace)
             {
-                auxMinY = furnitureSpace[0].spaces.Length-1;
+                auxMinZ = furnitureSpace[0].spaces.Length-1;
                 for (int k = 0; k < furnitureSpace.Length; k++)
                 {
                     for (int i = 0; i < furnitureSpace[k].spaces.Length; i++)
@@ -110,7 +113,59 @@ public class HousingFurnitureData : ScriptableObject
                         {
                             if (furnitureSpace[k].spaces[i].row[j])
                             {
-                                if (i < auxMinY) auxMinY = i;
+                                if (i < auxMinZ) auxMinZ = i;
+                            }
+                        }
+                    }
+                }
+            }
+            return auxMinZ;
+        }
+    }
+    public int maxZ
+    {
+        get
+        {
+            int auxMaxZ = -1;
+            if (validFurnitureSpace)
+            {
+                auxMaxZ = 0;
+                for (int k = 0; k < furnitureSpace.Length; k++)
+                {
+                    for (int i = 0; i < furnitureSpace[k].spaces.Length; i++)
+                    {
+                        for (int j = 0; j < furnitureSpace[k].spaces[i].row.Length; j++)
+                        {
+                            if (furnitureSpace[k].spaces[i].row[j])
+                            {
+                                if (i > auxMaxZ) auxMaxZ = i;
+                            }
+                        }
+                    }
+                }
+            }
+            return auxMaxZ;
+        }
+    }
+    public int minY
+    {
+        get
+        {
+            int auxMinY = -1;
+            if (validFurnitureSpace)
+            {
+                bool found = false;
+                auxMinY = furnitureSpace.Length-1;
+                for (int k = 0; k < furnitureSpace.Length && !found; k++)
+                {
+                    for (int i = 0; i < furnitureSpace[k].spaces.Length && !found; i++)
+                    {
+                        for (int j = 0; j < furnitureSpace[k].spaces[i].row.Length && !found; j++)
+                        {
+                            if (furnitureSpace[k].spaces[i].row[j])
+                            {
+                                if (k < auxMinY) auxMinY = k;
+                                found = true;
                             }
                         }
                     }
@@ -126,16 +181,18 @@ public class HousingFurnitureData : ScriptableObject
             int auxMaxY = -1;
             if (validFurnitureSpace)
             {
+                bool found = false;
                 auxMaxY = 0;
-                for (int k = 0; k < furnitureSpace.Length; k++)
+                for (int k = furnitureSpace.Length-1; k >= 0 && !found; k--)
                 {
-                    for (int i = 0; i < furnitureSpace[k].spaces.Length; i++)
+                    for (int i = 0; i < furnitureSpace[k].spaces.Length && !found; i++)
                     {
-                        for (int j = 0; j < furnitureSpace[k].spaces[i].row.Length; j++)
+                        for (int j = 0; j < furnitureSpace[k].spaces[i].row.Length && !found; j++)
                         {
                             if (furnitureSpace[k].spaces[i].row[j])
                             {
-                                if (i > auxMaxY) auxMaxY = i;
+                                if (k > auxMaxY) auxMaxY = k;
+                                found = true;
                             }
                         }
                     }
@@ -166,6 +223,18 @@ public class HousingFurnitureData : ScriptableObject
                 auxDepth = maxY - minY + 1;
             }
             return auxDepth;
+        }
+    }
+    public int height
+    {
+        get
+        {
+            int auxHeight = -1;
+            if (validFurnitureSpace)
+            {
+                auxHeight = (maxY - minY) + 1;
+            }
+            return auxHeight;
         }
     }
 
