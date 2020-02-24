@@ -104,7 +104,7 @@ public class HousingFurnitureData : ScriptableObject
             int auxMinZ = -1;
             if (validFurnitureSpace)
             {
-                auxMinZ = furnitureSpace[0].spaces.Length-1;
+                auxMinZ = furnitureSpace[0].spaces.Length - 1;
                 for (int k = 0; k < furnitureSpace.Length; k++)
                 {
                     for (int i = 0; i < furnitureSpace[k].spaces.Length; i++)
@@ -155,7 +155,7 @@ public class HousingFurnitureData : ScriptableObject
             if (validFurnitureSpace)
             {
                 bool found = false;
-                auxMinY = furnitureSpace.Length-1;
+                auxMinY = furnitureSpace.Length - 1;
                 for (int k = 0; k < furnitureSpace.Length && !found; k++)
                 {
                     for (int i = 0; i < furnitureSpace[k].spaces.Length && !found; i++)
@@ -183,7 +183,7 @@ public class HousingFurnitureData : ScriptableObject
             {
                 bool found = false;
                 auxMaxY = 0;
-                for (int k = furnitureSpace.Length-1; k >= 0 && !found; k--)
+                for (int k = furnitureSpace.Length - 1; k >= 0 && !found; k--)
                 {
                     for (int i = 0; i < furnitureSpace[k].spaces.Length && !found; i++)
                     {
@@ -220,7 +220,7 @@ public class HousingFurnitureData : ScriptableObject
             int auxDepth = -1;
             if (validFurnitureSpace)
             {
-                auxDepth = maxY - minY + 1;
+                auxDepth = maxZ - minZ + 1;
             }
             return auxDepth;
         }
@@ -235,6 +235,38 @@ public class HousingFurnitureData : ScriptableObject
                 auxHeight = (maxY - minY) + 1;
             }
             return auxHeight;
+        }
+    }
+    public int widthOrient
+    {
+        get
+        {
+            int auxWidth = -1;
+            if (orientation == Direction.Up || orientation == Direction.Down)
+            {
+                auxWidth = width;
+            }
+            else
+            {
+                auxWidth = depth;
+            }
+            return auxWidth;
+        }
+    }
+    public int depthOrient
+    {
+        get
+        {
+            int auxDepth = -1;
+            if (orientation == Direction.Up || orientation == Direction.Down)
+            {
+                auxDepth = depth;
+            }
+            else
+            {
+                auxDepth = width;
+            }
+            return auxDepth;
         }
     }
 
@@ -314,20 +346,20 @@ public class HousingFurnitureData : ScriptableObject
     void AutoAdjustSpace()
     {
         Debug.Log("Trying to Auto Adjust Space");
-        if(minX > 0)
+        if (minX > 0)
         {
             int moveAmount = minX;
             AdjustSpace(Direction.Left, moveAmount);
         }
 
-        if(minY > 0)
+        if (minY > 0)
         {
             int moveAmount = minY;
             AdjustSpace(Direction.Up, moveAmount);
         }
     }
 
-    void AdjustSpace (Direction dir, int moveAmount)
+    void AdjustSpace(Direction dir, int moveAmount)
     {
         Debug.Log("Adjusting Space in direction " + dir + " with amount " + moveAmount);
         for (int i = 0; i < furnitureSpace.Length; i++)
@@ -359,9 +391,9 @@ public class FurnitureLevel
 
     public void Adjust(Direction dir, int moveAmount)
     {
-        if(rows != spaces.Length)
+        if (rows != spaces.Length)
         {
-            Debug.LogError("FurnitureLevel -> Adjust: Error: rows("+rows+") and spaces.Length("+ spaces.Length + ") do not match");
+            Debug.LogError("FurnitureLevel -> Adjust: Error: rows(" + rows + ") and spaces.Length(" + spaces.Length + ") do not match");
             return;
         }
         if (columns != spaces[0].row.Length)
@@ -384,7 +416,7 @@ public class FurnitureLevel
                     for (int j = 0; j < spaces[i].row.Length && (j + moveAmount) < spaces[i].row.Length; j++)
                     {
                         newSpaces[i].row[j] = spaces[i].row[j + moveAmount];
-                        Debug.Log("Adjust: Moving ["+i+","+(j+moveAmount)+"] to ["+i+","+j+"] with value = " + spaces[i].row[j + moveAmount]);
+                        Debug.Log("Adjust: Moving [" + i + "," + (j + moveAmount) + "] to [" + i + "," + j + "] with value = " + spaces[i].row[j + moveAmount]);
                     }
                 }
                 break;

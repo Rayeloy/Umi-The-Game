@@ -106,7 +106,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     [Range(0, 180)]
     public float instantRotationMinAngle = 120;
     float rotationRestrictedPercentage = 1;
-    float targetRotAngle;
+    [HideInInspector]
+    public float targetRotAngle;
     float rotationVelocity = 2;
 
     [Header("--- SPEED ---")]
@@ -285,7 +286,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         get
         {
             StageScript stageScript = collCheck.floor != null ? collCheck.floor.GetComponent<StageScript>() : null;
-            if (stageScript != null) Debug.Log("stageScript = " + stageScript + "; stageScript.bounceJumpable = "
+            if (!disableAllDebugs && vertMovementDebugsOn && stageScript != null) Debug.Log("stageScript = " + stageScript + "; stageScript.bounceJumpable = "
      + stageScript.bounceJumpable);
             return (stageScript == null || (stageScript != null && stageScript.bounceJumpable));
         }
@@ -527,9 +528,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         jumpVelocity = Mathf.Abs(gravity * jumpApexTime);
         maxTimePressingJump = jumpApexTime * pressingJumpActiveProportion;
         wallJumpRadius = Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad) * walJumpConeHeight;
-        if (!disableAllDebugs) Debug.Log("wallJumpRaduis = " + wallJumpRadius + "; tan(wallJumpAngle)= " + Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad));
+        if (!disableAllDebugs && startDebugsOn) Debug.Log("wallJumpRaduis = " + wallJumpRadius + "; tan(wallJumpAngle)= " + Mathf.Tan(wallJumpAngle * Mathf.Deg2Rad));
         wallJumpMinHorizAngle = Mathf.Clamp(wallJumpMinHorizAngle, 0, 90);
-        if(!disableAllDebugs) Debug.Log("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
+        if(!disableAllDebugs && startDebugsOn) Debug.Log("Gravity = " + gravity + "; Jump Velocity = " + jumpVelocity);
 
         finalMaxMoveSpeed = currentMaxMoveSpeed = maxMoveSpeed;
         knockbackBreakAcc = Mathf.Clamp(knockbackBreakAcc, -float.MaxValue, breakAcc);//menos de break Acc lo haría ver raro
@@ -565,6 +566,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void KonoFixedUpdate()
     {
+
         if (!disableAllDebugs && updateDebugsOn) Debug.LogWarning("PLAYER FIXED UPDATE: ");
         //Debug.LogWarning("Current pos = " + transform.position.ToString("F8"));
         lastPos = transform.position;
@@ -2262,7 +2264,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     void SmoothRotateCharacter()
     {
-        if (myCamera.camMode == cameraMode.Free)
+        if (myCamera.camMode == cameraMode.Free )//TO DO: Bloquear en knockback?
         {
             float currentAngle = rotateObj.rotation.eulerAngles.y;
             //if(currentAngle != targetRotAngle)

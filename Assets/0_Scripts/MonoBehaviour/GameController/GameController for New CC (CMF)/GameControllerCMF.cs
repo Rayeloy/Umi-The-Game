@@ -185,7 +185,7 @@ public class GameControllerCMF : MonoBehaviour
         }
 
         //AUTOMATIC PLAYERS & CAMERAS/CANVAS SETUP
-        PlayersSetup();
+        PlayersSetup();// Spawn positions
         SetUpCanvases();
         AllAwakes();
         //}
@@ -297,6 +297,7 @@ public class GameControllerCMF : MonoBehaviour
         RenController.instance.disabled = true;
         for (int i = 0; i < playerNum; i++)
         {
+            Debug.Log("Respawning player " + (i+1) + "/" + (playerNum));
             RespawnPlayer(allPlayers[i]);
         }
     }
@@ -419,7 +420,7 @@ public class GameControllerCMF : MonoBehaviour
                 if (allPlayers.Count == 1)
                 {
                     GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
-                    if (debugModeOn) Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
+                    if (debugModeOn) Debug.Log("My actions are = " + GameInfo.instance.myControls);
                     allPlayers[0].actions = GameInfo.instance.myControls;
                 }
                 else
@@ -506,6 +507,7 @@ public class GameControllerCMF : MonoBehaviour
                     break;
             }
             //}
+            if(gameMode != GameMode.Housing)
             SetSpawnPositions();
         }
 
@@ -643,9 +645,7 @@ public class GameControllerCMF : MonoBehaviour
 
         //Añadir a los arrays todos los componentes del jugador
         //guarda jugador
-        if (debugModeOn) Debug.Log("1 allPlayers.Count = " + allPlayers.Count);
         allPlayers.Add(player);
-        if (debugModeOn) Debug.Log("2 allPlayers.Count = " + allPlayers.Count);
         //if (online)
         //{
         //    if (jugadaGalaxia)
@@ -1015,6 +1015,8 @@ public class GameControllerCMF : MonoBehaviour
         player.SetVelocity(Vector3.zero);
         player.transform.position = player.mySpawnInfo.position;
         player.rotateObj.transform.rotation = player.mySpawnInfo.rotation;
+        player.targetRotAngle = player.mySpawnInfo.rotation.eulerAngles.y;
+        Debug.LogWarning("Respawn Player:  player.mySpawnInfo.position = " + player.mySpawnInfo.position + "; player.mySpawnInfo.rotation.y = " + player.mySpawnInfo.rotation.eulerAngles.y);
         //print("Player " + player.gameObject.name + " respawn rotation = " + player.spawnRotation.eulerAngles);
 
         //player.myCamera.KonoAwake();

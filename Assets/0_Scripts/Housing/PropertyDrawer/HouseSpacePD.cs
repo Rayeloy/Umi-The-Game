@@ -121,9 +121,9 @@ public class HouseSpacePD : PropertyDrawer
                     {
                         if (copyUpSwitch[k - 1])
                         {
-                            for (int i = 0; i < width; i++)
+                            for (int i = 0; i < depth; i++)
                             {
-                                for (int j = 0; j < depth; j++)
+                                for (int j = 0; j < width; j++)
                                 {
                                     SerializedProperty row = houseLevels.GetArrayElementAtIndex(k).FindPropertyRelative("houseLevelRows").GetArrayElementAtIndex(i).FindPropertyRelative("row");
                                     SerializedProperty auxBool = row.GetArrayElementAtIndex(j);
@@ -140,9 +140,9 @@ public class HouseSpacePD : PropertyDrawer
                     {
                         if (copyDownSwitch[k])
                         {
-                            for (int i = 0; i < width; i++)
+                            for (int i = 0; i < depth; i++)
                             {
-                                for (int j = 0; j < depth; j++)
+                                for (int j = 0; j < width; j++)
                                 {
                                     SerializedProperty row = houseLevels.GetArrayElementAtIndex(k).FindPropertyRelative("houseLevelRows").GetArrayElementAtIndex(i).FindPropertyRelative("row");
                                     SerializedProperty auxBool = row.GetArrayElementAtIndex(j);

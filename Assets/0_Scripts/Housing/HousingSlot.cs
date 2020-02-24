@@ -38,6 +38,19 @@ public class HousingSlot : MonoBehaviour
         }
     }
 
+    public bool hasAnyWallFurniture
+    {
+        get
+        {
+            bool result = false;
+            for (int i = 0; i < myWalls.Length; i++)
+            {
+                if (myWalls[i].myWallFurniture != null) result = true;
+            }
+            return result;
+        }
+    }
+
     public void KonoAwake(HousingGridCoordinates _gridCoordinates, float _size, HousingSlotType _slotType = HousingSlotType.None,
         bool leftWall = false, bool rightWall = false, bool upWall = false, bool downWall = false)
     {
@@ -58,7 +71,7 @@ public class HousingSlot : MonoBehaviour
     {
         for (int i = 0; i < myWalls.Length; i++)
         {
-            if(myWalls[i].orientation == _orientation)
+            if (myWalls[i].orientation == _orientation)
             {
                 return myWalls[i];
             }
@@ -66,12 +79,72 @@ public class HousingSlot : MonoBehaviour
         return null;
     }
 
-    public bool SetWallObject (HousingFurnitureData furnitureMeta, GameObject _gO)
+    bool SetWallFurniture(HousingFurnitureData _furnitureMeta, GameObject _gO)
     {
         bool result = false;
         if (!thickness)
         {
-            //TO DO: set to false other walls if has thickness & set this wall 
+            if (_furnitureMeta.thickness)
+            {
+                for (int i = 0; i < myWalls.Length; i++)
+                {
+                    if (myWalls[i].orientation != _furnitureMeta.orientation)
+                    {
+                        if (myWalls[i].myWallFurniture != null)
+                        {
+                            Debug.LogError("Can't place Wall Furniture here because this furniture has thickness and there is already at least 1 wall furniture in this slot.");
+                            return false;
+                        }
+                    }
+                }
+                    //TO DO: set to false other walls if has thickness & set this wall 
+                    for (int i = 0; i < myWalls.Length; i++)
+                    {
+                        if (myWalls[i].orientation != _furnitureMeta.orientation)
+                        {
+                            myWalls[i].valid = false;
+                        }
+                        else
+                        {
+                            myWalls[i].myWallFurniture = _furnitureMeta;
+                            myWalls[i].gO = myFurnitureObject;
+                        }
+                    }
+                result = true;
+            }
+            else
+            {
+
+            }
+        }
+        else
+        {
+            Debug.LogError("Can't place furniture here because this slot has already thickness");
+            return false;
+        }
+
+        return result;
+    }
+
+    public bool SetFurniture(HousingFurnitureData _furnitureMeta, GameObject _gO)
+    {
+        bool result = false;
+        if (_furnitureMeta.furnitureType == FurnitureType.Wall)
+        {
+            if (slotType == HousingSlotType.Wall || slotType == HousingSlotType.WallAndFloor)
+            {
+                result = SetWallFurniture(_furnitureMeta, _gO);
+            }
+            else
+            {
+                Debug.LogError("Can't place a wall furniture here because the slot is not of wall type.");
+                return false;
+            }
+        }
+        else
+        {
+            //TO DO: 
+            Debug.LogError("TO DO");
         }
         return result;
     }
@@ -79,15 +152,23 @@ public class HousingSlot : MonoBehaviour
 
 public struct HousingGridCoordinates
 {
-    int y;
-    int x;
-    int z;
+    public int y;
+    public int x;
+    public int z;
 
     public HousingGridCoordinates(int _y, int _x, int _z)
     {
         y = _y;
         x = _x;
         z = _z;
+    }
+
+    public string printString
+    {
+        get
+        {
+            return "("+ y + ","+ z + ","+ x + ")";
+        }
     }
 }
 
@@ -101,7 +182,7 @@ public class HousingSlotWall
     {
         get
         {
-            return myWallFurniture !=null? myWallFurniture.thickness : false;
+            return myWallFurniture != null ? myWallFurniture.thickness : false;
         }
     }
 

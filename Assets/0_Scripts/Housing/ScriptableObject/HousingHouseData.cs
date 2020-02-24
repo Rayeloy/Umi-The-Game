@@ -42,6 +42,10 @@ public class HousingHouseData : ScriptableObject
     HouseSpace oldHouseSpace;
     private void OnValidate()
     {
+        if (Application.isPlaying)
+        {
+            return;
+        }
         if (reset)
         {
             reset = false;
@@ -163,6 +167,19 @@ public class HousingHouseData : ScriptableObject
         CopyHouseSpace(houseSpace, ref oldHouseSpace);
     }
 
+    public bool GetAtIndex(int k, int i, int j)
+    {
+        return houseSpace.houseLevels[k].houseLevelRows[i].row[j];
+    }
+    public Row GetAtIndex(int k, int i)
+    {
+        return houseSpace.houseLevels[k].houseLevelRows[i];
+    }
+    public HouseLevel GetAtIndex(int k)
+    {
+        return houseSpace.houseLevels[k];
+    }
+
     void CopyHouseSpace(HouseSpace origHouseSpace, ref HouseSpace targetHouseSpace)
     {
         if(origHouseSpace==null || targetHouseSpace == null)
@@ -205,6 +222,14 @@ public class HouseSpace
     public int height;
     public int width;
     public int depth;
+
+    public bool valid
+    {
+        get
+        {
+            return height > 0 && width > 0 && depth > 0;
+        }
+    }
     public HouseSpace(int _height, int _depth, int _width)
     {
         height = _height;
@@ -216,9 +241,155 @@ public class HouseSpace
             houseLevels[i] = new HouseLevel(depth, width);
         }
     }
+
+    public bool GetAtIndex(int k, int i, int j)
+    {
+        return houseLevels[k].houseLevelRows[i].row[j];
+    }
+    public Row GetAtIndex(int k, int i)
+    {
+        return houseLevels[k].houseLevelRows[i];
+    }
+    public HouseLevel GetAtIndex(int k)
+    {
+        return houseLevels[k];
+    }
+
+    public int minX
+    {
+        get
+        {
+            int auxMinX = -1;
+            if (valid)
+            {
+                auxMinX = width - 1;
+                for (int k = 0; k < height && auxMinX != 0; k++)
+                {
+                    for (int i = 0; i < depth && auxMinX != 0; i++)
+                    {
+                        for (int j = 0; j < width && auxMinX != 0; j++)
+                        {
+                            if (GetAtIndex(k, i, j) && j < auxMinX) auxMinX = j;
+                        }
+                    }
+                }
+            }
+            return auxMinX;
+        }
+    }
+    public int maxX
+    {
+        get
+        {
+            int auxMaxX = -1;
+            if (valid)
+            {
+                auxMaxX = 0;
+                for (int k = 0; k < height && auxMaxX != width - 1; k++)
+                {
+                    for (int i = 0; i < depth && auxMaxX != width - 1; i++)
+                    {
+                        for (int j = width - 1; j >= 0 && auxMaxX != width - 1; j--)
+                        {
+                            if (GetAtIndex(k, i, j) && j > auxMaxX) auxMaxX = j;
+                        }
+                    }
+                }
+            }
+            return auxMaxX;
+        }
+    }
+    public int minZ
+    {
+        get
+        {
+            int auxMinZ = -1;
+            if (valid)
+            {
+                auxMinZ = depth - 1;
+                for (int k = 0; k < height && auxMinZ != 0; k++)
+                {
+                    for (int i = 0; i < depth && auxMinZ != 0; i++)
+                    {
+                        for (int j = 0; j < width && auxMinZ != 0; j++)
+                        {
+                            if (GetAtIndex(k, i, j) && i < auxMinZ) auxMinZ = i;
+                        }
+                    }
+                }
+            }
+            return auxMinZ;
+        }
+    }
+    public int maxZ
+    {
+        get
+        {
+            int auxMaxZ = -1;
+            if (valid)
+            {
+                auxMaxZ = 0;
+                for (int k = 0; k < height && auxMaxZ != depth - 1; k++)
+                {
+                    for (int i = depth - 1; i >= 0 && auxMaxZ != depth - 1; i--)
+                    {
+                        for (int j = 0; j < width && auxMaxZ != depth - 1; j++)
+                        {
+                            if (GetAtIndex(k, i, j) && i > auxMaxZ) auxMaxZ = i;
+                        }
+                    }
+                }
+            }
+            return auxMaxZ;
+        }
+    }
+    public int minY
+    {
+        get
+        {
+            int auxMinY = -1;
+            if (valid)
+            {
+                auxMinY = height - 1;
+                for (int k = 0; k < height && auxMinY != 0; k++)
+                {
+                    for (int i = 0; i < depth && auxMinY != 0; i++)
+                    {
+                        for (int j = 0; j < width && auxMinY != 0; j++)
+                        {
+                            if (GetAtIndex(k, i, j) && k < auxMinY) auxMinY = k;
+                        }
+                    }
+                }
+            }
+            return auxMinY;
+        }
+    }
+    public int maxY
+    {
+        get
+        {
+            int auxMaxY = -1;
+            if (valid)
+            {
+                auxMaxY = 0;
+                for (int k = height - 1; k >= 0 && auxMaxY != height - 1; k--)
+                {
+                    for (int i = 0; i < depth && auxMaxY != height - 1; i++)
+                    {
+                        for (int j = 0; j < width && auxMaxY != height - 1; j++)
+                        {
+                            if (GetAtIndex(k, i, j) && k > auxMaxY) auxMaxY = k;
+                        }
+                    }
+                }
+            }
+            return auxMaxY;
+        }
+    }
 }
 
-[System.Serializable]
+    [System.Serializable]
 public class HouseLevel
 {
     public int width;

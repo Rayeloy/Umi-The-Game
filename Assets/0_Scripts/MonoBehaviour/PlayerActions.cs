@@ -4,6 +4,13 @@ using InControl;
 
 public class PlayerActions : PlayerActionSet
 {
+    public bool isKeyboard
+    {
+        get
+        {
+            return Device == null;
+        }
+    }
     public InputDeviceClass controlsType;
 
     public PlayerAction R1;
@@ -34,6 +41,7 @@ public class PlayerActions : PlayerActionSet
     public PlayerAction L3;
 
     public PlayerAction Start;
+    public PlayerAction Select;
 
     public PlayerActions()
     {
@@ -64,6 +72,7 @@ public class PlayerActions : PlayerActionSet
         L3 = CreatePlayerAction("L3");
 
         Start = CreatePlayerAction("Start");
+        Select = CreatePlayerAction("Select");
     }
 
     public static PlayerActions CreateDefaultBindings()
@@ -97,6 +106,8 @@ public class PlayerActions : PlayerActionSet
         actions.R3.AddDefaultBinding(Key.Key5);
 
         actions.Start.AddDefaultBinding(Key.Escape);
+        actions.Select.AddDefaultBinding(Key.Tab);
+
 
         // JOYSTICK
         actions.controlsType = InputDeviceClass.Controller;
@@ -126,6 +137,7 @@ public class PlayerActions : PlayerActionSet
         actions.L3.AddDefaultBinding(InputControlType.LeftStickButton);
 
         actions.Start.AddDefaultBinding(InputControlType.Start);
+        actions.Select.AddDefaultBinding(InputControlType.Select);
         return actions;
     }
 

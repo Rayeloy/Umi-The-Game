@@ -35,8 +35,6 @@ public class CameraControllerCMF : MonoBehaviour
     public float camDistanceXToPlayer;
     public float camDistanceYToPlayer;
     public float camDistanceZToPlayer;
-    float mouseX = 0;
-    float mouseY = 0;
     float finalInputX;
     float finalInputZ;
     public float smoothX;
@@ -146,8 +144,8 @@ public class CameraControllerCMF : MonoBehaviour
                 inputX = 0;
                 inputZ = 0;
             }
-            finalInputX = inputX + mouseX;
-            finalInputZ = inputZ + mouseY;
+            finalInputX = inputX;
+            finalInputZ = inputZ;
 
             Quaternion localRotation = Quaternion.Euler(0, 0, 0);
             switch (camMode)
