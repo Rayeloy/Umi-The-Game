@@ -9,6 +9,7 @@ using UnityEngine;
 public class PlayerVFXCMF : MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
+    public bool debugModeOn = false;
     //Referencias
     public PlayerMovementCMF myPlayerMovement;
 
@@ -40,7 +41,7 @@ public class PlayerVFXCMF : MonoBehaviour
     public void KonoStart()
     {
         dashTrail.emitting = false;
-        Debug.Log("My weapon skin go = " + myPlayerMovement.myPlayerWeap.currentWeaponSkin.gameObject);
+        if(debugModeOn) Debug.Log("My weapon skin go = " + myPlayerMovement.myPlayerWeap.currentWeaponSkin.gameObject);
         weaponTrailRenderers = myPlayerMovement.myPlayerWeap.currentWeaponSkin.trailRenderers;
         for (int i = 0; i < weaponTrailRenderers.Length; i++)
         {

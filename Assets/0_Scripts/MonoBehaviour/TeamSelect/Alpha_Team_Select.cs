@@ -25,7 +25,6 @@ public class Alpha_Team_Select : MonoBehaviour
 
     PlayerActions keyboardListener;
     PlayerActions joystickListener;
-    JoyStickControls myJoyStickControls;
 
     TeamSelectMenuState teamSelectMenuSt = TeamSelectMenuState.ChoosingMapVariation;
 
@@ -80,7 +79,6 @@ public class Alpha_Team_Select : MonoBehaviour
             selectPlayers[i].myCanvas.gameObject.SetActive(false);
             selectPlayers[i].deadzone = deadzone;
         }
-        myJoyStickControls = new JoyStickControls();
     }
 
     void Start()
@@ -251,26 +249,6 @@ public class Alpha_Team_Select : MonoBehaviour
         InputManager.OnDeviceDetached -= OnDeviceDetached;
         joystickListener.Destroy();
         keyboardListener.Destroy();
-    }
-
-    void ResetJoystickControls()
-    {
-        if (GameInfo.instance.myControls.LeftJoystick.Y > -deadzone && myJoyStickControls.downIsPressed)
-        {
-            myJoyStickControls.downIsPressed = false;
-        }
-        if (GameInfo.instance.myControls.LeftJoystick.Y < deadzone && myJoyStickControls.upIsPressed)
-        {
-            myJoyStickControls.upIsPressed = false;
-        }
-        if (GameInfo.instance.myControls.LeftJoystick.X > -deadzone && myJoyStickControls.leftIsPressed)
-        {
-            myJoyStickControls.leftIsPressed = false;
-        }
-        if (GameInfo.instance.myControls.LeftJoystick.X < deadzone && myJoyStickControls.rightIsPressed)
-        {
-            myJoyStickControls.rightIsPressed = false;
-        }
     }
 
     public void LockMapVariation(int mapIndex)
@@ -759,7 +737,7 @@ public class SelectPlayer
                 }
                 break;
         }
-        myJoyStickControls = new JoyStickControls();
+        myJoyStickControls = new JoyStickControls(GameInfo.instance.myControls.LeftJoystick, deadzone);
 
         // AJUSTE DE ESCALA DE LA HUD PARA CAMARAS CON RECT DESPROPORCIONADO
         RectTransform teamText = myTeamSelectPlayerCanvas.teamNameText.GetComponent<RectTransform>();
@@ -796,17 +774,13 @@ public class SelectPlayer
                     break;
                 case TeamSelectPlayerState.SelectingTeam:
                     //Debug.Log("Selecting Team: myControls.LeftJoystick.X = "+ myControls.LeftJoystick.X);
-                    if (myControls.LeftJoystick.X < -deadzone && !myJoyStickControls.leftIsPressed)
+                    if (myJoyStickControls.LeftWasPressed)
                     {
-                        //Debug.Log("Left was pressed");
-                        myJoyStickControls.leftIsPressed = true;
                         ChangeTeam(1);
                         //Animation Left
                     }
-                    else if (myControls.LeftJoystick.X > deadzone && !myJoyStickControls.rightIsPressed)
+                    else if (myJoyStickControls.RightWasPressed)
                     {
-                        //Debug.Log("Right was pressed");
-                        myJoyStickControls.rightIsPressed = true;
                         ChangeTeam(0);
                         //Animation Right
                     }
@@ -828,22 +802,8 @@ public class SelectPlayer
                     }
                     break;
             }
-            if (GameInfo.instance.myControls.LeftJoystick.Y > -deadzone && myJoyStickControls.downIsPressed)
-            {
-                myJoyStickControls.upIsPressed = false;
-            }
-            if (GameInfo.instance.myControls.LeftJoystick.Y < deadzone && myJoyStickControls.upIsPressed)
-            {
-                myJoyStickControls.downIsPressed = false;
-            }
-            if (GameInfo.instance.myControls.LeftJoystick.X > -deadzone && myJoyStickControls.leftIsPressed)
-            {
-                myJoyStickControls.leftIsPressed = false;
-            }
-            if (GameInfo.instance.myControls.LeftJoystick.X < deadzone && myJoyStickControls.rightIsPressed)
-            {
-                myJoyStickControls.rightIsPressed = false;
-            }
+
+            myJoyStickControls.ResetJoyStick();
         }
     }
 
@@ -1058,8 +1018,78 @@ public class SelectPlayer
 
 public class JoyStickControls
 {
+    PlayerTwoAxisAction joyStick;
+    float deadzone;
+
     public bool leftIsPressed = false;
-    public bool downIsPressed = false;
     public bool rightIsPressed = false;
+    public bool downIsPressed = false;
     public bool upIsPressed = false;
+
+    public bool LeftWasPressed
+    {
+        get
+        {
+            bool result = joyStick.X < -deadzone && !leftIsPressed;
+            if(result) leftIsPressed = true;
+            return result;
+        }
+    }
+    public bool RightWasPressed
+    {
+        get
+        {
+            bool result = joyStick.X > deadzone && !rightIsPressed;
+            if (result) rightIsPressed = true;
+            return result;
+        }
+    }
+    public bool DownWasPressed
+    {
+        get
+        {
+            bool result = joyStick.Y < -deadzone && !downIsPressed;
+            if (result) downIsPressed = true;
+            return result;
+        }
+    }
+    public bool UpWasPressed
+    {
+        get
+        {
+            bool result = joyStick.Y > deadzone && !upIsPressed;
+            if (result) upIsPressed = true;
+            return result;
+        }
+    }
+
+
+    public JoyStickControls(PlayerTwoAxisAction _joyStick, float _deadzone=0.2f)
+    {
+        joyStick = _joyStick;
+        deadzone = _deadzone;
+    }
+
+    /// <summary>
+    /// IMPORTANT to do it ALWAYS, and at the END of the Update.
+    /// </summary>
+    public void ResetJoyStick()
+    {
+        if (joyStick.Y > -deadzone && downIsPressed)
+        {
+            downIsPressed = false;
+        }
+        if (joyStick.Y < deadzone && upIsPressed)
+        {
+            upIsPressed = false;
+        }
+        if (joyStick.X > -deadzone && leftIsPressed)
+        {
+            leftIsPressed = false;
+        }
+        if (joyStick.X < deadzone && rightIsPressed)
+        {
+            rightIsPressed = false;
+        }
+    }
 }

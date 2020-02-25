@@ -110,5 +110,9 @@ public static class VectorMath {
 		return _normalizedVector * _newLength;
 	}
 
-
+    public static Vector3 MiddlePoint(Vector3 pointA, Vector3 pointB)
+    {
+        Vector3 dir = (pointB - pointA);
+        return pointA + (dir / 2);
+    }
 }

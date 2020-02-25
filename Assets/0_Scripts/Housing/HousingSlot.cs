@@ -153,8 +153,8 @@ public class HousingSlot : MonoBehaviour
 public struct HousingGridCoordinates
 {
     public int y;
-    public int x;
     public int z;
+    public int x;
 
     public HousingGridCoordinates(int _y, int _x, int _z)
     {

@@ -8,6 +8,8 @@ using UnityEngine;
 public class PlayerWeaponsCMF : MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
+    public bool debugModeOn = false;
+
     //Referencias
     [Header("Referencias")]
     public PlayerAnimationCMF myPlayerAnim;
@@ -155,7 +157,7 @@ public class PlayerWeaponsCMF : MonoBehaviour
 
     public void PickupWeapon(WeaponData weaponData)
     {
-        Debug.Log("PickupWeapon Start");
+        if(debugModeOn) Debug.Log("PickupWeapon Start");
         //if (!hasWeapon)
         //{
         //    //print("SET PLAYER LAYER TO GO THROUGH SPAWN WALLS");
@@ -229,7 +231,7 @@ public class PlayerWeaponsCMF : MonoBehaviour
 
     public void SetTeamWeapon(Team team)
     {
-        Debug.Log("SetTeamWeapon Start");
+        if(debugModeOn) Debug.Log("SetTeamWeapon Start");
         switch (team)
         {
             case Team.A:

@@ -45233,9 +45233,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcb1f6fd1a158a74f9c7f9580017ee6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllDebugs: 0
+  disableAllDebugs: 1
   updateDebugsOn: 0
-  startDebugsOn: 1
+  startDebugsOn: 0
   charContDebugsOn: 0
   horMovementDebugsOn: 0
   vertMovementDebugsOn: 0
@@ -45256,6 +45256,7 @@ MonoBehaviour:
   cameraFollow: {fileID: 3707974620405122464}
   rotateObj: {fileID: 3859628569363590123}
   instantRotationMinAngle: 120
+  targetRotAngle: 0
   maxFallSpeed: 40
   maxAscendSpeed: 40
   maxMoveSpeed: 10
@@ -45407,7 +45408,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 300e5e0114c9a4e4296d3361ccce336f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugModeOn: 1
+  debugModeOn: 0
   hitboxDebugsOn: 0
   myPlayerMovement: {fileID: 0}
   myPlayerHUD: {fileID: 0}
@@ -45441,7 +45442,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a4c82b982cceb54c9d5bbd97ffefb92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugModeOn: 1
+  debugModeOn: 0
   charContDebugsOn: 0
   myCameraBase: {fileID: 0}
   hookSt: 0
@@ -45480,6 +45481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f241ddb2c7ccc04f9bd0465a7bd7150, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugModeOn: 0
   myPlayerAnim: {fileID: 3492127030470539752}
   myPlayerMovement: {fileID: 873758771431004316}
   myPlayerCombatNew: {fileID: 8719508589324532801}
@@ -60190,6 +60192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a24b9440477da2045b164640b63b5b8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugModeOn: 0
   myPlayerMovement: {fileID: 873758771431004316}
   effects:
   - effectType: 1

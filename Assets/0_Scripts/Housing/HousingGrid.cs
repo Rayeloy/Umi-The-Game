@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class HousingGrid : MonoBehaviour
 {
-    HousingHouseData myHouseMeta;
+    [HideInInspector]
+    public HousingHouseData myHouseMeta;
+    HousingSlot[,,] slots;// (level,row,column)
+    [HideInInspector]
+    public HousingGridCoordinates currentSlotCoord;
+
 
     public int width;
     public int depth;
@@ -12,6 +17,7 @@ public class HousingGrid : MonoBehaviour
     GameObject slotPrefab;
     GameObject wallPrefab;
     Vector3 housePos = Vector3.zero;
+    Material highlightedSlotMat;
     public Vector3 center
     {
         get
@@ -25,19 +31,18 @@ public class HousingGrid : MonoBehaviour
                 min.y += (myHouseMeta.housingSlotSize * myHouseMeta.houseSpace.minY);
                 Vector3 max = housePos;
                 max.x += (myHouseMeta.housingSlotSize * myHouseMeta.houseSpace.maxX);
-                max.z += (myHouseMeta.housingSlotSize * myHouseMeta.houseSpace.maxZ);
+                max.z -= (myHouseMeta.housingSlotSize * myHouseMeta.houseSpace.maxZ);
                 max.y += (myHouseMeta.housingSlotSize * myHouseMeta.houseSpace.maxY);
-
-                result = max - min;
+                result = VectorMath.MiddlePoint(min, max);
+                Debug.Log("HousingGrid: center = " + result.ToString("F4") + "; min = "+ min.ToString("F4") + "; max = " +max.ToString("F4"));
             }
 
             return result;
         }
     }
 
-    HousingSlot[,,] slots;// (level,row,column)
 
-    public void KonoAwake(HousingHouseData _myHouseMeta, GameObject _slotPrefab, GameObject _wallPrefab, Vector3 _housePos)
+    public void KonoAwake(HousingHouseData _myHouseMeta, GameObject _slotPrefab, GameObject _wallPrefab, Vector3 _housePos, Material _highlightedSlotMat)
     {
         myHouseMeta = _myHouseMeta;
 
@@ -50,6 +55,9 @@ public class HousingGrid : MonoBehaviour
         slotPrefab = _slotPrefab;
         wallPrefab = _wallPrefab;
         housePos = _housePos;
+
+        highlightedSlotMat = _highlightedSlotMat;
+        currentSlotCoord = new HousingGridCoordinates();
     }
 
     public void CreateGrid(bool showSlotMeshes = false)
@@ -101,9 +109,9 @@ public class HousingGrid : MonoBehaviour
 
                         bool wall = wallLeft || wallRight || wallUp || wallDown;
                         slotType = wall ? (floor ? HousingSlotType.WallAndFloor : HousingSlotType.Wall) : floor ? HousingSlotType.Floor : HousingSlotType.None;
-                        Debug.Log("wall = " + wall + "; floor = " + floor);
+                        //Debug.Log("wall = " + wall + "; floor = " + floor);
                         #endregion
-                        Debug.Log("Housing: Initializing slot "+ coord.printString + " with slotType = " +slotType);
+                        //Debug.Log("Housing: Initializing slot "+ coord.printString + " with slotType = " +slotType);
                         //Initialize slot
                         newSlot.KonoAwake(coord, slotSize, slotType, wallLeft, wallRight, wallUp, wallDown);
 
@@ -119,7 +127,7 @@ public class HousingGrid : MonoBehaviour
         }
     }
 
-    public void CreateWalls()
+    public void CreateWalls(bool _showCollisionWalls, Material[] wallMats)
     {
         if (myHouseMeta == null) return;
 
@@ -142,8 +150,7 @@ public class HousingGrid : MonoBehaviour
                         Vector3 wallPos = new Vector3(parentSlot.transform.position.x - wallDist, parentSlot.transform.position.y, parentSlot.transform.position.z);
                         GameObject wallObject = Instantiate(wallPrefab, wallPos, Quaternion.Euler(0, 270, 0), null);
                         wallObject.name = "LeftWall";
-                        wallObject.transform.localScale = new Vector3(myHouseMeta.housingSlotSize, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z);
-                        wallObject.transform.parent = parentSlot;
+                        SetUpWall(wallObject, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z, parentSlot, _showCollisionWalls, wallMats);
                     }
 
                     //RIGHT
@@ -153,8 +160,7 @@ public class HousingGrid : MonoBehaviour
                         Vector3 wallPos = new Vector3(parentSlot.transform.position.x + wallDist, parentSlot.transform.position.y, parentSlot.transform.position.z);
                         GameObject wallObject = Instantiate(wallPrefab, wallPos, Quaternion.Euler(0, 90, 0), null);
                         wallObject.name = "RightWall";
-                        wallObject.transform.localScale = new Vector3(myHouseMeta.housingSlotSize, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z);
-                        wallObject.transform.parent = parentSlot;
+                        SetUpWall(wallObject, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z, parentSlot, _showCollisionWalls, wallMats);
                     }
 
                     //FRONT
@@ -164,8 +170,7 @@ public class HousingGrid : MonoBehaviour
                         Vector3 wallPos = new Vector3(parentSlot.transform.position.x, parentSlot.transform.position.y, parentSlot.transform.position.z + wallDist);
                         GameObject wallObject = Instantiate(wallPrefab, wallPos, Quaternion.Euler(0, 0, 0), null);
                         wallObject.name = "FrontWall";
-                        wallObject.transform.localScale = new Vector3(myHouseMeta.housingSlotSize, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z);
-                        wallObject.transform.parent = parentSlot;
+                        SetUpWall(wallObject, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z, parentSlot, _showCollisionWalls, wallMats);
                     }
 
                     //BACK
@@ -175,8 +180,7 @@ public class HousingGrid : MonoBehaviour
                         Vector3 wallPos = new Vector3(parentSlot.transform.position.x, parentSlot.transform.position.y, parentSlot.transform.position.z - wallDist);
                         GameObject wallObject = Instantiate(wallPrefab, wallPos, Quaternion.Euler(0, 180, 0), null);
                         wallObject.name = "BackWall";
-                        wallObject.transform.localScale = new Vector3(myHouseMeta.housingSlotSize, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z);
-                        wallObject.transform.parent = parentSlot;
+                        SetUpWall(wallObject, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z, parentSlot, _showCollisionWalls, wallMats);
                     }
 
                     //Floor
@@ -186,9 +190,7 @@ public class HousingGrid : MonoBehaviour
                         Vector3 wallPos = new Vector3(parentSlot.transform.position.x, parentSlot.transform.position.y - wallDist, parentSlot.transform.position.z);
                         GameObject wallObject = Instantiate(wallPrefab, wallPos, Quaternion.Euler(90, 0, 0), null);
                         wallObject.name = "FloorTile";
-                        wallObject.transform.localScale = new Vector3(myHouseMeta.housingSlotSize, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z);
-                        //Debug.Log("Wall " + wallObject.name + " localScale =  " + wallObject.transform.localScale + "; slotSize = " + myHouseMeta.housingSlotSize);
-                        wallObject.transform.parent = parentSlot;
+                        SetUpWall(wallObject, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z, parentSlot, _showCollisionWalls, wallMats);
                     }
 
                     //Ceiling
@@ -198,13 +200,23 @@ public class HousingGrid : MonoBehaviour
                         Vector3 wallPos = new Vector3(parentSlot.transform.position.x, parentSlot.transform.position.y + wallDist, parentSlot.transform.position.z);
                         GameObject wallObject = Instantiate(wallPrefab, wallPos, Quaternion.Euler(-90, 0, 0), null);
                         wallObject.name = "CeilingTile";
-                        wallObject.transform.localScale = new Vector3(myHouseMeta.housingSlotSize, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z);
-                        wallObject.transform.parent = parentSlot;
+                        SetUpWall(wallObject, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z, parentSlot, _showCollisionWalls, wallMats);
                     }
                 }
             }
         }
     }
+
+    void SetUpWall(GameObject wallObject, float wallSize, float wallThickness, Transform _parent, bool _showWall, Material[] _wallMats)
+    {
+        wallObject.transform.localScale = new Vector3(wallSize, wallSize, wallThickness);
+        wallObject.transform.parent = _parent;
+        MeshRenderer meshR = wallObject.GetComponent<MeshRenderer>();
+        meshR.material = _showWall ? _wallMats[0] : _wallMats[1];
+        //meshR.enabled = _showCollisionWalls;
+    }
+
+
 
     /// <summary>
     /// Returns the spawn position for the house.
@@ -221,7 +233,7 @@ public class HousingGrid : MonoBehaviour
             return false;
         }
 
-        playerSpawnPos = slots[1, door.x, door.z].transform.position;
+        playerSpawnPos = slots[1, door.z, door.x].transform.position;
         playerSpawnRot = Quaternion.Euler(0, door.doorMeta.orientation == Direction.Up ? 180 : door.doorMeta.orientation == Direction.Down ? 0 :
             door.doorMeta.orientation == Direction.Left ? 90 : door.doorMeta.orientation == Direction.Right ? 270 : 0, 0);
         return true;
@@ -275,5 +287,74 @@ public class HousingGrid : MonoBehaviour
         result = true;
 
         return result;
+    }
+
+    public bool HighlightSlotMove(Direction dir, EditCameraDirection editCamDir)
+    {
+        bool result = false;
+        HousingGridCoordinates newCoord = currentSlotCoord;
+        Debug.Log(" dir = " + (int)dir + "; (int)editCamDir = " + (int)editCamDir);
+        dir += (int)editCamDir;//magic stuff
+        dir += (int)dir > 3 ? -4 : (int)dir <0? +4 : 0;
+        Debug.Log("dir after = " + (int)dir);
+
+        switch (dir)
+        {
+            case Direction.Left:
+                if(newCoord.x -1 >= 0)
+                {
+                    newCoord.x += -1;
+                    result = true;
+                }
+                break;
+            case Direction.Right:
+                if (newCoord.x + 1 < myHouseMeta.width)
+                {
+                    newCoord.x += 1;
+                    result = true;
+                }
+                break;
+            case Direction.Up:
+                if (newCoord.z - 1 >= 0)
+                {
+                    newCoord.z += -1;
+                    result = true;
+                }
+                break;
+            case Direction.Down:
+                if (newCoord.z + 1 < myHouseMeta.depth)
+                {
+                    newCoord.z += 1;
+                    result = true;
+                }
+                break;
+        }
+        if (result)
+        {
+            StopHighLightSlot(currentSlotCoord);
+            result = HighlightSlot(newCoord);
+        }
+
+
+        return result;
+    }
+
+    public bool HighlightSlot(HousingGridCoordinates coord)
+    {
+        currentSlotCoord = coord;
+        bool result = false;
+        MeshRenderer meshR = slots[coord.y, coord.z, coord.x].gameObject.GetComponent<MeshRenderer>();
+        if (meshR == null) return false;
+        meshR.enabled = true;
+        meshR.material = highlightedSlotMat;
+        result = true;
+
+        return result;
+    }
+
+    public void StopHighLightSlot(HousingGridCoordinates coord)
+    {
+        if(slots[coord.y, coord.z, coord.x] != null)
+        slots[coord.y, coord.z, coord.x].gameObject.GetComponent<MeshRenderer>().enabled = false;
     }
 }

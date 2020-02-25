@@ -4,11 +4,11 @@ using UnityEngine;
 
 
 public enum Direction
-{
-    Left,
-    Right,
-    Up,
-    Down
+{//DONT CHANGE NUMBERS/ORDER
+    Left=3,
+    Right=1,
+    Up=0,
+    Down=2
 }
 
 [ExecuteInEditMode]

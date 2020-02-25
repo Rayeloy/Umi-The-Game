@@ -31,7 +31,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 18653062163503073}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -32.563}
 --- !u!20 &4225119949977331892
 Camera:
   m_ObjectHideFlags: 0
@@ -127,3 +127,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d077b20da0fd44548a6bdddfab1db1d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deadZone: 0.2
+  camMoveSpeed: 20
+  cameraRotationSpeed: 150
+  clampAngleMax: 80
+  clampAngleMin: -50
+  smoothRotMaxTime: 0.5
+  zoomedInCamZoom: 2
+  cameraZoomSpeed: 10

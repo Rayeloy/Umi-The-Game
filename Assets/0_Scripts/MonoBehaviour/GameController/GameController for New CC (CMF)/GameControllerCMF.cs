@@ -364,6 +364,7 @@ public class GameControllerCMF : MonoBehaviour
                 LateUpdatePlayers();
             }
         }
+        SpecificLateUpdate();
     }
 
     void UpdatePlayers()
@@ -389,13 +390,23 @@ public class GameControllerCMF : MonoBehaviour
             allPlayers[i].KonoLateUpdate();
         }
     }
-
+    /// <summary>
+    /// Update done at the end for the child classes.
+    /// </summary>
     protected virtual void SpecificUpdate()
     {
     }
 
+    /// <summary>
+    /// Update for Capture the Whale. It is different to SpecificUpdate about when it is done. SpecificUpdate is always done at the end. This is done earlier. Check code.
+    /// </summary>
     protected virtual void UpdateModeExclusiveClasses()//no borrar, es para los hijos
     {
+    }
+
+    protected virtual void SpecificLateUpdate()
+    {
+
     }
     #endregion
 
