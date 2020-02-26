@@ -323,6 +323,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
+      propertyPath: highlightedSlotMat.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
       propertyPath: wallMaterials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 317f8d7f704ce2c40bd5c940d670fd52, type: 2}
@@ -345,7 +349,15 @@ PrefabInstance:
     - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
       propertyPath: highlightedSlotMat
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
+      propertyPath: highlightedSlotMat.Array.data[0]
+      value: 
       objectReference: {fileID: 2100000, guid: e7873d3dc4eac8548a0432d69e51b1b7, type: 2}
+    - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
+      propertyPath: highlightedSlotMat.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: ec604a5a70bdc394f8793865e51a4c0b, type: 2}
     - target: {fileID: 8202504287477519080, guid: 745c7a9479b52c44080e54fad3e9c870,
         type: 3}
       propertyPath: m_Enabled

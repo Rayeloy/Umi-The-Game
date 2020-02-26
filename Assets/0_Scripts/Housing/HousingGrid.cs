@@ -292,7 +292,8 @@ public class HousingGrid : MonoBehaviour
     public bool HighlightSlotMove(Direction dir, EditCameraDirection editCamDir)
     {
         bool result = false;
-        HousingGridCoordinates newCoord = currentSlotCoord;
+        HousingGridCoordinates oldCoord;
+        HousingGridCoordinates newCoord = oldCoord = currentSlotCoord;
         Debug.Log(" dir = " + (int)dir + "; (int)editCamDir = " + (int)editCamDir);
         dir += (int)editCamDir;//magic stuff
         dir += (int)dir > 3 ? -4 : (int)dir <0? +4 : 0;
@@ -301,38 +302,58 @@ public class HousingGrid : MonoBehaviour
         switch (dir)
         {
             case Direction.Left:
-                if(newCoord.x -1 >= 0)
+                for (int i = currentSlotCoord.x - 1; i >= 0 && !result; i--)
                 {
-                    newCoord.x += -1;
-                    result = true;
+                        newCoord.x = i;
+                        result = HighlightSlot(newCoord);
+                    Debug.Log("newCoord = "+ newCoord .printString+ "; result = " + result);
                 }
+                //if (newCoord.x -1 >= 0)
+                //{
+                //    newCoord.x += -1;
+                //    result = true;
+                //}
                 break;
             case Direction.Right:
-                if (newCoord.x + 1 < myHouseMeta.width)
+                for (int i = currentSlotCoord.x + 1; i < width && !result; i++)
                 {
-                    newCoord.x += 1;
-                    result = true;
+                    newCoord.x = i;
+                    result = HighlightSlot(newCoord);
                 }
+                //if (newCoord.x + 1 < myHouseMeta.width)
+                //{
+                //    newCoord.x += 1;
+                //    result = true;
+                //}
                 break;
             case Direction.Up:
-                if (newCoord.z - 1 >= 0)
+                for (int j = currentSlotCoord.z - 1; j >= 0 && !result; j--)
                 {
-                    newCoord.z += -1;
-                    result = true;
+                    newCoord.z = j;
+                    result = HighlightSlot(newCoord);
                 }
+                //if (newCoord.z - 1 >= 0)
+                //{
+                //    newCoord.z += -1;
+                //    result = true;
+                //}
                 break;
             case Direction.Down:
-                if (newCoord.z + 1 < myHouseMeta.depth)
+                for (int j = currentSlotCoord.z + 1; j < depth && !result; j++)
                 {
-                    newCoord.z += 1;
-                    result = true;
+                    newCoord.z = j;
+                    result = HighlightSlot(newCoord);
                 }
+                //if (newCoord.z + 1 < myHouseMeta.depth)
+                //{
+                //    newCoord.z += 1;
+                //    result = true;
+                //}
                 break;
         }
         if (result)
         {
-            StopHighLightSlot(currentSlotCoord);
-            result = HighlightSlot(newCoord);
+            StopHighLightSlot(oldCoord);
         }
 
 
@@ -341,6 +362,17 @@ public class HousingGrid : MonoBehaviour
 
     public bool HighlightSlot(HousingGridCoordinates coord)
     {
+        bool foundFree = false;
+        for (int k = 0; k < height && !foundFree; k++)
+        {
+            if (slots[k, coord.z, coord.x] != null && slots[k, coord.z, coord.x].free)
+            {
+                coord.y = k;
+                foundFree = true;
+            }
+        }
+        if (!foundFree) return false;
+
         currentSlotCoord = coord;
         bool result = false;
         MeshRenderer meshR = slots[coord.y, coord.z, coord.x].gameObject.GetComponent<MeshRenderer>();
@@ -348,6 +380,7 @@ public class HousingGrid : MonoBehaviour
         meshR.enabled = true;
         meshR.material = slots[coord.y, coord.z, coord.x].free? highlightedSlotMat[0] : highlightedSlotMat[1];
         result = true;
+        Debug.Log("Highlight slot " + coord.printString);
 
         return result;
     }

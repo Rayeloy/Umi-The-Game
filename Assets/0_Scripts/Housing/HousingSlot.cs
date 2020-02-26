@@ -22,7 +22,7 @@ public class HousingSlot : MonoBehaviour
     float size;
 
     [HideInInspector]
-    public HousingFurnitureData myFurniture = null;
+    public HousingFurnitureData myFurnitureMeta = null;
     [HideInInspector]
     public GameObject myFurnitureObject = null;
     [HideInInspector]
@@ -33,7 +33,7 @@ public class HousingSlot : MonoBehaviour
     {
         get
         {
-            return myFurniture != null && myFurnitureObject != null;
+            return myFurnitureMeta != null && myFurnitureObject != null;
         }
     }
     public bool thickness
@@ -106,38 +106,47 @@ public class HousingSlot : MonoBehaviour
     {
         bool result = false;
 
-            if (_furnitureMeta.thickness)
+        if (_furnitureMeta.thickness)
+        {
+            for (int i = 0; i < myWalls.Length; i++)
             {
-                for (int i = 0; i < myWalls.Length; i++)
+                if (myWalls[i].orientation != _furnitureMeta.orientation)
                 {
-                    if (myWalls[i].orientation != _furnitureMeta.orientation)
+                    if (myWalls[i].myWallFurniture != null)
                     {
-                        if (myWalls[i].myWallFurniture != null)
-                        {
-                            Debug.LogError("Can't place Wall Furniture here because this furniture has thickness and there is already at least 1 wall furniture in this slot.");
-                            return false;
-                        }
+                        Debug.LogError("Can't place Wall Furniture here because this furniture has thickness and there is already at least 1 wall furniture in this slot.");
+                        return false;
                     }
                 }
-                    //TO DO: set to false other walls if has thickness & set this wall 
-                    for (int i = 0; i < myWalls.Length; i++)
-                    {
-                        if (myWalls[i].orientation != _furnitureMeta.orientation)
-                        {
-                            myWalls[i].valid = false;
-                        }
-                        else
-                        {
-                            myWalls[i].myWallFurniture = _furnitureMeta;
-                            myWalls[i].gO = myFurnitureObject;
-                        }
-                    }
-                result = true;
             }
-            else
+            //TO DO: set to false other walls if has thickness & set this wall 
+            for (int i = 0; i < myWalls.Length; i++)
             {
-            Debug.LogError("TO DO");
+                if (myWalls[i].orientation != _furnitureMeta.orientation)
+                {
+                    myWalls[i].valid = false;
+                }
+                else
+                {
+                    myWalls[i].myWallFurniture = _furnitureMeta;
+                    myWalls[i].gO = myFurnitureObject;
+                }
             }
+            result = true;
+        }
+        else
+        {
+            bool found = false;
+            for (int i = 0; i < myWalls.Length && !found; i++)
+            {
+                if (myWalls[i].orientation == _furnitureMeta.orientation)
+                {
+                    myWalls[i].myWallFurniture = _furnitureMeta;
+                    myWalls[i].gO = myFurnitureObject;
+                    found = true;
+                }
+            }
+        }
 
         return result;
     }
@@ -166,6 +175,8 @@ public class HousingSlot : MonoBehaviour
         {
             //TO DO: 
             Debug.LogError("TO DO");
+            myFurnitureMeta = _furnitureMeta;
+            myFurnitureObject = _gO;
         }
         return result;
     }
@@ -188,7 +199,7 @@ public struct HousingGridCoordinates
     {
         get
         {
-            return "("+ y + ","+ z + ","+ x + ")";
+            return "(" + y + "," + z + "," + x + ")";
         }
     }
 }

@@ -89,6 +89,7 @@ public class HousingEditModeCameraController : MonoBehaviour
 
         actions = GameInfo.instance.myControls;
         currentCameraMode = EditCameraMode.ZoomedOut;
+        currentCameraDir = EditCameraDirection.ZPos;
 
         smoothRotTime = 0;
     }
