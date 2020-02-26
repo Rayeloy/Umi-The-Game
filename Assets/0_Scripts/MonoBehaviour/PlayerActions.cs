@@ -43,6 +43,8 @@ public class PlayerActions : PlayerActionSet
     public PlayerAction Start;
     public PlayerAction Select;
 
+    public PlayerAction ThrowHook;
+
     public PlayerActions()
     {
         R1 = CreatePlayerAction("R1");
@@ -73,6 +75,8 @@ public class PlayerActions : PlayerActionSet
 
         Start = CreatePlayerAction("Start");
         Select = CreatePlayerAction("Select");
+
+        ThrowHook = CreatePlayerAction("ThrowHook");
     }
 
     public static PlayerActions CreateDefaultBindings()
@@ -108,6 +112,7 @@ public class PlayerActions : PlayerActionSet
         actions.Start.AddDefaultBinding(Key.Escape);
         actions.Select.AddDefaultBinding(Key.Tab);
 
+        actions.ThrowHook.AddDefaultBinding(Mouse.LeftButton);
 
         // JOYSTICK
         actions.controlsType = InputDeviceClass.Controller;
@@ -138,6 +143,8 @@ public class PlayerActions : PlayerActionSet
 
         actions.Start.AddDefaultBinding(InputControlType.Start);
         actions.Select.AddDefaultBinding(InputControlType.Select);
+
+        actions.ThrowHook.AddDefaultBinding(InputControlType.RightTrigger);
         return actions;
     }
 
@@ -204,7 +211,6 @@ public class PlayerActions : PlayerActionSet
         return actions;
     }
 
-
     public static PlayerActions CreateWithKeyboardBindings()
     {
         var actions = new PlayerActions();
@@ -221,6 +227,7 @@ public class PlayerActions : PlayerActionSet
         actions.Y.AddDefaultBinding(Key.Key2);
         actions.B.AddDefaultBinding(Key.Key3);
 
+        //actions.RJLeft.LowerDeadZone = 0.2f;
         actions.RJUp.AddDefaultBinding(Mouse.PositiveY);
         actions.RJDown.AddDefaultBinding(Mouse.NegativeY);
         actions.RJLeft.AddDefaultBinding(Mouse.NegativeX);
@@ -235,6 +242,9 @@ public class PlayerActions : PlayerActionSet
         actions.R3.AddDefaultBinding(Key.Key5);
 
         actions.Start.AddDefaultBinding(Key.Escape);
+        actions.Select.AddDefaultBinding(Key.Tab);
+
+        actions.ThrowHook.AddDefaultBinding(Mouse.LeftButton);
         return actions;
     }
 
@@ -242,6 +252,7 @@ public class PlayerActions : PlayerActionSet
     {
         var actions = new PlayerActions();
 
+        // JOYSTICK
         actions.controlsType = InputDeviceClass.Controller;
 
         actions.R1.AddDefaultBinding(InputControlType.RightBumper);
@@ -259,6 +270,7 @@ public class PlayerActions : PlayerActionSet
         actions.RJLeft.AddDefaultBinding(InputControlType.RightStickLeft);
         actions.RJRight.AddDefaultBinding(InputControlType.RightStickRight);
 
+
         actions.LJUp.AddDefaultBinding(InputControlType.LeftStickUp);
         actions.LJDown.AddDefaultBinding(InputControlType.LeftStickDown);
         actions.LJLeft.AddDefaultBinding(InputControlType.LeftStickLeft);
@@ -268,6 +280,9 @@ public class PlayerActions : PlayerActionSet
         actions.L3.AddDefaultBinding(InputControlType.LeftStickButton);
 
         actions.Start.AddDefaultBinding(InputControlType.Start);
+        actions.Select.AddDefaultBinding(InputControlType.Select);
+
+        actions.ThrowHook.AddDefaultBinding(InputControlType.RightBumper);
         return actions;
     }
 

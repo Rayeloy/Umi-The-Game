@@ -23,7 +23,14 @@ public class HousingFurnitureData : ScriptableObject
     public string furnitureName;
     public FurnitureType furnitureType = FurnitureType.None;
     public GameObject prefab;
+    [Tooltip("The default rotation of the furniture. Normal value = Up. Left means looking to the positive X, " +
+        "Right means looking to negative X, Up means looking to negative Z, Down means looking to positive Z.")]
+    public Direction orientation = Direction.Up;
+
     [Header(" --- Furniture Space --- ")]
+    public bool autoAnchor = true;
+    [Tooltip("This is used as the center of rotation when rotating the furniture.")]
+    public HousingGridCoordinates anchor;
     public int rows = 3;
     public int columns = 3;
     public bool autoAdjustSpaces = false;
@@ -35,7 +42,6 @@ public class HousingFurnitureData : ScriptableObject
     [Header(" -- WALL FURNITURE -- ")]
     [Tooltip("Only for wall furniture.")]
     public bool thickness = false;
-    public Direction orientation = Direction.Up;
 
 
     public bool validFurnitureSpace
@@ -273,11 +279,14 @@ public class HousingFurnitureData : ScriptableObject
 
     private void OnValidate()
     {
+        AutoAnchor();
+
         if (autoAdjustSpaces)
         {
             autoAdjustSpaces = false;
             AutoAdjustSpace();
         }
+
 
         //CHECK IF ANY SPACE PARAMETER CHANGED
         bool canvasSpaceChanged = (furnitureSpaceOld != null && furnitureSpace.Length != furnitureSpaceOld.Length);
@@ -345,28 +354,139 @@ public class HousingFurnitureData : ScriptableObject
 
     void AutoAdjustSpace()
     {
-        Debug.Log("Trying to Auto Adjust Space");
-        if (minX > 0)
+        if (validFurnitureSpace)
         {
-            int moveAmount = minX;
-            AdjustSpace(Direction.Left, moveAmount);
-        }
+            Debug.Log("Trying to Auto Adjust Space");
+            if (minX > 0)
+            {
+                int moveAmount = minX;
+                AdjustSpace(Direction.Left, moveAmount);
+            }
 
-        if (minY > 0)
-        {
-            int moveAmount = minY;
-            AdjustSpace(Direction.Up, moveAmount);
+            if (minZ > 0)
+            {
+                int moveAmount = minZ;
+                AdjustSpace(Direction.Up, moveAmount);
+            }
+
+
+            //Create New copy "old"
+            furnitureSpaceOld = new FurnitureLevel[furnitureSpace.Length];
+            for (int i = 0; i < furnitureSpaceOld.Length; i++)
+            {
+                furnitureSpaceOld[i] = new FurnitureLevel(rows, columns);
+            }
+            CopyFurnitureSpace(furnitureSpace, ref furnitureSpaceOld);
+
+            //Check for empty rows and columns
+
+            //REMOVE EMPTY ROWS
+            for (int i = GetAtIndex(0).Length - 1; i >= 0 && i > maxZ; i--)
+            {
+                //Debug.Log("Looking for empty Columns: i = " + i);
+                bool emptyRow = true;
+                for (int k = 0; k < furnitureSpace.Length && emptyRow; k++)
+                {
+                    //Debug.Log("Looking for empty Columns: k = " + k);
+
+                    for (int j = 0; j < GetAtIndex(0, i).Length && emptyRow; j++)
+                    {
+                        //Debug.Log("Looking for empty Columns: j = " + j);
+
+                        if (GetAtIndex(k, i, j))
+                        {
+                            emptyRow = false;
+                        }
+                    }
+                }
+                if (emptyRow)
+                {
+                    //Debug.Log("remove a column");
+                    rows--;
+                }
+            }
+            if (columns <= 0 || rows <= 0) return;
+
+            //REMOVE EMPTY ROWS
+            for (int j = GetAtIndex(0, 0).Length - 1; j >= 0 && j > maxX; j--)
+            {
+                bool emptyColumn = true;
+                for (int k = 0; k < furnitureSpace.Length && emptyColumn; k++)
+                {
+                    for (int i = 0; i < GetAtIndex(0, 0).Length && emptyColumn; i++)
+                    {
+                        if (GetAtIndex(k, i, j))
+                        {
+                            emptyColumn = false;
+                        }
+                    }
+                }
+                if (emptyColumn)
+                {
+                    //Debug.Log("remove a row");
+                    columns--;
+                }
+            }
         }
     }
 
     void AdjustSpace(Direction dir, int moveAmount)
     {
-        Debug.Log("Adjusting Space in direction " + dir + " with amount " + moveAmount);
+        //Debug.LogWarning("Adjusting Space in direction " + dir + " with amount " + moveAmount);
         for (int i = 0; i < furnitureSpace.Length; i++)
         {
             furnitureSpace[i].Adjust(dir, moveAmount);
         }
     }
+
+    void AutoAnchor()
+    {
+        if (!autoAnchor) return;
+        autoAnchor = false;
+        HousingGridCoordinates center = new HousingGridCoordinates(0, minZ + depth / 2, minX + width / 2);
+        //HousingGridCoordinates newAnchor = new HousingGridCoordinates();
+        //int distToCenter = int.MaxValue;
+        //    for (int i = 0; i < depth; i++)
+        //    {
+        //        for (int j = 0; j < width; j++)
+        //        {
+        //        //if(GetAtIndex(k,i,j))
+        //        int auxDist = Mathf.Abs(i - minX) + Mathf.Abs(j - depth);
+        //        if (auxDist < distToCenter)
+        //        {
+        //            distToCenter = auxDist;
+        //            newAnchor = new HousingGridCoordinates()
+        //        }
+        //    }
+        anchor = center;
+    }
+
+    //bool CheckValidAnchor()
+    //{
+    //    return GetAtIndex(anchor);
+    //}
+
+    #region --- Get ---
+    bool GetAtIndex(int k, int i, int j)
+    {
+        return furnitureSpace[k].spaces[i].row[j];
+    }
+
+    bool GetAtIndex(HousingGridCoordinates coord)
+    {
+        return furnitureSpace[coord.y].spaces[coord.z].row[coord.x];
+    }
+
+    bool[] GetAtIndex(int k, int i)
+    {
+        return furnitureSpace[k].spaces[i].row;
+    }
+
+    Row[] GetAtIndex(int k)
+    {
+        return furnitureSpace[k].spaces;
+    }
+    #endregion
 }
 
 [System.Serializable]
@@ -416,7 +536,7 @@ public class FurnitureLevel
                     for (int j = 0; j < spaces[i].row.Length && (j + moveAmount) < spaces[i].row.Length; j++)
                     {
                         newSpaces[i].row[j] = spaces[i].row[j + moveAmount];
-                        Debug.Log("Adjust: Moving [" + i + "," + (j + moveAmount) + "] to [" + i + "," + j + "] with value = " + spaces[i].row[j + moveAmount]);
+                        //Debug.Log("Adjust: Moving [" + i + "," + (j + moveAmount) + "] to [" + i + "," + j + "] with value = " + spaces[i].row[j + moveAmount]);
                     }
                 }
                 break;

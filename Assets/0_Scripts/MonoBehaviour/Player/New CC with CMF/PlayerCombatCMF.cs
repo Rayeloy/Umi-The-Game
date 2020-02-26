@@ -183,11 +183,9 @@ public class PlayerCombatCMF : MonoBehaviour
 
             //HOOK INPUT CHECK
             if (!myPlayerMovement.noInput && myPlayerMovement.vertMovSt != VerticalMovementState.FloatingInWater && (attackStg == AttackPhaseType.ready)
-                && aiming && ((!myPlayerMovement.actions.isKeyboard && myPlayerMovement.actions.R2.WasPressed)||(myPlayerMovement.actions.isKeyboard && myPlayerMovement.actions.X.WasPressed )))//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
+                && aiming && myPlayerMovement.actions.ThrowHook.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
             {
                 myHook.StartHook();
-                //ChangeAttackType(gC.attackHook);
-                //StartAttack();
             }
         }
         ProcessWeaponSkill();

@@ -6,7 +6,7 @@ using UnityEngine;
 [CustomPropertyDrawer(typeof(FurnitureLevel))]
 public class FurnitureLevelPD : PropertyDrawer
 {
-    float padding = 15;
+    float padding = 16;
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
@@ -26,7 +26,7 @@ public class FurnitureLevelPD : PropertyDrawer
             for (int i = 0; i < spaces.arraySize; i++)
             {
                 Rect rowRect = new Rect(container.x, container.y + EditorGUIUtility.singleLineHeight * (i+1), 100, 25);
-                EditorGUI.LabelField(rowRect, "Row "+(i+1));
+                EditorGUI.LabelField(rowRect, "Row "+(i));
                 SerializedProperty currentRow = spaces.GetArrayElementAtIndex(i).FindPropertyRelative("row");
                 for (int j = 0; j < currentRow.arraySize; j++)
                 {
@@ -34,10 +34,7 @@ public class FurnitureLevelPD : PropertyDrawer
                     Rect boolRect = new Rect(rowRect.x + 100 + (padding * j), rowRect.y, 30, 15);
                     auxBool.boolValue = EditorGUI.Toggle(boolRect, auxBool.boolValue);                //auxBool.boolValue = EditorGUILayout.Toggle(auxBool.boolValue);
                 }
-            }
-
-
-           
+            }     
         }
         EditorGUI.EndFoldoutHeaderGroup();
         EditorGUI.EndProperty();

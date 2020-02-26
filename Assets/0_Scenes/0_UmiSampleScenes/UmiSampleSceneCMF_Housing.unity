@@ -218,6 +218,55 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 9080193105827176625, guid: 745c7a9479b52c44080e54fad3e9c870,
+        type: 3}
+      propertyPath: leftJoyStickDeadzone
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: wallMaterials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: highlightedSlotMat.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: wallMaterials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 317f8d7f704ce2c40bd5c940d670fd52, type: 2}
+    - target: {fileID: 0}
+      propertyPath: wallMaterials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 1156883bcf27223458416c943ccbe75b, type: 2}
+    - target: {fileID: 0}
+      propertyPath: debugModeOn
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: showWallMeshes
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: cameraDistValue
+      value: 0.011
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: highlightedSlotMat
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: highlightedSlotMat.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e7873d3dc4eac8548a0432d69e51b1b7, type: 2}
+    - target: {fileID: 0}
+      propertyPath: highlightedSlotMat.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: ec604a5a70bdc394f8793865e51a4c0b, type: 2}
+    - target: {fileID: 0}
+      propertyPath: leftJoyStickDeadzone
+      value: 0.6
+      objectReference: {fileID: 0}
     - target: {fileID: 6328377588913272834, guid: 745c7a9479b52c44080e54fad3e9c870,
         type: 3}
       propertyPath: m_Name
@@ -318,55 +367,15 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
-      propertyPath: wallMaterials.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
-      propertyPath: highlightedSlotMat.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
-      propertyPath: wallMaterials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 317f8d7f704ce2c40bd5c940d670fd52, type: 2}
-    - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
-      propertyPath: wallMaterials.Array.data[1]
-      value: 
-      objectReference: {fileID: 2100000, guid: 1156883bcf27223458416c943ccbe75b, type: 2}
-    - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
-      propertyPath: debugModeOn
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
-      propertyPath: showWallMeshes
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
-      propertyPath: cameraDistValue
-      value: 0.011
-      objectReference: {fileID: 0}
-    - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
-      propertyPath: highlightedSlotMat
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
-      propertyPath: highlightedSlotMat.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: e7873d3dc4eac8548a0432d69e51b1b7, type: 2}
-    - target: {fileID: 45114744, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
-      propertyPath: highlightedSlotMat.Array.data[1]
-      value: 
-      objectReference: {fileID: 2100000, guid: ec604a5a70bdc394f8793865e51a4c0b, type: 2}
-    - target: {fileID: 8202504287477519080, guid: 745c7a9479b52c44080e54fad3e9c870,
+    - target: {fileID: 4295667806725636634, guid: 745c7a9479b52c44080e54fad3e9c870,
         type: 3}
-      propertyPath: m_Enabled
-      value: 0
+      propertyPath: m_fontSize
+      value: 26.45
       objectReference: {fileID: 0}
-    - target: {fileID: 8202465440926634244, guid: 745c7a9479b52c44080e54fad3e9c870,
+    - target: {fileID: 4295667806938966908, guid: 745c7a9479b52c44080e54fad3e9c870,
         type: 3}
-      propertyPath: m_Enabled
-      value: 0
+      propertyPath: m_fontSize
+      value: 36.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
