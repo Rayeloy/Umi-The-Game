@@ -17,7 +17,7 @@ public class HousingGrid : MonoBehaviour
     GameObject slotPrefab;
     GameObject wallPrefab;
     Vector3 housePos = Vector3.zero;
-    Material highlightedSlotMat;
+    Material[] highlightedSlotMat;
     public Vector3 center
     {
         get
@@ -42,7 +42,7 @@ public class HousingGrid : MonoBehaviour
     }
 
 
-    public void KonoAwake(HousingHouseData _myHouseMeta, GameObject _slotPrefab, GameObject _wallPrefab, Vector3 _housePos, Material _highlightedSlotMat)
+    public void KonoAwake(HousingHouseData _myHouseMeta, GameObject _slotPrefab, GameObject _wallPrefab, Vector3 _housePos, Material[] _highlightedSlotMat)
     {
         myHouseMeta = _myHouseMeta;
 
@@ -260,7 +260,7 @@ public class HousingGrid : MonoBehaviour
                 {
                     if (!slots[coord.y + k, coord.z + i, coord.x + j].SetFurniture(furnitureMeta, furnitureObject))
                     {
-                        Debug.LogError("Can't place wall furniture on ("+ (coord.y + k) + ","+ (coord.z + i) + ","+ (coord.x + j) + ") at orientation "+ furnitureMeta.orientation);
+                        Debug.LogError("Can't place wall furniture at ("+ (coord.y + k) + ","+ (coord.z + i) + ","+ (coord.x + j) + ") at orientation "+ furnitureMeta.orientation);
                         return false;
                     }
                 }
@@ -346,7 +346,7 @@ public class HousingGrid : MonoBehaviour
         MeshRenderer meshR = slots[coord.y, coord.z, coord.x].gameObject.GetComponent<MeshRenderer>();
         if (meshR == null) return false;
         meshR.enabled = true;
-        meshR.material = highlightedSlotMat;
+        meshR.material = slots[coord.y, coord.z, coord.x].free? highlightedSlotMat[0] : highlightedSlotMat[1];
         result = true;
 
         return result;

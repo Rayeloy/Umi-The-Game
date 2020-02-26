@@ -27,7 +27,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
     public HousingEditModeCameraController editModeCameraBase;
     float cameraHeightOffset = 0;
     public float cameraDistValue = 0;
-    public Material highlightedSlotMat;
+    public Material[] highlightedSlotMat;
 
 
 
@@ -47,22 +47,24 @@ public class GameControllerCMF_Housing : GameControllerCMF
         {
             SwitchPlayAndHousingMode();
         }
-
-        if (myLeftJoyStickControls.LeftWasPressed)
+        if (editHouseOn)
         {
-            currentGrid.HighlightSlotMove(Direction.Left, editModeCameraBase.currentCameraDir);
-        }
-        else if (myLeftJoyStickControls.RightWasPressed)
-        {
-            currentGrid.HighlightSlotMove(Direction.Right, editModeCameraBase.currentCameraDir);
-        }
-        else if (myLeftJoyStickControls.UpWasPressed)
-        {
-            currentGrid.HighlightSlotMove(Direction.Up, editModeCameraBase.currentCameraDir);
-        }
-        else if (myLeftJoyStickControls.DownWasPressed)
-        {
-            currentGrid.HighlightSlotMove(Direction.Down, editModeCameraBase.currentCameraDir);
+            if (myLeftJoyStickControls.LeftWasPressed)
+            {
+                currentGrid.HighlightSlotMove(Direction.Left, editModeCameraBase.currentCameraDir);
+            }
+            else if (myLeftJoyStickControls.RightWasPressed)
+            {
+                currentGrid.HighlightSlotMove(Direction.Right, editModeCameraBase.currentCameraDir);
+            }
+            else if (myLeftJoyStickControls.UpWasPressed)
+            {
+                currentGrid.HighlightSlotMove(Direction.Up, editModeCameraBase.currentCameraDir);
+            }
+            else if (myLeftJoyStickControls.DownWasPressed)
+            {
+                currentGrid.HighlightSlotMove(Direction.Down, editModeCameraBase.currentCameraDir);
+            }
         }
         myLeftJoyStickControls.ResetJoyStick();
     }

@@ -12,6 +12,9 @@ public enum HousingSlotType
 
 public class HousingSlot : MonoBehaviour
 {
+    [HideInInspector]
+    public bool baseFurniture = false;
+
     GameObject slotObject;
     HousingSlotType slotType = HousingSlotType.None;
     HousingGridCoordinates gridCoordinates;
@@ -25,6 +28,14 @@ public class HousingSlot : MonoBehaviour
     [HideInInspector]
     public HousingSlotWall[] myWalls = new HousingSlotWall[4];
 
+
+    public bool hasFurniture
+    {
+        get
+        {
+            return myFurniture != null && myFurnitureObject != null;
+        }
+    }
     public bool thickness
     {
         get
@@ -51,8 +62,18 @@ public class HousingSlot : MonoBehaviour
         }
     }
 
+    public bool free
+    {
+        get
+        {
+            return !baseFurniture && !thickness && !hasFurniture;
+        }
+    }
+
+
+
     public void KonoAwake(HousingGridCoordinates _gridCoordinates, float _size, HousingSlotType _slotType = HousingSlotType.None,
-        bool leftWall = false, bool rightWall = false, bool upWall = false, bool downWall = false)
+        bool leftWall = false, bool rightWall = false, bool upWall = false, bool downWall = false, bool _baseFurniture = false)
     {
         slotObject = null;
         slotType = _slotType;
@@ -65,6 +86,8 @@ public class HousingSlot : MonoBehaviour
         myWalls[3] = new HousingSlotWall(Direction.Down, downWall);
 
         myFurnitureObject = null;
+
+        baseFurniture = _baseFurniture;
     }
 
     public HousingSlotWall GetWall(Direction _orientation)
@@ -82,8 +105,7 @@ public class HousingSlot : MonoBehaviour
     bool SetWallFurniture(HousingFurnitureData _furnitureMeta, GameObject _gO)
     {
         bool result = false;
-        if (!thickness)
-        {
+
             if (_furnitureMeta.thickness)
             {
                 for (int i = 0; i < myWalls.Length; i++)
@@ -114,20 +136,19 @@ public class HousingSlot : MonoBehaviour
             }
             else
             {
-
+            Debug.LogError("TO DO");
             }
-        }
-        else
-        {
-            Debug.LogError("Can't place furniture here because this slot has already thickness");
-            return false;
-        }
 
         return result;
     }
 
     public bool SetFurniture(HousingFurnitureData _furnitureMeta, GameObject _gO)
     {
+        if (!free)
+        {
+            Debug.LogError("HousingSlot -> SetFurniture: Can't place a furniture because the slot is not free");
+            return false;
+        }
         bool result = false;
         if (_furnitureMeta.furnitureType == FurnitureType.Wall)
         {
