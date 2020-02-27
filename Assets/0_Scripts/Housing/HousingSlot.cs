@@ -38,8 +38,9 @@ public class HousingSlot : MonoBehaviour
             bool auxThickness = false;
             for (int i = 0; i < myWallFurnitures.Length && !auxThickness; i++)
             {
-                if(myWallFurnitures[i]!=null && myWallFurnitures[i].furnitureMeta!=null)
-                auxThickness = myWallFurnitures[i].furnitureMeta.thickness;
+                if (myWallFurnitures[i] != null && myWallFurnitures[i].furnitureMeta != null)
+                    auxThickness = myWallFurnitures[i].furnitureMeta.thickness;
+                if (auxThickness) Debug.LogWarning("Thickness = true : slot " + gridCoordinates.printString + " has thickness at " + (Direction)i + " because wall furniture " + myWallFurnitures[i].furnitureMeta.name + " is there.");
             }
             return auxThickness;
         }
@@ -60,14 +61,25 @@ public class HousingSlot : MonoBehaviour
     {
         get
         {
+            if (baseFurniture) Debug.LogError("Not free because baseFurniture = true");
+            if (thickness) Debug.LogError("Not free because thickness = true");
+            if (hasFurniture) Debug.LogError("Not free because hasFurniture = true");
+
             return !baseFurniture && !thickness && !hasFurniture;
+        }
+    }
+    public bool canPlaceFurnitureOn
+    {
+        get
+        {
+            return hasFurniture && myFurniture != null && myFurniture.furnitureMeta.furnitureType == FurnitureType.Floor;
         }
     }
     bool[] hasWalls;
 
 
     public void KonoAwake(HousingGridCoordinates _gridCoordinates, HousingSlotType _slotType = HousingSlotType.None,
-        bool upWall = false, bool rightWall = false, bool downWall = false,bool leftWall = false, bool _baseFurniture = false)
+        bool upWall = false, bool rightWall = false, bool downWall = false, bool leftWall = false, bool _baseFurniture = false)
     {
         slotObject = null;
         slotType = _slotType;
@@ -91,6 +103,7 @@ public class HousingSlot : MonoBehaviour
 
     bool SetWallFurniture(HousingFurniture _wallFurniture)
     {
+        Debug.LogWarning("SLOT: START SET WALL FURNITURE");
         bool result = false;
 
         if (thickness)
@@ -99,17 +112,17 @@ public class HousingSlot : MonoBehaviour
             return false;
         }
 
-        if(!hasWalls[(int)_wallFurniture.currentOrientation])
+        if (!hasWalls[(int)_wallFurniture.currentOrientation])
         {
-            Debug.LogError("Can't place furniture here because the slot has no "+ _wallFurniture.currentOrientation + " wall.");
+            Debug.LogError("Can't place furniture here because the slot has no " + _wallFurniture.currentOrientation + " wall.");
             return false;
         }
 
         if (_wallFurniture.furnitureMeta.thickness)
         {
-            for (int i = 0; i < myWallFurnitures.Length; i++)
+            for (int i = 0; i < myWallFurnitures.Length; i++)//for every wall furniture
             {
-                if(i != (int)_wallFurniture.currentOrientation)
+                if (myWallFurnitures[i] != null && myWallFurnitures[i].furnitureMeta != null)//if there is a wall furniture
                 {
                     //Delete furniture and send back to inventory
                     Debug.LogError("TO DO: send back to inventory");
@@ -118,8 +131,17 @@ public class HousingSlot : MonoBehaviour
                 }
             }
         }
+        else
+        {
+            if (myWallFurnitures[(int)_wallFurniture.currentOrientation] != null && myWallFurnitures[(int)_wallFurniture.currentOrientation].furnitureMeta != null)//if there is a wall furniture
+            {
+                Debug.LogError("Can't place a furniture here because there is already a wall furniture in this wall");
+                return false;
+            }
+        }
 
         //SET WALL FURNITURE
+        Debug.Log("Setting wall furniture " + _wallFurniture.name + " at slot " + gridCoordinates.printString + " with orientation " + _wallFurniture.currentOrientation);
         myWallFurnitures[(int)_wallFurniture.currentOrientation] = _wallFurniture;
         result = true;
 
@@ -128,9 +150,11 @@ public class HousingSlot : MonoBehaviour
 
     public bool SetFurniture(HousingFurniture _furniture)
     {
+        Debug.LogWarning("SLOT: START SET FURNITURE");
+
         if (!free)
         {
-            Debug.LogError("HousingSlot -> SetFurniture: Can't place a furniture because the slot is not free");
+            Debug.LogError("HousingSlot -> SetFurniture: Can't place a furniture because the slot " + gridCoordinates.printString + " is not free");
             return false;
         }
         bool result = false;
@@ -152,6 +176,52 @@ public class HousingSlot : MonoBehaviour
             Debug.LogError("TO DO?");
             myFurniture = _furniture;
         }
+        return result;
+    }
+
+    public bool CanPlaceWallFurniture(HousingFurniture _wallFurniture)
+    {
+        bool result = false;
+
+        if (thickness || hasFurniture)
+        {
+            Debug.LogError("THIS MESSAGE SHOULD NOT BE APPEARING. Can't place furniture here because the slot has thickness or a furniture already. ");
+            return false;
+        }
+
+        if (!hasWalls[(int)_wallFurniture.currentOrientation])
+        {
+            Debug.LogError("Can't place furniture here because the slot has no " + _wallFurniture.currentOrientation + " wall.");
+            return false;
+        }
+
+        if (myWallFurnitures[(int)_wallFurniture.currentOrientation] != null && myWallFurnitures[(int)_wallFurniture.currentOrientation].furnitureMeta != null)
+        {
+            if (!_wallFurniture.furnitureMeta.thickness)
+            {
+                Debug.LogError("Can't place furniture here because the slot's " + _wallFurniture.currentOrientation + " wall is already occupied by another wall furniture(" + _wallFurniture.name + ").");
+                return false;
+            }
+        }
+        result = true;
+
+        return result;
+    }
+
+    public bool HasThisFurniture(HousingFurniture _furniture)
+    {
+        bool result = false;
+        if (!hasFurniture && !hasAnyWallFurniture) return false;
+
+        if (hasFurniture)
+        {
+            result = _furniture == myFurniture;
+        }
+        if(!result && hasAnyWallFurniture)
+        {
+            result = myWallFurnitures[(int)_furniture.currentOrientation] == _furniture;
+        }
+
         return result;
     }
 }

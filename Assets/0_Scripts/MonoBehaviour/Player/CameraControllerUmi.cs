@@ -11,7 +11,7 @@ public class CameraControllerUmi : MonoBehaviour
     public Transform cameraFollowObj;
     public Transform myCamera;
 
-    public cameraMode camMode = cameraMode.Fixed;
+    public CameraMode camMode = CameraMode.Fixed;
 
     [Tooltip("Valor de 0 a 1 que indica la zona muerta del joystick de la camara, siendo 0 una zona muerta nula, y 1 todo el joystick entero.")]
     public float deadZone = 0.2f;
@@ -92,22 +92,22 @@ public class CameraControllerUmi : MonoBehaviour
         originalRot = myCamera.localRotation.eulerAngles;
         switch (camMode)
         {
-            case cameraMode.Fixed:
+            case CameraMode.Fixed:
                 GetComponentInChildren<CameraCollisions>().enabled = true;
                 //myCamera.SetParent(myPlayerMov.rotateObj);
                 myCamera.localPosition = originalPos;
                 //myCamera.localRotation = Quaternion.Euler(0, 0, 0);
                 break;
-            case cameraMode.Free:
+            case CameraMode.Free:
                 //myCamera.SetParent(transform);
                 GetComponentInChildren<CameraCollisions>().enabled = true;
                 transform.localRotation = myPlayerMov.rotateObj.localRotation;
                 //print("I'm " + gameObject.name + " and my local rotation = " + transform.localRotation.eulerAngles);
                 myCamera.localPosition = originalCamPosFree;
                 break;
-            case cameraMode.FixedFree:
+            case CameraMode.FixedFree:
                 break;
-            case cameraMode.Shoulder:
+            case CameraMode.Shoulder:
                 GetComponentInChildren<CameraCollisions>().enabled = true;
                 originalPos = originalCamPosSho;
                 myCamera.localPosition = originalPos;
@@ -152,7 +152,7 @@ public class CameraControllerUmi : MonoBehaviour
             Quaternion localRotation = Quaternion.Euler(0, 0, 0);
             switch (camMode)
             {
-                case cameraMode.Fixed:
+                case CameraMode.Fixed:
                     //yaw += speedH * Input.GetAxis(myPlayerMov.contName + "H2");
                     //pitch -= speedV * Input.GetAxis(myPlayerMov.contName + "V2");
 
@@ -176,7 +176,7 @@ public class CameraControllerUmi : MonoBehaviour
                     transform.position = currentCamPos;
                     //print("myCamera.localPosition = " + myCamera.localPosition);
                     break;
-                case cameraMode.Shoulder:
+                case CameraMode.Shoulder:
                     followObjRot = cameraFollowObj.rotation;
                     rotX += finalInputZ * rotSpeedSho * Time.deltaTime;
                     rotX = Mathf.Clamp(rotX, clampAngleMinSho, clampAngleMaxSho);
@@ -208,7 +208,7 @@ public class CameraControllerUmi : MonoBehaviour
                     transform.position = currentCamPos;
                     //print("myCamera.localPosition = " + myCamera.localPosition);
                     break;
-                case cameraMode.Free:
+                case CameraMode.Free:
                     if (myPlayerMov.Actions.R3.WasPressed)
                     {
                         print("R3 pulsado");
@@ -265,7 +265,7 @@ public class CameraControllerUmi : MonoBehaviour
                     }
                     transform.rotation = Quaternion.Euler(currentCamRot.x, currentCamRot.y, currentCamRot.z);
                     break;
-                case cameraMode.FixedFree:
+                case CameraMode.FixedFree:
                     break;
             }
             if (myCamera.GetComponentInChildren<CameraCollisions>().enabled)
@@ -290,7 +290,7 @@ public class CameraControllerUmi : MonoBehaviour
 
     public void InstantRotation()
     {
-        if (camMode == cameraMode.Free)
+        if (camMode == CameraMode.Free)
         {
             rotY = myPlayerMov.rotateObj.localRotation.eulerAngles.y;
         }
@@ -327,25 +327,25 @@ public class CameraControllerUmi : MonoBehaviour
     }
     #endregion
 
-    public void SwitchCamera(cameraMode cameraMode)
+    public void SwitchCamera(CameraMode cameraMode)
     {
         camMode = cameraMode;
         switch (camMode)
         {
-            case cameraMode.Fixed:
+            case CameraMode.Fixed:
                 GetComponentInChildren<CameraCollisions>().enabled = true;
                 targetMyCamPos = originalPos;
                 myPlayerMov.rotateObj.localRotation = Quaternion.Euler(0, transform.localRotation.eulerAngles.y, 0);
                 break;
-            case cameraMode.Free:
+            case CameraMode.Free:
                 GetComponentInChildren<CameraCollisions>().enabled = true;
                 //transform.localRotation = myPlayerMov.rotateObj.localRotation;
                 rotY = myPlayerMov.rotateObj.localRotation.eulerAngles.y;
                 targetMyCamPos = originalCamPosFree;
                 break;
-            case cameraMode.FixedFree:
+            case CameraMode.FixedFree:
                 break;
-            case cameraMode.Shoulder:
+            case CameraMode.Shoulder:
                 GetComponentInChildren<CameraCollisions>().enabled = true;
                 originalPos = originalCamPosSho;
                 targetMyCamPos = originalPos;
@@ -426,7 +426,7 @@ public class CameraControllerUmi : MonoBehaviour
     #endregion
 }
 
-public enum cameraMode
+public enum CameraMode
 {
     Fixed,
     Free,

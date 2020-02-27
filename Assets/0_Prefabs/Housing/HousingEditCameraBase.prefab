@@ -128,11 +128,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deadZone: 0.6
-  camMoveSpeed: 20
+  currentCameraDir: 0
+  camMoveSpeed: 2
+  followModeCamHeight: 3
+  zoomedInModeCamHeight: 1
   cameraRotationSpeed: 150
   clampAngleMax: 80
   clampAngleMin: -50
   smoothRotMaxTime: 0.5
-  zoomedInCamZoom: 2
-  cameraZoomSpeed: 10
-  currentCameraDir: 0
+  zoomedInCamZoom: 3
+  followSelectionZoom: 7
+  cameraZoomSpeed: 2
+  sphereCastRadius: 7.5
+  maxDistance: 2.2919672
+  maxHitsNumber: 500
+  wallLayerMask:
+    serializedVersion: 2
+    m_Bits: 512

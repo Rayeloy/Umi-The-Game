@@ -329,11 +329,11 @@ public class HouseSpace
             if (valid)
             {
                 auxMaxZ = 0;
-                for (int k = 0; k < height && auxMaxZ != depth - 1; k++)
+                for (int k = 0; k < height && auxMaxZ == 0; k++)
                 {
-                    for (int i = depth - 1; i >= 0 && auxMaxZ != depth - 1; i--)
+                    for (int i = depth - 1; i >= 0 && auxMaxZ == 0; i--)
                     {
-                        for (int j = 0; j < width && auxMaxZ != depth - 1; j++)
+                        for (int j = 0; j < width && auxMaxZ == 0; j++)
                         {
                             if (GetAtIndex(k, i, j) && i > auxMaxZ) auxMaxZ = i;
                         }

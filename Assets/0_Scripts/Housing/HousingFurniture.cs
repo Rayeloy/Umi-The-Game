@@ -8,6 +8,7 @@ public class HousingFurniture : MonoBehaviour
     public Direction currentOrientation;
     public FurnitureLevel[] currentSpaces;
     HousingGridCoordinates anchor;
+    public HousingGridCoordinates currentAnchorGridPos;
 
     public bool validCurrentSpaces
     {
@@ -46,7 +47,7 @@ public class HousingFurniture : MonoBehaviour
         }
     }
 
-    public HousingFurniture(HousingFurnitureData _furnitureMeta)
+    public void KonoAwake(HousingFurnitureData _furnitureMeta)
     {
         furnitureMeta = _furnitureMeta;
         currentOrientation = Direction.Up;
@@ -72,24 +73,9 @@ public class HousingFurniture : MonoBehaviour
     public void Copy(HousingFurniture _furniture)
     {
         furnitureMeta = _furniture.furnitureMeta;
-        currentOrientation = Direction.Up;
-        currentSpaces = _furniture.furnitureMeta.furnitureSpace;
-        anchor = _furniture.furnitureMeta.anchor;
-        switch (_furniture.furnitureMeta.orientation)
-        {
-            default: break;
-
-            case Direction.Right:
-                RotateClockWise();
-                break;
-            case Direction.Down:
-                RotateClockWise();
-                RotateClockWise();
-                break;
-            case Direction.Left:
-                RotateCounterClockWise();
-                break;
-        }
+        currentOrientation = _furniture.currentOrientation;
+        currentSpaces = _furniture.currentSpaces;
+        anchor = _furniture.anchor;
     }
 
     public void RotateClockWise()
@@ -132,6 +118,9 @@ public class HousingFurniture : MonoBehaviour
         anchor = new HousingGridCoordinates(0, transposedAnchor.z, (depth -1) - transposedAnchor.x);
 
         currentSpaces = newSpaces;
+
+        //Rotate actual gameObject
+        transform.localRotation = Quaternion.Euler(0, transform.localRotation.eulerAngles.y + 90, 0);
     }
 
     public void RotateCounterClockWise()
@@ -174,13 +163,15 @@ public class HousingFurniture : MonoBehaviour
         anchor = new HousingGridCoordinates(0, (width - 1) - transposedAnchor.z, transposedAnchor.x);
 
         currentSpaces = newSpaces;
+        //Rotate actual gameObject
+        transform.localRotation = Quaternion.Euler(0, transform.localRotation.eulerAngles.y - 90, 0);
     }
 
-    public HousingGridCoordinates GetGridCoord(HousingGridCoordinates localCoord, HousingGridCoordinates anchorCoord)
+    public HousingGridCoordinates GetGridCoord(HousingGridCoordinates localCoord)
     {
         int xDif = localCoord.x - anchor.x;
         int zDif = localCoord.z - anchor.z;
-        HousingGridCoordinates gridCoord = new HousingGridCoordinates(anchorCoord.y, anchorCoord.z + zDif, anchorCoord.x + xDif);
+        HousingGridCoordinates gridCoord = new HousingGridCoordinates(localCoord.y, currentAnchorGridPos.z + zDif, currentAnchorGridPos.x + xDif);
 
         return gridCoord;
     }

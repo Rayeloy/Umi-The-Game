@@ -10,32 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3acad65496e192e46aa126e30881273b, type: 3}
-  m_Name: HouseExampleMeta
+  m_Name: EloyHouse
   m_EditorClassIdentifier: 
   houseName: HouseExampleMeta
   housingSlotSize: 1.5
   door:
-    prefab: {fileID: 0}
+    doorMeta: {fileID: 0}
     x: -1
     z: -1
-    height: 2
-    width: 1
-    orientation: 2
   windows:
-  - prefab: {fileID: 0}
+  - windowMeta: {fileID: 0}
     x: -1
     z: -1
     y: 1
-    height: 1
-    width: 1
-    orientation: 1
-  - prefab: {fileID: 0}
+  - windowMeta: {fileID: 0}
     x: -1
     z: -1
     y: 1
-    height: 1
-    width: 1
-    orientation: 0
   width: 11
   depth: 11
   height: 8

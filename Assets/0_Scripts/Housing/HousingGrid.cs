@@ -11,6 +11,8 @@ public class HousingGrid : MonoBehaviour
     [HideInInspector]
     public HousingGridCoordinates currentSlotCoord;
     public HousingFurniture currentFurniture = null;
+    public HousingFurniture highlightedFurniture = null;
+    public HousingEditModeCameraController cameraCont= null;
 
 
     public int width;
@@ -44,13 +46,13 @@ public class HousingGrid : MonoBehaviour
     HousingGridCoordinates center;
     List<CloseCoordinates> closeCoords = new List<CloseCoordinates>();
 
-
-
-    public void KonoAwake(HousingHouseData _myHouseMeta, Transform _furnituresParent, GameObject _slotPrefab, GameObject _wallPrefab, Vector3 _housePos, Material[] _highlightedSlotMat)
+    public void KonoAwake(HousingHouseData _myHouseMeta, Transform _furnituresParent, GameObject _slotPrefab, GameObject _wallPrefab,
+        Vector3 _housePos, Material[] _highlightedSlotMat, HousingEditModeCameraController _camCont)
     {
         myHouseMeta = _myHouseMeta;
-        CalculateWorldCenter();
+        worldCenter = CalculateWorldCenter();
 
+        cameraCont = _camCont;
         furnituresParent = _furnituresParent;
 
         width = myHouseMeta.width;
@@ -216,6 +218,8 @@ public class HousingGrid : MonoBehaviour
                         Vector3 wallPos = new Vector3(parentSlot.transform.position.x, parentSlot.transform.position.y - wallDist, parentSlot.transform.position.z);
                         GameObject wallObject = Instantiate(wallPrefab, wallPos, Quaternion.Euler(90, 0, 0), null);
                         wallObject.name = "FloorTile";
+                        if(k==0)
+                        wallObject.tag = "HousingFloor";
                         SetUpWall(wallObject, myHouseMeta.housingSlotSize, wallPrefab.transform.localScale.z, parentSlot, _showCollisionWalls, wallMats);
                     }
 
@@ -238,7 +242,7 @@ public class HousingGrid : MonoBehaviour
         wallObject.transform.localScale = new Vector3(wallSize, wallSize, wallThickness);
         wallObject.transform.parent = _parent;
         MeshRenderer meshR = wallObject.GetComponent<MeshRenderer>();
-        meshR.material = _showWall ? _wallMats[0] : _wallMats[1];
+        if (meshR != null && !_showWall) meshR.material = _wallMats[1];
         //meshR.enabled = _showCollisionWalls;
     }
 
@@ -247,26 +251,29 @@ public class HousingGrid : MonoBehaviour
     /// </summary>
     public bool CreateDoor(out Vector3 playerSpawnPos, out Quaternion playerSpawnRot)
     {
+        Debug.LogWarning("START CREATE DOOR");
         bool result = false;
         playerSpawnPos = Vector3.zero; playerSpawnRot = Quaternion.identity;
 
         HouseDoor door = myHouseMeta.door;
-
+        HousingGridCoordinates doorCoord = new HousingGridCoordinates(0, door.z, door.x);
         HousingFurniture furniture;
-        if (SpawnFurnitureAt(door.doorMeta, new HousingGridCoordinates(0, door.z, door.x), out furniture))
+        if (!SpawnFurnitureAt(door.doorMeta, doorCoord, out furniture))
         {
-            // PLACE DOOR FURNITURE
-            if (!PlaceWallFurniture(furniture))
-            {
-                Debug.LogError("Can't Place door");
-                return false;
-            }
-
-            playerSpawnPos = slots[1, door.z, door.x].transform.position;
-            playerSpawnRot = Quaternion.Euler(0, door.doorMeta.orientation == Direction.Up ? 180 : door.doorMeta.orientation == Direction.Down ? 0 :
-                door.doorMeta.orientation == Direction.Left ? 90 : door.doorMeta.orientation == Direction.Right ? 270 : 0, 0);
-            result = true;
+            Debug.LogError("Can't Spawn door at " + doorCoord.printString);
+            return false;
         }
+        // PLACE DOOR FURNITURE
+        if (!PlaceFurniture(furniture))
+        {
+            Debug.LogError("Can't Place door");
+            return false;
+        }
+
+        playerSpawnPos = slots[1, door.z, door.x].transform.position;
+        playerSpawnRot = Quaternion.Euler(0, door.doorMeta.orientation == Direction.Up ? 180 : door.doorMeta.orientation == Direction.Down ? 0 :
+            door.doorMeta.orientation == Direction.Left ? 90 : door.doorMeta.orientation == Direction.Right ? 270 : 0, 0);
+        result = true;
 
         return result;
     }
@@ -275,6 +282,7 @@ public class HousingGrid : MonoBehaviour
 
     public bool SpawnFurniture(HousingFurnitureData _furnitureMeta, out HousingFurniture _furniture)
     {
+        Debug.LogWarning("START SPAWN FURNITURE ");
         bool result = false;
         //In case we can't spawn at center, we get a list of close coordinates with distance levels, to check through it
         _furniture = null;
@@ -312,14 +320,21 @@ public class HousingGrid : MonoBehaviour
     /// <param name="furnitureMeta"></param>
     /// <param name="spawnCoord"></param>
     /// <returns></returns>
-    public bool SpawnFurnitureAt(HousingFurnitureData furnitureMeta, HousingGridCoordinates spawnCoord, out HousingFurniture _furniture)
+    public bool SpawnFurnitureAt(HousingFurnitureData _furnitureMeta, HousingGridCoordinates spawnCoord, out HousingFurniture _furniture)
     {
+        Debug.LogWarning("START SPAWN FURNITURE AT");
         bool result = false;
         _furniture = null;
         //We try to spawn it in the middle:
-        if (furnitureMeta.widthOrient > width || furnitureMeta.depthOrient > depth || furnitureMeta.height > height) return false;
+        if (_furnitureMeta.widthOrient > width || _furnitureMeta.depthOrient > depth || _furnitureMeta.height > height) return false;
 
-        _furniture = new HousingFurniture(furnitureMeta);
+        GameObject furnitureObject = Instantiate(_furnitureMeta.prefab, Vector3.zero, Quaternion.identity, furnituresParent);
+        furnitureObject.AddComponent(typeof(HousingFurniture));
+        HousingFurniture auxFurniture = furnitureObject.GetComponent<HousingFurniture>();
+        auxFurniture.KonoAwake(_furnitureMeta);
+        _furniture = auxFurniture;
+        _furniture.currentAnchorGridPos = spawnCoord;
+
         bool validLevelFound = false;
         for (int k = spawnCoord.y; k < height && !validLevelFound; k++)
         {
@@ -327,40 +342,52 @@ public class HousingGrid : MonoBehaviour
             int furnitureMaxY = (currentLevelCoord.y + _furniture.height - 1);
             if (furnitureMaxY >= height) return false;
 
-            if (CanFurnitureFit(_furniture, currentLevelCoord))
+            if (CanFurnitureFit(_furniture))
             {
-                GameObject furnitureObject = Instantiate(_furniture.furnitureMeta.prefab, Vector3.zero, Quaternion.identity, furnituresParent);
-                furnitureObject.AddComponent(typeof(HousingFurniture));
-                HousingFurniture auxFurniture = furnitureObject.GetComponent<HousingFurniture>();
-                auxFurniture.Copy(_furniture);
-                _furniture = auxFurniture;
+                //Move furniture's gameobject correctly
+                Vector3 worldPos = GetSlotAt(_furniture.currentAnchorGridPos).transform.position;
+                if(_furniture.furnitureMeta.furnitureType == FurnitureType.Wall)
+                {
+                    worldPos += _furniture.currentOrientation == Direction.Up ? Vector3.forward * myHouseMeta.housingSlotSize/2 :
+                        _furniture.currentOrientation == Direction.Down ? -Vector3.forward * myHouseMeta.housingSlotSize/2 :
+                        _furniture.currentOrientation == Direction.Right ? Vector3.right * myHouseMeta.housingSlotSize/2 :
+                        _furniture.currentOrientation == Direction.Left ? -Vector3.right * myHouseMeta.housingSlotSize/2 : Vector3.zero;
+                }
+                _furniture.transform.position = worldPos;
                 validLevelFound = true;
             }
             else continue;
         }
-        if (!validLevelFound)//We can spawn the object here, but we still need to check if we can place it there
+        if (!validLevelFound)
         {
+            Destroy(furnitureObject);
             Debug.LogError("HousingGrid -> SpawnFurnitureAt: Can't spawn furniture at " + spawnCoord.printString);
             return false;
+        }
+        else
+        {
+            result = true;
         }
 
         return result;
     }
 
-    public bool CanFurnitureFit(HousingFurniture _furniture, HousingGridCoordinates coord)
+    bool CanFurnitureFit(HousingFurniture _furniture)
     {
+        Debug.LogWarning("START CAN FURNITURE FIT");
         bool result = false;
 
-        for (int k = 0; k < _furniture.height; k++)
+        for (int k = 0; k < _furniture.height; k++)//for every furniture level
         {
-            for (int i = 0; i < _furniture.depth; i++)
+            for (int i = 0; i < _furniture.depth; i++)//for every furniture row
             {
-                for (int j = 0; j < _furniture.width; j++)
+                for (int j = 0; j < _furniture.width; j++)//for every furniture slot
                 {
-                    HousingGridCoordinates currentCheckCoord = _furniture.GetGridCoord(new HousingGridCoordinates(k, i, j), coord);
+                    HousingGridCoordinates currentCheckCoord = _furniture.GetGridCoord(new HousingGridCoordinates(k, i, j));
                     if (!(GetSlotAt(currentCheckCoord) != null && GetSlotAt(currentCheckCoord).free))
                     {
-                        Debug.LogError("Can't place furniture " + _furniture.furnitureMeta.name + " with anchor at " + coord.printString + "; conflict at " + currentCheckCoord.printString);
+                        Debug.LogError("Can't place furniture " + _furniture.furnitureMeta.name + " with anchor at " + _furniture.currentAnchorGridPos.printString +
+                            "; conflict at " + currentCheckCoord.printString+"; k = "+k+"; i = "+i+"; j = "+j);
                         return false;
                     }
                 }
@@ -371,8 +398,9 @@ public class HousingGrid : MonoBehaviour
         return result;
     }
 
-    public bool  PlaceFurniture(HousingFurniture _furniture)
+    public bool PlaceFurniture(HousingFurniture _furniture)
     {
+        Debug.LogWarning("START PLACE FURNITURE");
         bool result = false;
         if (_furniture.furnitureMeta.furnitureType == FurnitureType.Wall) result = PlaceWallFurniture(_furniture);
         else
@@ -383,68 +411,341 @@ public class HousingGrid : MonoBehaviour
         return result;
     }
 
-    public bool PlaceWallFurniture(HousingFurniture _furniture)
+    bool PlaceWallFurniture(HousingFurniture _furniture)
     {
+        Debug.LogWarning("START PLACE WALL FURNITURE");
         bool result = false;
 
         //Check if valid position
+        result = CheckIfCanBePlaced(_furniture);
 
-        Transform slotTrans = slots[coord.y, coord.z, coord.x].transform;
-        GameObject furnitureObject = Instantiate(_furniture.furnitureMeta.prefab, Vector3.zero, Quaternion.identity, slotTrans);
-
-        Debug.Log("Furniture Data: Coord = " + coord.printString + "; height = " + furnitureMeta.height + "; depth = " + furnitureMeta.depthOrient + "; width = " + furnitureMeta.widthOrient);
-        for (int k = 0; k < furnitureMeta.height; k++)
+        if (!result)
         {
-            for (int i = 0; i < furnitureMeta.depthOrient; i++)
+            Debug.LogError("HousingGrid -> PlaceWallFurniture : Can't place wall furniture here because 1 or more slots are not valid.");
+            return false;
+        }
+
+        for (int k = 0; k < _furniture.height; k++)//for every furniture level
+        {
+            for (int i = 0; i < _furniture.depth; i++)//for every furniture row
             {
-                for (int j = 0; j < furnitureMeta.widthOrient; j++)
+                for (int j = 0; j < _furniture.width; j++)//for every furniture slot
                 {
-                    if (!slots[coord.y + k, coord.z + i, coord.x + j].SetFurniture(furnitureMeta, furnitureObject))
+                    HousingGridCoordinates currentCheckCoord = _furniture.GetGridCoord(new HousingGridCoordinates(k, i, j));
+                    HousingSlot currentSlot = GetSlotAt(currentCheckCoord);
+                    Debug.Log("Going to set furniture at " + currentCheckCoord.printString + "; furniture's k = "+k+"; i = "+i+"; j = " +j);
+                    if (!currentSlot.SetFurniture(_furniture))
                     {
-                        Debug.LogError("Can't place wall furniture at (" + (coord.y + k) + "," + (coord.z + i) + "," + (coord.x + j) + ") at orientation " + furnitureMeta.orientation);
+                        Debug.LogError("can't set furniture, This should NOT be happening because we already checked before");
                         return false;
                     }
                 }
             }
         }
+        //DeSelect furniture
 
-        float slotSize = myHouseMeta.housingSlotSize;
-        Vector3 slotPos = slotTrans.position;
-        Collider col = furnitureObject.GetComponentInChildren<Collider>();
-        if (col == null)
+        result = true;
+        #region old setFurniture
+        //Transform slotTrans = slots[coord.y, coord.z, coord.x].transform;
+        //GameObject furnitureObject = Instantiate(_furniture.furnitureMeta.prefab, Vector3.zero, Quaternion.identity, slotTrans);
+
+        //Debug.Log("Furniture Data: Coord = " + coord.printString + "; height = " + furnitureMeta.height + "; depth = " + furnitureMeta.depthOrient + "; width = " + furnitureMeta.widthOrient);
+        //for (int k = 0; k < furnitureMeta.height; k++)
+        //{
+        //    for (int i = 0; i < furnitureMeta.depthOrient; i++)
+        //    {
+        //        for (int j = 0; j < furnitureMeta.widthOrient; j++)
+        //        {
+        //            if (!slots[coord.y + k, coord.z + i, coord.x + j].SetFurniture(furnitureMeta, furnitureObject))
+        //            {
+        //                Debug.LogError("Can't place wall furniture at (" + (coord.y + k) + "," + (coord.z + i) + "," + (coord.x + j) + ") at orientation " + furnitureMeta.orientation);
+        //                return false;
+        //            }
+        //        }
+        //    }
+        //}
+
+        //float slotSize = myHouseMeta.housingSlotSize;
+        //Vector3 slotPos = slotTrans.position;
+        //Collider col = furnitureObject.GetComponentInChildren<Collider>();
+        //if (col == null)
+        //{
+        //    Debug.LogError("HousingGrid -> SetWallFurniture -> Error: Can't find the collider of the furniture " + furnitureMeta.name + ".");
+        //    //playerSpawnPos = Vector3.zero; playerSpawnRot = Quaternion.identity;
+        //    return false;
+        //}
+        //float y = slotPos.y - (slotSize / 2) + col.bounds.extents.y;
+        //float x = slotPos.x + (furnitureMeta.orientation == Direction.Left ? -slotSize / 2 : furnitureMeta.orientation == Direction.Right ? +slotSize / 2 : 0);
+        //float z = slotPos.z + (furnitureMeta.orientation == Direction.Up ? +slotSize / 2 : furnitureMeta.orientation == Direction.Down ? -slotSize / 2 : 0);
+        //Vector3 pos = new Vector3(x, y, z);
+        //Quaternion rot = Quaternion.Euler(0, furnitureMeta.orientation == Direction.Up ? 0 : furnitureMeta.orientation == Direction.Down ? 180 :
+        //    furnitureMeta.orientation == Direction.Left ? 270 : furnitureMeta.orientation == Direction.Right ? 90 : 0, 0);
+        //furnitureObject.transform.position = pos;
+        //furnitureObject.transform.rotation = rot;
+        //result = true;
+
+        //if (!result)
+        //{
+        //    //TO DO: erase furniture
+
+        //}
+        #endregion
+
+        return result;
+    }
+
+    bool CheckIfCanBePlaced(HousingFurniture _furniture)
+    {
+        Debug.LogWarning("START CHECK IF CAN BE PLACED");
+        bool result = false;
+
+        for (int k = 0; k < _furniture.height; k++)//for every furniture level
         {
-            Debug.LogError("HousingGrid -> SetWallFurniture -> Error: Can't find the collider of the furniture " + furnitureMeta.name + ".");
-            //playerSpawnPos = Vector3.zero; playerSpawnRot = Quaternion.identity;
-            return false;
+            for (int i = 0; i < _furniture.depth; i++)//for every furniture row
+            {
+                for (int j = 0; j < _furniture.width; j++)//for every furniture slot
+                {
+                    bool validSlot = false;
+                    HousingGridCoordinates currentCheckCoord = _furniture.GetGridCoord(new HousingGridCoordinates(k, i, j));
+                    HousingSlot currentSlot = GetSlotAt(currentCheckCoord);
+                    if (currentSlot != null && currentSlot.free)
+                    {
+                        HousingSlot underSlot = null;
+                        if (k-1 >= 0) underSlot = GetSlotAt(new HousingGridCoordinates(k - 1, i, j));
+
+                        switch (_furniture.furnitureMeta.furnitureType)
+                        {
+                            case FurnitureType.Floor:
+                                if (k - 1 >= 0 && underSlot == null)
+                                    validSlot = true;
+                                break;
+                            case FurnitureType.Floor_Small:
+                                if (k - 1 >= 0 && (underSlot == null || (underSlot != null && underSlot.canPlaceFurnitureOn)))
+                                    validSlot = true;
+                                break;
+                            case FurnitureType.Wall:
+                                if (currentSlot.CanPlaceWallFurniture(_furniture))
+                                    validSlot = true;
+                                break;
+                        }
+                    }
+                    if (!validSlot)
+                    {
+                        Debug.LogError("Can't place furniture " + _furniture.furnitureMeta.name + " with anchor at " + _furniture.currentAnchorGridPos.printString + "; conflict at " + currentCheckCoord.printString);
+                        result = false;
+                    }
+                    ////Highlight color depending on validSlot
+                    //int value = validSlot ? 0 : 1;
+                    //HighlightSlot(currentCheckCoord, value);
+                }
+            }
         }
-        float y = slotPos.y - (slotSize / 2) + col.bounds.extents.y;
-        float x = slotPos.x + (furnitureMeta.orientation == Direction.Left ? -slotSize / 2 : furnitureMeta.orientation == Direction.Right ? +slotSize / 2 : 0);
-        float z = slotPos.z + (furnitureMeta.orientation == Direction.Up ? +slotSize / 2 : furnitureMeta.orientation == Direction.Down ? -slotSize / 2 : 0);
-        Vector3 pos = new Vector3(x, y, z);
-        Quaternion rot = Quaternion.Euler(0, furnitureMeta.orientation == Direction.Up ? 0 : furnitureMeta.orientation == Direction.Down ? 180 :
-            furnitureMeta.orientation == Direction.Left ? 270 : furnitureMeta.orientation == Direction.Right ? 90 : 0, 0);
-        furnitureObject.transform.position = pos;
-        furnitureObject.transform.rotation = rot;
         result = true;
 
-        if (!result)
+        return result;
+    }
+
+    bool HighlightSlot(HousingGridCoordinates coord, int state)//0 == good; 1 == bad; 2 == nothing
+    {
+        HousingSlot slot = GetSlotAt(coord);
+        MeshRenderer meshR = slot.GetComponent<MeshRenderer>();
+        if (meshR == null) return false;
+        meshR.enabled = true;
+        meshR.material = state == 0 ? highlightedSlotMat[0] : state == 1 ? highlightedSlotMat[1] : highlightedSlotMat[2];
+        Debug.Log("Highlight slot " + coord.printString);
+        return true;
+    }
+
+    public bool StopHighlightSlot(HousingGridCoordinates coord)
+    {
+        HousingSlot slot = GetSlotAt(coord);
+        MeshRenderer meshR = slot.GetComponent<MeshRenderer>();
+        if (meshR == null) return false;
+        meshR.enabled = false;
+        Debug.Log("Stop Highlight slot " + coord.printString);
+        return true;
+    }
+
+    bool HighlightFurniture(HousingFurniture _furniture)
+    {
+        bool result = false;
+        for (int k = 0; k < _furniture.height; k++)//for every furniture level
         {
-            //TO DO: erase furniture
+            for (int i = 0; i < _furniture.depth; i++)//for every furniture row
+            {
+                for (int j = 0; j < _furniture.width; j++)//for every furniture slot
+                {
+                    bool validSlot = false;
+                    HousingGridCoordinates currentCheckCoord = _furniture.GetGridCoord(new HousingGridCoordinates(k, i, j));
+                    HousingSlot currentSlot = GetSlotAt(currentCheckCoord);
+                    if (currentSlot != null && currentSlot.free)
+                    {
+                        HousingSlot underSlot = null;
+                        if (k - 1 >= 0) underSlot = GetSlotAt(new HousingGridCoordinates(k - 1, i, j));
 
+                        switch (_furniture.furnitureMeta.furnitureType)
+                        {
+                            case FurnitureType.Floor:
+                                if (k - 1 >= 0 && underSlot == null)
+                                    validSlot = true;
+                                break;
+                            case FurnitureType.Floor_Small:
+                                if (k - 1 >= 0 && (underSlot == null || (underSlot != null && underSlot.canPlaceFurnitureOn)))
+                                    validSlot = true;
+                                break;
+                            case FurnitureType.Wall:
+                                if (currentSlot.CanPlaceWallFurniture(_furniture))
+                                    validSlot = true;
+                                break;
+                        }
+                    }
+                    //Highlight color depending on validSlot
+                    int value = validSlot ? 0 : 1;
+                    if(!HighlightSlot(currentCheckCoord, value))
+                    {
+                        Debug.LogError("Can't hightlight the slot "+ currentCheckCoord.printString);
+                        return false;
+                    }
+                }
+            }
         }
+        result = true;
 
+        if(result) highlightedFurniture = _furniture;
+
+        return result;
+    }
+
+    bool StopHighlightFurniture(HousingFurniture _furniture)
+    {
+        bool result = false;
+
+        for (int k = 0; k < _furniture.height; k++)//for every furniture level
+        {
+            for (int i = 0; i < _furniture.depth; i++)//for every furniture row
+            {
+                for (int j = 0; j < _furniture.width; j++)//for every furniture slot
+                {
+                    HousingGridCoordinates currentCheckCoord = _furniture.GetGridCoord(new HousingGridCoordinates(k, i, j));
+                    if (!StopHighlightSlot(currentCheckCoord))
+                    {
+                        Debug.LogError("Can't Highlight Furniture at slot " + currentCheckCoord.printString);
+                        return false;
+                    }
+                }
+            }
+        }
+        result = true;
+
+        if (result)
+        {
+            highlightedFurniture = null;
+        }
         return result;
     }
 
     #region --- Selected Slot ---
 
-    public bool HighlightSlotMove(Direction dir, EditCameraDirection editCamDir)
+    public bool SelectSlotAt(HousingGridCoordinates coord)
+    {
+        bool result = false;
+        if (currentFurniture == null)
+        {
+            #region -- Check if we can select that slot --
+            bool foundValid = false;
+            for (int k = coord.y; k < height && !foundValid; k++)
+            {
+                if (slots[k, coord.z, coord.x] != null &&
+                    (k - 1 < 0 || (k - 1 >= 0 && (slots[k - 1, coord.z, coord.x] == null || (slots[k - 1, coord.z, coord.x] != null && !slots[k - 1, coord.z, coord.x].free && !slots[k, coord.z, coord.x].free))))
+                    && (k + 1 >= height || (k + 1 < height && (slots[k + 1, coord.z, coord.x] == null || (slots[k + 1, coord.z, coord.x] != null && slots[k + 1, coord.z, coord.x].free)))))
+                {
+                    coord.y = k;
+                    foundValid = true;
+                }
+            }
+            if (!foundValid)
+            {
+                for (int k = 0; k < coord.y && !foundValid; k++)
+                {
+                    if (slots[k, coord.z, coord.x] != null &&
+                        (k - 1 < 0 || (k - 1 >= 0 && (slots[k - 1, coord.z, coord.x] == null || (slots[k - 1, coord.z, coord.x] != null && !slots[k - 1, coord.z, coord.x].free && !slots[k, coord.z, coord.x].free))))
+                        && (k + 1 >= height || (k + 1 < height && (slots[k + 1, coord.z, coord.x] == null || (slots[k + 1, coord.z, coord.x] != null && slots[k + 1, coord.z, coord.x].free)))))
+                    {
+                        coord.y = k;
+                        foundValid = true;
+                    }
+                }
+            }
+            if (!foundValid) return false;
+            #endregion
+
+            //STOP HIGHLIGHT FURNITURE
+            if (highlightedFurniture!= null && !GetSlotAt(coord).HasThisFurniture(highlightedFurniture))
+            {
+                StopHighlightFurniture(highlightedFurniture);
+            }
+
+            #region -- Highlight furniture --
+            //HIGHLIGHT FURNITURE
+            if (GetSlotAt(coord).hasFurniture)
+            {
+                if (!HighlightFurniture(GetSlotAt(coord).myFurniture))
+                {
+                    Debug.Log("Can't highlight furniture");
+                    return false;
+                }
+            }
+            else if (GetSlotAt(coord).hasAnyWallFurniture)
+            {
+                HousingSlot slot = GetSlotAt(coord);
+                if (slot.myWallFurnitures[(int)cameraCont.currentCameraDir] != null && slot.myWallFurnitures[(int)cameraCont.currentCameraDir].furnitureMeta != null)
+                {
+                    if (!HighlightFurniture(slot.myWallFurnitures[(int)cameraCont.currentCameraDir]))
+                    {
+                        Debug.Log("Can't highlight wall furniture");
+                        return false;
+                    }
+                }
+                else
+                {
+                    bool wallFurnitureFound = false;
+                    for (int i = 0; i < slot.myWallFurnitures.Length; i++)
+                    {
+                        if(slot.myWallFurnitures[i]!=null && slot.myWallFurnitures[i].furnitureMeta != null)
+                        {
+                            wallFurnitureFound = true;
+                            if (!HighlightFurniture(slot.myWallFurnitures[i]))
+                            {
+                                Debug.Log("Can't highlight wall furniture");
+                                return false;
+                            }
+                        }
+                    }
+                    if (!wallFurnitureFound) Debug.LogError("Can't find the wall furniture that SHOULD exist. THIS SHOULD NOT BE HAPPENING");
+                }
+            }
+            #endregion
+
+            HighlightSlot(coord, 2);
+            currentSlotCoord = coord;
+            Debug.Log("Highlight slot " + coord.printString);
+            result = true;
+        }
+        else// select a slot while having a furniture picked
+        {
+            Debug.LogError("TO DO");
+        }
+
+        return result;
+    }
+
+    public bool MoveSelectSlot(Direction dir)
     {
         bool result = false;
         HousingGridCoordinates oldCoord;
         HousingGridCoordinates newCoord = oldCoord = currentSlotCoord;
-        Debug.Log(" dir = " + (int)dir + "; (int)editCamDir = " + (int)editCamDir);
-        dir += (int)editCamDir;//magic stuff
+        Debug.Log(" dir = " + (int)dir + "; (int)editCamDir = " + (int)cameraCont.currentCameraDir);
+        dir += (int)cameraCont.currentCameraDir;//magic stuff
         dir += (int)dir > 3 ? -4 : (int)dir < 0 ? +4 : 0;
         Debug.Log("dir after = " + (int)dir);
 
@@ -454,117 +755,93 @@ public class HousingGrid : MonoBehaviour
                 for (int i = currentSlotCoord.x - 1; i >= 0 && !result; i--)
                 {
                     newCoord.x = i;
-                    result = HighlightSlot(newCoord);
+                    result = SelectSlotAt(newCoord);
                     Debug.Log("newCoord = " + newCoord.printString + "; result = " + result);
                 }
-                //if (newCoord.x -1 >= 0)
-                //{
-                //    newCoord.x += -1;
-                //    result = true;
-                //}
                 break;
             case Direction.Right:
                 for (int i = currentSlotCoord.x + 1; i < width && !result; i++)
                 {
                     newCoord.x = i;
-                    result = HighlightSlot(newCoord);
+                    result = SelectSlotAt(newCoord);
                 }
-                //if (newCoord.x + 1 < myHouseMeta.width)
-                //{
-                //    newCoord.x += 1;
-                //    result = true;
-                //}
                 break;
             case Direction.Up:
                 for (int j = currentSlotCoord.z - 1; j >= 0 && !result; j--)
                 {
                     newCoord.z = j;
-                    result = HighlightSlot(newCoord);
+                    result = SelectSlotAt(newCoord);
                 }
-                //if (newCoord.z - 1 >= 0)
-                //{
-                //    newCoord.z += -1;
-                //    result = true;
-                //}
                 break;
             case Direction.Down:
                 for (int j = currentSlotCoord.z + 1; j < depth && !result; j++)
                 {
                     newCoord.z = j;
-                    result = HighlightSlot(newCoord);
+                    result = SelectSlotAt(newCoord);
                 }
-                //if (newCoord.z + 1 < myHouseMeta.depth)
-                //{
-                //    newCoord.z += 1;
-                //    result = true;
-                //}
                 break;
         }
         if (result)
         {
-            StopHighLightSlot(oldCoord);
+            StopHighlightSlot(oldCoord);
         }
-
 
         return result;
     }
 
-    public bool HighlightSlot(HousingGridCoordinates coord)
-    {
-        bool foundValid = false;
-        for (int k = coord.y; k < height && !foundValid; k++)
-        {
-            if (slots[k, coord.z, coord.x] != null &&
-                (k - 1 < 0 || (k - 1 >= 0 && (slots[k - 1, coord.z, coord.x] == null || (slots[k - 1, coord.z, coord.x] != null && !slots[k - 1, coord.z, coord.x].free))))
-                && (k + 1 >= height || (k + 1 < height && (slots[k + 1, coord.z, coord.x] == null || (slots[k + 1, coord.z, coord.x] != null && slots[k + 1, coord.z, coord.x].free)))))
-            {
-                coord.y = k;
-                foundValid = true;
-            }
-        }
-        if (!foundValid)
-        {
-            for (int k = 0; k < coord.y && !foundValid; k++)
-            {
-                if (slots[k, coord.z, coord.x] != null &&
-                    (k - 1 < 0 || (k - 1 >= 0 && (slots[k - 1, coord.z, coord.x] == null || (slots[k - 1, coord.z, coord.x] != null && !slots[k - 1, coord.z, coord.x].free))))
-                    && (k + 1 >= height || (k + 1 < height && (slots[k + 1, coord.z, coord.x] == null || (slots[k + 1, coord.z, coord.x] != null && slots[k + 1, coord.z, coord.x].free)))))
-                {
-                    coord.y = k;
-                    foundValid = true;
-                }
-            }
-        }
-        if (!foundValid) return false;
+    //public bool HighlightSlot(HousingGridCoordinates coord)
+    //{
+    //    bool foundValid = false;
+    //    for (int k = coord.y; k < height && !foundValid; k++)
+    //    {
+    //        if (slots[k, coord.z, coord.x] != null &&
+    //            (k - 1 < 0 || (k - 1 >= 0 && (slots[k - 1, coord.z, coord.x] == null || (slots[k - 1, coord.z, coord.x] != null && !slots[k - 1, coord.z, coord.x].free))))
+    //            && (k + 1 >= height || (k + 1 < height && (slots[k + 1, coord.z, coord.x] == null || (slots[k + 1, coord.z, coord.x] != null && slots[k + 1, coord.z, coord.x].free)))))
+    //        {
+    //            coord.y = k;
+    //            foundValid = true;
+    //        }
+    //    }
+    //    if (!foundValid)
+    //    {
+    //        for (int k = 0; k < coord.y && !foundValid; k++)
+    //        {
+    //            if (slots[k, coord.z, coord.x] != null &&
+    //                (k - 1 < 0 || (k - 1 >= 0 && (slots[k - 1, coord.z, coord.x] == null || (slots[k - 1, coord.z, coord.x] != null && !slots[k - 1, coord.z, coord.x].free))))
+    //                && (k + 1 >= height || (k + 1 < height && (slots[k + 1, coord.z, coord.x] == null || (slots[k + 1, coord.z, coord.x] != null && slots[k + 1, coord.z, coord.x].free)))))
+    //            {
+    //                coord.y = k;
+    //                foundValid = true;
+    //            }
+    //        }
+    //    }
+    //    if (!foundValid) return false;
 
-        currentSlotCoord = coord;
-        bool result = false;
-        MeshRenderer meshR = slots[coord.y, coord.z, coord.x].gameObject.GetComponent<MeshRenderer>();
-        if (meshR == null) return false;
-        meshR.enabled = true;
-        meshR.material = slots[coord.y, coord.z, coord.x].free ? highlightedSlotMat[0] : highlightedSlotMat[1];
-        result = true;
-        Debug.Log("Highlight slot " + coord.printString);
+    //    currentSlotCoord = coord;
+    //    bool result = false;
+    //    MeshRenderer meshR = slots[coord.y, coord.z, coord.x].gameObject.GetComponent<MeshRenderer>();
+    //    if (meshR == null) return false;
+    //    meshR.enabled = true;
+    //    meshR.material = slots[coord.y, coord.z, coord.x].free ? highlightedSlotMat[0] : highlightedSlotMat[1];
+    //    result = true;
+    //    Debug.Log("Highlight slot " + coord.printString);
 
-        return result;
-    }
+    //    return result;
+    //}
 
-    public void StopHighLightSlot(HousingGridCoordinates coord)
-    {
-        if (slots[coord.y, coord.z, coord.x] != null)
-            slots[coord.y, coord.z, coord.x].gameObject.GetComponent<MeshRenderer>().enabled = false;
-    }
-
-    void HighlightFurniture()
-    {
-
-    }
+    //public void StopHighlightSlot(HousingGridCoordinates coord)
+    //{
+    //    if (slots[coord.y, coord.z, coord.x] != null)
+    //        slots[coord.y, coord.z, coord.x].gameObject.GetComponent<MeshRenderer>().enabled = false;
+    //}
 
     #endregion
 
     #region -- Get & Set --
-    HousingSlot GetSlotAt(HousingGridCoordinates coord)
+    public HousingSlot GetSlotAt(HousingGridCoordinates coord)
     {
+        if (coord.y < 0 || coord.y >= slots.GetLength(0) || coord.z < 0 || coord.z >= slots.GetLength(1) ||
+            coord.x < 0 || coord.x >= slots.GetLength(2)) Debug.LogError("Can't get slot at " + coord.printString);
         return slots[coord.y, coord.z, coord.x];
     }
 
@@ -581,5 +858,4 @@ public class HousingGrid : MonoBehaviour
             distance = _dist;
         }
     }
-
 }

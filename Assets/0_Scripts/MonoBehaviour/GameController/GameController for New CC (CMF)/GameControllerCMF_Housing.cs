@@ -7,13 +7,15 @@ public class GameControllerCMF_Housing : GameControllerCMF
     [Header("--- HOUSING ---")]
     public bool showSlotMeshes = false;
     public Transform housingParent;
+    public Transform housingFurnituresParent;
     public GameObject housingGridPrefab;
     public GameObject housingSlotPrefab;
-    public GameObject housingWall;
+    public GameObject wallPrefab;
     public HousingHouseData houseMeta;
     public Vector3 houseSpawnPos = Vector3.zero;
     public bool showWallMeshes = false;
     public Material[] wallMaterials; // length = 2
+    public HousingFurnitureData testFurniture;
 
     GameObject currentGridObject;
     HousingGrid currentGrid;
@@ -24,7 +26,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
     [Header(" - Edit Mode - ")]
     [Range(0, 1)]
     public float leftJoyStickDeadzone = 0.2f;
-    public HousingEditModeCameraController editModeCameraBase;
+    public HousingEditModeCameraController editModeCameraController;
     float cameraHeightOffset = 0;
     public float cameraDistValue = 0;
     public Material[] highlightedSlotMat;
@@ -36,13 +38,17 @@ public class GameControllerCMF_Housing : GameControllerCMF
         myLeftJoyStickControls = new JoyStickControls(allPlayers[0].actions.LeftJoystick, leftJoyStickDeadzone);
         currentGridObject = Instantiate(housingGridPrefab, houseSpawnPos, Quaternion.identity, housingParent);
         currentGrid = currentGridObject.GetComponent<HousingGrid>();
-        currentGrid.KonoAwake(houseMeta, housingSlotPrefab, housingWall, houseSpawnPos, highlightedSlotMat);
+        currentGrid.KonoAwake(houseMeta, housingFurnituresParent, housingSlotPrefab, wallPrefab, houseSpawnPos, highlightedSlotMat, editModeCameraController);
         //Spawn House
         SpawnHouse(houseMeta);
+        editModeCameraController.KonoAwake(currentGrid, houseSpawnPos);
     }
 
     protected override void SpecificUpdate()
     {
+        //Camera Update
+        if(editHouseOn) editModeCameraController.KonoUpdate();
+
         if (allPlayers[0].actions.Select.WasPressed)
         {
             SwitchPlayAndHousingMode();
@@ -51,22 +57,28 @@ public class GameControllerCMF_Housing : GameControllerCMF
         {
             if (myLeftJoyStickControls.LeftWasPressed)
             {
-                currentGrid.HighlightSlotMove(Direction.Left, editModeCameraBase.currentCameraDir);
+                currentGrid.MoveSelectSlot(Direction.Left);
             }
             else if (myLeftJoyStickControls.RightWasPressed)
             {
-                currentGrid.HighlightSlotMove(Direction.Right, editModeCameraBase.currentCameraDir);
+                currentGrid.MoveSelectSlot(Direction.Right);
             }
             else if (myLeftJoyStickControls.UpWasPressed)
             {
-                currentGrid.HighlightSlotMove(Direction.Up, editModeCameraBase.currentCameraDir);
+                currentGrid.MoveSelectSlot(Direction.Up);
             }
             else if (myLeftJoyStickControls.DownWasPressed)
             {
-                currentGrid.HighlightSlotMove(Direction.Down, editModeCameraBase.currentCameraDir);
+                currentGrid.MoveSelectSlot(Direction.Down);
             }
         }
         myLeftJoyStickControls.ResetJoyStick();
+
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            HousingFurniture aux;
+            currentGrid.SpawnFurniture(testFurniture, out aux);
+        }
     }
 
     protected override void SpecificLateUpdate()
@@ -74,7 +86,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
         if (editHouseOn)
         {
             //move camera
-            editModeCameraBase.KonoLateUpdate();
+            editModeCameraController.KonoLateUpdate();
         }
     }
 
@@ -94,12 +106,16 @@ public class GameControllerCMF_Housing : GameControllerCMF
                 }
                 Debug.Log(" playerSpawnPos = " + playerSpawnPos + "; playerSpawnRot = " + playerSpawnRot);
             }
+            else
+            {
+                Debug.LogError("Can't create door");
+            }
         }
     }
 
     void SwitchPlayAndHousingMode()
     {
-        if (!editHouseOn)
+        if (!editHouseOn) //ACTIVATE EDIT MODE
         {
             //FOR ONLINE:
             /*if(people in room>1)//can only edit room if alone in it.
@@ -113,27 +129,28 @@ public class GameControllerCMF_Housing : GameControllerCMF
 
             //Set new Edit Camera
             cameraHeightOffset = ((currentGrid.myHouseMeta.height / 2) + 1) * currentGrid.myHouseMeta.housingSlotSize;
-            Vector3 cameraBaseCenterPos = currentGrid.center + Vector3.up * cameraHeightOffset;
+            Vector3 cameraBaseCenterPos = currentGrid.worldCenter + Vector3.up * cameraHeightOffset;
             Vector3 houseFloorCenter = new Vector3(cameraBaseCenterPos.x, houseSpawnPos.y, cameraBaseCenterPos.z + (currentGrid.myHouseMeta.depth / 3 * currentGrid.myHouseMeta.housingSlotSize));
             float volume = currentGrid.myHouseMeta.width * currentGrid.myHouseMeta.depth * currentGrid.myHouseMeta.height * currentGrid.myHouseMeta.housingSlotSize;
             float cameraMaxZoomDist = volume * cameraDistValue;
-            editModeCameraBase.Activate(cameraBaseCenterPos, houseFloorCenter, -cameraMaxZoomDist);
+            Debug.Log(" cameraBaseCenterPos = " + cameraBaseCenterPos.ToString("F4") + "; houseFloorCenter = " + houseFloorCenter.ToString("F4") + "; cameraMaxZoomDist = " + cameraMaxZoomDist.ToString("F4"));
+            editModeCameraController.Activate(cameraBaseCenterPos, houseFloorCenter, -cameraMaxZoomDist);
 
             //Highlight center Slot
             HousingGridCoordinates coord = new HousingGridCoordinates(0, currentGrid.myHouseMeta.depth / 2, currentGrid.myHouseMeta.width / 2);
-            currentGrid.HighlightSlot(coord);
+            currentGrid.SelectSlotAt(coord);
         }
-        else
+        else // DEACTIVE EDIT MODE
         {
             //Save room disposition to Database
             //Spawn player at door
             ActivateHostPlayer();
 
             //Deactivate Edit Camera
-            editModeCameraBase.DeActivate();
+            editModeCameraController.DeActivate();
 
             //stop hightlight current slot
-            currentGrid.StopHighLightSlot(currentGrid.currentSlotCoord);
+            currentGrid.StopHighlightSlot(currentGrid.currentSlotCoord);
         }
         editHouseOn = !editHouseOn;
         playing = !playing;

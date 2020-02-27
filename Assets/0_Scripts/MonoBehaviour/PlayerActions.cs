@@ -45,6 +45,13 @@ public class PlayerActions : PlayerActionSet
 
     public PlayerAction ThrowHook;
 
+    public PlayerAction RotateCameraHEMLeft;
+    public PlayerAction RotateCameraHEMRight;
+    public PlayerAction RotateCameraHEMUp;
+    public PlayerAction RotateCameraHEMDown;
+    public PlayerTwoAxisAction RotateCameraHousingEditMode;
+    public PlayerAction ZoomIn;
+
     public PlayerActions()
     {
         R1 = CreatePlayerAction("R1");
@@ -77,6 +84,12 @@ public class PlayerActions : PlayerActionSet
         Select = CreatePlayerAction("Select");
 
         ThrowHook = CreatePlayerAction("ThrowHook");
+        RotateCameraHEMLeft = CreatePlayerAction("RotateCameraHEMLeft");
+        RotateCameraHEMRight = CreatePlayerAction("RotateCameraHEMRight");
+        RotateCameraHEMDown = CreatePlayerAction("RotateCameraHEMDown");
+        RotateCameraHEMUp = CreatePlayerAction("RotateCameraHEMUp");
+        RotateCameraHousingEditMode = CreateTwoAxisPlayerAction(RotateCameraHEMLeft, RotateCameraHEMRight, RotateCameraHEMDown, RotateCameraHEMUp);
+        ZoomIn = CreatePlayerAction("ZoomIn");
     }
 
     public static PlayerActions CreateDefaultBindings()
@@ -112,7 +125,15 @@ public class PlayerActions : PlayerActionSet
         actions.Start.AddDefaultBinding(Key.Escape);
         actions.Select.AddDefaultBinding(Key.Tab);
 
+        //GAME IN GAME ACTIONS
         actions.ThrowHook.AddDefaultBinding(Mouse.LeftButton);
+        actions.RotateCameraHEMRight.AddDefaultBinding(Key.RightArrow);
+        actions.RotateCameraHEMLeft.AddDefaultBinding(Key.LeftArrow);
+        actions.RotateCameraHEMDown.AddDefaultBinding(Key.DownArrow);
+        actions.RotateCameraHEMUp.AddDefaultBinding(Key.UpArrow);
+        actions.ZoomIn.AddDefaultBinding(Key.Shift);
+
+
 
         // JOYSTICK
         actions.controlsType = InputDeviceClass.Controller;
@@ -142,9 +163,16 @@ public class PlayerActions : PlayerActionSet
         actions.L3.AddDefaultBinding(InputControlType.LeftStickButton);
 
         actions.Start.AddDefaultBinding(InputControlType.Start);
-        actions.Select.AddDefaultBinding(InputControlType.Select);
+        actions.Select.AddDefaultBinding(InputControlType.Back);
 
+        //GAME IN GAME ACTIONS
         actions.ThrowHook.AddDefaultBinding(InputControlType.RightTrigger);
+        actions.RotateCameraHEMRight.AddDefaultBinding(InputControlType.RightStickRight);
+        actions.RotateCameraHEMLeft.AddDefaultBinding(InputControlType.RightStickLeft);
+        actions.RotateCameraHEMDown.AddDefaultBinding(InputControlType.RightStickDown);
+        actions.RotateCameraHEMUp.AddDefaultBinding(InputControlType.RightStickUp);
+        actions.ZoomIn.AddDefaultBinding(InputControlType.RightStickButton);
+
         return actions;
     }
 
