@@ -124,35 +124,91 @@
             Class to wrap static access to the random.Next() call in a thread safe manner.
             </summary>
         </member>
-        <member name="T:ExitGames.Client.Photon.EncryptorManaged.CryptoBase">
-            <summary>
-            Empty base class for encryptor/decryptor classes for "Datagram Encryption".
-            </summary>
-        </member>
-        <member name="F:ExitGames.Client.Photon.EncryptorManaged.CryptoBase.BLOCK_SIZE">
+        <member name="F:ExitGames.Client.Photon.Encryption.EncryptorNet.BLOCK_SIZE">
             <summary>
             Defines block size for encryption/decryption algorithm
             </summary>
         </member>
-        <member name="F:ExitGames.Client.Photon.EncryptorManaged.CryptoBase.IV_SIZE">
+        <member name="F:ExitGames.Client.Photon.Encryption.EncryptorNet.IV_SIZE">
             <summary>
-            Defines IV size for encryption/decryption algorithm
+            Defines reusedIvBytes size for encryption/decryption algorithm
             </summary>
         </member>
-        <member name="F:ExitGames.Client.Photon.EncryptorManaged.CryptoBase.HMAC_SIZE">
+        <member name="F:ExitGames.Client.Photon.Encryption.EncryptorNet.HMAC_SIZE">
             <summary>
             Defines HMAC size for packet authentication algorithm
             </summary>
         </member>
-        <member name="T:ExitGames.Client.Photon.EncryptorManaged.Encryptor">
+        <member name="F:ExitGames.Client.Photon.Encryption.EncryptorNet.encryptorIn">
             <summary>
-            Empty implemenation of encryption for "Datagram Encryption".
+            Encryption/decryption algorithm implementation
             </summary>
         </member>
-        <member name="T:ExitGames.Client.Photon.EncryptorManaged.Decryptor">
+        <member name="F:ExitGames.Client.Photon.Encryption.EncryptorNet.hmacsha256In">
             <summary>
-            Empty implementation for decryption for UDP protocol with "Datagram Encryption".
+            Packet authentication algorithm impelmenation
             </summary>
+        </member>
+        <member name="T:ExitGames.Client.Photon.Encryption.EncryptorNative">
+            <summary>
+            Implemenation of encryption for "Datagram Encryption".
+            </summary>
+        </member>
+        <member name="F:ExitGames.Client.Photon.Encryption.EncryptorNative.BLOCK_SIZE">
+            <summary>
+            Defines block size for encryption/decryption algorithm
+            </summary>
+        </member>
+        <member name="F:ExitGames.Client.Photon.Encryption.EncryptorNative.IV_SIZE">
+            <summary>
+            Defines IV size for encryption/decryption algorithm
+            </summary>
+        </member>
+        <member name="F:ExitGames.Client.Photon.Encryption.EncryptorNative.HMAC_SIZE">
+            <summary>
+            Defines HMAC size for packet authentication algorithm
+            </summary>
+        </member>
+        <member name="M:ExitGames.Client.Photon.Encryption.EncryptorNative.Init(System.Byte[],System.Byte[],System.Byte[])">
+            <summary>
+            Initialize
+            </summary>
+            <param name="encryptionSecret"></param>
+            <param name="hmacSecret"></param>
+        </member>
+        <member name="M:ExitGames.Client.Photon.Encryption.EncryptorNative.Encrypt(System.Byte[],System.Int32,System.Byte[],System.Int32@,System.Boolean)">
+            <summary>
+            Encrypts data. puts them into output buffer and prepends with IV
+            </summary>
+            <param name="data"></param>
+            <param name="len"></param>
+            <param name="output"></param>
+            <param name="offset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ExitGames.Client.Photon.Encryption.EncryptorNative.CreateHMAC(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Finishes current HMAC
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ExitGames.Client.Photon.Encryption.EncryptorNative.Decrypt(System.Byte[],System.Int32,System.Int32,System.Int32@,System.Boolean)">
+            <summary>
+            Decrypts buffer containing HMAC
+            </summary>
+            <param name="data">encrypted data prepened by IV</param>
+            <param name="offset">offset in the buffer</param>
+            <param name="len">len of data to decrypt</param>
+            /// <param name="outLen">len of decrypted data</param>
+            <returns></returns>
+        </member>
+        <member name="M:ExitGames.Client.Photon.Encryption.EncryptorNative.CheckHMAC(System.Byte[],System.Int32)">
+            <summary>
+            Checkes wheter data have corect HMAC or not
+            </summary>
+            <param name="data">buffer with data and HMAC</param>
+            <param name="len">len of data including HMAC</param>
+            <returns>true if check pass, false otherwise</returns>
         </member>
         <member name="T:ExitGames.Client.Photon.StatusCode">
             <summary>
@@ -173,52 +229,33 @@
             <summary>the PhotonPeer encountered an exception and will disconnect, too.<br/>See {@link PhotonListener#OnStatusChanged}*</summary>
         </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.ExceptionOnConnect">
-            <summary>the PhotonPeer encountered an exception while opening the incoming connection to the server. The server could be down / not running or the client has no network or a misconfigured DNS.<br/>See {@link PhotonListener#OnStatusChanged}*</summary>
+            <summary>Exception while opening the incoming connection to the server. Followed by Disconnect.</summary>
+            <remarks>The server could be down / not running or the client has no network or a misconfigured DNS.<br/>See {@link PhotonListener#OnStatusChanged}*</remarks>
         </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.SecurityExceptionOnConnect">
             <summary>Used on platforms that throw a security exception on connect. Unity3d does this, e.g., if a webplayer build could not fetch a policy-file from a remote server.</summary>
         </member>
-        <member name="F:ExitGames.Client.Photon.StatusCode.QueueOutgoingReliableWarning">
-            <summary>PhotonPeer outgoing queue is filling up. send more often.</summary>
-        </member>
-        <member name="F:ExitGames.Client.Photon.StatusCode.QueueOutgoingUnreliableWarning">
-            <summary>PhotonPeer outgoing queue is filling up. send more often.</summary>
-        </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.SendError">
             <summary>Sending command failed. Either not connected, or the requested channel is bigger than the number of initialized channels.</summary>
         </member>
-        <member name="F:ExitGames.Client.Photon.StatusCode.QueueOutgoingAcksWarning">
-            <summary>PhotonPeer outgoing queue is filling up. send more often.</summary>
-        </member>
-        <member name="F:ExitGames.Client.Photon.StatusCode.QueueIncomingReliableWarning">
-            <summary>PhotonPeer incoming queue is filling up. Dispatch more often.</summary>
-        </member>
-        <member name="F:ExitGames.Client.Photon.StatusCode.QueueIncomingUnreliableWarning">
-            <summary>PhotonPeer incoming queue is filling up. Dispatch more often.</summary>
-        </member>
-        <member name="F:ExitGames.Client.Photon.StatusCode.QueueSentWarning">
-            <summary>PhotonPeer incoming queue is filling up. Dispatch more often.</summary>
-        </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.ExceptionOnReceive">
-            <summary>Exception, if a server cannot be connected. Most likely, the server is not responding. Ask user to try again later.</summary>
+            <summary>Exception, if a server cannot be connected. Followed by Disconnect.</summary>
+            <remarks>Most likely, the server is not responding. Ask user to try again later.</remarks>
         </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.TimeoutDisconnect">
-            <summary>Disconnection due to a timeout (client did no longer receive ACKs from server).</summary>
-        </member>
-        <member name="F:ExitGames.Client.Photon.StatusCode.DisconnectByServer">
-            <summary>Timeout disconnect by server. The server didn't receive necessary ACKs in time.</summary>
+            <summary>Disconnection due to a timeout (client did no longer receive ACKs from server). Followed by Disconnect.</summary>
         </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.DisconnectByServerTimeout">
-            <summary>Timeout disconnect by server. The server didn't receive necessary ACKs in time.</summary>
+            <summary>Timeout disconnect by server. The server didn't receive necessary ACKs in time. Followed by Disconnect.</summary>
         </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.DisconnectByServerUserLimit">
             <summary>Disconnect by server due to concurrent user limit reached (received a disconnect command).</summary>
         </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.DisconnectByServerLogic">
-            <summary>Disconnect by server due to server's logic.</summary>
+            <summary>(1043) Disconnect by server due to server's logic. Followed by Disconnect.</summary>
         </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.DisconnectByServerReasonUnknown">
-            <summary>Disconnect by server due to unspecified reason.</summary>
+            <summary>Disconnect by server due to unspecified reason. Followed by Disconnect.</summary>
         </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.EncryptionEstablished">
             <summary>(1048) Value for OnStatusChanged()-call, when the encryption-setup for secure communication finished successfully.</summary>
@@ -445,7 +482,8 @@
             <summary>False if this library build contains C# Socket code. If true, you must set some type as SocketImplementation before connecting.</summary>
         </member>
         <member name="F:ExitGames.Client.Photon.PhotonPeer.NativeDatagramEncrypt">
-            <summary>True, if this library needs a native Photon "Encryptor" plugin library for "Datagram Encryption". If false, this dll attempts to use managed encryption.</summary>
+            <summary>Where dynamic linking is available, this library will attempt to load a native Photon "Encryptor" plugin library for "Datagram Encryption".</summary>
+            <remarks>Fallback to a managed implementation. This value is always true.</remarks>
         </member>
         <member name="F:ExitGames.Client.Photon.PhotonPeer.DebugBuild">
             <summary>True if the library was compiled with DEBUG setting.</summary>
@@ -917,11 +955,12 @@
         <member name="F:ExitGames.Client.Photon.PhotonPeer.PayloadEncryptionSecret">
             <summary>PayloadEncryption Secret. Message payloads get encrypted with it individually and on demand.</summary>
         </member>
-        <member name="F:ExitGames.Client.Photon.PhotonPeer.DgramEncryptor">
-            <summary>Datagram Encryptor.</summary>
+        <member name="P:ExitGames.Client.Photon.PhotonPeer.EncryptorType">
+            <summary>Setter for the Datagram Encryptor instance. Used at next connect.</summary>
+            <remarks>If null, the PhotonPeer will create a default encryptor instance.</remarks>
         </member>
-        <member name="F:ExitGames.Client.Photon.PhotonPeer.DgramDecryptor">
-            <summary>Datagram Decryptor.</summary>
+        <member name="F:ExitGames.Client.Photon.PhotonPeer.Encryptor">
+            <summary>The datagram encryptor used for the current connection. Applied internally in InitDatagramEncryption.</summary>
         </member>
         <member name="M:ExitGames.Client.Photon.PhotonPeer.#ctor(ExitGames.Client.Photon.IPhotonPeerListener,ExitGames.Client.Photon.ConnectionProtocol)">
             <summary>
@@ -2068,6 +2107,18 @@
             <param name="address">A valid IPAddress or null.</param>
             <returns>If the IPAddress.ToString() contains a colon (which means it's IPv6).</returns>
         </member>
+        <member name="M:ExitGames.Client.Photon.IPhotonSocket.GetIpAddresses(System.String)">
+            <summary>Wraps a DNS call to provide an array of addresses, sorted to have the IPv6 ones first.</summary>
+            <remarks>
+            This skips a DNS lookup, if the hostname is an IPv4 address. Then only this address is used as is.
+            The DNS lookup may take a while, so it is recommended to do this in a thread. Also, it may fail entirely.
+            </remarks>
+            <returns>
+            IPAddress array for hostname, sorted to put any IPv6 addresses first.<br/>
+            If the DNS lookup fails, HandleException(StatusCode.ExceptionOnConnect) gets called and null returned.
+            Then the socket should not attempt to connect.
+            </returns>
+        </member>
         <member name="M:ExitGames.Client.Photon.IPhotonSocket.GetIpAddress(System.String)">
             <summary>
             Returns null or the IPAddress representing the address, doing Dns resolution if needed.
@@ -2095,17 +2146,19 @@
             <summary>Internal class to encapsulate the network i/o functionality for the realtime libary.</summary>
         </member>
         <member name="M:ExitGames.Client.Photon.SocketTcp.Send(System.Byte[],System.Int32)">
-            <summary>
-            used by TPeer*
-            </summary>
+            <summary>used by PhotonPeer*</summary>
+        </member>
+        <member name="M:ExitGames.Client.Photon.SocketTcp.ReceiveLoop">
+            <summary>Endless loop, run in Receive Thread.</summary>
         </member>
         <member name="T:ExitGames.Client.Photon.SocketTcpAsync">
             <summary>Internal class to encapsulate the network i/o functionality for the realtime libary.</summary>
         </member>
         <member name="M:ExitGames.Client.Photon.SocketTcpAsync.Send(System.Byte[],System.Int32)">
-            <summary>
-            used by TPeer*
-            </summary>
+            <summary>used by PhotonPeer*</summary>
+        </member>
+        <member name="M:ExitGames.Client.Photon.SocketNative.Send(System.Byte[],System.Int32)">
+            <summary>used by PhotonPeer*</summary>
         </member>
         <member name="T:ExitGames.Client.Photon.SimulationItem">
             <summary>
@@ -2339,14 +2392,14 @@
         </member>
         <member name="P:Photon.SocketServer.Security.DiffieHellmanCryptoProvider.PublicKey">
             <summary>
-            Gets the public key that can be used by another DiffieHellmanCryptoProvider object 
+            Gets the public key that can be used by another DiffieHellmanCryptoProvider object
             to generate a shared secret agreement.
             </summary>
         </member>
         <member name="M:Photon.SocketServer.Security.DiffieHellmanCryptoProvider.DeriveSharedKey(System.Byte[])">
             <summary>
-            Derives the shared key is generated from the secret agreement between two parties, 
-            given a byte array that contains the second party's public key. 
+            Derives the shared key is generated from the secret agreement between two parties,
+            given a byte array that contains the second party's public key.
             </summary>
             <param name="otherPartyPublicKey">
             The second party's public key.

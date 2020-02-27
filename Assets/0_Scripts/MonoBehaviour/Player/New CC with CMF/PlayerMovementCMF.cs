@@ -567,7 +567,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
     {
             myPlayerCombatNew.KonoUpdate();
     }
-}
+    }
 
     public void KonoFixedUpdate()
     {
@@ -618,13 +618,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             inputsInfo.ResetInputs();
 
             collCheck.SavePlatformPoint();
-        }
-        else
-        {
-            if(BoltNetwork.IsServer)
-            {
-                ResetMovementVariables();
-            }
         }
 
     }
@@ -1400,7 +1393,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
         }
         else
         {
-            timeJumpInsurance += TimePlus.betterTime();
+            timeJumpInsurance += Time.deltaTime;
             if (timeJumpInsurance >= maxTimeJumpInsurance || jumpSt == JumpState.Jumping)
             {
                 jumpInsurance = false;
@@ -1476,7 +1469,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
     {
         if (wallJumping)
         {
-            stopWallTime += TimePlus.betterTime();
+            stopWallTime += Time.deltaTime;
             if (actions.A.WasReleased || !actions.A.IsPressed)
             {
                 EndWallJump();
@@ -1643,7 +1636,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                     return;
                 }
 
-                chargeJumpCurrentReleaseTime += TimePlus.betterTime();
+                chargeJumpCurrentReleaseTime += Time.deltaTime;
             }
 
             //FAIL?
@@ -1657,7 +1650,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                     return;
                 }
                 Debug.Log("chargeJumpLandedTime  = " + chargeJumpLandedTime);
-                chargeJumpLandedTime += TimePlus.betterTime();
+                chargeJumpLandedTime += Time.deltaTime;
             }
         }
     }
@@ -1764,7 +1757,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             else//sin tocar ninguna dirección/joystick
             {
                 Vector3 newMoveDir = boostDir = new Vector3(currentCamFacingDir.x, 0, currentCamFacingDir.z);//nos movemos en la dirección en la que mire la cámara
-                RotateCharacter(newMoveDir);
+                if (BoltNetwork.IsClient)
+                {
+                    RotateCharacter(newMoveDir);
+                }
             }
             if (BoltNetwork.IsConnected && BoltNetwork.IsClient)
             {
@@ -1841,7 +1837,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
     {
         if (moveSt != MoveState.Boost && boostCurrentFuel < boostCapacity)
         {
-            boostCurrentFuel += boostRechargingSpeed * TimePlus.betterTime();
+            boostCurrentFuel += boostRechargingSpeed * Time.deltaTime;
             boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
         }
     }
@@ -1859,7 +1855,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
     {
         if (boostCDStarted)
         {
-            boostCDTime += TimePlus.betterTime();
+            boostCDTime += Time.deltaTime;
             if (boostCDTime >= boostCDMaxTime)
             {
                 StopBoostCD();
@@ -2675,7 +2671,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
     {
 
         IUmiPlayerCommandInput input = UmiPlayerCommand.Create();
-
         input.Joystick = actions.LeftJoystick;
         input.Cam = (transform.position - myCamera.transform.GetChild(0).position).normalized;
         input.R2Pressed = inputsInfo.R2WasPressed;
@@ -2694,7 +2689,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                 break;
         }
 
-        ResetMovementVariables();
         UpdateFlagLightBeam();
         ProcessInputsBuffer();
         UpdateFacingDir();
@@ -2702,8 +2696,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
         entity.QueueInput(input);
         // RESET InputsInfo class to get new possible inputs during the next Update frames
         inputsInfo.ResetInputs();
-
-
     }
 
     public override void ExecuteCommand(Command command, bool resetState)
@@ -2714,16 +2706,33 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
 
         if (resetState)
         {
-            transform.position = cmd.Result.Position;
             Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
-            collCheck.ResetVariables();
-            collCheck.UpdateCollisionChecks(cmd.Result.velocity);
-            mover.SetVelocity(cmd.Result.velocity, platformMovement);
-            mover.SetExtendSensorRange(collCheck.below);
+            if ((transform.position - cmd.Result.Position).magnitude > 1 && (cmd.Result.velocity.magnitude < 1 || currentVel.magnitude < 1))
+            {
+                collCheck.ResetVariables();
+                ResetMovementVariables();
+                collCheck.UpdateCollisionVariables(mover, jumpSt);
+                transform.position = cmd.Result.Position;
+                collCheck.UpdateCollisionChecks(cmd.Result.velocity);
+                mover.SetVelocity(cmd.Result.velocity, platformMovement);
+            }
+            else if ((transform.position - cmd.Result.Position).magnitude > 3)
+            {
+                collCheck.ResetVariables();
+                ResetMovementVariables();
+                collCheck.UpdateCollisionVariables(mover, jumpSt);
+                transform.position = cmd.Result.Position;
+                collCheck.UpdateCollisionChecks(cmd.Result.velocity);
+                mover.SetVelocity(cmd.Result.velocity, platformMovement);
+            }
         }
         else
         {
             Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
+            collCheck.ResetVariables();
+            ResetMovementVariables();
+            collCheck.UpdateCollisionVariables(mover, jumpSt);
+
             #region --- Calculate Movement ---
 
             HorizontalOnlineMovement(cmd.Input.Joystick, cmd.Input.Cam, cmd.Input.R2Pressed, cmd.Input.camMode);
@@ -2735,8 +2744,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             OnlineProcessWallJump(cmd.Input.JumpReleased);//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "mover.SetVelocity"
 
             #endregion
-            collCheck.ResetVariables();
-            collCheck.UpdateCollisionVariables(mover, jumpSt);
 
             collCheck.UpdateCollisionChecks(currentVel);
             mover.SetVelocity(currentVel, platformMovement);
@@ -2770,16 +2777,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
         if (moveSt == MoveState.Boost)
         {
             //print("PROCESS BOOST: boostTime = " + boostCurrentFuel + "; boostDuration = "+ boostCapacity);
-            if (BoltNetwork.IsServer)
-            {
-                boostCurrentFuel -= boostDepletingSpeed * TimePlus.betterTime();
-                boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
-                state.boostFuel = boostCurrentFuel;
-            }
-            else
-            {
-                boostCurrentFuel = state.boostFuel;
-            }
+            boostCurrentFuel -= boostDepletingSpeed * Time.deltaTime;
+            boostCurrentFuel = Mathf.Clamp(boostCurrentFuel, 0, boostCapacity);
             if (boostCurrentFuel > 0)
             {
                 if (R2)
@@ -2901,7 +2900,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             if (!disableAllDebugs && currentSpeed != 0) Debug.Log("CurrentSpeed 1.2 = " + currentSpeed.ToString("F4") + "; finalAcc = " + finalAcc + "; moveSt = " + moveSt +
                 "; currentSpeed =" + currentSpeed.ToString("F4"));
             float currentSpeedB4 = currentSpeed;
-            currentSpeed = currentSpeed + finalAcc * TimePlus.betterTime();
+            currentSpeed = currentSpeed + finalAcc * Time.deltaTime;
             if (moveSt == MoveState.NotMoving && Mathf.Sign(currentSpeedB4) != Mathf.Sign(currentSpeed))
             {
                 currentSpeed = 0;
@@ -2948,11 +2947,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                     else
                     {
                         Vector3 oldDir = horizontalVel.magnitude == 0 && myPlayerCombatNew.attackStg != AttackPhaseType.ready ? rotateObj.forward.normalized : horizontalVel.normalized;
-                        newDir = oldDir + (currentInputDir * (finalMovingAcc * TimePlus.betterTime()));
+                        newDir = oldDir + (currentInputDir * (finalMovingAcc * Time.deltaTime));
                         float auxAngle = Vector3.Angle(oldCurrentVel, newDir);
                         if (!disableAllDebugs) Debug.LogWarning("MOVING: finalMovingAcc2 = " + finalMovingAcc + ";  auxAngle = " + auxAngle +
-                             + (currentInputDir * finalMovingAcc * TimePlus.betterTime()).magnitude
-                             + (currentInputDir * finalMovingAcc * TimePlus.betterTime()) + "; newDir = " + newDir);
+                             + (currentInputDir * finalMovingAcc * Time.deltaTime).magnitude
+                             + (currentInputDir * finalMovingAcc * Time.deltaTime) + "; newDir = " + newDir);
                     }
                     horizontalVel = newDir.normalized * currentSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
@@ -2994,7 +2993,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                     //print("vel.y = " + currentVel.y);
                     break;
                 case MoveState.MovingBreaking://FRENADA FUERTE
-                    newDir = horizontalVel.normalized + (currentInputDir * finalMovingAcc * TimePlus.betterTime());
+                    newDir = horizontalVel.normalized + (currentInputDir * finalMovingAcc * Time.deltaTime);
                     horizontalVel = newDir.normalized * currentSpeed;
                     currentVel = new Vector3(horizontalVel.x, currentVel.y, horizontalVel.z);
                     break;
@@ -3101,7 +3100,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                             return;
                         }
 
-                        chargeJumpCurrentReleaseTime += TimePlus.betterTime();
+                        chargeJumpCurrentReleaseTime += Time.deltaTime;
                     }
 
                     //FAIL?
@@ -3115,7 +3114,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                             return;
                         }
                         Debug.Log("chargeJumpLandedTime  = " + chargeJumpLandedTime);
-                        chargeJumpLandedTime += TimePlus.betterTime();
+                        chargeJumpLandedTime += Time.deltaTime;
                     }
                 }
             }
@@ -3130,7 +3129,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                         chargeJumpLastApexHeight = transform.position.y;
                         //Debug.Log("START FALLING");
                     }
-                    currentVel.y += gravity * TimePlus.betterTime();
+                    currentVel.y += gravity * Time.deltaTime;
                     break;
                 case JumpState.Falling:
 
@@ -3147,11 +3146,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                         jumpSt = JumpState.None;
                     }
 
-                    currentVel.y += gravity * TimePlus.betterTime();
+                    currentVel.y += gravity * Time.deltaTime;
                     break;
                 case JumpState.Jumping:
-                    currentVel.y += gravity * TimePlus.betterTime();
-                    timePressingJump += TimePlus.betterTime();
+                    currentVel.y += gravity * Time.deltaTime;
+                    timePressingJump += Time.deltaTime;
                     if (timePressingJump >= maxTimePressingJump)
                     {
                         StopJump();
@@ -3165,7 +3164,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                     }
                     break;
                 case JumpState.Breaking:
-                    currentVel.y += (gravity * breakJumpForce) * TimePlus.betterTime();
+                    currentVel.y += (gravity * breakJumpForce) * Time.deltaTime;
                     if (currentVel.y <= 0)
                     {
                         if (!disableAllDebugs) Debug.Log("JumpSt = None");
@@ -3175,7 +3174,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                     }
                     break;
                 case JumpState.WallJumping:
-                    currentVel.y += wallJumpSlidingAcc * TimePlus.betterTime();
+                    currentVel.y += wallJumpSlidingAcc * Time.deltaTime;
                     break;
                 case JumpState.WallJumped:
                     if (currentVel.y < 0 && (!collCheck.below || collCheck.sliping))
@@ -3185,7 +3184,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                         chargeJumpLastApexHeight = transform.position.y;
                         //Debug.Log("START FALLING");
                     }
-                    currentVel.y += gravity * TimePlus.betterTime();
+                    currentVel.y += gravity * Time.deltaTime;
                     break;
                 case JumpState.ChargeJumping:
                     if (currentVel.y <= 0)
@@ -3193,7 +3192,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                         if (!disableAllDebugs) Debug.Log("JumpSt = None");
                         jumpSt = JumpState.None;
                     }
-                    currentVel.y += currentGravity * TimePlus.betterTime();
+                    currentVel.y += currentGravity * Time.deltaTime;
                     break;
                 case JumpState.BounceJumping:
                     if (currentVel.y <= 0)
@@ -3201,7 +3200,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                         if (!disableAllDebugs) Debug.Log("JumpSt = None");
                         jumpSt = JumpState.None;
                     }
-                    currentVel.y += currentGravity * TimePlus.betterTime();
+                    currentVel.y += currentGravity * Time.deltaTime;
                     break;
             }
         }
@@ -3294,7 +3293,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
     {
         if (wallJumping)
         {
-            stopWallTime += TimePlus.betterTime();
+            stopWallTime += Time.deltaTime;
             if (jump)
             {
                 EndWallJump();

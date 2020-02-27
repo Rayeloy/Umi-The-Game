@@ -39,20 +39,10 @@ namespace Bolt
 			UnitySettings.IsBuildDotNet = true;
 #endif
 
-#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-			UnitySettings.CurrentPlatform = RuntimePlatform.OSXPlayer;
-#elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-			UnitySettings.CurrentPlatform = RuntimePlatform.WindowsPlayer;
-#elif UNITY_STANDALONE_LINUX
-			UnitySettings.CurrentPlatform = RuntimePlatform.LinuxPlayer;
-#elif UNITY_IOS || UNITY_IPHONE
-			UnitySettings.CurrentPlatform = RuntimePlatform.IPhonePlayer;
-#elif UNITY_ANDROID
-			UnitySettings.CurrentPlatform = RuntimePlatform.Android;
-#endif
-		}
+            UnitySettings.CurrentPlatform = Application.platform;
+        }
 
-		static int GetActiveSceneIndex()
+        static int GetActiveSceneIndex()
 		{
 			return SceneManager.GetActiveScene().buildIndex;
 		}

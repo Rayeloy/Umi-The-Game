@@ -59,12 +59,26 @@
             <param name="group">Build target where to disable the flag</param>
             <param name="constantToDisable">Flag to disable</param>
         </member>
-        <member name="T:bolt.editor.Utils.BoltLogExecutor">
+        <member name="T:Bolt.Editor.Utils.BoltLogExecutor">
             <summary>
             This class will setup the BoltLog class using the current configuration 
             on the Bolt Settings. This will keep the logs appearing in Editor Mode,
             but will totally disabled if the user prefers.
             </summary>
+        </member>
+        <member name="T:bolt.editor.Utils.ProviderManager">
+            <summary>
+            Used to checkout files from a Source Code Provider, like Perforce when enabled
+            <see cref="!:https://docs.unity3d.com/ScriptReference/VersionControl.Provider.html"/>
+            The main behavior is enabled only if it's enabled in the Bolt Settings (<see cref="F:BoltRuntimeSettings.enableSourceProvider"/>)
+            </summary>
+        </member>
+        <member name="M:bolt.editor.Utils.ProviderManager.Checkout(System.String[])">
+            <summary>
+            Checkout all files specified on the paths list
+            If the Source Provider was properly configured, this method will checkout the file and set it as writable
+            </summary>
+            <param name="paths">List of file paths to checkout</param>
         </member>
     </members>
 </doc>

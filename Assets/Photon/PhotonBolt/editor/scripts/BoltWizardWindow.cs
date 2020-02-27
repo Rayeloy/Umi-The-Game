@@ -11,7 +11,7 @@ using Debug = UnityEngine.Debug;
 [InitializeOnLoad]
 public partial class BoltWizardWindow : EditorWindow
 {
-    BoltSetupStage currentStage = BoltSetupStage.SetupIntro;
+    BoltSetupStage currentStage = BoltSetupStage.Intro;
     static Stopwatch watch = new Stopwatch();
 
     static Boolean? Ready;
@@ -438,19 +438,19 @@ public partial class BoltWizardWindow : EditorWindow
     {
         switch (currentStage)
         {
-            case BoltSetupStage.SetupIntro:
+            case BoltSetupStage.Intro:
                 DrawIntro();
                 break;
-            case BoltSetupStage.SetupRelease:
+            case BoltSetupStage.ReleaseHistory:
                 DrawReleaseHistory();
                 break;
-            case BoltSetupStage.SetupPhoton:
+            case BoltSetupStage.Photon:
                 DrawSetupPhoton();
                 break;
-            case BoltSetupStage.SetupBolt:
+            case BoltSetupStage.Bolt:
                 DrawSetupBolt();
                 break;
-            case BoltSetupStage.SetupSupport:
+            case BoltSetupStage.Support:
                 DrawSupport();
                 break;
         }
@@ -732,23 +732,23 @@ public partial class BoltWizardWindow : EditorWindow
 
         DrawStepOption(introIcon, new GUIContent("Bolt Wizard Intro"),
             active: currentStage ==
-                    BoltSetupStage.SetupIntro);
+                    BoltSetupStage.Intro);
 
         DrawStepOption(releaseIcon, new GUIContent("Release History"),
             active: currentStage ==
-                    BoltSetupStage.SetupRelease);
+                    BoltSetupStage.ReleaseHistory);
 
         DrawStepOption(photonCloudIcon, new GUIContent("Photon Cloud"),
             active: currentStage ==
-                    BoltSetupStage.SetupPhoton);
+                    BoltSetupStage.Photon);
 
         DrawStepOption(boltIcon, new GUIContent("Bolt"),
             active: currentStage ==
-                    BoltSetupStage.SetupBolt);
+                    BoltSetupStage.Bolt);
 
         DrawStepOption(discordIcon, new GUIContent("Support"),
             active: currentStage ==
-                    BoltSetupStage.SetupSupport);
+                    BoltSetupStage.Support);
 
         GUILayout.FlexibleSpace();
         GUILayout.Label(BoltNetwork.CurrentVersion, textLabel);
@@ -772,7 +772,7 @@ public partial class BoltWizardWindow : EditorWindow
         EditorGUI.BeginDisabledGroup((int) currentStage == 1);
 
 #if !BOLT_CLOUD
-		if (currentStage == BoltSetupStage.SetupPhoton)
+		if (currentStage == BoltSetupStage.Photon)
 		{
 			if (GUILayout.Button("Skip", GUILayout.Width(ButtonWidth)))
 			{
@@ -794,10 +794,10 @@ public partial class BoltWizardWindow : EditorWindow
 
         switch (currentStage)
         {
-            case BoltSetupStage.SetupPhoton:
+            case BoltSetupStage.Photon:
                 nextLabel = AccountService.IsValidEmail(AppIdOrEmail) ? "Register by Email" : nextLabel;
                 break;
-            case BoltSetupStage.SetupSupport:
+            case BoltSetupStage.Support:
                 nextLabel = "Done";
                 break;
             default:
@@ -809,7 +809,7 @@ public partial class BoltWizardWindow : EditorWindow
         {
             if (beforeNextCallback == null || beforeNextCallback())
             {
-                if (currentStage == BoltSetupStage.SetupSupport)
+                if (currentStage == BoltSetupStage.Support)
                 {
                     EditorPrefs.SetBool(FirstStartupKey, true);
                     Close();
@@ -1057,6 +1057,6 @@ public partial class BoltWizardWindow : EditorWindow
 
         AssetDatabase.ImportPackage(PackagePath(packageName), false);
 
-        currentStage = BoltSetupStage.SetupBolt;
+        currentStage = BoltSetupStage.Bolt;
     }
 }

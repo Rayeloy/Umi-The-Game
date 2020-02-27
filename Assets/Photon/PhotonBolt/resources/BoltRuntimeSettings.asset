@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _config:
     framesPerSecond: 60
-    packetSize: 1280
+    packetSize: 1200
     packetMaxEventSize: 512
     maxEntityPriority: 65536
     maxPropertyPriority: 2048
@@ -29,25 +29,25 @@ MonoBehaviour:
     serverDejitterDelay: 6
     serverDejitterDelayMin: 3
     serverDejitterDelayMax: 9
-    serverConnectionLimit: 64
+    serverConnectionLimit: 32
     serverConnectionAcceptMode: 0
     commandQueueSize: 60
     commandRedundancy: 6
     commandPingMultiplier: 1.25
-    useNetworkSimulation: 1
-    simulatedLoss: 0.01
-    simulatedPingMean: 100
-    simulatedPingJitter: 100
+    useNetworkSimulation: 0
+    simulatedLoss: 0.02
+    simulatedPingMean: 200
+    simulatedPingJitter: 10
     simulatedRandomFunction: 0
     connectionTimeout: 10000
     connectionRequestTimeout: 500
     connectionRequestAttempts: 20
     disableAutoSceneLoading: 0
     EnableIPv6: 0
-  debugClientCount: 100
+  debugClientCount: 2
   debugStartPort: 50538
-  debugStartMapName: CMF_Online_Test
-  debugPlayAsServer: 1
+  debugStartMapName: PhotonGame
+  debugPlayAsServer: 0
   showDebugInfo: 1
   overrideTimeScale: 1
   logUncaughtExceptions: 0
@@ -61,7 +61,7 @@ MonoBehaviour:
   masterServerGameId: 09A20926-601A-4EF4-BFEE-374761B0D2A5
   showBoltEntityHints: 0
   serializeProjectAsText: 0
-  photonAppId: efca1250-c2f2-4604-9ad0-18af7d21e5cf
+  photonAppId: 86a1fe66-2bf9-46cc-9a87-302ee0da6736
   photonUsePunch: 1
   photonCloudRegionIndex: 0
   instantiateMode: 2
@@ -69,8 +69,9 @@ MonoBehaviour:
   globalEntityPriorityCalculatorQueryOption: 3
   globalEntityReplicationFilterQueryOption: 3
   a2sServerPort: 21777
-  enableA2sServer: 1
+  enableA2sServer: 0
   RoomUpdateRate: 5
   RoomCreateTimeout: 20
   RoomJoinTimeout: 20
   enableClientMetrics: 0
+  enableSourceProvider: 0

@@ -8,6 +8,7 @@
         {
           "Name": "transform_Pos",
           "Enabled": true,
+          "Expanded": true,
           "Comment": "This is my transform! yay",
           "Priority": 2,
           "PropertyType": {
@@ -89,6 +90,7 @@
         {
           "Name": "Transform_Rot",
           "Enabled": true,
+          "Expanded": true,
           "Priority": 1,
           "PropertyType": {
             "$type": "Bolt.Compiler.PropertyTypeTransform, bolt.compiler",
@@ -273,6 +275,7 @@
         {
           "Name": "Joystick",
           "Enabled": true,
+          "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
@@ -282,22 +285,22 @@
               {
                 "MinValue": -1,
                 "MaxValue": 1,
-                "Accuracy": 0.01,
+                "Accuracy": 0.001,
                 "Enabled": true,
-                "Pack": 100.0,
-                "Read": 0.01,
+                "Pack": 999.999939,
+                "Read": 0.001,
                 "Shift": 1.0,
-                "BitsRequired": 8
+                "BitsRequired": 11
               },
               {
                 "MinValue": -1,
                 "MaxValue": 1,
-                "Accuracy": 0.01,
+                "Accuracy": 0.001,
                 "Enabled": true,
-                "Pack": 100.0,
-                "Read": 0.01,
+                "Pack": 999.999939,
+                "Read": 0.001,
                 "Shift": 1.0,
-                "BitsRequired": 8
+                "BitsRequired": 11
               },
               {
                 "MinValue": -1024,
@@ -318,6 +321,7 @@
         {
           "Name": "Cam",
           "Enabled": true,
+          "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
@@ -375,7 +379,6 @@
         {
           "Name": "R2Pressed",
           "Enabled": true,
-          "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {

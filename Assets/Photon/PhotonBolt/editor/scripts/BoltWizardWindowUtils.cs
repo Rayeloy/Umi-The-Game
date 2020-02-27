@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Net.Mail;
-using System.Net.Security;
-using System.Net.Sockets;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 using Bolt.Editor;
@@ -69,11 +62,11 @@ Please, feel free to click on the Next button, and get started.";
 
 	enum BoltSetupStage
 	{
-		SetupIntro = 1,
-		SetupRelease = 2,
-		SetupPhoton = 3,
-		SetupBolt = 4,
-		SetupSupport = 5
+		Intro = 1,
+		ReleaseHistory = 2,
+		Photon = 3,
+		Bolt = 4,
+		Support = 5
 	}
 
 	[Flags]
@@ -179,56 +172,61 @@ Please, feel free to click on the Next button, and get started.";
 		}
 		return true;
 	}
-	
+
 	private void PrepareReleaseHistoryText()
 	{
-		var text = (TextAsset) AssetDatabase.LoadAssetAtPath(Path.Combine(BoltPathUtility.BasePath, "release_history.txt"),
-			typeof(TextAsset));
+		var text = (TextAsset)AssetDatabase.LoadAssetAtPath(Path.Combine(BoltPathUtility.BasePath, "release_history.txt"), typeof(TextAsset));
 		var baseText = text.text;
 
-		var rx = new Regex(@"(\b(\d+\.)?\d+\.\d+\.\d+\n)",
-			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Multiline);
-		var regexAdded = new Regex(@"\b(Added:)(.*)\b",
-			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Multiline);
-		var regexChanged = new Regex(@"\b(Changed:)(.*)\b",
-			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Multiline);
-		var regexFixed = new Regex(@"\b(Fixed:)(.*)\b",
-			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Multiline);
-		var regexRemoved = new Regex(@"\b(Removed:)(.*)\b",
-			RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Multiline);
+		var regexVersion = new Regex(@"(\b(\d+\.)?\d+\.\d+\.\d+\n)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Multiline);
+		var regexAdded = new Regex(@"\b(Added:)(.*)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Multiline);
+		var regexChanged = new Regex(@"\b(Changed:)(.*)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Multiline);
+		var regexFixed = new Regex(@"\b(Fixed:)(.*)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Multiline);
+		var regexRemoved = new Regex(@"\b(Removed:)(.*)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Multiline);
 
-		var matches = rx.Matches(baseText);
+		var matches = regexVersion.Matches(baseText);
 
-		var currentVersionMatch = matches[0];
-		var lastVersionMatch = currentVersionMatch.NextMatch();
-
-		if (currentVersionMatch.Success && lastVersionMatch.Success)
+		if (matches.Count > 0)
 		{
-			var header = currentVersionMatch.Value.Trim();
-			var mainText = baseText.Substring(currentVersionMatch.Index + currentVersionMatch.Length,
-				lastVersionMatch.Index - lastVersionMatch.Length - 1).Trim();
+			var currentVersionMatch = matches[0];
+			var lastVersionMatch = currentVersionMatch.NextMatch();
 
-			var resultAdded = regexAdded.Matches(mainText);
-			var resultChanged = regexChanged.Matches(mainText);
-			var resultFixed = regexFixed.Matches(mainText);
-			var resultRemoved = regexRemoved.Matches(mainText);
-
-			Func<MatchCollection, List<string>> itemProcessor = (match) =>
+			if (currentVersionMatch.Success && lastVersionMatch.Success)
 			{
-				var resultList = new List<string>();
-				for (var index = 0; index < match.Count; index++)
-				{
-					var result = match[index];
-					resultList.Add(result.Groups[2].Value.Trim());
-				}
-				return resultList;
-			};
+				var header = currentVersionMatch.Value.Trim();
+				var mainText = baseText.Substring(currentVersionMatch.Index + currentVersionMatch.Length,
+					lastVersionMatch.Index - lastVersionMatch.Length - 1).Trim();
 
-			ReleaseHistoryHeader = header;
-			ReleaseHistoryTextAdded = itemProcessor(resultAdded);
-			ReleaseHistoryTextChanged = itemProcessor(resultChanged);
-			ReleaseHistoryTextFixed = itemProcessor(resultFixed);
-			ReleaseHistoryTextRemoved = itemProcessor(resultRemoved);
+				var resultAdded = regexAdded.Matches(mainText);
+				var resultChanged = regexChanged.Matches(mainText);
+				var resultFixed = regexFixed.Matches(mainText);
+				var resultRemoved = regexRemoved.Matches(mainText);
+
+				Func<MatchCollection, List<string>> itemProcessor = (match) =>
+				{
+					var resultList = new List<string>();
+					for (var index = 0; index < match.Count; index++)
+					{
+						var result = match[index];
+						resultList.Add(result.Groups[2].Value.Trim());
+					}
+					return resultList;
+				};
+
+				ReleaseHistoryHeader = header;
+				ReleaseHistoryTextAdded = itemProcessor(resultAdded);
+				ReleaseHistoryTextChanged = itemProcessor(resultChanged);
+				ReleaseHistoryTextFixed = itemProcessor(resultFixed);
+				ReleaseHistoryTextRemoved = itemProcessor(resultRemoved);
+			}
+		}
+		else
+		{
+			ReleaseHistoryHeader = "Please look the file release_history.txt";
+			ReleaseHistoryTextAdded = new List<string>();
+			ReleaseHistoryTextChanged = new List<string>();
+			ReleaseHistoryTextFixed = new List<string>();
+			ReleaseHistoryTextRemoved = new List<string>();
 		}
 	}
 }

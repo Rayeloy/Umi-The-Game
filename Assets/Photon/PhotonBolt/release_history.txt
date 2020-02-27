@@ -1,3 +1,29 @@
+1.2.11
+
+Added: GlobalEventListener callback documentation.
+Added: Support for PlayFab Servers 2.0 (Thunderhead).
+Added: Support for Source Control Systems like Perforce.
+Added: Option to force the External/Public binding endpoint of the Game Server. Useful when running a Headless server on restricted network infrastructure.
+Added: New Thread Pool manager, responsible for the creation and usage of Threads inside the SDK. It guarantees an on-demand initialization, recycling, and destruction of Threads, optimizing processing power and memory consumption.
+
+Changed: Optimizations to the Punchthrough process. Bolt will check if both peers seem to be on the same sub-network, if not, it will skip local/private endpoints.
+Changed: Update Photon Realtime version to 4.1.2.19.
+Changed: By default, the A2S Service will be off.
+Changed: Start Session Creation timeout only after the Creation Request was sent. Before it started right at the beginning of the Session Creation behavior.
+Changed: Reliable Data Stream API deprecated. The streaming system is not working properly when running in RELIABLE mode and is deprecated until fixed. The UNRELIABLE mode still works fine.
+Changed: UdpKit namespaces to follow the official naming convention. Most of the namespaces were named in lowercase, now are all in PascalCase, as described on the MS Documentation. Major changes: "UdpKit.platform" to "UdpKit.Platform", "UdpKit.platform.photon" to "UdpKit.Platform.Photon".
+Changed: All UdpKit Platforms (DotNet, Photon, XboxOne, PS4, Null) were moved to "UdpKit.Platform" namespace.
+Changed: Bolt now finishes the startup only after the current Platform signals it has completed all async operations. This solves desynchronizations between foreground and background setup on the Platforms.
+
+Fixed: NullReferenceException when trying to access the CurrentAsyncOperation with the "Auto Scene Load" disabled.
+Fixed: NullReferenceException on the Photon integration when stopping Bolt while it stills connecting the Best Region.
+Fixed: Null-check in BoltCore.BeginShutdown when trying to Destroy an Entity already detached.
+Fixed: BoltNetwork.ServerFrame performance. This property is cached internally now leading to better performance when using it.
+Fixed: Photon Platform metadata, like Region, is set only when valid. Any invalid value will be removed from the metadata dictionary.
+Fixed: False error logged when running as SinglePlayer and ShutdownImmediate is invoked.
+Fixed: Create "Development Builds" when using Bolt Scene window to Debug builds.
+Fixed: Unable to load new scenes after a mid-load disconnection. Now any in-progress scene loading info is cleared on shutdown.
+
 1.2.10
 
 Added: Public API for Connection Packet count metrics: Sent, Received and Lost.
