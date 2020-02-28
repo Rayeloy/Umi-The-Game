@@ -11,10 +11,10 @@ public enum EditCameraMode
 
 public enum EditCameraDirection
 {
-    ZPos=0,
-    ZNeg=2,
-    XPos=1,
-    XNeg=3
+    ZPos = 0,
+    ZNeg = 2,
+    XPos = 1,
+    XNeg = 3
 }
 
 public class HousingEditModeCameraController : MonoBehaviour
@@ -22,13 +22,14 @@ public class HousingEditModeCameraController : MonoBehaviour
     PlayerActions actions;
     [Range(0, 1)]
     public float deadZone = 0.2f;
-    JoyStickControls myRightJoyStickControls;
+    EloyAdvancedAxisControls myRightJoyStickControls;
 
     [HideInInspector]
     public EditCameraDirection currentCameraDir = EditCameraDirection.ZPos;
     EditCameraMode currentCameraMode = EditCameraMode.ZoomedOut;
 
     GameObject myCameraObject;
+    Transform middleCameraBase;
     HousingGrid houseGrid;
 
     //POSITION
@@ -45,28 +46,37 @@ public class HousingEditModeCameraController : MonoBehaviour
     {
         get
         {
-            return followSelectionPos + Vector3.up * (currentCameraMode == EditCameraMode.FollowSelection? followModeCamHeight: zoomedInModeCamHeight);
+            return followSelectionPos + Vector3.up * (currentCameraMode == EditCameraMode.FollowSelection ? followModeCamHeight : zoomedInModeCamHeight);
         }
     }
 
     //ROTATION
     [Header(" - Camera Base Rotation - ")]
     public float cameraBaseRotationSpeed = 150;
-    public float clampAngleMax = 80f;
-    public float clampAngleMin = 80f;
     public float smoothRotMaxTime = 0.5f;
     float smoothCamBaseRotTime = 0;
-    float rotY, rotX = 0;
     Vector3 targetCamBaseRot;
     Vector3 currentCamBaseRot;
+    //Vector3 lastCamBaseRot;
     float startRotY = 0;
-    Quaternion originalCamBaseRot;
-    //InsideCameraRotation
+    float smoothRotVal = 0;
 
+    //Rotation for the zoomed in camera base
+    [Header(" - Middle Camera Base - (For zoom in only) ")]
+    public float middleCamBaseRotSpeed = 150;
+    public float middleCamBaseRotSmoothSpeed = 2;
+    public float clampAngleMax = 80f;
+    public float clampAngleMin = -50f;
+    Vector3 targetMiddleCamBaseRot;
+    Vector3 currentMiddleCamBaseRot;
+
+    //InsideCameraRotation
     [Header(" - Camera Rotation - ")]
+    public float cameraRotationSpeed = 2;
     Vector3 targetCamRot;
     Vector3 currentCamRot;
-    public float cameraRotationSpeed = 2;
+    Vector3 originalCamRot;
+    Vector3 originalForwardVector;
 
     //ZOOM
     [Header(" - Camera Zoom - ")]
@@ -83,6 +93,7 @@ public class HousingEditModeCameraController : MonoBehaviour
     public float maxDistance = 10;
     public int maxHitsNumber = 50;
     public LayerMask wallLayerMask;
+    List<MeshRenderer> hiddenWalls;
     Vector3 housePos;
 
 
@@ -91,52 +102,10 @@ public class HousingEditModeCameraController : MonoBehaviour
         myCameraObject = GetComponentInChildren<Camera>().gameObject;
         myCameraObject.gameObject.SetActive(false);
         Debug.Log("EditCameraBase: My camera = " + myCameraObject);
-        myRightJoyStickControls = new JoyStickControls(GameInfo.instance.myControls.RotateCameraHousingEditMode, deadZone);
+        middleCameraBase = transform.GetChild(0);
+        myRightJoyStickControls = new EloyAdvancedAxisControls(GameInfo.instance.myControls.RotateCameraHousingEditMode, deadZone);
         houseGrid = _houseGrid;
         housePos = _housePos;
-    }
-
-    public void Activate(Vector3 cameraBasePos, Vector3 _houseFloorCenter, float _zoomedOutCamDist)
-    {
-        if (myCameraObject == null)
-        {
-            Debug.LogError("EditCameraBase: My camera is null");
-            return;
-        }
-        myCameraObject.SetActive(true);
-
-        currentCamBaseRot = targetCamBaseRot = Vector3.zero;
-        transform.rotation = Quaternion.Euler(currentCamBaseRot.x, currentCamBaseRot.y, currentCamBaseRot.z);
-        startRotY = currentCamBaseRot.y;
-        centerCamPos = targetCamPos = currentCamPos = cameraBasePos;
-        transform.position = currentCamPos;
-        currentCamZoom = targetCamZoom = zoomedOutCamZoom = _zoomedOutCamDist;
-        myCameraObject.transform.localPosition = new Vector3(0, 0, currentCamZoom);
-        myCameraObject.transform.LookAt(_houseFloorCenter);
-        originalCamBaseRot = myCameraObject.transform.localRotation;
-        Debug.Log("inside camera Rotation = " + myCameraObject.transform.localRotation.eulerAngles.ToString("F4"));
-
-        actions = GameInfo.instance.myControls;
-        currentCameraMode = EditCameraMode.ZoomedOut;
-        currentCameraDir = EditCameraDirection.ZPos;
-
-        smoothCamBaseRotTime = 0;
-
-        hiddenWalls = new List<MeshRenderer>();
-    }
-
-    public void DeActivate()
-    {
-        myCameraObject.gameObject.SetActive(false);
-        actions = null;
-        //currentCamRot = targetCamRot = Vector3.zero;
-
-        for (int i = 0; i < hiddenWalls.Count; i++)
-        {
-            Color oldColor = hiddenWalls[i].material.color;
-            hiddenWalls[i].material.color = new Color(oldColor.r, oldColor.g, oldColor.b, 1f);
-        }
-        hiddenWalls.Clear();
     }
 
     public void KonoUpdate()
@@ -162,11 +131,10 @@ public class HousingEditModeCameraController : MonoBehaviour
                 {
                     RotateCameraLeft();
                 }
-
                 break;
             case EditCameraMode.FollowSelection:
                 targetCamPos = followSelectionPosWithOffset;
-                myCameraObject.transform.LookAt(followSelectionPos);
+                //myCameraObject.transform.LookAt(followSelectionPos);
 
                 //Inputs
                 if (myRightJoyStickControls.RightWasPressed)
@@ -180,84 +148,94 @@ public class HousingEditModeCameraController : MonoBehaviour
                 break;
             case EditCameraMode.ZoomedIn:
                 targetCamPos = followSelectionPosWithOffset;
-                float inputX =  actions.RightJoystick.X;
-                float inputZ = -actions.RightJoystick.Y;
+                float inputX = -actions.RightJoystick.X;
+                float inputZ = actions.RightJoystick.Y;
 
                 Vector3 input = new Vector2(inputX, inputZ);
-                if (!actions.isKeyboard && input.magnitude < 0.1f) inputX = inputZ = 0;
+                if (actions.Device != null && input.magnitude < 0.1f) inputX = inputZ = 0;
 
-                Quaternion localRotation = Quaternion.Euler(0, 0, 0);
-
-                rotY += inputX * cameraBaseRotationSpeed * Time.deltaTime;
-                rotX += inputZ * cameraBaseRotationSpeed * Time.deltaTime;
-                rotX = Mathf.Clamp(rotX, clampAngleMin, clampAngleMax);
-                Debug.Log("RotX = "+rotX+"; RotY = " + rotY);
-                targetCamBaseRot = new Vector3(rotX, rotY, 0.0f);
-                break;
+                float currentYRot = middleCameraBase.rotation.eulerAngles.y % 360;
+                currentCameraDir = currentYRot >= 45 && currentYRot < 135 ? EditCameraDirection.XPos : currentYRot >= 135 && currentYRot < 225 ? EditCameraDirection.ZNeg :
+                    currentYRot >= 225 && currentYRot < 315 ? EditCameraDirection.XNeg : EditCameraDirection.ZPos;
+                targetMiddleCamBaseRot.y += inputX * middleCamBaseRotSpeed * Time.deltaTime;
+                targetMiddleCamBaseRot.x += inputZ * middleCamBaseRotSpeed * Time.deltaTime;
+                targetMiddleCamBaseRot.x = Mathf.Clamp(targetMiddleCamBaseRot.x, clampAngleMin, clampAngleMax);
+             break;
         }
 
         //SMOOTH ROTATION/MOVEMENT/ZOOM
-        SmoothCamRot();
-        SmoothCamPos();
+        SmoothCamBaseRot();
+        SmoothCamBasePos();
+        SmoothMiddleCamBaseRot();
         SmoothCamZoom();
+        SmoothCamRot();
 
         //APPLY ROTATION/MOVEMENT/ZOOM
         //Debug.Log(" currentCamRot = " + currentCamRot.ToString("F4"));
-        transform.rotation = Quaternion.Euler(currentCamBaseRot.x, currentCamBaseRot.y, currentCamBaseRot.z);
+        transform.rotation = Quaternion.Euler(currentCamBaseRot);
         transform.position = currentCamPos;
-        myCameraObject.transform.localPosition = new Vector3(0, 0, currentCamZoom);
-
+        middleCameraBase.transform.localRotation = Quaternion.Euler(currentMiddleCamBaseRot);
+        myCameraObject.transform.localPosition = new Vector3(0, 0, -currentCamZoom);
+        myCameraObject.transform.localRotation = Quaternion.Euler(currentCamRot);
+    
         myRightJoyStickControls.ResetJoyStick();
     }
 
-    void SmoothCamPos()
+    public void Activate(Vector3 cameraBasePos, Vector3 _houseFloorCenter, float _zoomedOutCamDist)
     {
-        if (currentCamPos == targetCamPos) return;
-        currentCamPos = Vector3.Lerp(currentCamPos, targetCamPos, camMoveSpeed * Time.deltaTime);
-    }
+        if (myCameraObject == null)
+        {
+            Debug.LogError("EditCameraBase: My camera is null");
+            return;
+        }
+        myCameraObject.SetActive(true);
 
-    float smoothRotVal = 0;
-    void SmoothCamRot()
-    {
-        //if (smoothRotTime >= smoothRotMaxTime) return;
-        if (smoothRotVal >= 1) return;
-        smoothCamBaseRotTime += Time.deltaTime;
-        smoothRotVal = Mathf.Clamp01(smoothCamBaseRotTime / smoothRotMaxTime);
-        float y = EasingFunction.EaseOutBack(startRotY, targetCamBaseRot.y, smoothRotVal);
-        //Debug.Log(" targetCamRot.y= "+ targetCamRot.y + "; value = " + smoothRotVal + "; y = " + y);
-        currentCamBaseRot = new Vector3(currentCamBaseRot.x, y, currentCamBaseRot.z);
-    }
+        actions = GameInfo.instance.myControls;
+        currentCameraMode = EditCameraMode.ZoomedOut;
+        currentCameraDir = EditCameraDirection.ZPos;
 
-    void SmoothCamZoom()
-    {
-        if (currentCamZoom == targetCamZoom) return;
-        currentCamZoom = Mathf.Lerp(currentCamZoom, targetCamZoom, cameraZoomSpeed * Time.deltaTime);
-    }
-
-    void RotateCameraRight()
-    {
-        Debug.Log("Rotate Camera Right");
-        smoothCamBaseRotTime = 0;
-        smoothRotVal = 0;
+        //Camera base Rotation
+        currentCamBaseRot = targetCamBaseRot = Vector3.zero;
+        transform.rotation = Quaternion.Euler(currentCamBaseRot.x, currentCamBaseRot.y, currentCamBaseRot.z);
         startRotY = currentCamBaseRot.y;
-        float newRotY = targetCamBaseRot.y - 90;
-        //newRotY += newRotY < 0 ? 360 : 0;
-        targetCamBaseRot.y = newRotY;
-        currentCameraDir--;
-        currentCameraDir += (int)currentCameraDir < 0 ? 4 : 0;
+        smoothCamBaseRotTime = 0;
+
+        //Camera base position
+        centerCamPos = targetCamPos = currentCamPos = cameraBasePos;
+        transform.position = currentCamPos;
+
+        //Middle Camera Base Rotation
+        currentMiddleCamBaseRot = targetMiddleCamBaseRot = new Vector3(0, 0, 0);
+        middleCameraBase.localRotation = Quaternion.Euler(currentMiddleCamBaseRot);
+
+        //Camera zoom
+        currentCamZoom = targetCamZoom = zoomedOutCamZoom = _zoomedOutCamDist;
+        myCameraObject.transform.localPosition = new Vector3(0, 0, -currentCamZoom);
+
+        //Camera Rotation
+        //myCameraObject.transform.LookAt(_houseFloorCenter);
+        Vector3 lookDir = _houseFloorCenter - myCameraObject.transform.position;
+        myCameraObject.transform.rotation = Quaternion.LookRotation(lookDir, Vector3.up);
+        targetCamRot = currentCamRot = originalCamRot = myCameraObject.transform.localRotation.eulerAngles;
+        originalForwardVector = transform.forward;
+        Debug.LogWarning("originalCamRot = " + originalCamRot.ToString("F4"));
+
+
+        hiddenWalls = new List<MeshRenderer>();
     }
 
-    void RotateCameraLeft()
+    public void DeActivate()
     {
-        Debug.Log("Rotate Camera Left");
-        smoothCamBaseRotTime = 0;
-        smoothRotVal = 0;
-        startRotY = currentCamBaseRot.y;
-        float newRotY = targetCamBaseRot.y + 90;
-        //newRotY += newRotY > 360 ? -360 : 0;
-        targetCamBaseRot.y = newRotY;
-        currentCameraDir++;
-        currentCameraDir += (int)currentCameraDir > 3 ? -4 : 0;
+        myCameraObject.gameObject.SetActive(false);
+        actions = null;
+        //currentCamRot = targetCamRot = Vector3.zero;
+
+        for (int i = 0; i < hiddenWalls.Count; i++)
+        {
+            Color oldColor = hiddenWalls[i].material.color;
+            hiddenWalls[i].material.color = new Color(oldColor.r, oldColor.g, oldColor.b, 1f);
+        }
+        hiddenWalls.Clear();
     }
 
     void SwitchCameraMode()
@@ -266,27 +244,119 @@ public class HousingEditModeCameraController : MonoBehaviour
         {
             case EditCameraMode.ZoomedOut:
                 currentCameraMode = EditCameraMode.FollowSelection;
-                //TO DO: Follow selection
-                targetCamZoom = -followSelectionZoom;
-                targetCamPos = followSelectionPos;
-                Quaternion origRot = myCameraObject.transform.localRotation;
-                myCameraObject.transform.LookAt(followSelectionPos);
+                targetCamZoom = followSelectionZoom;
+                targetCamPos = followSelectionPosWithOffset;
+                Vector3 futureCamPos = targetCamPos - originalForwardVector * targetCamZoom;
+                targetCamRot = Quaternion.LookRotation(followSelectionPos - futureCamPos, Vector3.up).eulerAngles;
+                Debug.LogWarning("targetCamRot = " + targetCamRot.ToString("F4") + "; currentCamRot = " + currentCamRot.ToString("F4"));
                 break;
             case EditCameraMode.FollowSelection:
                 currentCameraMode = EditCameraMode.ZoomedIn;
-                targetCamPos = followSelectionPos;
-                targetCamZoom = -zoomedInCamZoom;
-                myCameraObject.transform.localRotation = Quaternion.identity;
+                targetCamPos = followSelectionPosWithOffset;
+                targetCamZoom = zoomedInCamZoom;
+                futureCamPos = targetCamPos - originalForwardVector * targetCamZoom;
+                targetCamRot = Quaternion.LookRotation(followSelectionPos - futureCamPos, Vector3.up).eulerAngles;
+                Debug.LogWarning("targetCamRot = " + targetCamRot.ToString("F4") + "; currentCamRot = " + currentCamRot.ToString("F4"));
                 break;
             case EditCameraMode.ZoomedIn:
                 currentCameraMode = EditCameraMode.ZoomedOut;
+                //Camera Base Pos
                 targetCamPos = centerCamPos;
-                targetCamZoom = -zoomedOutCamZoom;
-                currentCamBaseRot = targetCamBaseRot = new Vector3(0, 0, 0);
-                myCameraObject.transform.localRotation = originalCamBaseRot;
+
+                //Camera Base Rotation
+                float targetCamBaseRotY = currentCameraDir == EditCameraDirection.XPos ? 90: currentCameraDir == EditCameraDirection.ZNeg ? 180 : currentCameraDir == EditCameraDirection.XNeg ? 270 :0;
+                currentCamBaseRot = targetCamBaseRot = new Vector3(0, targetCamBaseRotY, 0);
+                //transform.rotation = Quaternion.Euler(currentCamBaseRot);
+
+                //Middle Camera Base Rotation
+                Debug.Log("middleCameraBase.rotation = " + middleCameraBase.rotation.eulerAngles.ToString("F4"));
+                float differentAngle = (middleCameraBase.rotation.eulerAngles.y) - targetCamBaseRotY;
+                currentMiddleCamBaseRot.y = differentAngle;
+                targetMiddleCamBaseRot = new Vector3(0, (currentMiddleCamBaseRot.y > 180 ? 360 : 0), 0);
+
+                //Camera Zoom
+                targetCamZoom = zoomedOutCamZoom;
+
+                //Camera rotation
+                currentCamRot = myCameraObject.transform.localRotation.eulerAngles;
+                targetCamRot = originalCamRot;
+                //Debug.LogWarning("differentAngle = " + differentAngle.ToString("F4") + "; (middleCameraBase.rotation.eulerAngles.y) = " + (middleCameraBase.rotation.eulerAngles.y).ToString("F4") + "; targetCamBaseRotY = " + targetCamBaseRotY);
+                //Debug.LogWarning("targetCamBaseRot = " + targetCamBaseRot.ToString("F4") + "; currentCamBaseRot = " + currentCamBaseRot.ToString("F4")+"; camDir = "+currentCameraDir);
                 break;
         }
     }
+
+    #region -- Smoothing --
+    void SmoothCamBasePos()
+    {
+        if (currentCamPos == targetCamPos) return;
+        currentCamPos = Vector3.Lerp(currentCamPos, targetCamPos, camMoveSpeed * Time.deltaTime);
+    }
+
+    void SmoothCamBaseRot()
+    {
+        //if (smoothRotTime >= smoothRotMaxTime) return;
+        if(currentCameraMode == EditCameraMode.ZoomedIn)
+        {
+            //currentCamBaseRot = Vector3.Lerp(currentCamBaseRot, targetCamBaseRot, cameraBaseRotationSpeed * Time.deltaTime);
+        }
+        else
+        {
+            if (smoothRotVal >= 1) return;
+            smoothCamBaseRotTime += Time.deltaTime;
+            smoothRotVal = Mathf.Clamp01(smoothCamBaseRotTime / smoothRotMaxTime);
+            float y = EasingFunction.EaseOutBack(startRotY, targetCamBaseRot.y, smoothRotVal);
+            //Debug.Log(" targetCamRot.y= "+ targetCamRot.y + "; value = " + smoothRotVal + "; y = " + y);
+            currentCamBaseRot = new Vector3(0, y, 0);
+        }
+    }
+
+    void SmoothMiddleCamBaseRot()
+    {
+        if(currentMiddleCamBaseRot != targetMiddleCamBaseRot)
+        currentMiddleCamBaseRot = Vector3.Lerp(currentMiddleCamBaseRot, targetMiddleCamBaseRot, middleCamBaseRotSmoothSpeed * Time.deltaTime);
+    }
+
+    void SmoothCamZoom()
+    {
+        if (currentCamZoom == targetCamZoom) return;
+        currentCamZoom = Mathf.Lerp(currentCamZoom, targetCamZoom, cameraZoomSpeed * Time.deltaTime);
+    }
+
+    void SmoothCamRot()
+    {
+        if (currentCamRot != targetCamRot)
+            currentCamRot = Vector3.Lerp(currentCamRot, targetCamRot, cameraRotationSpeed * Time.deltaTime);
+    }
+    #endregion
+
+    void RotateCameraRight()
+    {
+        smoothCamBaseRotTime = 0;
+        smoothRotVal = 0;
+        startRotY = currentCamBaseRot.y;
+        float newRotY = targetCamBaseRot.y - 90;
+        //newRotY += newRotY < 0 ? 360 : 0;
+        targetCamBaseRot.y = newRotY;
+        currentCameraDir--;
+        currentCameraDir += (int)currentCameraDir < 0 ? 4 : 0;
+        Debug.LogWarning("Rotate Camera Right: targetCamBaseRot = " + targetCamBaseRot.ToString("F4")+"; currentCamBaseRot = "+currentCamBaseRot.ToString("F4"));
+    }
+
+    void RotateCameraLeft()
+    {
+        smoothCamBaseRotTime = 0;
+        smoothRotVal = 0;
+        startRotY = currentCamBaseRot.y;
+        float newRotY = targetCamBaseRot.y + 90;
+        //newRotY += newRotY > 360 ? -360 : 0;
+        targetCamBaseRot.y = newRotY;
+        currentCameraDir++;
+        currentCameraDir += (int)currentCameraDir > 3 ? -4 : 0;
+        Debug.LogWarning("Rotate Camera Left: targetCamBaseRot = " + targetCamBaseRot.ToString("F4"));
+    }
+
+    #region -- Hide Walls --
 
     float CalculateCurrentRadius()
     {
@@ -310,7 +380,7 @@ public class HousingEditModeCameraController : MonoBehaviour
                         currentWidth = houseGrid.myHouseMeta.depth * houseGrid.myHouseMeta.housingSlotSize;
                         break;
                 }
-                currentWidth =  currentWidth / 2 - houseGrid.myHouseMeta.housingSlotSize;
+                currentWidth = currentWidth / 2 - houseGrid.myHouseMeta.housingSlotSize - 0.01f;
                 break;
             case EditCameraMode.FollowSelection:
                 currentWidth = 3;
@@ -320,16 +390,14 @@ public class HousingEditModeCameraController : MonoBehaviour
                 break;
         }
 
-
         return currentWidth;
     }
 
-    List<MeshRenderer> hiddenWalls;
     void HideWalls()
     {
         Vector3 rayOrigin = myCameraObject.transform.position;
         Vector3 rayDir = myCameraObject.transform.forward;
-        float rayLength = 100;
+        float rayLength = 1000;
         switch (currentCameraMode)
         {
             case EditCameraMode.FollowSelection:
@@ -343,44 +411,61 @@ public class HousingEditModeCameraController : MonoBehaviour
         }
 
         //calculate distance to wall
+        List<MeshRenderer> newHiddenWalls = new List<MeshRenderer>();
         RaycastHit hit;
-        if (Physics.Raycast(rayOrigin, rayDir, out hit, rayLength, wallLayerMask,QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(rayOrigin, rayDir, out hit, rayLength, wallLayerMask, QueryTriggerInteraction.Ignore))
         {
             if (hit.transform.tag == "HousingWall")
-            maxDistance = hit.distance;
-        }
-        Debug.DrawRay(rayOrigin, rayDir * maxDistance, Color.red);
+                maxDistance = hit.distance;
+            Debug.DrawRay(rayOrigin, rayDir * maxDistance, Color.red);
+            Vector3 perpVector = Vector3.Cross(Vector3.up, rayDir).normalized;
+            Debug.DrawLine(hit.point + (perpVector * sphereCastRadius), hit.point - (perpVector * sphereCastRadius), Color.red);
+            Debug.DrawLine(hit.point + (Vector3.up * sphereCastRadius), hit.point - (Vector3.up * sphereCastRadius), Color.red);
 
-        RaycastHit[] hits = new RaycastHit[maxHitsNumber];
-        sphereCastRadius = CalculateCurrentRadius();
-        int hitsNumber = Physics.SphereCastNonAlloc(rayOrigin, sphereCastRadius, rayDir.normalized, hits, maxDistance, wallLayerMask, QueryTriggerInteraction.Ignore);
-        if (hitsNumber > 0)
-        {
-            List<MeshRenderer> newHiddenWalls = new List<MeshRenderer>();
-            for (int i = 0; i < hitsNumber; i++)
+            RaycastHit[] hits = new RaycastHit[maxHitsNumber];
+            sphereCastRadius = CalculateCurrentRadius();
+            int hitsNumber = Physics.SphereCastNonAlloc(rayOrigin, sphereCastRadius, rayDir.normalized, hits, maxDistance, wallLayerMask, QueryTriggerInteraction.Ignore);
+            if (hitsNumber > 0)
             {
-                if (hits[i].collider.tag == "HousingWall")
+                for (int i = 0; i < hitsNumber; i++)
                 {
-                    MeshRenderer meshR = hits[i].collider.GetComponent<MeshRenderer>();
-                    if (meshR == null)
+                    if (hits[i].collider.tag == "HousingWall")
                     {
-                        Debug.LogError("HousingEditModeCameraController -> HideWalls: Can't find mesh Renderer of " + hits[i].collider.name);
-                        continue;
-                    }
-                    Color oldColor = meshR.material.color;
+                        MeshRenderer meshR = hits[i].collider.GetComponent<MeshRenderer>();
+                        if (meshR == null)
+                        {
+                            Debug.LogError("HousingEditModeCameraController -> HideWalls: Can't find mesh Renderer of " + hits[i].collider.name);
+                            continue;
+                        }
+                        Color oldColor = meshR.material.color;
                         meshR.material.color = new Color(oldColor.r, oldColor.g, oldColor.b, 0.01f);
                         newHiddenWalls.Add(meshR);
+                    }
                 }
             }
-            for (int j = 0; j < hiddenWalls.Count; j++)
-            {
-                if (!newHiddenWalls.Contains(hiddenWalls[j]))
-                {
-                    Color oldColor = hiddenWalls[j].material.color;
-                    hiddenWalls[j].material.color = new Color(oldColor.r, oldColor.g, oldColor.b, 1f);
-                }
-            }
-            hiddenWalls = newHiddenWalls;
         }
+        for (int j = 0; j < hiddenWalls.Count; j++)
+        {
+            if (!newHiddenWalls.Contains(hiddenWalls[j]))
+            {
+                Color oldColor = hiddenWalls[j].material.color;
+                hiddenWalls[j].material.color = new Color(oldColor.r, oldColor.g, oldColor.b, 1f);
+            }
+        }
+        hiddenWalls = newHiddenWalls;
     }
+
+    #endregion
+
+    #region - Auxiliar -
+
+    //Vector3 GetLookingRotAt(Transform myTransform, Vector3 lookingPos, Vector3 target)
+    //{
+    //    Vector3 oldPos = myTransform.position;
+
+    //    myTransform.position = lookingPos;
+    //    Vector3 lookdir = target - lookingPos;
+    //    Vector3 result = Quaternion.LookRotation(, Vector3.up)
+    //}
+    #endregion
 }

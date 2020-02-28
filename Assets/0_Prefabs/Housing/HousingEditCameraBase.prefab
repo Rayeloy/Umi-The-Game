@@ -25,11 +25,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 770207515367980257}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 18653062163503073}
+  m_Father: {fileID: 4391773875080849647}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -32.563}
 --- !u!20 &4225119949977331892
@@ -83,6 +83,37 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 770207515367980257}
   m_Enabled: 1
+--- !u!1 &1434842306285850379
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4391773875080849647}
+  m_Layer: 0
+  m_Name: MiddleCameraBase
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4391773875080849647
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1434842306285850379}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 2210965060778976425}
+  m_Father: {fileID: 18653062163503073}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5433350999730163712
 GameObject:
   m_ObjectHideFlags: 0
@@ -111,7 +142,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 2210965060778976425}
+  - {fileID: 4391773875080849647}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -129,16 +160,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deadZone: 0.6
   currentCameraDir: 0
-  camMoveSpeed: 2
+  camMoveSpeed: 3
   followModeCamHeight: 3
   zoomedInModeCamHeight: 1
-  cameraRotationSpeed: 150
-  clampAngleMax: 80
-  clampAngleMin: -50
+  cameraBaseRotationSpeed: 150
   smoothRotMaxTime: 0.5
+  middleCamBaseRotSpeed: 150
+  middleCamBaseRotSmoothSpeed: 8
+  clampAngleMax: 60
+  clampAngleMin: -32
+  cameraRotationSpeed: 2
   zoomedInCamZoom: 3
   followSelectionZoom: 7
-  cameraZoomSpeed: 2
+  cameraZoomSpeed: 3
   sphereCastRadius: 7.5
   maxDistance: 2.2919672
   maxHitsNumber: 500

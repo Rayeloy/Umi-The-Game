@@ -76,7 +76,19 @@ public class HousingSlot : MonoBehaviour
         }
     }
     bool[] hasWalls;
-
+    public bool hasAnyWall
+    {
+        get
+        {
+            bool result = false;
+            for (int i = 0; i < hasWalls.Length && !result; i++)
+            {
+                if (hasWalls[i]) result = true;
+            }
+            Debug.Log("The Slot "+ gridCoordinates.printString +" hasAnyWall = "+result);
+            return result;
+        }
+    }
 
     public void KonoAwake(HousingGridCoordinates _gridCoordinates, HousingSlotType _slotType = HousingSlotType.None,
         bool upWall = false, bool rightWall = false, bool downWall = false, bool leftWall = false, bool _baseFurniture = false)

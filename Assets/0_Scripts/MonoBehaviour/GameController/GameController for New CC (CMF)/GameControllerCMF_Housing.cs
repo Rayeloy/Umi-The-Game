@@ -22,7 +22,10 @@ public class GameControllerCMF_Housing : GameControllerCMF
 
     //EDIT MODE
     bool editHouseOn = false;
-    JoyStickControls myLeftJoyStickControls;
+    EloyAdvancedAxisControls myLeftJoyStickControls;
+    EloyAdvancedButtonControls selectUp;
+    EloyAdvancedButtonControls selectDown;
+
     [Header(" - Edit Mode - ")]
     [Range(0, 1)]
     public float leftJoyStickDeadzone = 0.2f;
@@ -31,11 +34,12 @@ public class GameControllerCMF_Housing : GameControllerCMF
     public float cameraDistValue = 0;
     public Material[] highlightedSlotMat;
 
-
-
     protected override void SpecificAwake()
     {
-        myLeftJoyStickControls = new JoyStickControls(allPlayers[0].actions.LeftJoystick, leftJoyStickDeadzone);
+        myLeftJoyStickControls = new EloyAdvancedAxisControls(allPlayers[0].actions.LeftJoystick, leftJoyStickDeadzone);
+        selectUp = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingEditModeMoveUp);
+        selectDown = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingEditModeMoveDown);
+
         currentGridObject = Instantiate(housingGridPrefab, houseSpawnPos, Quaternion.identity, housingParent);
         currentGrid = currentGridObject.GetComponent<HousingGrid>();
         currentGrid.KonoAwake(houseMeta, housingFurnituresParent, housingSlotPrefab, wallPrefab, houseSpawnPos, highlightedSlotMat, editModeCameraController);
@@ -59,20 +63,32 @@ public class GameControllerCMF_Housing : GameControllerCMF
             {
                 currentGrid.MoveSelectSlot(Direction.Left);
             }
-            else if (myLeftJoyStickControls.RightWasPressed)
+            if (myLeftJoyStickControls.RightWasPressed)
             {
                 currentGrid.MoveSelectSlot(Direction.Right);
             }
-            else if (myLeftJoyStickControls.UpWasPressed)
+            if (myLeftJoyStickControls.UpWasPressed)
             {
                 currentGrid.MoveSelectSlot(Direction.Up);
             }
-            else if (myLeftJoyStickControls.DownWasPressed)
+            if (myLeftJoyStickControls.DownWasPressed)
             {
                 currentGrid.MoveSelectSlot(Direction.Down);
             }
+            if (selectUp.WasPressed)
+            {
+                currentGrid.MoveSelectUp();
+            }
+            if (selectDown.WasPressed)
+            {
+                currentGrid.MoveSelectDown();
+            }
         }
+
+        //IMPORTANT
         myLeftJoyStickControls.ResetJoyStick();
+        selectUp.ResetButton();
+        selectDown.ResetButton();
 
         if (Input.GetKeyDown(KeyCode.Alpha9))
         {
@@ -134,9 +150,10 @@ public class GameControllerCMF_Housing : GameControllerCMF
             float volume = currentGrid.myHouseMeta.width * currentGrid.myHouseMeta.depth * currentGrid.myHouseMeta.height * currentGrid.myHouseMeta.housingSlotSize;
             float cameraMaxZoomDist = volume * cameraDistValue;
             Debug.Log(" cameraBaseCenterPos = " + cameraBaseCenterPos.ToString("F4") + "; houseFloorCenter = " + houseFloorCenter.ToString("F4") + "; cameraMaxZoomDist = " + cameraMaxZoomDist.ToString("F4"));
-            editModeCameraController.Activate(cameraBaseCenterPos, houseFloorCenter, -cameraMaxZoomDist);
+            editModeCameraController.Activate(cameraBaseCenterPos, houseFloorCenter, cameraMaxZoomDist);
 
             //Highlight center Slot
+            currentGrid.stickToWall = false;
             HousingGridCoordinates coord = new HousingGridCoordinates(0, currentGrid.myHouseMeta.depth / 2, currentGrid.myHouseMeta.width / 2);
             currentGrid.SelectSlotAt(coord);
         }
