@@ -625,7 +625,7 @@ public class SelectPlayer
     [Range(0, 1)]
     [HideInInspector] public float deadzone = 0.2f;
     [HideInInspector] public PlayerActions myControls;
-    JoyStickControls myJoyStickControls;
+    EloyAdvancedAxisControls myJoyStickControls;
 
     [Header("TEAM SELECT PLAYER HUD")]
     public TeamSelectPlayerCanvas myTeamSelectPlayerCanvas;
@@ -737,7 +737,7 @@ public class SelectPlayer
                 }
                 break;
         }
-        myJoyStickControls = new JoyStickControls(GameInfo.instance.myControls.LeftJoystick, deadzone);
+        myJoyStickControls = new EloyAdvancedAxisControls(GameInfo.instance.myControls.LeftJoystick, deadzone);
 
         // AJUSTE DE ESCALA DE LA HUD PARA CAMARAS CON RECT DESPROPORCIONADO
         RectTransform teamText = myTeamSelectPlayerCanvas.teamNameText.GetComponent<RectTransform>();
@@ -1012,84 +1012,6 @@ public class SelectPlayer
             {
                 myTeamSelectPlayerCanvas.lockStateActivateImages[i].gameObject.SetActive(false);
             }
-        }
-    }
-}
-
-public class JoyStickControls
-{
-    PlayerTwoAxisAction joyStick;
-    float deadzone;
-
-    public bool leftIsPressed = false;
-    public bool rightIsPressed = false;
-    public bool downIsPressed = false;
-    public bool upIsPressed = false;
-
-    public bool LeftWasPressed
-    {
-        get
-        {
-            bool result = joyStick.X < -deadzone && !leftIsPressed;
-            if(result) leftIsPressed = true;
-            return result;
-        }
-    }
-    public bool RightWasPressed
-    {
-        get
-        {
-            bool result = joyStick.X > deadzone && !rightIsPressed;
-            if (result) rightIsPressed = true;
-            return result;
-        }
-    }
-    public bool DownWasPressed
-    {
-        get
-        {
-            bool result = joyStick.Y < -deadzone && !downIsPressed;
-            if (result) downIsPressed = true;
-            return result;
-        }
-    }
-    public bool UpWasPressed
-    {
-        get
-        {
-            bool result = joyStick.Y > deadzone && !upIsPressed;
-            if (result) upIsPressed = true;
-            return result;
-        }
-    }
-
-
-    public JoyStickControls(PlayerTwoAxisAction _joyStick, float _deadzone=0.2f)
-    {
-        joyStick = _joyStick;
-        deadzone = _deadzone;
-    }
-
-    /// <summary>
-    /// IMPORTANT to do it ALWAYS, and at the END of the Update.
-    /// </summary>
-    public void ResetJoyStick()
-    {
-        if (joyStick.Y > -deadzone && downIsPressed)
-        {
-            downIsPressed = false;
-        }
-        if (joyStick.Y < deadzone && upIsPressed)
-        {
-            upIsPressed = false;
-        }
-        if (joyStick.X > -deadzone && leftIsPressed)
-        {
-            leftIsPressed = false;
-        }
-        if (joyStick.X < deadzone && rightIsPressed)
-        {
-            rightIsPressed = false;
         }
     }
 }

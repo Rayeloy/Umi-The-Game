@@ -768,13 +768,13 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 currentInputDir.Normalize();
                 switch (myCamera.camMode)
                 {
-                    case cameraMode.Fixed:
+                    case CameraMode.Fixed:
                         currentInputDir = RotateVector(-facingAngle, temp);
                         break;
-                    case cameraMode.Shoulder:
+                    case CameraMode.Shoulder:
                         currentInputDir = RotateVector(-facingAngle, temp);
                         break;
-                    case cameraMode.Free:
+                    case CameraMode.Free:
                         Vector3 camDir = (transform.position - myCamera.transform.GetChild(0).position).normalized;
                         camDir.y = 0;
                         // ANGLE OF JOYSTICK
@@ -2204,7 +2204,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         switch (myCamera.camMode)
         {
-            case cameraMode.Fixed:
+            case CameraMode.Fixed:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 //Calculate looking dir of camera
                 Vector3 camPos = myCamera.transform.GetChild(0).position;
@@ -2212,13 +2212,13 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 //currentFacingDir = new Vector3(myPos.x - camPos.x, 0, myPos.z - camPos.z).normalized;
                 currentCamFacingDir = myCamera.myCamera.transform.forward.normalized;
                 break;
-            case cameraMode.Shoulder:
+            case CameraMode.Shoulder:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 //currentFacingDir = RotateVector(-myCamera.transform.localRotation.eulerAngles.y, Vector3.forward).normalized;
                 currentCamFacingDir = myCamera.myCamera.transform.forward.normalized;
                 //print("CurrentFacingDir = " + currentFacingDir);
                 break;
-            case cameraMode.Free:
+            case CameraMode.Free:
                 facingAngle = rotateObj.localRotation.eulerAngles.y;
                 //currentFacingDir = RotateVector(-rotateObj.localRotation.eulerAngles.y, Vector3.forward).normalized;
                 currentCamFacingDir = (cameraFollow.position - myCamera.myCamera.transform.position).normalized;
@@ -2232,19 +2232,19 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         switch (myCamera.camMode)
         {
-            case cameraMode.Fixed:
+            case CameraMode.Fixed:
                 Vector3 point1 = transform.position;
                 Vector3 point2 = new Vector3(point1.x, point1.y + 1, point1.z);
                 Vector3 dir = new Vector3(point2.x - point1.x, point2.y - point1.y, point2.z - point1.z);
                 rotateObj.Rotate(dir, rotSpeed * Time.deltaTime);
                 break;
-            case cameraMode.Shoulder:
+            case CameraMode.Shoulder:
                 point1 = transform.position;
                 point2 = new Vector3(point1.x, point1.y + 1, point1.z);
                 dir = new Vector3(point2.x - point1.x, point2.y - point1.y, point2.z - point1.z);
                 rotateObj.Rotate(dir, rotSpeed * Time.deltaTime);
                 break;
-            case cameraMode.Free:
+            case CameraMode.Free:
                 Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
                 Vector3 lookingDir = wallJumping ? currentInputDir : hardSteerOn ? hardSteerDir : horVel; lookingDir.Normalize();
                 if (lookingDir != Vector3.zero)
@@ -2264,7 +2264,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     void SmoothRotateCharacter()
     {
-        if (myCamera.camMode == cameraMode.Free )//TO DO: Bloquear en knockback?
+        if (myCamera.camMode == CameraMode.Free )//TO DO: Bloquear en knockback?
         {
             float currentAngle = rotateObj.rotation.eulerAngles.y;
             //if(currentAngle != targetRotAngle)

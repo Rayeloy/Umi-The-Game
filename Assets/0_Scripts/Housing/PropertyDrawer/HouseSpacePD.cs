@@ -184,7 +184,7 @@ public class HouseSpacePD : PropertyDrawer
                 currentHeight += EditorGUIUtility.singleLineHeight;
                 float currentX = container.x +20;
                 Rect levelFoldoutRect = new Rect(currentX, currentHeight, container.width, EditorGUIUtility.singleLineHeight);
-                levelFoldout[k] = EditorGUI.Foldout(levelFoldoutRect, levelFoldout[k], "Level " + (k + 1));
+                levelFoldout[k] = EditorGUI.Foldout(levelFoldoutRect, levelFoldout[k], "Level " + (k));
                 if (levelFoldout[k])
                 {
                     currentHeight += EditorGUIUtility.singleLineHeight;
@@ -216,7 +216,7 @@ public class HouseSpacePD : PropertyDrawer
                     {
                         currentHeight += i == 0 ? EditorGUIUtility.singleLineHeight * 1.5f : EditorGUIUtility.singleLineHeight;
                         Rect rowRect = new Rect(currentX, currentHeight, 100, 25);
-                        EditorGUI.LabelField(rowRect, "Row " + (i + 1));
+                        EditorGUI.LabelField(rowRect, "Row " + (i));
                         SerializedProperty currentRow = houseLevelRows.GetArrayElementAtIndex(i).FindPropertyRelative("row");
                         for (int j = 0; j < currentRow.arraySize; j++)//
                         {

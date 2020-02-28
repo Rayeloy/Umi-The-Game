@@ -24,16 +24,22 @@ public class PlayerActions : PlayerActionSet
     public PlayerAction Y;
     public PlayerAction B;
 
+    public PlayerAction DPadLeft;
+    public PlayerAction DPadRight;
+    public PlayerAction DPadDown;
+    public PlayerAction DPadUp;
+    public PlayerTwoAxisAction DPad;
+
     public PlayerAction RJLeft;
     public PlayerAction RJRight;
-    public PlayerAction RJUp;
     public PlayerAction RJDown;
+    public PlayerAction RJUp;
     public PlayerTwoAxisAction RightJoystick;
 
     public PlayerAction LJLeft;
     public PlayerAction LJRight;
-    public PlayerAction LJUp;
     public PlayerAction LJDown;
+    public PlayerAction LJUp;
     public PlayerTwoAxisAction LeftJoystick;
     public TwoAxisButtons leftJoystcikAsButtons;
 
@@ -42,6 +48,17 @@ public class PlayerActions : PlayerActionSet
 
     public PlayerAction Start;
     public PlayerAction Select;
+
+    public PlayerAction ThrowHook;
+
+    public PlayerAction RotateCameraHEMLeft;
+    public PlayerAction RotateCameraHEMRight;
+    public PlayerAction RotateCameraHEMDown;
+    public PlayerAction RotateCameraHEMUp;
+    public PlayerTwoAxisAction RotateCameraHousingEditMode;
+    public PlayerAction ZoomIn;
+    public PlayerAction HousingEditModeMoveUp;
+    public PlayerAction HousingEditModeMoveDown;
 
     public PlayerActions()
     {
@@ -55,16 +72,22 @@ public class PlayerActions : PlayerActionSet
         Y = CreatePlayerAction("Y");
         B = CreatePlayerAction("B");
 
+        DPadLeft = CreatePlayerAction("DPadLeft");
+        DPadRight = CreatePlayerAction("DPadRight");
+        DPadDown = CreatePlayerAction("DPadDown");
+        DPadUp = CreatePlayerAction("DPadUp");
+        DPad = CreateTwoAxisPlayerAction(DPadLeft, DPadRight, DPadDown, DPadUp);
+
         RJLeft = CreatePlayerAction("RJLeft");
         RJRight = CreatePlayerAction("RJRight");
-        RJUp = CreatePlayerAction("RJUp");
         RJDown = CreatePlayerAction("RJDown");
+        RJUp = CreatePlayerAction("RJUp");
         RightJoystick = CreateTwoAxisPlayerAction(RJLeft, RJRight, RJDown, RJUp);
 
         LJLeft = CreatePlayerAction("LJLeft");
         LJRight = CreatePlayerAction("LJRight");
-        LJUp = CreatePlayerAction("LJUp");
         LJDown = CreatePlayerAction("LJDown");
+        LJUp = CreatePlayerAction("LJUp");
         LeftJoystick = CreateTwoAxisPlayerAction(LJLeft, LJRight, LJDown, LJUp);
         //LeftJoystick.LowerDeadZone = 
 
@@ -73,42 +96,20 @@ public class PlayerActions : PlayerActionSet
 
         Start = CreatePlayerAction("Start");
         Select = CreatePlayerAction("Select");
+
+        ThrowHook = CreatePlayerAction("ThrowHook");
+        RotateCameraHEMLeft = CreatePlayerAction("RotateCameraHEMLeft");
+        RotateCameraHEMRight = CreatePlayerAction("RotateCameraHEMRight");
+        RotateCameraHEMDown = CreatePlayerAction("RotateCameraHEMDown");
+        RotateCameraHEMUp = CreatePlayerAction("RotateCameraHEMUp");
+        RotateCameraHousingEditMode = CreateTwoAxisPlayerAction(RotateCameraHEMLeft, RotateCameraHEMRight, RotateCameraHEMDown, RotateCameraHEMUp);
+        ZoomIn = CreatePlayerAction("ZoomIn");
+        HousingEditModeMoveUp = CreatePlayerAction("HousingEditModeMoveUp");
+        HousingEditModeMoveDown = CreatePlayerAction("HousingEditModeMoveDown");
     }
 
-    public static PlayerActions CreateDefaultBindings()
+    static void SetUpXboxControllerActions(ref PlayerActions actions) 
     {
-        var actions = new PlayerActions();
-        //KEYBOARD AND MOUSE
-        actions.controlsType = InputDeviceClass.Keyboard;
-
-        actions.R1.AddDefaultBinding(Key.T);
-        actions.R2.AddDefaultBinding(Key.LeftShift);
-        actions.L1.AddDefaultBinding(Key.G);
-        actions.L2.AddDefaultBinding(Mouse.RightButton);
-
-        actions.A.AddDefaultBinding(Key.Space);
-        actions.X.AddDefaultBinding(Mouse.LeftButton);
-        actions.Y.AddDefaultBinding(Key.Key2);
-        actions.B.AddDefaultBinding(Key.Key3);
-
-        //actions.RJLeft.LowerDeadZone = 0.2f;
-        actions.RJUp.AddDefaultBinding(Mouse.PositiveY);
-        actions.RJDown.AddDefaultBinding(Mouse.NegativeY);
-        actions.RJLeft.AddDefaultBinding(Mouse.NegativeX);
-        actions.RJRight.AddDefaultBinding(Mouse.PositiveX);
-
-        actions.LJUp.AddDefaultBinding(Key.W);
-        actions.LJDown.AddDefaultBinding(Key.S);
-        actions.LJLeft.AddDefaultBinding(Key.A);
-        actions.LJRight.AddDefaultBinding(Key.D);
-
-        actions.L3.AddDefaultBinding(Key.Key4);
-        actions.R3.AddDefaultBinding(Key.Key5);
-
-        actions.Start.AddDefaultBinding(Key.Escape);
-        actions.Select.AddDefaultBinding(Key.Tab);
-
-
         // JOYSTICK
         actions.controlsType = InputDeviceClass.Controller;
 
@@ -122,22 +123,92 @@ public class PlayerActions : PlayerActionSet
         actions.Y.AddDefaultBinding(InputControlType.Action4);
         actions.B.AddDefaultBinding(InputControlType.Action2);
 
-        actions.RJUp.AddDefaultBinding(InputControlType.RightStickUp);
-        actions.RJDown.AddDefaultBinding(InputControlType.RightStickDown);
+        actions.DPadLeft.AddDefaultBinding(InputControlType.DPadLeft);
+        actions.DPadRight.AddDefaultBinding(InputControlType.DPadRight);
+        actions.DPadDown.AddDefaultBinding(InputControlType.DPadDown);
+        actions.DPadUp.AddDefaultBinding(InputControlType.DPadUp);
+
         actions.RJLeft.AddDefaultBinding(InputControlType.RightStickLeft);
         actions.RJRight.AddDefaultBinding(InputControlType.RightStickRight);
+        actions.RJDown.AddDefaultBinding(InputControlType.RightStickDown);
+        actions.RJUp.AddDefaultBinding(InputControlType.RightStickUp);
 
-
-        actions.LJUp.AddDefaultBinding(InputControlType.LeftStickUp);
-        actions.LJDown.AddDefaultBinding(InputControlType.LeftStickDown);
         actions.LJLeft.AddDefaultBinding(InputControlType.LeftStickLeft);
         actions.LJRight.AddDefaultBinding(InputControlType.LeftStickRight);
+        actions.LJDown.AddDefaultBinding(InputControlType.LeftStickDown);
+        actions.LJUp.AddDefaultBinding(InputControlType.LeftStickUp);
 
         actions.R3.AddDefaultBinding(InputControlType.RightStickButton);
         actions.L3.AddDefaultBinding(InputControlType.LeftStickButton);
 
         actions.Start.AddDefaultBinding(InputControlType.Start);
-        actions.Select.AddDefaultBinding(InputControlType.Select);
+        actions.Select.AddDefaultBinding(InputControlType.Back);
+
+        //GAME IN GAME ACTIONS
+        actions.ThrowHook.AddDefaultBinding(InputControlType.RightTrigger);
+        actions.RotateCameraHEMLeft.AddDefaultBinding(InputControlType.RightStickLeft);
+        actions.RotateCameraHEMRight.AddDefaultBinding(InputControlType.RightStickRight);
+        actions.RotateCameraHEMDown.AddDefaultBinding(InputControlType.RightStickDown);
+        actions.RotateCameraHEMUp.AddDefaultBinding(InputControlType.RightStickUp);
+        actions.ZoomIn.AddDefaultBinding(InputControlType.RightStickButton);
+        actions.HousingEditModeMoveUp.AddDefaultBinding(InputControlType.DPadUp);
+        actions.HousingEditModeMoveDown.AddDefaultBinding(InputControlType.DPadDown);
+    }
+
+    static void SetUpKeyboardAndMouseActions(ref PlayerActions actions)
+    {
+        //KEYBOARD AND MOUSE
+        actions.controlsType = InputDeviceClass.Keyboard;
+
+        actions.R1.AddDefaultBinding(Key.T);
+        actions.R2.AddDefaultBinding(Key.LeftShift);
+        actions.L1.AddDefaultBinding(Key.G);
+        actions.L2.AddDefaultBinding(Mouse.RightButton);
+
+        actions.A.AddDefaultBinding(Key.Space);
+        actions.X.AddDefaultBinding(Mouse.LeftButton);
+        actions.Y.AddDefaultBinding(Key.Key2);
+        actions.B.AddDefaultBinding(Key.Key3);
+
+        actions.DPadLeft.AddDefaultBinding(Key.LeftArrow);
+        actions.DPadRight.AddDefaultBinding(Key.RightArrow);
+        actions.DPadDown.AddDefaultBinding(Key.DownArrow);
+        actions.DPadUp.AddDefaultBinding(Key.UpArrow);
+
+        actions.RJLeft.AddDefaultBinding(Mouse.NegativeX);
+        actions.RJRight.AddDefaultBinding(Mouse.PositiveX);
+        actions.RJDown.AddDefaultBinding(Mouse.NegativeY);
+        actions.RJUp.AddDefaultBinding(Mouse.PositiveY);
+
+        actions.LJLeft.AddDefaultBinding(Key.A);
+        actions.LJRight.AddDefaultBinding(Key.D);
+        actions.LJDown.AddDefaultBinding(Key.S);
+        actions.LJUp.AddDefaultBinding(Key.W);
+
+        actions.L3.AddDefaultBinding(Key.Key4);
+        actions.R3.AddDefaultBinding(Key.Key5);
+
+        actions.Start.AddDefaultBinding(Key.Escape);
+        actions.Select.AddDefaultBinding(Key.Tab);
+
+        //GAME IN GAME ACTIONS
+        actions.ThrowHook.AddDefaultBinding(Mouse.LeftButton);
+        actions.RotateCameraHEMLeft.AddDefaultBinding(Key.LeftArrow);
+        actions.RotateCameraHEMRight.AddDefaultBinding(Key.RightArrow);
+        actions.RotateCameraHEMDown.AddDefaultBinding(Key.DownArrow);
+        actions.RotateCameraHEMUp.AddDefaultBinding(Key.UpArrow);
+        actions.ZoomIn.AddDefaultBinding(Key.Shift);
+        actions.HousingEditModeMoveUp.AddDefaultBinding(Key.E);
+        actions.HousingEditModeMoveDown.AddDefaultBinding(Key.Q);
+    }
+
+    public static PlayerActions CreateDefaultBindings()
+    {
+        var actions = new PlayerActions();
+        SetUpKeyboardAndMouseActions(ref actions);
+
+        SetUpXboxControllerActions(ref actions);
+
         return actions;
     }
 
@@ -204,37 +275,12 @@ public class PlayerActions : PlayerActionSet
         return actions;
     }
 
-
     public static PlayerActions CreateWithKeyboardBindings()
     {
         var actions = new PlayerActions();
 
-        actions.controlsType = InputDeviceClass.Keyboard;
+        SetUpKeyboardAndMouseActions(ref actions);
 
-        actions.R1.AddDefaultBinding(Key.T);
-        actions.R2.AddDefaultBinding(Key.LeftShift);
-        actions.L1.AddDefaultBinding(Key.G);
-        actions.L2.AddDefaultBinding(Mouse.RightButton);
-
-        actions.A.AddDefaultBinding(Key.Space);
-        actions.X.AddDefaultBinding(Mouse.LeftButton);
-        actions.Y.AddDefaultBinding(Key.Key2);
-        actions.B.AddDefaultBinding(Key.Key3);
-
-        actions.RJUp.AddDefaultBinding(Mouse.PositiveY);
-        actions.RJDown.AddDefaultBinding(Mouse.NegativeY);
-        actions.RJLeft.AddDefaultBinding(Mouse.NegativeX);
-        actions.RJRight.AddDefaultBinding(Mouse.PositiveX);
-
-        actions.LJUp.AddDefaultBinding(Key.W);
-        actions.LJDown.AddDefaultBinding(Key.S);
-        actions.LJLeft.AddDefaultBinding(Key.A);
-        actions.LJRight.AddDefaultBinding(Key.D);
-
-        actions.L3.AddDefaultBinding(Key.Key4);
-        actions.R3.AddDefaultBinding(Key.Key5);
-
-        actions.Start.AddDefaultBinding(Key.Escape);
         return actions;
     }
 
@@ -242,32 +288,8 @@ public class PlayerActions : PlayerActionSet
     {
         var actions = new PlayerActions();
 
-        actions.controlsType = InputDeviceClass.Controller;
+        SetUpXboxControllerActions(ref actions);
 
-        actions.R1.AddDefaultBinding(InputControlType.RightBumper);
-        actions.R2.AddDefaultBinding(InputControlType.RightTrigger);
-        actions.L1.AddDefaultBinding(InputControlType.LeftBumper);
-        actions.L2.AddDefaultBinding(InputControlType.LeftTrigger);
-
-        actions.A.AddDefaultBinding(InputControlType.Action1);
-        actions.X.AddDefaultBinding(InputControlType.Action3);
-        actions.Y.AddDefaultBinding(InputControlType.Action4);
-        actions.B.AddDefaultBinding(InputControlType.Action2);
-
-        actions.RJUp.AddDefaultBinding(InputControlType.RightStickUp);
-        actions.RJDown.AddDefaultBinding(InputControlType.RightStickDown);
-        actions.RJLeft.AddDefaultBinding(InputControlType.RightStickLeft);
-        actions.RJRight.AddDefaultBinding(InputControlType.RightStickRight);
-
-        actions.LJUp.AddDefaultBinding(InputControlType.LeftStickUp);
-        actions.LJDown.AddDefaultBinding(InputControlType.LeftStickDown);
-        actions.LJLeft.AddDefaultBinding(InputControlType.LeftStickLeft);
-        actions.LJRight.AddDefaultBinding(InputControlType.LeftStickRight);
-
-        actions.R3.AddDefaultBinding(InputControlType.RightStickButton);
-        actions.L3.AddDefaultBinding(InputControlType.LeftStickButton);
-
-        actions.Start.AddDefaultBinding(InputControlType.Start);
         return actions;
     }
 

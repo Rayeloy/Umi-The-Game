@@ -92,12 +92,6 @@ public class GameControllerCMF : MonoBehaviour
     //variables globales de la partida
     [HideInInspector]
     public bool playing = false;
-    //[HideInInspector]
-    //public bool online; //= PhotonNetwork.IsConnected; JUAN: No se puede inicializar el valor porque tira un error chungo, THX UNITY, está inicializado en el Awake
-
-    // variables para nuestro jugador online
-    [HideInInspector]
-    public PlayerActions BaseGameActions { get; set; }
 
     [HideInInspector]
     public bool HasPlayerFlatCamera(PlayerMovementCMF pM)

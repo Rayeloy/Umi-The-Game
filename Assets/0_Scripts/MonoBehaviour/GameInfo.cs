@@ -98,10 +98,10 @@ public class GameInfo : MonoBehaviour
     }
 
     #region Controls
-    bool ButtonWasPressedOnListener(PlayerActions actions)
-    {
-        return actions.AnyButtonWasPressed();
-    }
+    //bool ButtonWasPressedOnListener(PlayerActions actions)
+    //{
+    //    return actions.AnyButtonWasPressed();
+    //}
 
     void UpdateControls()
     {
@@ -238,7 +238,7 @@ public class UIAnimation
     [Header("--- MOVEMENT ---")]
     public Vector2 initialPos;
     public Vector2 finalPos;
-    private Vector2 originalPos; 
+    private Vector2 originalPos;
 
 
     public UIAnimation(UIAnimType _type, ref RectTransform _rect, float _xAmplitude = 7f, float _frequency = 0.06f,
@@ -393,11 +393,211 @@ public class UIAnimation
                     image.color = newColor;
                     break;
                 case UIAnimType.scale:
-                    rect.localScale = new Vector3(originalScale.x * finalScale, originalScale.y* finalScale, 1);
+                    rect.localScale = new Vector3(originalScale.x * finalScale, originalScale.y * finalScale, 1);
                     break;
                 case UIAnimType.movement:
                     rect.localPosition = finalPos;
                     break;
+            }
+        }
+    }
+}
+
+public class EloyAdvancedAxisControls
+{
+    PlayerTwoAxisAction joyStick;
+    float deadzone;
+    float timeToTurbo = 0.4f;
+    float turboFrequency = 0.1f;
+
+    public bool leftIsPressed = false;
+    public bool rightIsPressed = false;
+    public bool downIsPressed = false;
+    public bool upIsPressed = false;
+
+    int lastPressedDir = -1; //0 -> up; 1 -> right; 2 -> down; 3 -> left
+
+    public bool LeftWasPressed
+    {
+        get
+        {
+            bool result = joyStick.X < -deadzone && (!leftIsPressed || (leftIsPressed && turboStarted && turboPressedTime >= turboFrequency) && (!diagonal || (diagonal && lastPressedDir!=3)));
+            if (result)
+            {
+                turboPressedTime = 0;
+                leftIsPressed = true;
+                lastPressedDir = 3;
+            }
+            return result;
+        }
+    }
+    public bool RightWasPressed
+    {
+        get
+        {
+            bool result = joyStick.X > deadzone && (!rightIsPressed || (rightIsPressed && turboStarted && turboPressedTime >= turboFrequency) && (!diagonal || (diagonal && lastPressedDir != 1)));
+            if (result)
+            {
+                turboPressedTime = 0;
+                rightIsPressed = true;
+                lastPressedDir = 1;
+            }
+            return result;
+        }
+    }
+    public bool DownWasPressed
+    {
+        get
+        {
+            bool result = joyStick.Y < -deadzone && (!downIsPressed || (downIsPressed && turboStarted && turboPressedTime >= turboFrequency) && (!diagonal || (diagonal && lastPressedDir != 2)));
+            if (result)
+            {
+                turboPressedTime = 0;
+                downIsPressed = true;
+                lastPressedDir = 2;
+            }
+            return result;
+        }
+    }
+    public bool UpWasPressed
+    {
+        get
+        {
+            bool result = joyStick.Y > deadzone && (!upIsPressed || (upIsPressed && turboStarted && turboPressedTime >= turboFrequency) && (!diagonal || (diagonal && lastPressedDir != 0)));
+            if (result)
+            {
+                turboPressedTime = 0;
+                upIsPressed = true;
+                lastPressedDir = 0;
+            }
+            return result;
+        }
+    }
+
+    bool diagonal
+    {
+        get
+        {
+            int counter = 0;
+            if (joyStick.X < -deadzone) counter++;
+            if (joyStick.X > deadzone) counter++;
+            if (joyStick.Y < -deadzone) counter++;
+            if (joyStick.Y > deadzone) counter++;
+            if (counter > 1) Debug.LogWarning("Diagonal! leftIsPressed = "+ leftIsPressed + "; rightIsPressed = "+ rightIsPressed + "; downIsPressed = "+ downIsPressed + "; upIsPressed = " + upIsPressed);
+            return counter > 1;
+        }
+    }
+
+    bool turboStarted = false;
+
+    float turboPressedTime = 0;
+
+    public EloyAdvancedAxisControls(PlayerTwoAxisAction _joyStick, float _deadzone = 0.2f, float _timeToTurbo = 0.4f, float _turboFrequency = 0.1f)
+    {
+        joyStick = _joyStick;
+        deadzone = _deadzone;
+        timeToTurbo = _timeToTurbo;
+        turboFrequency = _turboFrequency;
+    }
+
+    /// <summary>
+    /// IMPORTANT to do it ALWAYS, and at the END of the Update.
+    /// </summary>
+    public void ResetJoyStick()
+    {
+        if (joyStick.X > -deadzone && leftIsPressed)
+        {
+            leftIsPressed = false;
+            //leftTurboStarted = false;
+        }
+        if (joyStick.X < deadzone && rightIsPressed)
+        {
+            rightIsPressed = false;
+            //rightTurboStarted = false;
+        }
+        if (joyStick.Y > -deadzone && downIsPressed)
+        {
+            downIsPressed = false;
+            //downTurboStarted = false;
+        }
+        if (joyStick.Y < deadzone && upIsPressed)
+        {
+            upIsPressed = false;
+            //upTurboStarted = false;
+        }
+
+        //TURBO
+        Vector2 input = new Vector2(joyStick.X, joyStick.Y);
+        if(input.magnitude< deadzone)
+        {
+            turboStarted = false;
+        }
+        else if(leftIsPressed || rightIsPressed || downIsPressed || upIsPressed)
+        {
+            turboPressedTime += Time.deltaTime;
+            if(!turboStarted && turboPressedTime >= timeToTurbo)
+            {
+                turboStarted = true;
+                turboPressedTime = 0;
+            }
+        }
+    }
+}
+
+public class EloyAdvancedButtonControls
+{
+    PlayerAction button;
+
+    bool isPressed = false;
+
+    bool turboMode = false;
+    float timeToTurbo = 0.4f;
+    float turboFrequency = 0.1f;
+    float turboPressedTime = 0;
+
+    public bool WasPressed
+    {
+        get
+        {
+            bool result = false;
+
+            if(button.IsPressed && (!isPressed ||(isPressed && turboMode && turboPressedTime >= turboFrequency)))
+            {
+                turboPressedTime = 0;
+                isPressed = true;
+                result = true;
+            }
+
+            return result;
+        }
+    }
+
+    public EloyAdvancedButtonControls(PlayerAction _button, float _timeToTurbo = 0.4f, float _turboFrequency = 0.1f)
+    {
+        button = _button;
+        timeToTurbo = _timeToTurbo;
+        turboFrequency = _turboFrequency;
+    }
+
+    /// <summary>
+    /// IMPORTANT to do it ALWAYS, and at the END of the Update.
+    /// </summary>
+    public void ResetButton()
+    {
+        if(!button.IsPressed && isPressed)
+        {
+            turboPressedTime = 0;
+            turboMode = false;
+            isPressed = false;
+        }
+
+        if (isPressed)
+        {
+            turboPressedTime += Time.deltaTime;
+            if(turboPressedTime >= timeToTurbo && !turboMode)
+            {
+
+                turboMode = true;
             }
         }
     }

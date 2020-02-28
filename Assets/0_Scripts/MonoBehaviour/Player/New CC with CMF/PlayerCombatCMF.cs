@@ -183,11 +183,9 @@ public class PlayerCombatCMF : MonoBehaviour
 
             //HOOK INPUT CHECK
             if (!myPlayerMovement.noInput && myPlayerMovement.vertMovSt != VerticalMovementState.FloatingInWater && (attackStg == AttackPhaseType.ready)
-                && aiming && ((!myPlayerMovement.actions.isKeyboard && myPlayerMovement.actions.R2.WasPressed)||(myPlayerMovement.actions.isKeyboard && myPlayerMovement.actions.X.WasPressed )))//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
+                && aiming && myPlayerMovement.actions.ThrowHook.WasPressed)//Input.GetButtonDown(myPlayerMovement.contName + "RB"))
             {
                 myHook.StartHook();
-                //ChangeAttackType(gC.attackHook);
-                //StartAttack();
             }
         }
         ProcessWeaponSkill();
@@ -869,7 +867,7 @@ public class PlayerCombatCMF : MonoBehaviour
         {
             if(debugModeOn) Debug.Log("Start aiming");
             aiming = true;
-            myPlayerMovement.myCamera.SwitchCamera(cameraMode.Shoulder);
+            myPlayerMovement.myCamera.SwitchCamera(CameraMode.Shoulder);
             myPlayerWeap.AttachWeaponToBack();
             myPlayerHUD.StartAim();
             //ChangeAttackType(GameController.instance.attackHook);
@@ -884,7 +882,7 @@ public class PlayerCombatCMF : MonoBehaviour
         {
             if(debugModeOn) Debug.Log("Stop aiming");
             aiming = false;
-            myPlayerMovement.myCamera.SwitchCamera(cameraMode.Free);
+            myPlayerMovement.myCamera.SwitchCamera(CameraMode.Free);
             myPlayerWeap.AttatchWeapon();
             myPlayerHUD.StopAim();
         }

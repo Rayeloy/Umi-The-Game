@@ -840,7 +840,7 @@ public class PlayerCombatNew : MonoBehaviour
         if (!aiming && attackStg == AttackPhaseType.ready && !myPlayerMovement.noInput)
         {
             aiming = true;
-            myPlayerMovement.myCamera.SwitchCamera(cameraMode.Shoulder);
+            myPlayerMovement.myCamera.SwitchCamera(CameraMode.Shoulder);
             myPlayerWeap.AttachWeaponToBack();
             myPlayerHUD.StartAim();
             //ChangeAttackType(GameController.instance.attackHook);
@@ -854,7 +854,7 @@ public class PlayerCombatNew : MonoBehaviour
         if (aiming)
         {
             aiming = false;
-            myPlayerMovement.myCamera.SwitchCamera(cameraMode.Free);
+            myPlayerMovement.myCamera.SwitchCamera(CameraMode.Free);
             myPlayerWeap.AttatchWeapon();
             myPlayerHUD.StopAim();
         }
