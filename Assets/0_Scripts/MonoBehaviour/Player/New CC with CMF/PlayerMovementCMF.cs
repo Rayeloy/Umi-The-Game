@@ -407,10 +407,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
 
     public void KonoAwake(bool isMyCharacter = false)
     {
-        Debug.Log("Awake Called !");
         SwitchTeam(team);
         if (!BoltNetwork.IsConnected || online_isLocal)
         {
+            Debug.Log("Awake Called !");
             mover = GetComponent<Mover>();
             collCheck.KonoAwake(mover.capsuleCollider);//we use capsule collider in our example
 
@@ -428,9 +428,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             myPlayerHook.myCameraBase = myCamera;
             hardSteerAcc = Mathf.Clamp(hardSteerAcc, hardSteerAcc, breakAcc);
             airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airHardSteerAcc, airBreakAcc);
-
-            //PLAYER MODEL
-            SwitchTeam(team);
 
             //WALLJUMP
             wallJumpCheckRaysRows = 5;
@@ -530,7 +527,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             }
             else
             {
-                collCheck.KonoStart();
                 myPlayerWeap.KonoStart();
                 myPlayerVFX.KonoStart();
             }
@@ -563,10 +559,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             myPlayerWeap.KonoUpdate();
             myPlayerHook.KonoUpdate();
         }
-    if(BoltNetwork.IsServer)
-    {
+        if(BoltNetwork.IsServer)
+        {
             myPlayerCombatNew.KonoUpdate();
-    }
+        }
     }
 
     public void KonoFixedUpdate()
@@ -2703,27 +2699,23 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
         UmiPlayerCommand cmd = (UmiPlayerCommand)command;
         lastPos = transform.position;
         frameCounter++;
-
+        Debug.Log("reset state :" + resetState);
         if (resetState)
         {
             Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
-            if ((transform.position - cmd.Result.Position).magnitude > 1 && (cmd.Result.velocity.magnitude < 1 || currentVel.magnitude < 1))
+            collCheck.ResetVariables();
+            ResetMovementVariables();
+            collCheck.UpdateCollisionVariables(mover, jumpSt);
+            HandleSlopes();
+            if ((transform.position - cmd.Result.Position).magnitude > 1 || (cmd.Result.velocity.magnitude < 1 || currentVel.magnitude < 1))
             {
-                collCheck.ResetVariables();
-                ResetMovementVariables();
-                collCheck.UpdateCollisionVariables(mover, jumpSt);
-                transform.position = cmd.Result.Position;
                 collCheck.UpdateCollisionChecks(cmd.Result.velocity);
+                OnlineProcessWallJump(cmd.Result.JumpState);
                 mover.SetVelocity(cmd.Result.velocity, platformMovement);
             }
-            else if ((transform.position - cmd.Result.Position).magnitude > 3)
+            if ((transform.position - cmd.Result.Position).magnitude > 3)
             {
-                collCheck.ResetVariables();
-                ResetMovementVariables();
-                collCheck.UpdateCollisionVariables(mover, jumpSt);
                 transform.position = cmd.Result.Position;
-                collCheck.UpdateCollisionChecks(cmd.Result.velocity);
-                mover.SetVelocity(cmd.Result.velocity, platformMovement);
             }
         }
         else
@@ -2750,6 +2742,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             mover.SetExtendSensorRange(collCheck.below);
 
             cmd.Result.Position = transform.position;
+            cmd.Result.JumpState = cmd.Input.JumpReleased;
             cmd.Result.velocity = currentVel;
         }
         collCheck.SavePlatformPoint();
