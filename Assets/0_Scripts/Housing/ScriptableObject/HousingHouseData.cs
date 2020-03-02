@@ -40,6 +40,17 @@ public class HousingHouseData : ScriptableObject
         }
     }
     HouseSpace oldHouseSpace;
+
+    private void Awake()
+    {
+        if(houseSpace == null)
+        {
+            Debug.Log("Creating New House Meta");
+            houseSpace = new HouseSpace(height, depth, width);
+            oldHouseSpace = new HouseSpace(height, depth, width);
+        }
+    }
+
     private void OnValidate()
     {
         if (Application.isPlaying)
