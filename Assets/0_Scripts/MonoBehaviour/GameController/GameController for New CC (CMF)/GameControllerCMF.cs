@@ -1115,17 +1115,20 @@ public class GameControllerCMF : MonoBehaviour
     #region ----[ BOLT CALLBACKS ]----
     public void EntityReceivedOrCreated(BoltEntity entity)
     {
-        PlayerMovementCMF player = entity.GetComponent<PlayerMovementCMF>();
-        if (player != null && ((allPlayers.Count > 0 && player != allPlayers[0].entity) || BoltNetwork.IsServer))
+        if (entity.IsControlled || BoltNetwork.IsServer)
         {
-            Debug.Log("entity \"" + entity + "\" is player and starting !");
-            Debug.Log("entity awake");
-            player.KonoAwake(false);
-            Debug.Log("entity start");
-            player.KonoStart();
-            Debug.Log("entity add to list");
-            allPlayers.Add(player);
-            player.gC = this;
+            PlayerMovementCMF player = entity.GetComponent<PlayerMovementCMF>();
+            if (player != null && (((allPlayers.Count > 0 && player != allPlayers[0]) || BoltNetwork.IsServer)))
+            {
+                Debug.Log("entity \"" + entity + "\" is player and starting !");
+                Debug.Log("entity awake");
+                player.KonoAwake(false);
+                Debug.Log("entity start");
+                player.KonoStart();
+                Debug.Log("entity add to list");
+                allPlayers.Add(player);
+                player.gC = this;
+            }
         }
     }
 
