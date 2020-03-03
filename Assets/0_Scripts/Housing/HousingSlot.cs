@@ -75,7 +75,7 @@ public class HousingSlot : MonoBehaviour
             return hasFurniture && myFurniture != null && myFurniture.furnitureMeta.furnitureType == FurnitureType.Floor;
         }
     }
-    bool[] hasWalls;
+    public bool[] hasWalls;
     public bool hasAnyWall
     {
         get

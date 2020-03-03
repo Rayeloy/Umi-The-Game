@@ -28,10 +28,10 @@ public class GameControllerCMF_Housing : GameControllerCMF
 
     [Header(" - Edit Mode - ")]
     [Range(0, 1)]
-    public float leftJoyStickDeadzone = 0.2f;
+    public float leftJoyStickDeadzone = 0.6f;
     public HousingEditModeCameraController editModeCameraController;
     float cameraHeightOffset = 0;
-    public float cameraDistValue = 0;
+    public float cameraDistValue = 0.009f;
     public Material[] highlightedSlotMat;
 
     protected override void SpecificAwake()
@@ -146,11 +146,13 @@ public class GameControllerCMF_Housing : GameControllerCMF
             //Set new Edit Camera
             cameraHeightOffset = ((currentGrid.myHouseMeta.height / 2) + 1) * currentGrid.myHouseMeta.housingSlotSize;
             Vector3 cameraBaseCenterPos = currentGrid.worldCenter + Vector3.up * cameraHeightOffset;
-            Vector3 houseFloorCenter = new Vector3(cameraBaseCenterPos.x, houseSpawnPos.y, cameraBaseCenterPos.z + (currentGrid.myHouseMeta.depth / 3 * currentGrid.myHouseMeta.housingSlotSize));
-            float volume = currentGrid.myHouseMeta.width * currentGrid.myHouseMeta.depth * currentGrid.myHouseMeta.height * currentGrid.myHouseMeta.housingSlotSize;
+            //Vector3 houseFloorCenter = new Vector3(cameraBaseCenterPos.x, houseSpawnPos.y, cameraBaseCenterPos.z + (currentGrid.myHouseMeta.depth / 3 * currentGrid.myHouseMeta.housingSlotSize));
+            float volume = (currentGrid.myHouseMeta.width * currentGrid.myHouseMeta.housingSlotSize )* (currentGrid.myHouseMeta.depth * currentGrid.myHouseMeta.housingSlotSize) *
+                (currentGrid.myHouseMeta.height * currentGrid.myHouseMeta.housingSlotSize);
             float cameraMaxZoomDist = volume * cameraDistValue;
-            Debug.Log(" cameraBaseCenterPos = " + cameraBaseCenterPos.ToString("F4") + "; houseFloorCenter = " + houseFloorCenter.ToString("F4") + "; cameraMaxZoomDist = " + cameraMaxZoomDist.ToString("F4"));
-            editModeCameraController.Activate(cameraBaseCenterPos, houseFloorCenter, cameraMaxZoomDist);
+            Debug.Log(" cameraBaseCenterPos = " + cameraBaseCenterPos.ToString("F4") + "; currentGrid.worldCenter = "+ currentGrid.worldCenter.ToString("F4")+
+                "; cameraHeightOffset = " + cameraHeightOffset.ToString("F4") + "; cameraMaxZoomDist = " + cameraMaxZoomDist.ToString("F4"));
+            editModeCameraController.Activate(cameraBaseCenterPos, cameraMaxZoomDist);
 
             //Highlight center Slot
             currentGrid.stickToWall = false;

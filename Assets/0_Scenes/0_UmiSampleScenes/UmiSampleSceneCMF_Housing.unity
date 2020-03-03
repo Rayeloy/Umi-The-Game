@@ -572,7 +572,7 @@ PrefabInstance:
         type: 3}
       propertyPath: houseMeta
       value: 
-      objectReference: {fileID: 11400000, guid: a602722aee2f0b946b599ae90e31b608,
+      objectReference: {fileID: 11400000, guid: 9ece223c3634bb6459102f0124bc39cb,
         type: 2}
     - target: {fileID: 9080193105827176625, guid: 745c7a9479b52c44080e54fad3e9c870,
         type: 3}
@@ -584,6 +584,11 @@ PrefabInstance:
         type: 3}
       propertyPath: showWallMeshes
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9080193105827176625, guid: 745c7a9479b52c44080e54fad3e9c870,
+        type: 3}
+      propertyPath: cameraDistValue
+      value: 0.009
       objectReference: {fileID: 0}
     - target: {fileID: 7548669343834102187, guid: 745c7a9479b52c44080e54fad3e9c870,
         type: 3}
@@ -689,6 +694,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontSize
       value: 47.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 6328435776126974738, guid: 745c7a9479b52c44080e54fad3e9c870,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.035686567
+      objectReference: {fileID: 0}
+    - target: {fileID: 6328435776126974738, guid: 745c7a9479b52c44080e54fad3e9c870,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6328435776126974738, guid: 745c7a9479b52c44080e54fad3e9c870,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6328435776126974738, guid: 745c7a9479b52c44080e54fad3e9c870,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.99936306
+      objectReference: {fileID: 0}
+    - target: {fileID: 6328435776126974738, guid: 745c7a9479b52c44080e54fad3e9c870,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 4.09
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}

@@ -23,8 +23,10 @@ public class HousingGrid : MonoBehaviour
     Vector3 housePos = Vector3.zero;
     Material[] highlightedSlotMat;
     public Vector3 worldCenter;
+    public Vector3 minSlotWorldPos;
+    public Vector3 maxSlotWorldPos;
 
-    Vector3 CalculateWorldCenter()
+    Vector3 CalculateWorldPositions()
     {
         Vector3 result = Vector3.zero;
         if (myHouseMeta.validHouseSpacing)
@@ -38,7 +40,9 @@ public class HousingGrid : MonoBehaviour
             max.z -= (myHouseMeta.housingSlotSize * myHouseMeta.houseSpace.maxZ);
             max.y += (myHouseMeta.housingSlotSize * myHouseMeta.houseSpace.maxY);
             result = VectorMath.MiddlePoint(min, max);
-            Debug.Log("HousingGrid: center = " + result.ToString("F4") + "; min = " + min.ToString("F4") + "; max = " + max.ToString("F4"));
+            minSlotWorldPos = min;
+            maxSlotWorldPos = max;
+            Debug.Log("HousingGrid: center = " + result.ToString("F4") + "; min = " + min.ToString("F4") + "; max = " + max.ToString("F4")+ "; housePos = " + housePos.ToString("F4"));
         }
         return result;
     }
@@ -50,7 +54,8 @@ public class HousingGrid : MonoBehaviour
         Vector3 _housePos, Material[] _highlightedSlotMat, HousingEditModeCameraController _camCont)
     {
         myHouseMeta = _myHouseMeta;
-        worldCenter = CalculateWorldCenter();
+        housePos = _housePos;//DON'T CHANGE ORDER OF THIS
+        worldCenter = CalculateWorldPositions();//DON'T CHANGE ORDER OF THIS
 
         cameraCont = _camCont;
         furnituresParent = _furnituresParent;
@@ -63,7 +68,7 @@ public class HousingGrid : MonoBehaviour
 
         slotPrefab = _slotPrefab;
         wallPrefab = _wallPrefab;
-        housePos = _housePos;
+        Debug.Log("housePos = " + housePos.ToString("F4"));
 
         highlightedSlotMat = _highlightedSlotMat;
         currentSlotCoord = new HousingGridCoordinates();
@@ -650,7 +655,7 @@ public class HousingGrid : MonoBehaviour
     {
         if (coord.y < 0 || coord.y >= height)
         {
-            Debug.LogError("OnFloor -> Invalid Coords: "+coord.printString);
+            Debug.LogError("OnFloor -> Invalid Coords: " + coord.printString);
             return false;
         }
         HousingSlot slot = GetSlotAt(coord);
@@ -737,7 +742,7 @@ public class HousingGrid : MonoBehaviour
                 }
                 if (!foundValid)
                 {
-                    for (int k = coord.y-1; k >=0 && !foundValid; k--)
+                    for (int k = coord.y - 1; k >= 0 && !foundValid; k--)
                     {
                         if (CanSelectSlot(new HousingGridCoordinates(k, coord.z, coord.x)))
                         {
@@ -833,7 +838,8 @@ public class HousingGrid : MonoBehaviour
                         stickToWall = true;
                         coord.y = k;
                         foundValid = true;
-                    }else if (CanSelectSlot(new HousingGridCoordinates(k, coord.z, coord.x)))
+                    }
+                    else if (CanSelectSlot(new HousingGridCoordinates(k, coord.z, coord.x)))
                     {
                         stickToWall = false;
                         coord.y = k;
@@ -920,7 +926,72 @@ public class HousingGrid : MonoBehaviour
         return result;
     }
 
-    public bool MoveSelectSlot(Direction dir)
+    public bool MoveSelectSlot(Direction inputDir)
+    {
+        bool result = false;
+        bool oldStickToWall = stickToWall;
+        HousingGridCoordinates oldCoord;
+        HousingGridCoordinates newCoord = oldCoord = currentSlotCoord;
+
+        if(inputDir == Direction.Down && stickToWall)
+        {
+            result = MoveSelectDown();
+        }
+
+        Direction realDir = inputDir;
+        realDir += (int)cameraCont.currentCameraDir;//magic stuff
+        realDir += (int)realDir > 3 ? -4 : (int)realDir < 0 ? +4 : 0;
+        if (!result)
+        {
+            switch (realDir)
+            {
+                case Direction.Left:
+                    newCoord.x = currentSlotCoord.x - 1;
+                    if (newCoord.x >= 0)
+                        result = SelectSlotAt(newCoord);
+                    //Debug.Log("newCoord = " + newCoord.printString + "; result = " + result);
+                    break;
+                case Direction.Right:
+                    newCoord.x = currentSlotCoord.x + 1;
+                    if (newCoord.x < width)
+                        result = SelectSlotAt(newCoord);
+                    break;
+                case Direction.Up:
+                    newCoord.z = currentSlotCoord.z - 1;
+                    if (newCoord.z >= 0)
+                        result = SelectSlotAt(newCoord);
+                    break;
+                case Direction.Down:
+                    newCoord.z = currentSlotCoord.z + 1;
+                    if (newCoord.z < depth)
+                        result = SelectSlotAt(newCoord);
+                    break;
+            }
+        }
+
+        if (!result)
+        {
+            HousingSlot slot = GetSlotAt(oldCoord);
+            int frontWall = (int)realDir + 1; frontWall += (int)frontWall > 3 ? -4 : 0;
+            int backWall = (int)realDir - 1; backWall += (int)backWall < 0 ? +4 : 0;
+            if (((inputDir == Direction.Left || inputDir == Direction.Right) && (slot.hasWalls[frontWall] || slot.hasWalls[backWall])) || inputDir == Direction.Down)
+            {
+                //do nothing
+            }
+            else
+            {
+                result = MoveSelectUp();
+            }
+        }
+        if (result)
+        {
+            StopHighlightSlot(oldCoord);
+        }
+
+        return result;
+    }
+
+    public bool MoveSelectSlotSkipWall(Direction dir)
     {
         bool result = false;
         HousingGridCoordinates oldCoord;
