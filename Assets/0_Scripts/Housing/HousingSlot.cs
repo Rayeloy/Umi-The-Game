@@ -23,7 +23,13 @@ public class HousingSlot : MonoBehaviour
     [HideInInspector]
     public HousingFurniture[] myWallFurnitures = new HousingFurniture[4];
 
-
+    public bool hasAnyFurniture
+    {
+        get
+        {
+            return hasFurniture || hasAnyWallFurniture;
+        }
+    }
     public bool hasFurniture
     {
         get
