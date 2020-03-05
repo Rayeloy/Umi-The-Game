@@ -126,6 +126,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
             {
                 Debug.LogError("Can't create door");
             }
+            currentGrid.StopHighlightPlacedFurniture();
         }
     }
 

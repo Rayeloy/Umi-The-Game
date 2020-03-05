@@ -453,7 +453,7 @@ public class HousingEditModeCameraController : MonoBehaviour
         {
             targetCamRot = ((int)currentCameraDir % 2) == 0 ? originalFrontCamRot : originalSideCamRot;
         }
-        Debug.LogWarning("Rotate Camera Right: targetCamBaseRot = " + targetCamBaseRot.ToString("F4") + "; currentCamBaseRot = " + currentCamBaseRot.ToString("F4") + "; targetCamRot = " + targetCamRot);
+        //Debug.LogWarning("Rotate Camera Right: targetCamBaseRot = " + targetCamBaseRot.ToString("F4") + "; currentCamBaseRot = " + currentCamBaseRot.ToString("F4") + "; targetCamRot = " + targetCamRot);
     }
 
     void RotateCameraLeft()
@@ -471,7 +471,7 @@ public class HousingEditModeCameraController : MonoBehaviour
         {
             targetCamRot = ((int)currentCameraDir % 2) == 0 ? originalFrontCamRot : originalSideCamRot;
         }
-        Debug.LogWarning("Rotate Camera Left: targetCamBaseRot = " + targetCamBaseRot.ToString("F4") + "; targetCamRot = " + targetCamRot);
+        //Debug.LogWarning("Rotate Camera Left: targetCamBaseRot = " + targetCamBaseRot.ToString("F4") + "; targetCamRot = " + targetCamRot);
     }
 
     #region -- Hide Walls --
@@ -562,51 +562,47 @@ public class HousingEditModeCameraController : MonoBehaviour
                     }
                 }
             }
-            Debug.Log("CorrectHitsFound = " + correctHitsFound);
+            //Debug.Log("CorrectHitsFound = " + correctHitsFound);
 
             if (correctHitsFound >= 1)
             {
                 Vector3 middlePoint = VectorMath.MiddlePoint(maxPoint, minPoint);
                 maxDistance = (middlePoint - rayOrigin).magnitude;
                 auxSphereRadius = (middlePoint - minPoint).magnitude;
-            }
-            else
-            {
-                Debug.LogWarning("Not enough hits found");
-                return;
-            }
 
-            sphereCastRadius = CalculateCurrentRadius();
-            sphereCastRadius = auxSphereRadius > sphereCastRadius ? auxSphereRadius : sphereCastRadius;
-            Vector3 perpVector = Vector3.Cross(Vector3.up, rayDir).normalized;
-            Vector3 point = rayOrigin + (rayDir * maxDistance);
+                sphereCastRadius = CalculateCurrentRadius();
+                sphereCastRadius = auxSphereRadius > sphereCastRadius ? auxSphereRadius : sphereCastRadius;
+                Vector3 perpVector = Vector3.Cross(Vector3.up, rayDir).normalized;
+                Vector3 point = rayOrigin + (rayDir * maxDistance);
 
-            //Draw sphere?
-            Debug.DrawLine(rayOrigin, point, Color.red);
-            Debug.DrawLine(point + (perpVector * sphereCastRadius), point - (perpVector * sphereCastRadius), Color.red);
-            Debug.DrawLine(point + (Vector3.up * sphereCastRadius), point - (Vector3.up * sphereCastRadius), Color.red);
+                //Draw sphere?
+                Debug.DrawLine(rayOrigin, point, Color.red);
+                Debug.DrawLine(point + (perpVector * sphereCastRadius), point - (perpVector * sphereCastRadius), Color.red);
+                Debug.DrawLine(point + (Vector3.up * sphereCastRadius), point - (Vector3.up * sphereCastRadius), Color.red);
 
-            hits = new RaycastHit[maxHitsNumber];
-            hitsNumber = Physics.SphereCastNonAlloc(rayOrigin, sphereCastRadius, rayDir.normalized, hits, maxDistance, wallLayerMask, QueryTriggerInteraction.Ignore);
-            if (hitsNumber > 0)
-            {
-                for (int j = 0; j < hitsNumber; j++)
+                hits = new RaycastHit[maxHitsNumber];
+                hitsNumber = Physics.SphereCastNonAlloc(rayOrigin, sphereCastRadius, rayDir.normalized, hits, maxDistance, wallLayerMask, QueryTriggerInteraction.Ignore);
+                if (hitsNumber > 0)
                 {
-                    if (hits[j].collider.tag == "HousingWall")
+                    for (int j = 0; j < hitsNumber; j++)
                     {
-                        MeshRenderer meshR = hits[j].collider.GetComponent<MeshRenderer>();
-                        if (meshR == null)
+                        if (hits[j].collider.tag == "HousingWall")
                         {
-                            Debug.LogError("HousingEditModeCameraController -> HideWalls: Can't find mesh Renderer of " + hits[j].collider.name);
-                            continue;
+                            MeshRenderer meshR = hits[j].collider.GetComponent<MeshRenderer>();
+                            if (meshR == null)
+                            {
+                                Debug.LogError("HousingEditModeCameraController -> HideWalls: Can't find mesh Renderer of " + hits[j].collider.name);
+                                continue;
+                            }
+                            Color oldColor = meshR.material.color;
+                            meshR.material.color = new Color(oldColor.r, oldColor.g, oldColor.b, 0.01f);
+                            newHiddenWalls.Add(meshR);
                         }
-                        Color oldColor = meshR.material.color;
-                        meshR.material.color = new Color(oldColor.r, oldColor.g, oldColor.b, 0.01f);
-                        newHiddenWalls.Add(meshR);
                     }
                 }
             }
         }
+
         for (int j = 0; j < hiddenWalls.Count; j++)
         {
             if (!newHiddenWalls.Contains(hiddenWalls[j]))
