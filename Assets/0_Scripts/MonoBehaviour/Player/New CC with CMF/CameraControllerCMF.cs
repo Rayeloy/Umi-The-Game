@@ -329,7 +329,6 @@ public class CameraControllerCMF : MonoBehaviour
         currentMyCamPos.y = Mathf.SmoothDamp(currentMyCamPos.y, targetMyCamPos.y, ref smoothMyCamY, smoothCamMoveTime);
         currentMyCamPos.z = Mathf.SmoothDamp(currentMyCamPos.z, targetMyCamPos.z, ref smoothMyCamZ, smoothCamMoveTime);
         myCamera.localPosition = currentMyCamPos;
-        Debug.Log("UwU : " + targetMyCamPos);
     }
     #endregion
 

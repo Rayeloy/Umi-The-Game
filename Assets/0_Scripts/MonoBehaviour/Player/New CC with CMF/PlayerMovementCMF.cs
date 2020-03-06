@@ -408,7 +408,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
     public void KonoAwake(bool isMyCharacter = false)
     {
         SwitchTeam(team);
-        if (!BoltNetwork.IsConnected || online_isLocal)
+        if (online_isLocal)
         {
             Debug.Log("Awake Called !");
             mover = GetComponent<Mover>();
@@ -488,7 +488,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
     public void KonoStart()
     {
         Debug.Log("Start Called !");
-        if (online_isLocal || !BoltNetwork.IsConnected)
+        if (online_isLocal)
         {
             gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
             currentGravity = gravity;
@@ -567,7 +567,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
 
     public void KonoFixedUpdate()
     {
-        if (!MasterManager.GameSettings.online || !BoltNetwork.IsConnected)
+        if (!MasterManager.GameSettings.online)
         {
             if (!disableAllDebugs) Debug.LogWarning("PLAYER FIXED UPDATE: ");
             //Debug.LogWarning("Current pos = " + transform.position.ToString("F8"));
@@ -711,7 +711,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
 
     public void StopBufferedInput(PlayerInput _inputType)
     {
-        if (!BoltNetwork.IsConnected || BoltNetwork.IsClient)
+        if (BoltNetwork.IsClient)
         {
             for (int i = 0; i < inputsBuffer.Length; i++)
             {
@@ -1356,7 +1356,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             if (!disableAllDebugs) Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + (moveSt != MoveState.Boost) + ")");
         }
 
-        if (!result && !calledFromBuffer /*&& (jumpSt != JumpState.Falling || (jumpSt == JumpState.Falling) && jumpInsurance)*/ && BoltNetwork.IsClient)
+        if (!result && !calledFromBuffer && BoltNetwork.IsClient)
         {
             BufferInput(PlayerInput.Jump);
         }
@@ -1758,7 +1758,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                     RotateCharacter(newMoveDir);
                 }
             }
-            if (BoltNetwork.IsConnected && BoltNetwork.IsClient)
+            if (BoltNetwork.IsClient)
             {
                 myPlayerHUD.StartCamVFX(CameraVFXType.Dash);
                 myPlayerVFX.ActivateEffect(PlayerVFXType.DashWaterImpulse);
@@ -1769,7 +1769,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
         }
         else
         {
-            if (BoltNetwork.IsConnected && BoltNetwork.IsClient)
+            if (BoltNetwork.IsClient)
             {
                 myPlayerHUD.StartDashHUDCantDoAnimation();
             }
@@ -2363,11 +2363,11 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             {
                 myPlayerWeap.AttachWeaponToBack();
             
-            if (haveFlag) 
-            {
-                //gC.RespawnFlag(flag.GetComponent<Flag>());
-                flag.SetAway(false);
-            }
+                if (haveFlag) 
+                {
+                    //gC.RespawnFlag(flag.GetComponent<Flag>());
+                    flag.SetAway(false);
+                }
             }
             //Desactivar al jugadro si se esta en la prorroga.
             if (gC.gameMode == GameMode.CaptureTheFlag)
@@ -2384,9 +2384,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                     myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
                 }
                 myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
-                myPlayerCombatNew.StopDoingCombat();
-                myPlayerHook.StopHook();
             }
+            myPlayerCombatNew.StopDoingCombat();
+            myPlayerHook.StopHook();
         }
     }
 
@@ -2413,13 +2413,13 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                 myPlayerAnimation.exitWater = true;
                 myPlayerWeap.AttatchWeapon();
                 myPlayerVFX.DeactivateEffect(PlayerVFXType.SwimmingEffect);
-            if (waterTrigger != null)
-            {
-                Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;//.y = waterTrigger.bounds.max.y;
-                waterSplashPos.y = waterTrigger.bounds.max.y - 0.5f;
-                myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
-            }
-            myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
+                if (waterTrigger != null)
+                {
+                    Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;//.y = waterTrigger.bounds.max.y;
+                    waterSplashPos.y = waterTrigger.bounds.max.y - 0.5f;
+                    myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
+                }
+                myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
             }
         }
     }
@@ -2696,10 +2696,13 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
 
     public override void ExecuteCommand(Command command, bool resetState)
     {
+        Debug.Log("333 jump state " + jumpSt);
+        Debug.Log("333 gravity " + gravity);
+        Debug.Log("333 reset " + resetState);
+        Debug.Log("333 water " + inWater);
         UmiPlayerCommand cmd = (UmiPlayerCommand)command;
         lastPos = transform.position;
         frameCounter++;
-        Debug.Log("reset state :" + resetState);
         if (resetState)
         {
             Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
@@ -3146,6 +3149,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                     timePressingJump += Time.deltaTime;
                     if (timePressingJump >= maxTimePressingJump)
                     {
+                        Debug.Log("Stopping jump !");
                         StopJump();
                     }
                     else
