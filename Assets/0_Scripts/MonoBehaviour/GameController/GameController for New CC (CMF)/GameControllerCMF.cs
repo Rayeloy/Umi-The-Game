@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using Crest;
 
 #region ----[ PUBLIC ENUMS ]----
 #endregion
@@ -61,6 +62,7 @@ public class GameControllerCMF : MonoBehaviour
     public float scaleDos = 1.25f;//escala de las camaras para 2 jugadores
     public float scaleCuatro = 1.25f;//escala para 3 jugadores y 4 jugadores
     [Header(" --- Other Stuff --- ")]
+    public OceanRenderer myOceanRenderer;
     //public Weapon startingWeaponA;
     //public Weapon startingWeaponB;
     #endregion
@@ -232,6 +234,15 @@ public class GameControllerCMF : MonoBehaviour
     {
         //if (!online)
         //{
+        // Check for Crest Ocean
+        if (myOceanRenderer != null && myOceanRenderer.isActiveAndEnabled)
+        {
+            if(MasterManager.GameSettings.online || (!MasterManager.GameSettings.online && playerNum == 1))
+            {
+                //Set Crest Ocean viewpoint for Ocean LOD
+                myOceanRenderer.Viewpoint = allPlayers[0].transform;
+            }
+        }
         StartPlayers();
         StartGame();
         //}
