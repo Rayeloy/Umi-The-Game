@@ -12,6 +12,7 @@ public enum HousingSlotType
 
 public class HousingSlot : MonoBehaviour
 {
+    public GameObject anchorObject;
     [HideInInspector]
     public bool baseFurniture = false;
 

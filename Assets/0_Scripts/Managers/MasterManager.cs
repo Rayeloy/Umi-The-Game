@@ -13,6 +13,11 @@ public class MasterManager : SingletonScriptableObject<MasterManager>
 
     public static GameSettings GameSettings { get { return Instance._gameSettings; } }
 
+    [SerializeField]
+    private HousingSettings _housingSettings;
+
+    public static HousingSettings HousingSettings { get { return Instance._housingSettings; } }
+
     //[SerializeField]
     //private List<NetworkedPrefab> _networkedPrefabs = new List<NetworkedPrefab>();
 
@@ -38,24 +43,24 @@ public class MasterManager : SingletonScriptableObject<MasterManager>
     //    return null;
     //}
 
-//    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-//    public static void PopulateNetworkedPrefabs()
-//    {
-//#if UNITY_EDITOR
+    //    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    //    public static void PopulateNetworkedPrefabs()
+    //    {
+    //#if UNITY_EDITOR
 
-//        GameObject[] results = Resources.LoadAll<GameObject>("");
-//        Instance._networkedPrefabs.Clear();
-//        for (int i = 0; i < results.Length; i++)
-//        {
-//            if (results[i].GetComponent<PhotonView>() != null)
-//            {
-//                string path = AssetDatabase.GetAssetPath(results[i]);
-//                Instance._networkedPrefabs.Add(new NetworkedPrefab(results[i], path));
-//                //Debug.Log("Loaded gameobject " + results[i] + ", with path " + path+"; _networkedPrefabs.Count = "+ Instance._networkedPrefabs.Count);
-//            }
-//        }
-//#endif
-//    }
+    //        GameObject[] results = Resources.LoadAll<GameObject>("");
+    //        Instance._networkedPrefabs.Clear();
+    //        for (int i = 0; i < results.Length; i++)
+    //        {
+    //            if (results[i].GetComponent<PhotonView>() != null)
+    //            {
+    //                string path = AssetDatabase.GetAssetPath(results[i]);
+    //                Instance._networkedPrefabs.Add(new NetworkedPrefab(results[i], path));
+    //                //Debug.Log("Loaded gameobject " + results[i] + ", with path " + path+"; _networkedPrefabs.Count = "+ Instance._networkedPrefabs.Count);
+    //            }
+    //        }
+    //#endif
+    //    }
 
 }
 

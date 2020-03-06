@@ -112,7 +112,7 @@ public class HousingEditModeCameraController : MonoBehaviour
         myCameraObject.gameObject.SetActive(false);
         Debug.Log("EditCameraBase: My camera = " + myCameraObject);
         middleCameraBase = transform.GetChild(0);
-        myRightJoyStickControls = new EloyAdvancedAxisControls(GameInfo.instance.myControls.RotateCameraHousingEditMode, deadZone);
+        myRightJoyStickControls = new EloyAdvancedAxisControls(GameInfo.instance.myControls.HousingRotateCamera, deadZone);
         houseGrid = _houseGrid;
         housePos = _housePos;
         CalculateHouseViewPoints();
@@ -182,20 +182,20 @@ public class HousingEditModeCameraController : MonoBehaviour
 
         //FRONT VIEW
         Vector3 dirToTopRightCorner = (houseGrid.maxSlotWorldPos - houseCenter).normalized;
-        houseMaxCorner = houseGrid.maxSlotWorldPos + (dirToTopRightCorner * houseGrid.myHouseMeta.housingSlotSize * 1.5f);
+        houseMaxCorner = houseGrid.maxSlotWorldPos + (dirToTopRightCorner * MasterManager.HousingSettings.slotSize * 1.5f);
 
         Vector3 bottomRightSlotPos = new Vector3(houseGrid.maxSlotWorldPos.x, houseGrid.minSlotWorldPos.y, houseGrid.maxSlotWorldPos.z);
         Vector3 dirToBottomRightCorner = (bottomRightSlotPos - houseCenter).normalized;
-        houseMaxMinYCorner = bottomRightSlotPos + (dirToBottomRightCorner * houseGrid.myHouseMeta.housingSlotSize * 2);
+        houseMaxMinYCorner = bottomRightSlotPos + (dirToBottomRightCorner * MasterManager.HousingSettings.slotSize * 2);
 
         //SIDEVIEW
         Vector3 topRightSlotPos = new Vector3(houseGrid.maxSlotWorldPos.x, houseGrid.maxSlotWorldPos.y, houseGrid.minSlotWorldPos.z);
         dirToTopRightCorner = (topRightSlotPos - houseCenter).normalized;
-        houseMaxMinZCorner = topRightSlotPos + (dirToTopRightCorner * houseGrid.myHouseMeta.housingSlotSize * 1.5f);
+        houseMaxMinZCorner = topRightSlotPos + (dirToTopRightCorner * MasterManager.HousingSettings.slotSize * 1.5f);
 
         bottomRightSlotPos = new Vector3(houseGrid.maxSlotWorldPos.x, houseGrid.minSlotWorldPos.y, houseGrid.minSlotWorldPos.z);
         dirToBottomRightCorner = (bottomRightSlotPos - houseCenter).normalized;
-        houseMinMaxXCorner = bottomRightSlotPos + (dirToBottomRightCorner * houseGrid.myHouseMeta.housingSlotSize * 2);
+        houseMinMaxXCorner = bottomRightSlotPos + (dirToBottomRightCorner * MasterManager.HousingSettings.slotSize * 2);
     }
 
     bool findZoomAndRotDone = false;
@@ -486,19 +486,19 @@ public class HousingEditModeCameraController : MonoBehaviour
                 switch (currentCameraDir)
                 {
                     case EditCameraDirection.ZPos:
-                        currentWidth = houseGrid.myHouseMeta.width * houseGrid.myHouseMeta.housingSlotSize;
+                        currentWidth = houseGrid.myHouseMeta.width * MasterManager.HousingSettings.slotSize;
                         break;
                     case EditCameraDirection.XPos:
-                        currentWidth = houseGrid.myHouseMeta.depth * houseGrid.myHouseMeta.housingSlotSize;
+                        currentWidth = houseGrid.myHouseMeta.depth * MasterManager.HousingSettings.slotSize;
                         break;
                     case EditCameraDirection.ZNeg:
-                        currentWidth = houseGrid.myHouseMeta.width * houseGrid.myHouseMeta.housingSlotSize;
+                        currentWidth = houseGrid.myHouseMeta.width * MasterManager.HousingSettings.slotSize;
                         break;
                     case EditCameraDirection.XNeg:
-                        currentWidth = houseGrid.myHouseMeta.depth * houseGrid.myHouseMeta.housingSlotSize;
+                        currentWidth = houseGrid.myHouseMeta.depth * MasterManager.HousingSettings.slotSize;
                         break;
                 }
-                currentWidth = currentWidth / 2 - houseGrid.myHouseMeta.housingSlotSize - 0.01f;
+                currentWidth = currentWidth / 2 - MasterManager.HousingSettings.slotSize - 0.01f;
                 break;
             case EditCameraMode.FollowSelection:
                 currentWidth = 3;

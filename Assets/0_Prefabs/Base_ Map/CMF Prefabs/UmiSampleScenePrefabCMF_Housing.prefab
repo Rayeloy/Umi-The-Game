@@ -70,6 +70,7 @@ MonoBehaviour:
   - {fileID: 6498126279662365358}
   scaleDos: 1.25
   scaleCuatro: 1.25
+  myOceanRenderer: {fileID: 8255741016016707290}
   playerNumTeamA: 0
   playerNumTeamB: 0
   gameOverStarted: 0
@@ -79,26 +80,18 @@ MonoBehaviour:
   showSlotMeshes: 0
   housingParent: {fileID: 6839287188731262034}
   housingFurnituresParent: {fileID: 6053406701416100990}
-  housingGridPrefab: {fileID: 2001836290882039728, guid: b8fb1ad2f687cc343bb80bfa436a6e8a,
-    type: 3}
-  housingSlotPrefab: {fileID: 7147764749764032367, guid: 7967cded87a63a9438538a932bed315e,
-    type: 3}
   wallPrefab: {fileID: 2111863855635486765, guid: aa2ce429967ff8f44a06258466fcaa21,
     type: 3}
-  houseMeta: {fileID: 0}
+  houseMeta: {fileID: 11400000, guid: 9ece223c3634bb6459102f0124bc39cb, type: 2}
   houseSpawnPos: {x: 0, y: 1.7, z: 0}
-  showWallMeshes: 0
+  showWallMeshes: 1
   wallMaterials:
   - {fileID: 2100000, guid: 317f8d7f704ce2c40bd5c940d670fd52, type: 2}
   - {fileID: 2100000, guid: 1156883bcf27223458416c943ccbe75b, type: 2}
-  testFurniture: {fileID: 0}
+  testFurniture: {fileID: 11400000, guid: 89a8b9de4ad284d4c90ca0e068f4b661, type: 2}
   leftJoyStickDeadzone: 0.6
   editModeCameraController: {fileID: 1440530383440817151}
-  cameraDistValue: 0.011
-  highlightedSlotMat:
-  - {fileID: 2100000, guid: e7873d3dc4eac8548a0432d69e51b1b7, type: 2}
-  - {fileID: 2100000, guid: ec604a5a70bdc394f8793865e51a4c0b, type: 2}
-  - {fileID: 2100000, guid: ffb697dc411333d48be5c4c4d98ad680, type: 2}
+  cameraDistValue: 0.009
 --- !u!1 &8604259467457358534
 GameObject:
   m_ObjectHideFlags: 0
@@ -198,6 +191,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1998629930512496855, guid: 6db9117d4df26494a8873799cc3754b6,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 5727753658902507009, guid: 6db9117d4df26494a8873799cc3754b6,
         type: 3}
       propertyPath: m_Name
@@ -258,6 +256,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5275901815917058324, guid: 6db9117d4df26494a8873799cc3754b6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5727753658902507015, guid: 6db9117d4df26494a8873799cc3754b6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 6db9117d4df26494a8873799cc3754b6, type: 3}
@@ -301,6 +304,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eb9eca1e26e482d4fb490b0cf6ed84ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8255741016016707290 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5275901817234082795, guid: 6db9117d4df26494a8873799cc3754b6,
+    type: 3}
+  m_PrefabInstance: {fileID: 4297995391546103089}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dde37eff0f7685f41902f400d1de0c6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &6042143956200921284 stripped

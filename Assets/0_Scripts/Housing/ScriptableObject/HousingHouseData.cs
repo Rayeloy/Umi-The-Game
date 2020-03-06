@@ -16,7 +16,6 @@ public enum Direction
 public class HousingHouseData : ScriptableObject
 {
     public string houseName;
-    public float housingSlotSize = 1;
 
     public HouseDoor door;
     public HouseWindow[] windows;

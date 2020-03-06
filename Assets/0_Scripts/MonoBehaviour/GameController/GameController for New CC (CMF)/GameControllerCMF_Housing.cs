@@ -8,8 +8,6 @@ public class GameControllerCMF_Housing : GameControllerCMF
     public bool showSlotMeshes = false;
     public Transform housingParent;
     public Transform housingFurnituresParent;
-    public GameObject housingGridPrefab;
-    public GameObject housingSlotPrefab;
     public GameObject wallPrefab;
     public HousingHouseData houseMeta;
     public Vector3 houseSpawnPos = Vector3.zero;
@@ -32,17 +30,16 @@ public class GameControllerCMF_Housing : GameControllerCMF
     public HousingEditModeCameraController editModeCameraController;
     float cameraHeightOffset = 0;
     public float cameraDistValue = 0.009f;
-    public Material[] highlightedSlotMat;
 
     protected override void SpecificAwake()
     {
         myLeftJoyStickControls = new EloyAdvancedAxisControls(allPlayers[0].actions.LeftJoystick, leftJoyStickDeadzone);
-        selectUp = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingEditModeMoveUp);
-        selectDown = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingEditModeMoveDown);
+        selectUp = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingMoveUp);
+        selectDown = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingMoveDown);
 
-        currentGridObject = Instantiate(housingGridPrefab, houseSpawnPos, Quaternion.identity, housingParent);
+        currentGridObject = Instantiate(MasterManager.HousingSettings.gridPrefab, houseSpawnPos, Quaternion.identity, housingParent);
         currentGrid = currentGridObject.GetComponent<HousingGrid>();
-        currentGrid.KonoAwake(houseMeta, housingFurnituresParent, housingSlotPrefab, wallPrefab, houseSpawnPos, highlightedSlotMat, editModeCameraController);
+        currentGrid.KonoAwake(houseMeta, housingFurnituresParent, wallPrefab, houseSpawnPos, MasterManager.HousingSettings.highlightedSlotMats, editModeCameraController);
         //Spawn House
         SpawnHouse(houseMeta);
         editModeCameraController.KonoAwake(currentGrid, houseSpawnPos);
@@ -82,6 +79,14 @@ public class GameControllerCMF_Housing : GameControllerCMF
             if (selectDown.WasPressed)
             {
                 currentGrid.MoveSelectDown();
+            }
+            if (allPlayers[0].actions.HousingRotateFurnitureClockwise.WasPressed)
+            {
+                if (!currentGrid.RotateFurniture(true)) Debug.LogError("GameControllerCMF_Housing: Can't rotate furniture clockwise!");
+            }
+            if (allPlayers[0].actions.HousingRotateFurnitureCounterClockwise.WasPressed)
+            {
+                if (!currentGrid.RotateFurniture(false)) Debug.LogError("GameControllerCMF_Housing: Can't rotate furniture counter clockwise!");
             }
         }
 
@@ -145,11 +150,11 @@ public class GameControllerCMF_Housing : GameControllerCMF
             DeactivateHostPlayer();
 
             //Set new Edit Camera
-            cameraHeightOffset = ((currentGrid.myHouseMeta.height / 2) + 1) * currentGrid.myHouseMeta.housingSlotSize;
+            cameraHeightOffset = ((currentGrid.myHouseMeta.height / 2) + 1) * MasterManager.HousingSettings.slotSize;
             Vector3 cameraBaseCenterPos = currentGrid.worldCenter + Vector3.up * cameraHeightOffset;
-            //Vector3 houseFloorCenter = new Vector3(cameraBaseCenterPos.x, houseSpawnPos.y, cameraBaseCenterPos.z + (currentGrid.myHouseMeta.depth / 3 * currentGrid.myHouseMeta.housingSlotSize));
-            float volume = (currentGrid.myHouseMeta.width * currentGrid.myHouseMeta.housingSlotSize )* (currentGrid.myHouseMeta.depth * currentGrid.myHouseMeta.housingSlotSize) *
-                (currentGrid.myHouseMeta.height * currentGrid.myHouseMeta.housingSlotSize);
+            //Vector3 houseFloorCenter = new Vector3(cameraBaseCenterPos.x, houseSpawnPos.y, cameraBaseCenterPos.z + (currentGrid.myHouseMeta.depth / 3 * MasterManager.HousingSettings.slotSize));
+            float volume = (currentGrid.myHouseMeta.width * MasterManager.HousingSettings.slotSize )* (currentGrid.myHouseMeta.depth * MasterManager.HousingSettings.slotSize) *
+                (currentGrid.myHouseMeta.height * MasterManager.HousingSettings.slotSize);
             float cameraMaxZoomDist = volume * cameraDistValue;
             Debug.Log(" cameraBaseCenterPos = " + cameraBaseCenterPos.ToString("F4") + "; currentGrid.worldCenter = "+ currentGrid.worldCenter.ToString("F4")+
                 "; cameraHeightOffset = " + cameraHeightOffset.ToString("F4") + "; cameraMaxZoomDist = " + cameraMaxZoomDist.ToString("F4"));

@@ -55,10 +55,13 @@ public class PlayerActions : PlayerActionSet
     public PlayerAction RotateCameraHEMRight;
     public PlayerAction RotateCameraHEMDown;
     public PlayerAction RotateCameraHEMUp;
-    public PlayerTwoAxisAction RotateCameraHousingEditMode;
+    public PlayerTwoAxisAction HousingRotateCamera;
     public PlayerAction ZoomIn;
-    public PlayerAction HousingEditModeMoveUp;
-    public PlayerAction HousingEditModeMoveDown;
+    public PlayerAction HousingMoveUp;
+    public PlayerAction HousingMoveDown;
+    public PlayerAction HousingRotateFurnitureClockwise;
+    public PlayerAction HousingRotateFurnitureCounterClockwise;
+
 
     public PlayerActions()
     {
@@ -102,10 +105,12 @@ public class PlayerActions : PlayerActionSet
         RotateCameraHEMRight = CreatePlayerAction("RotateCameraHEMRight");
         RotateCameraHEMDown = CreatePlayerAction("RotateCameraHEMDown");
         RotateCameraHEMUp = CreatePlayerAction("RotateCameraHEMUp");
-        RotateCameraHousingEditMode = CreateTwoAxisPlayerAction(RotateCameraHEMLeft, RotateCameraHEMRight, RotateCameraHEMDown, RotateCameraHEMUp);
+        HousingRotateCamera = CreateTwoAxisPlayerAction(RotateCameraHEMLeft, RotateCameraHEMRight, RotateCameraHEMDown, RotateCameraHEMUp);
         ZoomIn = CreatePlayerAction("ZoomIn");
-        HousingEditModeMoveUp = CreatePlayerAction("HousingEditModeMoveUp");
-        HousingEditModeMoveDown = CreatePlayerAction("HousingEditModeMoveDown");
+        HousingMoveUp = CreatePlayerAction("HousingEditModeMoveUp");
+        HousingMoveDown = CreatePlayerAction("HousingEditModeMoveDown");
+        HousingRotateFurnitureClockwise = CreatePlayerAction("HousingRotateFurnitureClockwise");
+        HousingRotateFurnitureCounterClockwise = CreatePlayerAction("HousingRotateFurnitureCounterClockwise");
     }
 
     static void SetUpXboxControllerActions(ref PlayerActions actions) 
@@ -151,8 +156,10 @@ public class PlayerActions : PlayerActionSet
         actions.RotateCameraHEMDown.AddDefaultBinding(InputControlType.RightStickDown);
         actions.RotateCameraHEMUp.AddDefaultBinding(InputControlType.RightStickUp);
         actions.ZoomIn.AddDefaultBinding(InputControlType.RightStickButton);
-        actions.HousingEditModeMoveUp.AddDefaultBinding(InputControlType.DPadUp);
-        actions.HousingEditModeMoveDown.AddDefaultBinding(InputControlType.DPadDown);
+        actions.HousingMoveUp.AddDefaultBinding(InputControlType.DPadUp);
+        actions.HousingMoveDown.AddDefaultBinding(InputControlType.DPadDown);
+        actions.HousingRotateFurnitureClockwise.AddDefaultBinding(InputControlType.RightBumper);
+        actions.HousingRotateFurnitureCounterClockwise.AddDefaultBinding(InputControlType.LeftBumper);
     }
 
     static void SetUpKeyboardAndMouseActions(ref PlayerActions actions)
@@ -198,8 +205,10 @@ public class PlayerActions : PlayerActionSet
         actions.RotateCameraHEMDown.AddDefaultBinding(Key.DownArrow);
         actions.RotateCameraHEMUp.AddDefaultBinding(Key.UpArrow);
         actions.ZoomIn.AddDefaultBinding(Key.Shift);
-        actions.HousingEditModeMoveUp.AddDefaultBinding(Key.E);
-        actions.HousingEditModeMoveDown.AddDefaultBinding(Key.Q);
+        actions.HousingMoveUp.AddDefaultBinding(Key.Space);
+        actions.HousingMoveDown.AddDefaultBinding(Key.F);
+        actions.HousingRotateFurnitureClockwise.AddDefaultBinding(Key.E);
+        actions.HousingRotateFurnitureCounterClockwise.AddDefaultBinding(Key.Q);
     }
 
     public static PlayerActions CreateDefaultBindings()
