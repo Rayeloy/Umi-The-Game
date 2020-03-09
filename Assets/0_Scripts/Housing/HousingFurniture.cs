@@ -7,7 +7,7 @@ public class HousingFurniture : MonoBehaviour
     public HousingFurnitureData furnitureMeta;
     public Direction currentOrientation;
     public FurnitureLevel[] currentSpaces;
-    HousingGridCoordinates anchor;
+    public HousingGridCoordinates anchor;
     public HousingGridCoordinates currentAnchorGridPos;
 
     public bool validCurrentSpaces
@@ -79,6 +79,9 @@ public class HousingFurniture : MonoBehaviour
         hasJustTurnedClockwise = hasJustTurnedCounterClockwise = false;
     }
 
+    public List<HousingFurniture> smallFurnitureOn;
+    public List<HousingFurniture> furnitureUnder;
+
     public void PrintSpaces()
     {
         for (int k = 0; k < height; k++)
@@ -120,6 +123,9 @@ public class HousingFurniture : MonoBehaviour
                 RotateCounterClockwise();
                 break;
         }
+
+        smallFurnitureOn = new List<HousingFurniture>();
+        furnitureUnder = new List<HousingFurniture>();
     }
 
     public void Copy(HousingFurniture _furniture)

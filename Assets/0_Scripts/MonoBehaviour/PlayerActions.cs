@@ -51,6 +51,7 @@ public class PlayerActions : PlayerActionSet
 
     public PlayerAction ThrowHook;
 
+    //Housing Edit Mode
     public PlayerAction RotateCameraHEMLeft;
     public PlayerAction RotateCameraHEMRight;
     public PlayerAction RotateCameraHEMDown;
@@ -61,6 +62,7 @@ public class PlayerActions : PlayerActionSet
     public PlayerAction HousingMoveDown;
     public PlayerAction HousingRotateFurnitureClockwise;
     public PlayerAction HousingRotateFurnitureCounterClockwise;
+    public PlayerAction HousingPickFurniture;
 
 
     public PlayerActions()
@@ -111,6 +113,7 @@ public class PlayerActions : PlayerActionSet
         HousingMoveDown = CreatePlayerAction("HousingEditModeMoveDown");
         HousingRotateFurnitureClockwise = CreatePlayerAction("HousingRotateFurnitureClockwise");
         HousingRotateFurnitureCounterClockwise = CreatePlayerAction("HousingRotateFurnitureCounterClockwise");
+        HousingPickFurniture = CreatePlayerAction("HousingPickFurniture");
     }
 
     static void SetUpXboxControllerActions(ref PlayerActions actions) 
@@ -160,6 +163,7 @@ public class PlayerActions : PlayerActionSet
         actions.HousingMoveDown.AddDefaultBinding(InputControlType.DPadDown);
         actions.HousingRotateFurnitureClockwise.AddDefaultBinding(InputControlType.RightBumper);
         actions.HousingRotateFurnitureCounterClockwise.AddDefaultBinding(InputControlType.LeftBumper);
+        actions.HousingPickFurniture.AddDefaultBinding(InputControlType.Action1);
     }
 
     static void SetUpKeyboardAndMouseActions(ref PlayerActions actions)
@@ -209,6 +213,7 @@ public class PlayerActions : PlayerActionSet
         actions.HousingMoveDown.AddDefaultBinding(Key.F);
         actions.HousingRotateFurnitureClockwise.AddDefaultBinding(Key.E);
         actions.HousingRotateFurnitureCounterClockwise.AddDefaultBinding(Key.Q);
+        actions.HousingPickFurniture.AddDefaultBinding(Key.Space);
     }
 
     public static PlayerActions CreateDefaultBindings()

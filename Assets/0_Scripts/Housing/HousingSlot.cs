@@ -79,7 +79,7 @@ public class HousingSlot : MonoBehaviour
     {
         get
         {
-            return hasFurniture && myFurniture != null && myFurniture.furnitureMeta.furnitureType == FurnitureType.Floor;
+            return hasFurniture && myFurniture.furnitureMeta.furnitureType == FurnitureType.Floor;
         }
     }
     public bool[] hasWalls;
@@ -118,6 +118,47 @@ public class HousingSlot : MonoBehaviour
     public HousingFurniture GetWall(Direction _orientation)
     {
         return myWallFurnitures[(int)_orientation];
+    }
+
+    public bool SetFurniture(HousingFurniture _furniture)
+    {
+        Debug.LogWarning("SLOT: START SET FURNITURE");
+
+        if (!free)
+        {
+            Debug.LogError("HousingSlot -> SetFurniture: Can't place a furniture because the slot " + gridCoordinates.printString + " is not free");
+            return false;
+        }
+        bool result = false;
+        if (_furniture.furnitureMeta.furnitureType == FurnitureType.Wall)
+        {
+            if (slotType == HousingSlotType.Wall || slotType == HousingSlotType.WallAndFloor)
+            {
+                result = SetWallFurniture(_furniture);
+            }
+            else
+            {
+                Debug.LogError("Can't place a wall furniture here because the slot is not of wall type.");
+                return false;
+            }
+        }
+        else
+        {
+            if(_furniture.furnitureMeta.furnitureType == FurnitureType.Floor && slotType != HousingSlotType.Floor && slotType != HousingSlotType.WallAndFloor)
+            {
+                Debug.LogError("Can't place a furniture here because the slot is not of floor type.");
+                return false;
+            }
+            if(!free)
+            {
+                Debug.LogError("Can't place a furniture here because it is not free. This should not be showing because we alread checked it!");
+                return false;
+            }
+
+            myFurniture = _furniture;
+            result = true;
+        }
+        return result;
     }
 
     bool SetWallFurniture(HousingFurniture _wallFurniture)
@@ -167,37 +208,6 @@ public class HousingSlot : MonoBehaviour
         return result;
     }
 
-    public bool SetFurniture(HousingFurniture _furniture)
-    {
-        Debug.LogWarning("SLOT: START SET FURNITURE");
-
-        if (!free)
-        {
-            Debug.LogError("HousingSlot -> SetFurniture: Can't place a furniture because the slot " + gridCoordinates.printString + " is not free");
-            return false;
-        }
-        bool result = false;
-        if (_furniture.furnitureMeta.furnitureType == FurnitureType.Wall)
-        {
-            if (slotType == HousingSlotType.Wall || slotType == HousingSlotType.WallAndFloor)
-            {
-                result = SetWallFurniture(_furniture);
-            }
-            else
-            {
-                Debug.LogError("Can't place a wall furniture here because the slot is not of wall type.");
-                return false;
-            }
-        }
-        else
-        {
-            //TO DO: 
-            Debug.LogError("TO DO?");
-            myFurniture = _furniture;
-        }
-        return result;
-    }
-
     public bool CanPlaceWallFurniture(HousingFurniture _wallFurniture)
     {
         bool result = false;
@@ -239,6 +249,52 @@ public class HousingSlot : MonoBehaviour
         if(!result && hasAnyWallFurniture)
         {
             result = myWallFurnitures[(int)_furniture.currentOrientation] == _furniture;
+        }
+
+        return result;
+    }
+
+    public bool PickFurniture(HousingFurniture _furniture)
+    {
+        bool result = false;
+        if(_furniture.furnitureMeta.furnitureType == FurnitureType.Wall)
+        {
+            result = PickWallFurniture(_furniture);
+        }
+        else
+        {
+            if (!hasFurniture)
+            {
+                Debug.LogError("Can't pick furniture because there is none");
+                return false;
+            }
+            if(myFurniture != _furniture)
+            {
+                Debug.LogError("Can't pick furniture because the furniture is different than the one we try to pick");
+                return false;
+            }
+            myFurniture = null;
+            result = true;
+        }
+
+        return result;
+    }
+
+    public bool PickWallFurniture(HousingFurniture _furniture)
+    {
+        bool result = false;
+        if (!hasAnyWallFurniture)
+        {
+            Debug.LogError("Can't pick wall furniture because there is none");
+            return false;
+        }
+        for (int i = 0; i < myWallFurnitures.Length && !result; i++)
+        {
+            if(myWallFurnitures[i] == _furniture)
+            {
+                myWallFurnitures[i] = null;
+                result = true;
+            }
         }
 
         return result;

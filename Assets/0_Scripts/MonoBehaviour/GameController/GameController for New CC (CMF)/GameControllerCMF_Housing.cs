@@ -14,6 +14,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
     public bool showWallMeshes = false;
     public Material[] wallMaterials; // length = 2
     public HousingFurnitureData testFurniture;
+    public HousingFurnitureData testSmallFurniture;
 
     GameObject currentGridObject;
     HousingGrid currentGrid;
@@ -23,6 +24,8 @@ public class GameControllerCMF_Housing : GameControllerCMF
     EloyAdvancedAxisControls myLeftJoyStickControls;
     EloyAdvancedButtonControls selectUp;
     EloyAdvancedButtonControls selectDown;
+    EloyAdvancedButtonControls rotateClockwise;
+    EloyAdvancedButtonControls rotateCounterClockwise;
 
     [Header(" - Edit Mode - ")]
     [Range(0, 1)]
@@ -36,6 +39,8 @@ public class GameControllerCMF_Housing : GameControllerCMF
         myLeftJoyStickControls = new EloyAdvancedAxisControls(allPlayers[0].actions.LeftJoystick, leftJoyStickDeadzone);
         selectUp = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingMoveUp);
         selectDown = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingMoveDown);
+        rotateClockwise = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingRotateFurnitureClockwise);
+        rotateCounterClockwise = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingRotateFurnitureCounterClockwise);
 
         currentGridObject = Instantiate(MasterManager.HousingSettings.gridPrefab, houseSpawnPos, Quaternion.identity, housingParent);
         currentGrid = currentGridObject.GetComponent<HousingGrid>();
@@ -72,21 +77,37 @@ public class GameControllerCMF_Housing : GameControllerCMF
             {
                 currentGrid.MoveSelectSlot(Direction.Down);
             }
-            if (selectUp.WasPressed)
-            {
-                currentGrid.MoveSelectUp();
-            }
-            if (selectDown.WasPressed)
-            {
-                currentGrid.MoveSelectDown();
-            }
-            if (allPlayers[0].actions.HousingRotateFurnitureClockwise.WasPressed)
+            //if (selectUp.WasPressed)
+            //{
+            //    currentGrid.MoveSelectUp();
+            //}
+            //if (selectDown.WasPressed)
+            //{
+            //    currentGrid.MoveSelectDown();
+            //}
+            if (rotateClockwise.WasPressed)
             {
                 if (!currentGrid.RotateFurniture(true)) Debug.LogError("GameControllerCMF_Housing: Can't rotate furniture clockwise!");
             }
-            if (allPlayers[0].actions.HousingRotateFurnitureCounterClockwise.WasPressed)
+            if (rotateCounterClockwise.WasPressed)
             {
                 if (!currentGrid.RotateFurniture(false)) Debug.LogError("GameControllerCMF_Housing: Can't rotate furniture counter clockwise!");
+            }
+            if (allPlayers[0].actions.HousingPickFurniture.WasPressed)
+            {
+                currentGrid.PickOrPlace();
+            }
+
+
+            if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+                HousingFurniture aux;
+                currentGrid.SpawnFurniture(testFurniture, out aux);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha8))
+            {
+                HousingFurniture aux;
+                currentGrid.SpawnFurniture(testSmallFurniture, out aux);
             }
         }
 
@@ -94,12 +115,8 @@ public class GameControllerCMF_Housing : GameControllerCMF
         myLeftJoyStickControls.ResetJoyStick();
         selectUp.ResetButton();
         selectDown.ResetButton();
-
-        if (Input.GetKeyDown(KeyCode.Alpha9))
-        {
-            HousingFurniture aux;
-            currentGrid.SpawnFurniture(testFurniture, out aux);
-        }
+        rotateClockwise.ResetButton();
+        rotateCounterClockwise.ResetButton();
     }
 
     protected override void SpecificLateUpdate()
