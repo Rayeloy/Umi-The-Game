@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class HousingFurniture : MonoBehaviour
 {
+    [HideInInspector]
+    public HousingGrid grid;
     public HousingFurnitureData furnitureMeta;
     public Direction currentOrientation;
     public FurnitureLevel[] currentSpaces;
@@ -99,12 +101,13 @@ public class HousingFurniture : MonoBehaviour
                 row += ")";
                 Debug.Log(row);
             }
-        }     
+        }
     }
 
-    public void KonoAwake(HousingFurnitureData _furnitureMeta)
+    public void KonoAwake(HousingFurnitureData _furnitureMeta, HousingGrid _grid)
     {
         furnitureMeta = _furnitureMeta;
+        grid = _grid;
         currentOrientation = Direction.Up;
         currentSpaces = furnitureMeta.furnitureSpace;
         anchor = _furnitureMeta.anchor;
@@ -128,6 +131,35 @@ public class HousingFurniture : MonoBehaviour
         furnitureUnder = new List<HousingFurniture>();
     }
 
+    private void Update()
+    {
+        if (furnitureMeta.furnitureType == FurnitureType.Floor_Small)
+        {
+            for (int i = 0; i < depth; i++)//for every furniture row
+            {
+                for (int j = 0; j < width; j++)//for every furniture slot
+                {
+                    bool val;
+                    HousingGridCoordinates currentCheckCoord = GetGridCoord(new HousingGridCoordinates(0, i, j), out val);
+                    HousingSlot currentSlot = grid.GetSlotAt(currentCheckCoord);
+                    if (val && currentSlot != null && currentSlot.HasThisFurniture(this))
+                    {
+                        //Check if floor fell
+                        HousingGridCoordinates underCoord = currentCheckCoord; underCoord.y--;
+                        if (underCoord.y >= 0 && underCoord.y < grid.height)
+                        {
+                            HousingSlot underSlot = grid.GetSlotAt(underCoord);
+                            if (underSlot != null && !underSlot.hasFurniture)
+                            {
+                                grid.DropFurniture(this);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void Copy(HousingFurniture _furniture)
     {
         furnitureMeta = _furniture.furnitureMeta;
@@ -136,7 +168,7 @@ public class HousingFurniture : MonoBehaviour
         anchor = _furniture.anchor;
     }
 
-    public void RotateClockwise(bool saveRotation=false)
+    public void RotateClockwise(bool saveRotation = false)
     {
         FurnitureLevel[] newSpaces = new FurnitureLevel[furnitureMeta.height];
         currentOrientation++;
@@ -211,7 +243,7 @@ public class HousingFurniture : MonoBehaviour
             {
                 for (int i = 0; i < width; i++)
                 {
-                    newSpaces[k].spaces[(width-1) - i].row[j] = transposeMatrix.spaces[i].row[j];
+                    newSpaces[k].spaces[(width - 1) - i].row[j] = transposeMatrix.spaces[i].row[j];
                 }
             }
         }
@@ -224,22 +256,24 @@ public class HousingFurniture : MonoBehaviour
         hasJustTurnedCounterClockwise = saveRotation;
     }
 
-    public HousingGridCoordinates GetGridCoord(HousingGridCoordinates localCoord)
+    public HousingGridCoordinates GetGridCoord(HousingGridCoordinates localCoord, out bool value)
     {
         int yDif = localCoord.y - anchor.y;
         int xDif = localCoord.x - anchor.x;
         int zDif = localCoord.z - anchor.z;
         HousingGridCoordinates gridCoord = new HousingGridCoordinates(currentAnchorGridPos.y + yDif, currentAnchorGridPos.z + zDif, currentAnchorGridPos.x + xDif);
+        value = GetAtIndex(localCoord);
 
         return gridCoord;
     }
 
-    public HousingGridCoordinates GetGridCoord(HousingGridCoordinates localCoord, HousingGridCoordinates anchorGridCoord)
+    public HousingGridCoordinates GetGridCoord(HousingGridCoordinates localCoord, HousingGridCoordinates anchorGridCoord, out bool value)
     {
         int yDif = localCoord.y - anchor.y;
         int xDif = localCoord.x - anchor.x;
         int zDif = localCoord.z - anchor.z;
         HousingGridCoordinates gridCoord = new HousingGridCoordinates(anchorGridCoord.y + yDif, anchorGridCoord.z + zDif, anchorGridCoord.x + xDif);
+        value = GetAtIndex(localCoord);
 
         return gridCoord;
     }

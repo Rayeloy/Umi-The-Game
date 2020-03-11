@@ -254,12 +254,12 @@ public class HousingSlot : MonoBehaviour
         return result;
     }
 
-    public bool PickFurniture(HousingFurniture _furniture)
+    public bool UnSetFurniture(HousingFurniture _furniture)
     {
         bool result = false;
         if(_furniture.furnitureMeta.furnitureType == FurnitureType.Wall)
         {
-            result = PickWallFurniture(_furniture);
+            result = UnSetWallFurniture(_furniture);
         }
         else
         {
@@ -280,7 +280,7 @@ public class HousingSlot : MonoBehaviour
         return result;
     }
 
-    public bool PickWallFurniture(HousingFurniture _furniture)
+    public bool UnSetWallFurniture(HousingFurniture _furniture)
     {
         bool result = false;
         if (!hasAnyWallFurniture)
