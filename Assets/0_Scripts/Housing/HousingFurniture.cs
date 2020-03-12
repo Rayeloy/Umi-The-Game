@@ -82,7 +82,7 @@ public class HousingFurniture : MonoBehaviour
     }
 
     public List<HousingFurniture> smallFurnitureOn;
-    public List<HousingFurniture> furnitureUnder;
+    public HousingFurniture furnitureBase;
 
     public void PrintSpaces()
     {
@@ -128,37 +128,36 @@ public class HousingFurniture : MonoBehaviour
         }
 
         smallFurnitureOn = new List<HousingFurniture>();
-        furnitureUnder = new List<HousingFurniture>();
     }
 
-    private void Update()
-    {
-        if (furnitureMeta.furnitureType == FurnitureType.Floor_Small)
-        {
-            for (int i = 0; i < depth; i++)//for every furniture row
-            {
-                for (int j = 0; j < width; j++)//for every furniture slot
-                {
-                    bool val;
-                    HousingGridCoordinates currentCheckCoord = GetGridCoord(new HousingGridCoordinates(0, i, j), out val);
-                    HousingSlot currentSlot = grid.GetSlotAt(currentCheckCoord);
-                    if (val && currentSlot != null && currentSlot.HasThisFurniture(this))
-                    {
-                        //Check if floor fell
-                        HousingGridCoordinates underCoord = currentCheckCoord; underCoord.y--;
-                        if (underCoord.y >= 0 && underCoord.y < grid.height)
-                        {
-                            HousingSlot underSlot = grid.GetSlotAt(underCoord);
-                            if (underSlot != null && !underSlot.hasFurniture)
-                            {
-                                grid.DropFurniture(this);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    //private void Update()
+    //{
+    //    if (furnitureMeta.furnitureType == FurnitureType.Floor_Small)
+    //    {
+    //        for (int i = 0; i < depth; i++)//for every furniture row
+    //        {
+    //            for (int j = 0; j < width; j++)//for every furniture slot
+    //            {
+    //                bool val;
+    //                HousingGridCoordinates currentCheckCoord = GetGridCoord(new HousingGridCoordinates(0, i, j), out val);
+    //                HousingSlot currentSlot = grid.GetSlotAt(currentCheckCoord);
+    //                if (val && currentSlot != null && currentSlot.HasThisFurniture(this))
+    //                {
+    //                    //Check if floor fell
+    //                    HousingGridCoordinates underCoord = currentCheckCoord; underCoord.y--;
+    //                    if (underCoord.y >= 0 && underCoord.y < grid.height)
+    //                    {
+    //                        HousingSlot underSlot = grid.GetSlotAt(underCoord);
+    //                        if (underSlot != null && !underSlot.hasFurniture)
+    //                        {
+    //                            grid.DropFurniture(this);
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 
     public void Copy(HousingFurniture _furniture)
     {

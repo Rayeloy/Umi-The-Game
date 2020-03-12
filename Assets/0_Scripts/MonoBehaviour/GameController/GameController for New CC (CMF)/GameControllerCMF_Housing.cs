@@ -15,6 +15,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
     public Material[] wallMaterials; // length = 2
     public HousingFurnitureData testFurniture;
     public HousingFurnitureData testSmallFurniture;
+    public HousingFurnitureData testSmallFurniture2;
 
     GameObject currentGridObject;
     HousingGrid currentGrid;
@@ -108,6 +109,11 @@ public class GameControllerCMF_Housing : GameControllerCMF
             {
                 HousingFurniture aux;
                 currentGrid.SpawnFurniture(testSmallFurniture, out aux);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha7))
+            {
+                HousingFurniture aux;
+                currentGrid.SpawnFurniture(testSmallFurniture2, out aux);
             }
         }
 
