@@ -44,7 +44,7 @@ public class HousingGrid : MonoBehaviour
             result = VectorMath.MiddlePoint(min, max);
             minSlotWorldPos = min;
             maxSlotWorldPos = max;
-            Debug.Log("HousingGrid: center = " + result.ToString("F4") + "; min = " + min.ToString("F4") + "; max = " + max.ToString("F4") + "; housePos = " + housePos.ToString("F4"));
+            Debug.Log("HousingGrid -> HousingGrid: center = " + result.ToString("F4") + "; min = " + min.ToString("F4") + "; max = " + max.ToString("F4") + "; housePos = " + housePos.ToString("F4"));
         }
         return result;
     }
@@ -275,13 +275,13 @@ public class HousingGrid : MonoBehaviour
         HousingFurniture furniture;
         if (!SpawnFurnitureAt(door.doorMeta, doorCoord, out furniture))
         {
-            Debug.LogError("Can't Spawn door at " + doorCoord.printString);
+            Debug.LogError("HousingGrid -> Can't Spawn door at " + doorCoord.printString);
             return false;
         }
         // PLACE DOOR FURNITURE
         if (!PlaceFurniture())
         {
-            Debug.LogError("Can't Place door");
+            Debug.LogError("HousingGrid -> Can't Place door");
             return false;
         }
 
@@ -350,7 +350,6 @@ public class HousingGrid : MonoBehaviour
         HousingFurniture auxFurniture = furnitureObject.GetComponent<HousingFurniture>();
         auxFurniture.KonoAwake(_furnitureMeta, this);
         _furniture = auxFurniture;
-        _furniture.currentAnchorGridPos = spawnCoord;
 
         bool validLevelFound = false;
         for (int k = spawnCoord.y; k < height && !validLevelFound; k++)
@@ -359,13 +358,15 @@ public class HousingGrid : MonoBehaviour
             int furnitureMaxY = (currentLevelCoord.y + _furniture.height - 1);
             if (furnitureMaxY >= height) return false;
 
+            _furniture.ChangePos(currentLevelCoord);
+
             if (CanFurnitureFit(_furniture))
             {
                 //Move furniture's gameobject correctly
                 PositionFurniture(_furniture);
                 validLevelFound = true;
             }
-            else continue;
+            else Debug.Log("HousingGrid -> SpawnFurnitureAt: Can't fit furniture at "+_furniture.currentAnchorGridPos.printString);
         }
         if (!validLevelFound)
         {
@@ -381,7 +382,7 @@ public class HousingGrid : MonoBehaviour
             if (!result)
             {
                 currentFurniture = null;
-                Debug.LogError("SpawnFurnitureAt: Can't select the slot " + _furniture.currentAnchorGridPos.printString + " with the furniture " + _furniture.name);
+                Debug.LogError("HousingGrid -> SpawnFurnitureAt: Can't select the slot " + _furniture.currentAnchorGridPos.printString + " with the furniture " + _furniture.name);
                 return false;
             }
         }
@@ -400,6 +401,20 @@ public class HousingGrid : MonoBehaviour
                 _furniture.currentOrientation == Direction.Left ? -Vector3.right * MasterManager.HousingSettings.slotSize / 2 : Vector3.zero;
         }
         _furniture.transform.position = worldPos;
+
+        for (int i = 0; i < _furniture.smallFurnitureOn.Count; i++)
+        {
+            HousingFurniture auxFurn = _furniture.smallFurnitureOn[i];
+            worldPos = GetSlotAt(auxFurn.currentAnchorGridPos).transform.position;
+            if (auxFurn.furnitureMeta.furnitureType == FurnitureType.Wall)
+            {
+                worldPos += auxFurn.currentOrientation == Direction.Up ? Vector3.forward * MasterManager.HousingSettings.slotSize / 2 :
+                    auxFurn.currentOrientation == Direction.Down ? -Vector3.forward * MasterManager.HousingSettings.slotSize / 2 :
+                    auxFurn.currentOrientation == Direction.Right ? Vector3.right * MasterManager.HousingSettings.slotSize / 2 :
+                    auxFurn.currentOrientation == Direction.Left ? -Vector3.right * MasterManager.HousingSettings.slotSize / 2 : Vector3.zero;
+            }
+            auxFurn.transform.position = worldPos;
+        }
     }
 
     bool CanFurnitureFit(HousingFurniture _furniture)
@@ -417,13 +432,13 @@ public class HousingGrid : MonoBehaviour
                     HousingGridCoordinates currentCheckCoord = _furniture.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
                     if (!val)
                     {
-                        Debug.LogError("CanFurnitureFit: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                        Debug.LogError("HousingGrid -> CanFurnitureFit: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
                         continue;
                     }
                     bool validSlot = false;
                     if (!IsCoordValid(currentCheckCoord))
                     {
-                        Debug.LogError("CanFurnitureFit: " + currentCheckCoord.printString + " is not a valid grid coordinate");
+                        Debug.LogError("HousingGrid -> CanFurnitureFit: " + currentCheckCoord.printString + " is not a valid grid coordinate");
                         return false;
                     }
                     HousingSlot slot = GetSlotAt(currentCheckCoord);
@@ -459,13 +474,13 @@ public class HousingGrid : MonoBehaviour
 
                     if (!validSlot)
                     {
-                        Debug.LogError("CanFurnitureFit: Can't place furniture " + _furniture.furnitureMeta.name + " with anchor at " + _furniture.currentAnchorGridPos.printString +
+                        Debug.LogError("HousingGrid -> CanFurnitureFit: Can't place furniture " + _furniture.furnitureMeta.name + " with anchor at " + _furniture.currentAnchorGridPos.printString +
     "; conflict at " + currentCheckCoord.printString + "; k = " + k + "; i = " + i + "; j = " + j);
                         return false;
                     }
                     else
                     {
-                        Debug.Log("CanFurnitureFit: found good selectable slot at " + currentCheckCoord.printString);
+                        Debug.Log("HousingGrid -> CanFurnitureFit: found good selectable slot at " + currentCheckCoord.printString);
                     }
                 }
             }
@@ -475,10 +490,81 @@ public class HousingGrid : MonoBehaviour
         {
             if (!baseFound)
             {
-                Debug.LogError("CanFurnitureFit: not even 1 base found");
+                Debug.LogError("HousingGrid -> CanFurnitureFit: not even 1 base found");
                 return false;
             }
         }
+
+        #region --- furniture on ---
+        for (int m = 0; m < _furniture.smallFurnitureOn.Count; m++)
+        {
+            HousingFurniture auxFurn = _furniture.smallFurnitureOn[m];
+            for (int k = 0; k < auxFurn.height; k++)//for every furniture level
+            {
+                for (int i = 0; i < auxFurn.depth; i++)//for every furniture row
+                {
+                    for (int j = 0; j < auxFurn.width; j++)//for every furniture slot
+                    {
+                        bool val;
+                        HousingGridCoordinates currentCheckCoord = auxFurn.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
+                        if (!val)
+                        {
+                            Debug.LogError("HousingGrid -> CanFurnitureFit: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                            continue;
+                        }
+                        bool validSlot = false;
+                        if (!IsCoordValid(currentCheckCoord))
+                        {
+                            Debug.LogError("HousingGrid -> CanFurnitureFit: " + currentCheckCoord.printString + " is not a valid grid coordinate");
+                            return false;
+                        }
+                        HousingSlot slot = GetSlotAt(currentCheckCoord);
+                        switch (auxFurn.furnitureMeta.furnitureType)
+                        {
+                            case FurnitureType.Floor:
+                                if ((slot != null && slot.free))
+                                {
+                                    validSlot = true;
+                                    if (k == 0 && !baseFound && (OnFloor(currentCheckCoord) || OnTopOfPile(currentCheckCoord)))
+                                    {
+                                        baseFound = true;
+                                    }
+                                }
+                                break;
+                            case FurnitureType.Floor_Small:
+                                if ((slot != null && slot.free))
+                                {
+                                    validSlot = true;
+                                    if (k == 0 && !baseFound && (OnFloor(currentCheckCoord) || OnTopOfPile(currentCheckCoord)))
+                                    {
+                                        baseFound = true;
+                                    }
+                                }
+                                break;
+                            case FurnitureType.Wall:
+                                if ((slot != null && slot.free && slot.CanPlaceWallFurniture(auxFurn)))
+                                {
+                                    validSlot = true;
+                                }
+                                break;
+                        }
+
+                        if (!validSlot)
+                        {
+                            Debug.LogError("HousingGrid -> CanFurnitureFit: Can't place furniture " + auxFurn.furnitureMeta.name + " with anchor at " + auxFurn.currentAnchorGridPos.printString +
+        "; conflict at " + currentCheckCoord.printString + "; k = " + k + "; i = " + i + "; j = " + j);
+                            return false;
+                        }
+                        else
+                        {
+                            Debug.Log("HousingGrid -> CanFurnitureFit: found good selectable slot at " + currentCheckCoord.printString);
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
+
         result = true;
 
         return result;
@@ -507,7 +593,7 @@ public class HousingGrid : MonoBehaviour
         bool result = false;
         if (currentFurniture == null)
         {
-            Debug.LogError("Can't place furniture because currentFurniture == null.");
+            Debug.LogError("HousingGrid -> Can't place furniture because currentFurniture == null.");
             return false;
         }
 
@@ -518,7 +604,7 @@ public class HousingGrid : MonoBehaviour
             result = CheckIfFurnitureCanBePlaced(currentFurniture);
             if (!result)
             {
-                Debug.LogError("PlaceFurniture : Can't place furniture here because 1 or more slots are not valid.");
+                Debug.LogError("HousingGrid -> PlaceFurniture : Can't place furniture here because 1 or more slots are not valid.");
                 return false;
             }
 
@@ -532,20 +618,49 @@ public class HousingGrid : MonoBehaviour
                         HousingGridCoordinates currentCheckCoord = currentFurniture.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
                         if (!val)
                         {
-                            Debug.LogError("PlaceWallFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                            Debug.LogError("HousingGrid -> PlaceFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
                             continue;
                         }
                         HousingSlot currentSlot = GetSlotAt(currentCheckCoord);
-                        Debug.Log("PlaceWallFurniture: Going to set furniture at " + currentCheckCoord.printString + "; furniture's k = " + k + "; i = " + i + "; j = " + j);
+                        Debug.Log("HousingGrid -> PlaceFurniture: Going to set furniture at " + currentCheckCoord.printString + "; furniture's k = " + k + "; i = " + i + "; j = " + j);
                         if (!currentSlot.SetFurniture(currentFurniture))
                         {
-                            Debug.LogError("PlaceWallFurniture: can't set furniture, This should NOT be happening because we already checked before");
+                            Debug.LogError("HousingGrid -> PlaceFurniture: can't set furniture, This should NOT be happening because we already checked before");
                             return false;
                         }
                     }
                 }
             }
-            result = true;
+
+            for (int m = 0; m < currentFurniture.smallFurnitureOn.Count; m++)
+            {
+                HousingFurniture auxFurn = currentFurniture.smallFurnitureOn[m];
+                for (int k = 0; k < auxFurn.height; k++)//for every furniture level
+                {
+                    for (int i = 0; i < auxFurn.depth; i++)//for every furniture row
+                    {
+                        for (int j = 0; j < auxFurn.width; j++)//for every furniture slot
+                        {
+                            bool val;
+                            HousingGridCoordinates currentCheckCoord = auxFurn.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
+                            if (!val)
+                            {
+                                Debug.LogError("HousingGrid -> PlaceFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                                continue;
+                            }
+                            HousingSlot currentSlot = GetSlotAt(currentCheckCoord);
+                            Debug.Log("HousingGrid -> PlaceFurniture: Going to set furniture at " + currentCheckCoord.printString + "; furniture's k = " + k + "; i = " + i + "; j = " + j);
+                            if (!currentSlot.SetFurniture(auxFurn))
+                            {
+                                Debug.LogError("HousingGrid -> PlaceFurniture: can't set furniture, This should NOT be happening because we already checked before");
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+
+                result = true;
         }
         if (result)
         {
@@ -566,7 +681,7 @@ public class HousingGrid : MonoBehaviour
         bool result = false;
         if (_furniture == null)
         {
-            Debug.LogError("Can't place furniture because _furniture == null.");
+            Debug.LogError("HousingGrid -> Can't place furniture because _furniture == null.");
             return false;
         }
 
@@ -576,7 +691,7 @@ public class HousingGrid : MonoBehaviour
         result = CheckIfFurnitureCanBePlaced(_furniture);
         if (!result)
         {
-            Debug.LogError("PlaceFurniture : Can't place furniture here because 1 or more slots are not valid.");
+            Debug.LogError("HousingGrid -> PlaceFurniture : Can't place furniture here because 1 or more slots are not valid.");
             return false;
         }
 
@@ -590,14 +705,14 @@ public class HousingGrid : MonoBehaviour
                     HousingGridCoordinates currentCheckCoord = _furniture.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
                     if (!val)
                     {
-                        Debug.LogError("PlaceFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                        Debug.LogError("HousingGrid -> PlaceFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
                         continue;
                     }
                     HousingSlot currentSlot = GetSlotAt(currentCheckCoord);
-                    Debug.Log("PlaceFurniture: Going to set furniture at " + currentCheckCoord.printString + "; furniture's k = " + k + "; i = " + i + "; j = " + j);
+                    Debug.Log("HousingGrid -> PlaceFurniture: Going to set furniture at " + currentCheckCoord.printString + "; furniture's k = " + k + "; i = " + i + "; j = " + j);
                     if (!currentSlot.SetFurniture(_furniture))
                     {
-                        Debug.LogError("PlaceFurniture: can't set furniture, This should NOT be happening because we already checked before");
+                        Debug.LogError("HousingGrid -> PlaceFurniture: can't set furniture, This should NOT be happening because we already checked before");
                         return false;
                     }
                 }
@@ -620,7 +735,7 @@ public class HousingGrid : MonoBehaviour
         bool result = false;
         if (currentFurniture == null)
         {
-            Debug.LogError("PlaceWallFurniture: Can't place furniture because currentFurniture == null. This message should not happen because this function " +
+            Debug.LogError("HousingGrid -> PlaceWallFurniture: Can't place furniture because currentFurniture == null. This message should not happen because this function " +
                 "is already encapsulated by PlaceFurniture, which already checks this.");
             return false;
         }
@@ -644,14 +759,14 @@ public class HousingGrid : MonoBehaviour
                     HousingGridCoordinates currentCheckCoord = currentFurniture.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
                     if (!val)
                     {
-                        Debug.LogError("PlaceWallFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                        Debug.LogError("HousingGrid -> PlaceWallFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
                         continue;
                     }
                     HousingSlot currentSlot = GetSlotAt(currentCheckCoord);
-                    Debug.Log("PlaceWallFurniture: Going to set furniture at " + currentCheckCoord.printString + "; furniture's k = " + k + "; i = " + i + "; j = " + j);
+                    Debug.Log("HousingGrid -> PlaceWallFurniture: Going to set furniture at " + currentCheckCoord.printString + "; furniture's k = " + k + "; i = " + i + "; j = " + j);
                     if (!currentSlot.SetFurniture(currentFurniture))
                     {
-                        Debug.LogError("PlaceWallFurniture: can't set furniture, This should NOT be happening because we already checked before");
+                        Debug.LogError("HousingGrid -> PlaceWallFurniture: can't set furniture, This should NOT be happening because we already checked before");
                         return false;
                     }
                 }
@@ -674,7 +789,7 @@ public class HousingGrid : MonoBehaviour
                 HousingGridCoordinates currentCheckCoord = _furniture.GetGridCoord(new HousingGridCoordinates(0, i, j), out val);
                 if (!val)
                 {
-                    Debug.LogWarning("PlaceFurniture: this local coord does not exist " + new HousingGridCoordinates(0, i, j).printString);
+                    Debug.LogWarning("HousingGrid -> PlaceFurniture: this local coord does not exist " + new HousingGridCoordinates(0, i, j).printString);
                 }
                 currentCheckCoord.y--;
                 if (IsCoordValid(currentCheckCoord))
@@ -697,7 +812,7 @@ public class HousingGrid : MonoBehaviour
     bool CheckIfFurnitureCanBePlaced(HousingFurniture _furniture)
     {
         Debug.LogWarning("START CHECK IF FURNITURE CAN BE PLACED");
-        bool result = false;
+        bool result;
 
         HousingFurniture furnitureUnder = null;
         for (int k = 0; k < _furniture.height; k++)//for every furniture level
@@ -710,17 +825,17 @@ public class HousingGrid : MonoBehaviour
                     HousingGridCoordinates currentCheckCoord = _furniture.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
                     if (!val)
                     {
-                        Debug.LogError("CheckIfFurnitureCanBePlaced: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                        Debug.LogError("HousingGrid -> CheckIfFurnitureCanBePlaced: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
                         continue;
                     }
                     bool validSlot = CheckIfFurnitureSlotCanBePlaced(_furniture, currentCheckCoord, k == 0);
                     if (!validSlot)
                     {
-                        Debug.LogError("CheckIfFurnitureCanBePlaced: Can't place furniture " + _furniture.furnitureMeta.name + " with anchor at " + _furniture.currentAnchorGridPos.printString +
+                        Debug.LogError("HousingGrid -> CheckIfFurnitureCanBePlaced: Can't place furniture " + _furniture.furnitureMeta.name + " with anchor at " + _furniture.currentAnchorGridPos.printString +
                             "; conflict at " + currentCheckCoord.printString);
                         return false;
                     }
-                    if(k == 0)
+                    if (k == 0)
                     {
                         currentCheckCoord.y--;
                         if (IsCoordValid(currentCheckCoord))
@@ -728,11 +843,11 @@ public class HousingGrid : MonoBehaviour
                             HousingSlot underSlot = GetSlotAt(currentCheckCoord);
                             if (underSlot != null && underSlot.hasFurniture)
                             {
-                                if(furnitureUnder == null)
-                                furnitureUnder = underSlot.myFurniture;
-                                else if(furnitureUnder != underSlot.myFurniture)
+                                if (furnitureUnder == null)
+                                    furnitureUnder = underSlot.myFurniture;
+                                else if (furnitureUnder != underSlot.myFurniture)
                                 {
-                                    Debug.LogError("CheckIfFurnitureCanBePlaced: Can't place a furniture on more than furniture at the same time!");
+                                    Debug.LogError("HousingGrid -> CheckIfFurnitureCanBePlaced: Can't place a furniture on more than 1 furniture at the same time!");
                                     return false;
                                 }
                             }
@@ -741,14 +856,42 @@ public class HousingGrid : MonoBehaviour
                 }
             }
         }
-        result = true;
+
+        for (int m = 0; m < _furniture.smallFurnitureOn.Count; m++)
+        {
+            HousingFurniture auxFurn = _furniture.smallFurnitureOn[m];
+            for (int k = 0; k < auxFurn.height; k++)//for every furniture level
+            {
+                for (int i = 0; i < auxFurn.depth; i++)//for every furniture row
+                {
+                    for (int j = 0; j < auxFurn.width; j++)//for every furniture slot
+                    {
+                        bool val;
+                        HousingGridCoordinates currentCheckCoord = auxFurn.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
+                        if (!val)
+                        {
+                            Debug.LogError("HousingGrid -> CheckIfFurnitureCanBePlaced: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                            continue;
+                        }
+                        bool validSlot = CheckIfFurnitureSlotCanBePlaced(auxFurn, currentCheckCoord, false);
+                        if (!validSlot)
+                        {
+                            Debug.LogError("HousingGrid -> CheckIfFurnitureCanBePlaced: Can't place furniture " + auxFurn.furnitureMeta.name + " with anchor at " + auxFurn.currentAnchorGridPos.printString +
+                                "; conflict at " + currentCheckCoord.printString);
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+            result = true;
 
         return result;
     }
 
     bool CheckIfFurnitureSlotCanBePlaced(HousingFurniture _furniture, HousingGridCoordinates coord, bool furnitureBase)
     {
-        Debug.LogWarning("START CHECK IF FURNITURE SLOT CAN BE PLACED");
+        Debug.LogWarning("START CHECK IF FURNITURE SLOT CAN BE PLACED: coord = "+ coord.printString);
         bool result = false;
         if (IsCoordValid(coord))
         {
@@ -776,7 +919,7 @@ public class HousingGrid : MonoBehaviour
             }
             if (!result)
             {
-                Debug.LogError("Can't place furniture Slot of " + _furniture.furnitureMeta.name + "  at " + coord.printString);
+                Debug.LogError("HousingGrid -> Can't place furniture Slot of " + _furniture.furnitureMeta.name + "  at " + coord.printString);
                 return false;
             }
         }
@@ -793,7 +936,7 @@ public class HousingGrid : MonoBehaviour
         bool result = false;
         if (currentFurniture != null || highlightedFurniture == null)
         {
-            Debug.LogError("PickFurniture: Can't pick furniture because currentFurniture != null or highlightedFurniture == null.");
+            Debug.LogError("HousingGrid -> PickFurniture: Can't pick furniture because currentFurniture != null or highlightedFurniture == null.");
             return false;
         }
         //if (highlightedFurniture.smallFurnitureOn.Count > 0)
@@ -812,30 +955,56 @@ public class HousingGrid : MonoBehaviour
                     HousingGridCoordinates currentCheckCoord = highlightedFurniture.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
                     if (!val)
                     {
-                        Debug.LogError("PickFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                        Debug.LogError("HousingGrid -> PickFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
                         continue;
                     }
                     HousingSlot currentSlot = GetSlotAt(currentCheckCoord);
                     if (!currentSlot.UnSetFurniture(highlightedFurniture))
                     {
-                        Debug.LogError("PickFurniture: can't UnSet furniture at " + currentCheckCoord.printString + "; furniture's k = " + k + "; i = " + i + "; j = " + j);
+                        Debug.LogError("HousingGrid -> PickFurniture: can't UnSet furniture at " + currentCheckCoord.printString + "; furniture's k = " + k + "; i = " + i + "; j = " + j);
                         return false;
                     }
                 }
             }
         }
 
+        for (int m = 0; m < highlightedFurniture.smallFurnitureOn.Count; m++)
+        {
+            HousingFurniture auxFurn = highlightedFurniture.smallFurnitureOn[m];
+            for (int k = 0; k < auxFurn.height; k++)//for every furniture level
+            {
+                for (int i = 0; i < auxFurn.depth; i++)//for every furniture row
+                {
+                    for (int j = 0; j < auxFurn.width; j++)//for every furniture slot
+                    {
+                        bool val;
+                        HousingGridCoordinates currentCheckCoord = auxFurn.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
+                        if (!val)
+                        {
+                            Debug.LogError("HousingGrid -> PickFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                            continue;
+                        }
+                        HousingSlot currentSlot = GetSlotAt(currentCheckCoord);
+                        if (!currentSlot.UnSetFurniture(auxFurn))
+                        {
+                            Debug.LogError("HousingGrid -> PickFurniture: can't UnSet furniture at " + currentCheckCoord.printString + "; furniture's k = " + k + "; i = " + i + "; j = " + j);
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
         currentFurniture = highlightedFurniture;
         currentSlotCoord = currentFurniture.currentAnchorGridPos;
         if (!HighlightPickedFurniture())
         {
-            Debug.LogError("PickFurniture: Can't highlight furniture");
+            Debug.LogError("HousingGrid -> PickFurniture: Can't highlight furniture");
             return false;
         }
 
         if (!HighlightSlot(currentSlotCoord, 2))
         {
-            Debug.LogError("PickFurniture: Can't highlight anchor's slot");
+            Debug.LogError("HousingGrid -> PickFurniture: Can't highlight anchor's slot");
             return false;
         }
         if (currentFurniture.furnitureBase != null)
@@ -919,7 +1088,7 @@ public class HousingGrid : MonoBehaviour
         HousingSlot slot = GetSlotAt(coord);
         if (slot == null)
         {
-            Debug.LogError("HighlightSlot: Invalid slot to highlight");
+            Debug.LogError("HousingGrid -> HighlightSlot: Invalid slot to highlight");
             return false;
         }
 
@@ -932,7 +1101,7 @@ public class HousingGrid : MonoBehaviour
                 {
                     if (!HighlightPlacedFurniture(slot.myFurniture))
                     {
-                        Debug.Log("Can't highlight furniture");
+                        Debug.Log("HousingGrid -> Can't highlight furniture");
                         return false;
                     }
                 }
@@ -942,7 +1111,7 @@ public class HousingGrid : MonoBehaviour
                     {
                         if (!HighlightPlacedFurniture(slot.myWallFurnitures[(int)cameraCont.currentCameraDir]))
                         {
-                            Debug.Log("Can't highlight wall furniture");
+                            Debug.Log("HousingGrid -> Can't highlight wall furniture");
                             return false;
                         }
                     }
@@ -956,24 +1125,24 @@ public class HousingGrid : MonoBehaviour
                                 wallFurnitureFound = true;
                                 if (!HighlightPlacedFurniture(slot.myWallFurnitures[i]))
                                 {
-                                    Debug.Log("Can't highlight wall furniture");
+                                    Debug.Log("HousingGrid -> Can't highlight wall furniture");
                                     return false;
                                 }
                             }
                         }
-                        if (!wallFurnitureFound) Debug.LogError("Can't find the wall furniture that SHOULD exist. THIS SHOULD NOT BE HAPPENING");
+                        if (!wallFurnitureFound) Debug.LogError("HousingGrid -> Can't find the wall furniture that SHOULD exist. THIS SHOULD NOT BE HAPPENING");
                     }
                 }
             }
             if (!HighlightSlot(coord, state))
             {
-                Debug.LogError("Couldn't highlight slot " + coord.printString);
+                Debug.LogError("HousingGrid -> Couldn't highlight slot " + coord.printString);
                 return false;
             }
         }
         else
         {
-            Debug.LogError("HighlightSlotFull: TO DO");
+            Debug.LogError("HousingGrid -> HighlightSlotFull: TO DO");
         }
 
         return true;
@@ -985,7 +1154,7 @@ public class HousingGrid : MonoBehaviour
         HousingSlot slot = GetSlotAt(coord);
         if (slot == null)
         {
-            Debug.LogError("HighlightSlot: Invalid slot to highlight");
+            Debug.LogError("HousingGrid -> HighlightSlot: Invalid slot to highlight");
             return false;
         }
         if (state == 2 && currentFurniture != null)
@@ -1045,6 +1214,38 @@ public class HousingGrid : MonoBehaviour
                 }
             }
         }
+
+        for (int m = 0; m < _furniture.smallFurnitureOn.Count; m++)
+        {
+            HousingFurniture auxFurn = _furniture.smallFurnitureOn[m];
+            for (int k = 0; k < auxFurn.height; k++)//for every furniture level
+            {
+                for (int i = 0; i < auxFurn.depth; i++)//for every furniture row
+                {
+                    for (int j = 0; j < auxFurn.width; j++)//for every furniture slot
+                    {
+                        bool val;
+                        HousingGridCoordinates currentCheckCoord = auxFurn.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
+                        if (!val)
+                        {
+                            Debug.LogError("HighlightPlacedFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                            continue;
+                        }
+                        HousingSlot currentSlot = GetSlotAt(currentCheckCoord);
+                        Debug.Log("HighlightPlacedFurniture: highlighting furniture slot " + currentCheckCoord.printString);
+                        if (currentSlot.HasThisFurniture(auxFurn))
+                        {
+                            if (!HighlightSlot(currentCheckCoord, 3))
+                            {
+                                Debug.LogError("HighlightPlacedFurniture: Can't highlight the slot " + currentCheckCoord.printString);
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         result = true;
 
         if (result) highlightedFurniture = _furniture;
@@ -1058,7 +1259,7 @@ public class HousingGrid : MonoBehaviour
         bool result = false;
         if (highlightedFurniture == null)
         {
-            Debug.LogWarning("StopHighlightPlacedFurniture: can't stop hightlighting this furniture.");
+            Debug.LogWarning("HousingGrid -> StopHighlightPlacedFurniture: can't stop hightlighting this furniture.");
             return false;
         }
         for (int k = 0; k < highlightedFurniture.height; k++)//for every furniture level
@@ -1071,7 +1272,7 @@ public class HousingGrid : MonoBehaviour
                     HousingGridCoordinates currentCheckCoord = highlightedFurniture.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
                     if (!val)
                     {
-                        Debug.LogError("StopHighlightPlacedFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                        Debug.LogError("HousingGrid -> StopHighlightPlacedFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
                         continue;
                     }
                     HousingSlot slot = GetSlotAt(currentCheckCoord);
@@ -1079,8 +1280,37 @@ public class HousingGrid : MonoBehaviour
                     {
                         if (!StopHighlightSlot(currentCheckCoord))
                         {
-                            Debug.LogWarning("StopHighlightPlacedFurniture: Can't Highlight Furniture at slot " + currentCheckCoord.printString);
+                            Debug.LogWarning("HousingGrid -> StopHighlightPlacedFurniture: Can't Highlight Furniture at slot " + currentCheckCoord.printString);
                             return false;
+                        }
+                    }
+                }
+            }
+        }
+        for (int m = 0; m < highlightedFurniture.smallFurnitureOn.Count; m++)
+        {
+            HousingFurniture auxFurn = highlightedFurniture.smallFurnitureOn[m];
+            for (int k = 0; k < auxFurn.height; k++)//for every furniture level
+            {
+                for (int i = 0; i < auxFurn.depth; i++)//for every furniture row
+                {
+                    for (int j = 0; j < auxFurn.width; j++)//for every furniture slot
+                    {
+                        bool val;
+                        HousingGridCoordinates currentCheckCoord = auxFurn.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
+                        if (!val)
+                        {
+                            Debug.LogError("HousingGrid -> StopHighlightPlacedFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                            continue;
+                        }
+                        HousingSlot slot = GetSlotAt(currentCheckCoord);
+                        if (slot != null && slot.HasThisFurniture(auxFurn))
+                        {
+                            if (!StopHighlightSlot(currentCheckCoord))
+                            {
+                                Debug.LogWarning("HousingGrid -> StopHighlightPlacedFurniture: Can't Highlight Furniture at slot " + currentCheckCoord.printString);
+                                return false;
+                            }
                         }
                     }
                 }
@@ -1101,7 +1331,7 @@ public class HousingGrid : MonoBehaviour
         bool result = false;
         if (currentFurniture == null)
         {
-            Debug.LogError("HighlightPickedFurniture: there is not picked furniture");
+            Debug.LogError("HousingGrid -> HighlightPickedFurniture: there is not picked furniture");
             return false;
         }
 
@@ -1116,7 +1346,7 @@ public class HousingGrid : MonoBehaviour
                     HousingGridCoordinates currentCheckCoord = currentFurniture.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
                     if (!val)
                     {
-                        Debug.LogError("HighlightPickedFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                        Debug.LogError("HousingGrid -> HighlightPickedFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
                         continue;
                     }
                     bool validSlot = CheckIfFurnitureSlotCanBePlaced(currentFurniture, currentCheckCoord, k == 0);
@@ -1124,17 +1354,18 @@ public class HousingGrid : MonoBehaviour
                     #region - Check if only 1 furniture under -
                     if (validSlot && k == 0)
                     {
-                        currentCheckCoord.y--;
-                        if (IsCoordValid(currentCheckCoord))
+                        HousingGridCoordinates underCoord = currentCheckCoord;
+                        underCoord.y--;
+                        if (IsCoordValid(underCoord))
                         {
-                            HousingSlot underSlot = GetSlotAt(currentCheckCoord);
+                            HousingSlot underSlot = GetSlotAt(underCoord);
                             if (underSlot != null && underSlot.hasFurniture)
                             {
                                 if (furnitureUnder == null)
                                     furnitureUnder = underSlot.myFurniture;
                                 else if (furnitureUnder != underSlot.myFurniture)
                                 {
-                                    Debug.LogWarning("HighlightPickedFurniture: Can't place a furniture on more than furniture at the same time!");
+                                    Debug.LogWarning("HousingGrid -> HighlightPickedFurniture: Can't place a furniture on more than furniture at the same time!");
                                     validSlot = false;
                                 }
                             }
@@ -1142,12 +1373,64 @@ public class HousingGrid : MonoBehaviour
                     }
                     #endregion
 
-                    if (validSlot) Debug.Log("HighlightPickedFurniture:  Found a good placeable slot at " + currentCheckCoord.printString);
+                    if (validSlot) Debug.Log("HousingGrid -> HighlightPickedFurniture:  Found a good placeable slot at " + currentCheckCoord.printString);
                     int value = validSlot ? 0 : 1;
                     if (!HighlightSlot(currentCheckCoord, value))
                     {
-                        Debug.LogError("HighlightPickedFurniture: Can't highlight the slot " + currentCheckCoord.printString);
+                        Debug.LogError("HousingGrid -> HighlightPickedFurniture: Can't highlight the slot " + currentCheckCoord.printString);
                         return false;
+                    }
+                }
+            }
+        }
+
+        for (int m = 0; m < currentFurniture.smallFurnitureOn.Count; m++)
+        {
+            HousingFurniture auxFurn = currentFurniture.smallFurnitureOn[m];
+            for (int k = 0; k < auxFurn.height; k++)//for every furniture level
+            {
+                for (int i = 0; i < auxFurn.depth; i++)//for every furniture row
+                {
+                    for (int j = 0; j < auxFurn.width; j++)//for every furniture slot
+                    {
+                        bool val;
+                        HousingGridCoordinates currentCheckCoord = auxFurn.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
+                        if (!val)
+                        {
+                            Debug.LogError("HousingGrid -> HighlightPickedFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                            continue;
+                        }
+                        bool validSlot = CheckIfFurnitureSlotCanBePlaced(auxFurn, currentCheckCoord, false);
+
+                        #region - Check if only 1 furniture under -
+                        //if (validSlot && k == 0)
+                        //{
+                        //    HousingGridCoordinates underCoord = currentCheckCoord;
+                        //    underCoord.y--;
+                        //    if (IsCoordValid(underCoord))
+                        //    {
+                        //        HousingSlot underSlot = GetSlotAt(underCoord);
+                        //        if (underSlot != null && underSlot.hasFurniture)
+                        //        {
+                        //            if (furnitureUnder == null)
+                        //                furnitureUnder = underSlot.myFurniture;
+                        //            else if (furnitureUnder != underSlot.myFurniture)
+                        //            {
+                        //                Debug.LogWarning("HighlightPickedFurniture: Can't place a furniture on more than furniture at the same time!");
+                        //                validSlot = false;
+                        //            }
+                        //        }
+                        //    }
+                        //}
+                        #endregion
+
+                        if (validSlot) Debug.Log("HousingGrid -> HighlightPickedFurniture:  Found a good placeable slot at " + currentCheckCoord.printString);
+                        int value = validSlot ? 0 : 1;
+                        if (!HighlightSlot(currentCheckCoord, value))
+                        {
+                            Debug.LogError("HousingGrid -> HighlightPickedFurniture: Can't highlight the slot " + currentCheckCoord.printString);
+                            return false;
+                        }
                     }
                 }
             }
@@ -1165,12 +1448,12 @@ public class HousingGrid : MonoBehaviour
         bool result = false;
         if (currentFurniture == null)
         {
-            Debug.LogWarning("StopHighlightPickedFurniture: can't stop hightlighting this furniture.");
+            Debug.LogWarning("HousingGrid -> StopHighlightPickedFurniture: can't stop hightlighting this furniture.");
             return false;
         }
         if (highlightedFurniture == null)
         {
-            Debug.LogWarning("StopHighlightPickedFurniture: can't stop hightlighting this furniture.");
+            Debug.LogWarning("HousingGrid -> StopHighlightPickedFurniture: can't stop hightlighting this furniture.");
             return false;
         }
 
@@ -1196,22 +1479,57 @@ public class HousingGrid : MonoBehaviour
                     HousingGridCoordinates currentCheckCoord = highlightedFurniture.GetGridCoord(new HousingGridCoordinates(k, i, j), oldAnchorCoord, out val);
                     if (!val)
                     {
-                        Debug.LogError("StopHighlightPickedFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                        Debug.LogError("HousingGrid -> StopHighlightPickedFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
                         continue;
                     }
                     HousingSlot slot = GetSlotAt(currentCheckCoord);
-                    Debug.Log("StopHighlightPickedFurniture: k = " + k + "; i = " + i + "; j = " + j + "; oldAnchorCoord = " + oldAnchorCoord.printString);
+                    Debug.Log("HousingGrid -> StopHighlightPickedFurniture: k = " + k + "; i = " + i + "; j = " + j + "; oldAnchorCoord = " + oldAnchorCoord.printString);
                     if (slot != null)
                     {
                         if (!StopHighlightSlot(currentCheckCoord))
                         {
-                            Debug.LogWarning("StopHighlightPickedFurniture: Can't Stop Highlight Furniture at slot " + currentCheckCoord.printString);
+                            Debug.LogWarning("HousingGrid -> StopHighlightPickedFurniture: Can't Stop Highlight Furniture at slot " + currentCheckCoord.printString);
                             return false;
                         }
                     }
                     else
                     {
-                        Debug.LogError("StopHighLightPickedFurniture: This should not be happening. This means we had the furniture in a non existing slot in the last movement!");
+                        Debug.LogError("HousingGrid -> StopHighLightPickedFurniture: This should not be happening. This means we had the furniture in a non existing slot in the last movement!");
+                    }
+                }
+            }
+        }
+
+        for (int m = 0; m < highlightedFurniture.smallFurnitureOn.Count; m++)
+        {
+            HousingFurniture auxFurn = highlightedFurniture.smallFurnitureOn[m];
+            for (int k = 0; k < auxFurn.height; k++)//for every furniture level
+            {
+                for (int i = 0; i < auxFurn.depth; i++)//for every furniture row
+                {
+                    for (int j = 0; j < auxFurn.width; j++)//for every furniture slot
+                    {
+                        bool val;
+                        HousingGridCoordinates currentCheckCoord = auxFurn.GetFurnitureOnGridCoord(new HousingGridCoordinates(k, i, j), oldAnchorCoord, out val);
+                        if (!val)
+                        {
+                            Debug.LogError("HousingGrid -> StopHighlightPickedFurniture: this local coord does not exist " + new HousingGridCoordinates(k, i, j).printString);
+                            continue;
+                        }
+                        HousingSlot slot = GetSlotAt(currentCheckCoord);
+                        Debug.Log("HousingGrid -> StopHighlightPickedFurniture: k = " + k + "; i = " + i + "; j = " + j + "; oldAnchorCoord = " + oldAnchorCoord.printString);
+                        if (slot != null)
+                        {
+                            if (!StopHighlightSlot(currentCheckCoord))
+                            {
+                                Debug.LogWarning("HousingGrid -> StopHighlightPickedFurniture: Can't Stop Highlight Furniture at slot " + currentCheckCoord.printString);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError("HousingGrid -> StopHighLightPickedFurniture: This should not be happening. This means we had the furniture in a non existing slot in the last movement!");
+                        }
                     }
                 }
             }
@@ -1235,7 +1553,7 @@ public class HousingGrid : MonoBehaviour
     {
         if (!IsCoordValid(coord))
         {
-            Debug.LogError("OnFloor -> Invalid Coords: " + coord.printString);
+            Debug.LogError("HousingGrid -> OnFloor -> Invalid Coords: " + coord.printString);
             return false;
         }
         HousingSlot slot = GetSlotAt(coord);
@@ -1248,7 +1566,7 @@ public class HousingGrid : MonoBehaviour
     {
         if (!IsCoordValid(coord))
         {
-            Debug.LogError("InPile -> Invalid Coords: " + coord.printString);
+            Debug.LogError("HousingGrid -> InPile -> Invalid Coords: " + coord.printString);
             return false;
         }
         HousingSlot slot = GetSlotAt(coord);
@@ -1264,7 +1582,7 @@ public class HousingGrid : MonoBehaviour
     {
         if (!IsCoordValid(coord))
         {
-            Debug.LogError("TopOfPile -> Invalid Coords: " + coord.printString);
+            Debug.LogError("HousingGrid -> TopOfPile -> Invalid Coords: " + coord.printString);
             return false;
         }
         HousingSlot slot = GetSlotAt(coord);
@@ -1278,7 +1596,7 @@ public class HousingGrid : MonoBehaviour
     {
         if (!IsCoordValid(coord))
         {
-            Debug.LogError("TopOfPile -> Invalid Coords: " + coord.printString);
+            Debug.LogError("HousingGrid -> TopOfPile -> Invalid Coords: " + coord.printString);
             return false;
         }
         HousingSlot slot = GetSlotAt(coord);
@@ -1294,7 +1612,7 @@ public class HousingGrid : MonoBehaviour
     {
         if (coord.y < 0 || coord.y >= height)
         {
-            Debug.LogError("CanSelectSlot -> Invalid Coords: " + coord.printString);
+            Debug.LogError("HousingGrid -> CanSelectSlot -> Invalid Coords: " + coord.printString);
             return false;
         }
 
@@ -1305,7 +1623,7 @@ public class HousingGrid : MonoBehaviour
     {
         if (!IsCoordValid(coord))
         {
-            Debug.LogError("CanSelectWallSlot -> Invalid Coords: " + coord.printString);
+            Debug.LogError("HousingGrid -> CanSelectWallSlot -> Invalid Coords: " + coord.printString);
             return false;
         }
         HousingSlot slot = GetSlotAt(coord);
@@ -1336,7 +1654,7 @@ public class HousingGrid : MonoBehaviour
                         stickToWall = GetSlotAt(checkCoord).hasAnyWall;
                         coord.y = k;
                         foundValid = true;
-                        Debug.Log("Found good Selectable slot at " + coord.printString);
+                        Debug.Log("HousingGrid -> Found good Selectable slot at " + coord.printString);
                     }
                 }
                 if (!foundValid)
@@ -1349,7 +1667,7 @@ public class HousingGrid : MonoBehaviour
                             stickToWall = GetSlotAt(checkCoord).hasAnyWall;
                             coord.y = k;
                             foundValid = true;
-                            Debug.Log("Found good Selectable slot at " + coord.printString);
+                            Debug.Log("HousingGrid -> Found good Selectable slot at " + coord.printString);
                         }
                     }
                 }
@@ -1359,7 +1677,7 @@ public class HousingGrid : MonoBehaviour
 
             if (!foundValid)
             {
-                Debug.LogError("SelectSlotAt: couldn't find a valid slot to select");
+                Debug.LogError("HousingGrid -> SelectSlotAt: couldn't find a valid slot to select");
                 return false;
             }
 
@@ -1371,7 +1689,7 @@ public class HousingGrid : MonoBehaviour
             if (result) currentSlotCoord = coord;
             else
             {
-                Debug.LogError("SelectSlotAt: Can't highlight slot full");
+                Debug.LogError("HousingGrid -> SelectSlotAt: Can't highlight slot full");
                 return false;
             }
         }
@@ -1382,13 +1700,13 @@ public class HousingGrid : MonoBehaviour
             for (int k = coord.y; k < height && !foundValid; k++)//Check upwards
             {
                 HousingGridCoordinates checkCoord = new HousingGridCoordinates(k, coord.z, coord.x);
-                currentFurniture.currentAnchorGridPos = checkCoord;
+                currentFurniture.ChangePos(checkCoord);
                 if (CanFurnitureFit(currentFurniture))
                 {
                     //stickToWall = GetSlotAt(checkCoord).hasAnyWall;
                     coord.y = k;
                     foundValid = true;
-                    Debug.Log("Found good Selectable slot at anchor " + coord.printString);
+                    Debug.Log("HousingGrid -> Found good Selectable slot at anchor " + coord.printString);
                 }
             }
             if (!foundValid)
@@ -1396,30 +1714,30 @@ public class HousingGrid : MonoBehaviour
                 for (int k = coord.y - 1; k >= 0 && !foundValid; k--)//Check downwards
                 {
                     HousingGridCoordinates checkCoord = new HousingGridCoordinates(k, coord.z, coord.x);
-                    currentFurniture.currentAnchorGridPos = checkCoord;
+                    currentFurniture.ChangePos(checkCoord);
                     if (CanFurnitureFit(currentFurniture))
                     {
                         //stickToWall = GetSlotAt(checkCoord).hasAnyWall;
                         coord.y = k;
                         foundValid = true;
-                        Debug.Log("Found good Selectable slot at " + coord.printString);
+                        Debug.Log("HousingGrid -> Found good Selectable slot at " + coord.printString);
                     }
                 }
             }
             if (!foundValid)
             {
-                Debug.LogError("SelectSlotAt: couldn't find valid slots to select with furniture");
+                Debug.LogError("HousingGrid -> SelectSlotAt: couldn't find valid slots to select with furniture");
                 return false;
             }
 
             //STOP HIGHLIGHT FURNITURE
-            StopHighlightSlot(currentSlotCoord);
+            StopHighlightSlot(currentSlotCoord);//I think it's not necessary
             StopHighlightPickedFurniture(currentSlotCoord);
 
             if (HighlightPickedFurniture()) result = HighlightSlot(coord, 2);
             else
             {
-                Debug.LogError("SelectSlotAt: Can't highlight picked furniture");
+                Debug.LogError("HousingGrid -> SelectSlotAt: Can't highlight picked furniture");
                 return false;
             }
 
@@ -1432,7 +1750,7 @@ public class HousingGrid : MonoBehaviour
             }
             else
             {
-                Debug.LogError("SelectSlotAt: Can't highlight anchor's slot");
+                Debug.LogError("HousingGrid -> SelectSlotAt: Can't highlight anchor's slot");
                 return false;
             }
         }
@@ -1450,7 +1768,7 @@ public class HousingGrid : MonoBehaviour
             bool foundValid = false;
             if (!goingDown)
             {
-                Debug.Log("going up");
+                Debug.Log("HousingGrid -> SelectWallSlotAt: going up");
                 for (int k = coord.y; k < height && !foundValid; k++)
                 {
                     if (CanSelectWallSlot(new HousingGridCoordinates(k, coord.z, coord.x)))
@@ -1469,7 +1787,7 @@ public class HousingGrid : MonoBehaviour
             }
             else
             {
-                Debug.Log("going down");
+                Debug.Log("HousingGrid -> SelectWallSlotAt: going down");
                 for (int k = coord.y; k >= 0 && !foundValid; k--)
                 {
                     if (CanSelectWallSlot(new HousingGridCoordinates(k, coord.z, coord.x)) || CanSelectSlot(new HousingGridCoordinates(k, coord.z, coord.x)))
@@ -1483,7 +1801,7 @@ public class HousingGrid : MonoBehaviour
 
             if (!foundValid)
             {
-                Debug.LogError("SelectWallSlotAt: Couldn't find valid slot going " + (goingDown ? "down" : "up"));
+                Debug.LogError("HousingGrid -> SelectWallSlotAt: Couldn't find valid slot going " + (goingDown ? "down" : "up"));
                 return false;
             }
 
@@ -1495,7 +1813,7 @@ public class HousingGrid : MonoBehaviour
             if (result) currentSlotCoord = coord;
             else
             {
-                Debug.LogError("SelectSlotAt: Can't highlight slot full");
+                Debug.LogError("HousingGrid ->SelectSlotAt: Can't highlight slot full");
                 return false;
             }
         }
@@ -1626,7 +1944,7 @@ public class HousingGrid : MonoBehaviour
         result = SelectWallSlotAt(coord, false);
         if (!result)
         {
-            Debug.LogError("Can't MoveSelectUp because we can't select the slot " + coord.printString);
+            Debug.LogError("HousingGrid ->Can't MoveSelectUp because we can't select the slot " + coord.printString);
             return false;
         }
 
@@ -1643,7 +1961,7 @@ public class HousingGrid : MonoBehaviour
         result = SelectWallSlotAt(coord, true);
         if (!result)
         {
-            Debug.LogError("Can't MoveSelectDown because we can't select the slot " + coord.printString);
+            Debug.LogError("HousingGrid ->Can't MoveSelectDown because we can't select the slot " + coord.printString);
             return false;
         }
 
@@ -1671,7 +1989,7 @@ public class HousingGrid : MonoBehaviour
 
             if (!SelectSlotAt(currentSlotCoord))
             {
-                Debug.LogError("RotateFurniture: can't Select furniture at " + currentSlotCoord.printString);
+                Debug.LogError("HousingGrid ->RotateFurniture: can't Select furniture at " + currentSlotCoord.printString);
                 currentFurniture.currentSpaces = oldSpaces;
                 currentFurniture.anchor = oldAnchor;
                 currentFurniture.ResetRotationBools();
@@ -1681,6 +1999,11 @@ public class HousingGrid : MonoBehaviour
 
             //Rotate actual gameObject
             currentFurniture.transform.localRotation = Quaternion.Euler(0, currentFurniture.transform.localRotation.eulerAngles.y + (90 * (clockwise ? 1 : -1)), 0);
+            for (int i = 0; i < currentFurniture.smallFurnitureOn.Count; i++)
+            {
+                HousingFurniture auxFurn = currentFurniture.smallFurnitureOn[i];
+                auxFurn.transform.localRotation = Quaternion.Euler(0, auxFurn.transform.localRotation.eulerAngles.y + (90 * (clockwise ? 1 : -1)), 0);
+            }
             result = true;
         }
         return result;
@@ -1693,7 +2016,7 @@ public class HousingGrid : MonoBehaviour
     public HousingSlot GetSlotAt(HousingGridCoordinates coord)
     {
         if (coord.y < 0 || coord.y >= slots.GetLength(0) || coord.z < 0 || coord.z >= slots.GetLength(1) ||
-            coord.x < 0 || coord.x >= slots.GetLength(2)) Debug.LogError("Can't get slot at " + coord.printString);
+            coord.x < 0 || coord.x >= slots.GetLength(2)) Debug.LogError("HousingGrid ->Can't get slot at " + coord.printString);
         return slots[coord.y, coord.z, coord.x];
     }
 
