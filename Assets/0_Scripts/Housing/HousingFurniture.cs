@@ -11,7 +11,6 @@ public class HousingFurniture : MonoBehaviour
     public FurnitureLevel[] currentSpaces;
     public HousingGridCoordinates anchor;
     public HousingGridCoordinates currentAnchorGridPos;
-    public HousingGridCoordinates oldAnchorGridPos;
 
     public bool validCurrentSpaces
     {
@@ -161,12 +160,18 @@ public class HousingFurniture : MonoBehaviour
     //    }
     //}
 
-    public void Copy(HousingFurniture _furniture)
+    public void Copy(FurnitureRotationData _furnData)
     {
-        furnitureMeta = _furniture.furnitureMeta;
-        currentOrientation = _furniture.currentOrientation;
-        currentSpaces = _furniture.currentSpaces;
-        anchor = _furniture.anchor;
+        currentOrientation = _furnData.currentOrientation;
+        currentSpaces = _furnData.currentSpaces;
+        anchor = _furnData.anchor;
+        currentAnchorGridPos = _furnData.currentAnchorGridPos;
+        smallFurnitureOn = _furnData.smallFurnitureOn;
+
+        for (int i = 0; i < smallFurnitureOn.Count; i++)
+        {
+            smallFurnitureOn[i].Copy(_furnData.smallFurnitureOnRotData[i]);
+        }
     }
 
     public void ChangePos(HousingGridCoordinates newAnchorPos)
@@ -175,6 +180,8 @@ public class HousingFurniture : MonoBehaviour
         for (int i = 0; i < smallFurnitureOn.Count; i++)
         {
             HousingFurniture auxFurn = smallFurnitureOn[i];
+            Debug.Log("HousingFurniture -> auxFurn.currentAnchorGridPos = "+ auxFurn.currentAnchorGridPos.printString+
+                "; currentAnchorGridPos = " + currentAnchorGridPos.printString);
 
             int yDif = auxFurn.currentAnchorGridPos.y - currentAnchorGridPos.y;
             int zDif = auxFurn.currentAnchorGridPos.z - currentAnchorGridPos.z;
@@ -232,8 +239,12 @@ public class HousingFurniture : MonoBehaviour
             int xAnchorDif = auxFurn.currentAnchorGridPos.x - currentAnchorGridPos.x;
             auxFurn.currentAnchorGridPos = new HousingGridCoordinates(currentAnchorGridPos.y + yAnchorDif, currentAnchorGridPos.z + xAnchorDif,
                 currentAnchorGridPos.x + (-zAnchorDif));
-            auxFurn.RotateClockwise();
+            Debug.Log("HousingFurniture -> RotateClockwise: smallFurnitureOn[" + i + "] -> Before:");
+            auxFurn.PrintSpaces();
+            auxFurn.RotateClockwise(saveRotation);
             auxFurn.ResetRotationBools();
+            Debug.Log("HousingFurniture -> RotateClockwise: smallFurnitureOn[" + i + "] -> After:");
+            auxFurn.PrintSpaces();
         }
 
         //update new anchor
@@ -248,8 +259,8 @@ public class HousingFurniture : MonoBehaviour
     public void RotateCounterClockwise(bool saveRotation = false)
     {
         FurnitureLevel[] newSpaces = new FurnitureLevel[furnitureMeta.height];
-        currentOrientation++;
-        currentOrientation += (int)currentOrientation > 3 ? -4 : 0;
+        currentOrientation--;
+        currentOrientation += (int)currentOrientation < 0 ? +4 : 0;
 
         for (int k = 0; k < currentSpaces.Length; k++)
         {
@@ -291,8 +302,12 @@ public class HousingFurniture : MonoBehaviour
             int xAnchorDif = auxFurn.currentAnchorGridPos.x - currentAnchorGridPos.x;
             auxFurn.currentAnchorGridPos = new HousingGridCoordinates(currentAnchorGridPos.y + yAnchorDif, currentAnchorGridPos.z + (-xAnchorDif),
                 currentAnchorGridPos.x + zAnchorDif);
+            Debug.Log("HousingFurniture -> RotateCounterClockWise: smallFurnitureOn[" + i + "] -> Before:");
+            auxFurn.PrintSpaces();
             auxFurn.RotateCounterClockwise();
             auxFurn.ResetRotationBools();
+            Debug.Log("HousingFurniture -> RotateCounterClockWise: smallFurnitureOn[" + i + "] -> After:");
+            auxFurn.PrintSpaces();
         }
 
         //update new anchor
@@ -311,7 +326,7 @@ public class HousingFurniture : MonoBehaviour
         int xDif = localCoord.x - anchor.x;
         HousingGridCoordinates gridCoord = new HousingGridCoordinates(currentAnchorGridPos.y + yDif, currentAnchorGridPos.z + zDif, currentAnchorGridPos.x + xDif);
         value = GetAtIndex(localCoord);
-
+        Debug.Log("HousingFurniture -> GetGridCoord: currentAnchorGridPos = " + currentAnchorGridPos.printString);
         return gridCoord;
     }
 
@@ -326,7 +341,7 @@ public class HousingFurniture : MonoBehaviour
         return gridCoord;
     }
 
-    public HousingGridCoordinates GetFurnitureOnGridCoord(HousingGridCoordinates localCoord, HousingGridCoordinates anchorGridCoord, out bool value)
+    public HousingGridCoordinates GetPiledFurnitureGridCoord(HousingGridCoordinates localCoord, HousingGridCoordinates anchorGridCoord, out bool value)
     {
         if (furnitureBase == null) return GetGridCoord(localCoord, anchorGridCoord, out value);
 
@@ -378,4 +393,30 @@ public class HousingFurniture : MonoBehaviour
         currentSpaces[coord.y].spaces[coord.z].row[coord.x] = val;
     }
     #endregion
+}
+
+public class FurnitureRotationData
+    {
+    public Direction currentOrientation;
+    public FurnitureLevel[] currentSpaces;
+    public HousingGridCoordinates anchor;
+    public HousingGridCoordinates currentAnchorGridPos;
+    public List<HousingFurniture> smallFurnitureOn;
+    public FurnitureRotationData[] smallFurnitureOnRotData;
+
+    public FurnitureRotationData(HousingFurniture _furniture)
+    {
+        currentOrientation = _furniture.currentOrientation;
+        currentSpaces = _furniture.currentSpaces;
+        anchor = _furniture.anchor;
+        currentAnchorGridPos = _furniture.currentAnchorGridPos;
+        smallFurnitureOn = _furniture.smallFurnitureOn;
+        smallFurnitureOnRotData = new FurnitureRotationData[smallFurnitureOn.Count];
+
+        for (int i = 0; i < smallFurnitureOn.Count; i++)
+        {
+            smallFurnitureOnRotData[i] = new FurnitureRotationData(smallFurnitureOn[i]);
+        }
+    }
+
 }

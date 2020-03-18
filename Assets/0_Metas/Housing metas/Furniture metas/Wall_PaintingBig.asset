@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3c4106dd2988b794784a9b266d2d8d86, type: 3}
-  m_Name: Plant
+  m_Name: Wall_PaintingBig
   m_EditorClassIdentifier: 
-  furnitureName: Plant
-  furnitureType: 3
-  prefab: {fileID: 229296903700564160, guid: 33e5953677ff2024cacb4019ba659cfa, type: 3}
+  furnitureName: PaintingSmall
+  furnitureType: 1
+  prefab: {fileID: 7653273285544071019, guid: 9f3f5c6d92a809c429134ef9a139dd24, type: 3}
   orientation: 0
   autoAnchor: 0
   anchor:
@@ -22,15 +22,15 @@ MonoBehaviour:
     z: 0
     x: 0
   rows: 1
-  columns: 1
+  columns: 2
   autoAdjustSpaces: 0
   furnitureSpace:
   - spaces:
-    - row: 01
+    - row: 0101
     rows: 1
-    columns: 1
+    columns: 2
   - spaces:
-    - row: 01
+    - row: 0101
     rows: 1
-    columns: 1
-  thickness: 0
+    columns: 2
+  thickness: 1

@@ -10,11 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3c4106dd2988b794784a9b266d2d8d86, type: 3}
-  m_Name: SimpleDoor
+  m_Name: Wall_SimpleDoor
   m_EditorClassIdentifier: 
   furnitureName: SimpleDoor
   furnitureType: 1
   prefab: {fileID: 7502606128283462239, guid: 70deae6de324fc2418464ef04c57acd7, type: 3}
+  orientation: 0
+  autoAnchor: 0
+  anchor:
+    y: 0
+    z: 0
+    x: 0
   rows: 1
   columns: 1
   autoAdjustSpaces: 0
@@ -28,4 +34,3 @@ MonoBehaviour:
     rows: 1
     columns: 1
   thickness: 1
-  orientation: 0

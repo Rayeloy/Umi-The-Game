@@ -124,7 +124,7 @@ public class HousingSlot : MonoBehaviour
     {
         Debug.LogWarning("SLOT: START SET FURNITURE");
 
-        if (!free)
+        if (!free && !(_furniture.furnitureMeta.furnitureType == FurnitureType.Wall && CanPlaceWallFurniture(_furniture)))
         {
             Debug.LogError("HousingSlot -> SetFurniture: Can't place a furniture because the slot " + gridCoordinates.printString + " is not free");
             return false;
@@ -212,7 +212,7 @@ public class HousingSlot : MonoBehaviour
     {
         bool result = false;
 
-        if (thickness || hasFurniture)
+        if (_wallFurniture.furnitureMeta.thickness && (thickness || hasFurniture))
         {
             Debug.LogError("THIS MESSAGE SHOULD NOT BE APPEARING. Can't place furniture here because the slot has thickness or a furniture already. ");
             return false;
@@ -226,11 +226,8 @@ public class HousingSlot : MonoBehaviour
 
         if (myWallFurnitures[(int)_wallFurniture.currentOrientation] != null && myWallFurnitures[(int)_wallFurniture.currentOrientation].furnitureMeta != null)
         {
-            if (!_wallFurniture.furnitureMeta.thickness)
-            {
                 Debug.LogError("Can't place furniture here because the slot's " + _wallFurniture.currentOrientation + " wall is already occupied by another wall furniture(" + _wallFurniture.name + ").");
                 return false;
-            }
         }
         result = true;
 

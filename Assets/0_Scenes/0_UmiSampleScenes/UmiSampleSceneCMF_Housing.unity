@@ -96,7 +96,8 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 354950f8566a731448e1f8d6cdb7488d,
+    type: 2}
   m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
@@ -582,13 +583,25 @@ PrefabInstance:
         type: 3}
       propertyPath: houseMeta
       value: 
-      objectReference: {fileID: 11400000, guid: dc75a82e260acdf41a6fb57a4213c718,
+      objectReference: {fileID: 11400000, guid: 4ed70b1b578945f48b541d83ee702978,
         type: 2}
     - target: {fileID: 9080193105827176625, guid: 745c7a9479b52c44080e54fad3e9c870,
         type: 3}
       propertyPath: testSmallFurniture2
       value: 
       objectReference: {fileID: 11400000, guid: 0cc0b7d5265de804b8c0349f7a1ea421,
+        type: 2}
+    - target: {fileID: 9080193105827176625, guid: 745c7a9479b52c44080e54fad3e9c870,
+        type: 3}
+      propertyPath: testWallFurniture
+      value: 
+      objectReference: {fileID: 11400000, guid: 78beab6da723ad54e97a39d73675315c,
+        type: 2}
+    - target: {fileID: 9080193105827176625, guid: 745c7a9479b52c44080e54fad3e9c870,
+        type: 3}
+      propertyPath: testWallFurniture2
+      value: 
+      objectReference: {fileID: 11400000, guid: faf8c2d862498624993df736377cae76,
         type: 2}
     - target: {fileID: 7548669343834102187, guid: 745c7a9479b52c44080e54fad3e9c870,
         type: 3}
