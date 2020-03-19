@@ -13,8 +13,6 @@ public enum HousingSlotType
 public class HousingSlot : MonoBehaviour
 {
     public GameObject anchorObject;
-    [HideInInspector]
-    public bool baseFurniture = false;
 
     GameObject slotObject;
     HousingSlotType slotType = HousingSlotType.None;
@@ -68,11 +66,11 @@ public class HousingSlot : MonoBehaviour
     {
         get
         {
-            if (baseFurniture) Debug.LogError("Not free because baseFurniture = true");
+            //if (baseFurniture) Debug.LogError("Not free because baseFurniture = true");
             if (thickness) Debug.LogError("Not free because thickness = true");
             if (hasFurniture) Debug.LogError("Not free because hasFurniture = true");
 
-            return !baseFurniture && !thickness && !hasFurniture;
+            return !thickness && !hasFurniture;
         }
     }
     public bool canPlaceFurnitureOn
@@ -98,7 +96,7 @@ public class HousingSlot : MonoBehaviour
     }
 
     public void KonoAwake(HousingGridCoordinates _gridCoordinates, HousingSlotType _slotType = HousingSlotType.None,
-        bool upWall = false, bool rightWall = false, bool downWall = false, bool leftWall = false, bool _baseFurniture = false)
+        bool upWall = false, bool rightWall = false, bool downWall = false, bool leftWall = false)
     {
         slotObject = null;
         slotType = _slotType;
@@ -112,7 +110,6 @@ public class HousingSlot : MonoBehaviour
 
         myFurniture = null;
 
-        baseFurniture = _baseFurniture;
     }
 
     public HousingFurniture GetWall(Direction _orientation)
@@ -166,11 +163,11 @@ public class HousingSlot : MonoBehaviour
         Debug.LogWarning("SLOT: START SET WALL FURNITURE");
         bool result = false;
 
-        if (thickness)
-        {
-            Debug.LogError("THIS MESSAGE SHOULD NOT BE APPEARING. Can't place furniture here because the slot has thickness. ");
-            return false;
-        }
+        //if (thickness)
+        //{
+        //    Debug.LogError("THIS MESSAGE SHOULD NOT BE APPEARING. Can't place furniture here because the slot has thickness. ");
+        //    return false;
+        //}
 
         if (!hasWalls[(int)_wallFurniture.currentOrientation])
         {

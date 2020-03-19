@@ -64,6 +64,8 @@ public class GameControllerCMF_Housing : GameControllerCMF
         }
         if (editHouseOn)
         {
+            currentGrid.KonoUpdate();
+
             if (myLeftJoyStickControls.LeftWasPressed)
             {
                 currentGrid.MoveSelectSlot(Direction.Left);
@@ -80,14 +82,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
             {
                 currentGrid.MoveSelectSlot(Direction.Down);
             }
-            //if (selectUp.WasPressed)
-            //{
-            //    currentGrid.MoveSelectUp();
-            //}
-            //if (selectDown.WasPressed)
-            //{
-            //    currentGrid.MoveSelectDown();
-            //}
+
             if (rotateClockwise.WasPressed)
             {
                 if (!currentGrid.RotateFurniture(true)) Debug.LogError("GameControllerCMF_Housing: Can't rotate furniture clockwise!");
@@ -220,6 +215,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
     void DeactivateHostPlayer()
     {
         allPlayers[0].transform.position = new Vector3(-200, -200, -200);
+        allPlayers[0].GetComponent<Rigidbody>().velocity = Vector3.zero;
         allPlayers[0].myCamera.myCamera.GetComponent<Camera>().enabled = false;
         AudioListener audioListener = allPlayers[0].myCamera.myCamera.GetComponent<AudioListener>();
         if (audioListener != null) audioListener.enabled = false;

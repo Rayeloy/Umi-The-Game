@@ -15,6 +15,7 @@ public class HousingGrid : MonoBehaviour
     public HousingFurniture currentFurniture = null;
     public HousingFurniture highlightedFurniture = null;
     public HousingEditModeCameraController cameraCont = null;
+    EditCameraDirection oldCamDir;
 
     public bool stickToWall;
     public int width;
@@ -59,6 +60,7 @@ public class HousingGrid : MonoBehaviour
 
     #endregion
 
+    #region --- MonoBehaviour Functions ---
     public void KonoAwake(HousingHouseData _myHouseMeta, Transform _furnituresParent, GameObject _wallPrefab,
         Vector3 _housePos, Material[] _highlightedSlotMat, HousingEditModeCameraController _camCont)
     {
@@ -68,6 +70,7 @@ public class HousingGrid : MonoBehaviour
         worldCenter = CalculateWorldPositions();//DON'T CHANGE ORDER OF THIS
 
         cameraCont = _camCont;
+        oldCamDir = _camCont.currentCameraDir;
         furnituresParent = _furnituresParent;
 
         width = myHouseMeta.width;
@@ -100,6 +103,17 @@ public class HousingGrid : MonoBehaviour
             }
         }
     }
+
+    public void KonoUpdate()
+    {
+        if (oldCamDir != cameraCont.currentCameraDir)
+        {
+            oldCamDir = cameraCont.currentCameraDir;
+            ReSelectSlot();
+        }
+    }
+
+    #endregion
 
     #region --- Create & Setup house ---
 
@@ -279,7 +293,7 @@ public class HousingGrid : MonoBehaviour
             return false;
         }
         // PLACE DOOR FURNITURE
-        if (!PlaceFurniture())
+        if (!PlaceFurniture(true))
         {
             Debug.LogError("HousingGrid -> Can't Place door");
             return false;
@@ -288,6 +302,7 @@ public class HousingGrid : MonoBehaviour
         playerSpawnPos = slots[1, door.z, door.x].transform.position;
         playerSpawnRot = Quaternion.Euler(0, door.doorMeta.orientation == Direction.Up ? 180 : door.doorMeta.orientation == Direction.Down ? 0 :
             door.doorMeta.orientation == Direction.Left ? 90 : door.doorMeta.orientation == Direction.Right ? 270 : 0, 0);
+
         result = true;
 
         return result;
@@ -339,7 +354,7 @@ public class HousingGrid : MonoBehaviour
     /// <returns></returns>
     public bool SpawnFurnitureAt(HousingFurnitureData _furnitureMeta, HousingGridCoordinates spawnCoord, out HousingFurniture _furniture)
     {
-        Debug.LogWarning("START SPAWN FURNITURE AT: spawnCoord = "+ spawnCoord.printString);
+        Debug.LogWarning("START SPAWN FURNITURE AT: spawnCoord = " + spawnCoord.printString);
         bool result = false;
         _furniture = null;
         //We try to spawn it in the middle:
@@ -367,7 +382,7 @@ public class HousingGrid : MonoBehaviour
                 PositionFurniture(_furniture);
                 validLevelFound = true;
             }
-            else Debug.Log("HousingGrid -> SpawnFurnitureAt: Can't fit furniture at "+_furniture.currentAnchorGridPos.printString);
+            else Debug.Log("HousingGrid -> SpawnFurnitureAt: Can't fit furniture at " + _furniture.currentAnchorGridPos.printString);
         }
         Debug.Log("HousingGrid -> SpawnFurnitureAt: TEST TEST TEST");
         if (!validLevelFound)
@@ -395,6 +410,7 @@ public class HousingGrid : MonoBehaviour
 
     void PositionFurniture(HousingFurniture _furniture)
     {
+        Debug.LogWarning("START POSITION FURNITURE: _furniture = " + _furniture.name);
         Vector3 worldPos = GetSlotAt(_furniture.currentAnchorGridPos).transform.position;
         if (_furniture.furnitureMeta.furnitureType == FurnitureType.Wall)
         {
@@ -416,6 +432,7 @@ public class HousingGrid : MonoBehaviour
                     auxFurn.currentOrientation == Direction.Right ? Vector3.right * MasterManager.HousingSettings.slotSize / 2 :
                     auxFurn.currentOrientation == Direction.Left ? -Vector3.right * MasterManager.HousingSettings.slotSize / 2 : Vector3.zero;
             }
+            Debug.Log("HousingGrid -> PositionFurniture: Moving smallFurnitureOn[" + i + "]");
             auxFurn.transform.position = worldPos;
         }
     }
@@ -439,8 +456,8 @@ public class HousingGrid : MonoBehaviour
                         continue;
                     }
                     bool auxBaseFound;
-                    bool validSlot = CanFurnitureSlotFit(_furniture, currentCheckCoord, k==0, out auxBaseFound);
-                    if (!baseFound && auxBaseFound) baseFound = true; 
+                    bool validSlot = CanFurnitureSlotFit(_furniture, currentCheckCoord, k == 0, out auxBaseFound);
+                    if (!baseFound && auxBaseFound) baseFound = true;
 
                     if (!validSlot)
                     {
@@ -506,7 +523,7 @@ public class HousingGrid : MonoBehaviour
     }
 
     bool CanFurnitureSlotFit(HousingFurniture _furniture, HousingGridCoordinates coord, bool furnitureBase, out bool baseFound)
-    {        
+    {
         bool validSlot = false;
         baseFound = false;
         if (!IsCoordValid(coord))
@@ -518,7 +535,7 @@ public class HousingGrid : MonoBehaviour
         switch (_furniture.furnitureMeta.furnitureType)
         {
             case FurnitureType.Floor:
-                if (slot != null && slot.free)
+                if (slot != null && !slot.hasFurniture)
                 {
                     validSlot = true;
                     if (furnitureBase && !baseFound && (OnFloor(coord) || OnTopOfPile(coord)))
@@ -528,7 +545,7 @@ public class HousingGrid : MonoBehaviour
                 }
                 break;
             case FurnitureType.Floor_Small:
-                if (slot != null && slot.free)
+                if (slot != null && !slot.hasFurniture)
                 {
                     validSlot = true;
                     if (furnitureBase && !baseFound && (OnFloor(coord) || OnTopOfPile(coord)))
@@ -538,7 +555,7 @@ public class HousingGrid : MonoBehaviour
                 }
                 break;
             case FurnitureType.Wall:
-                if (slot != null && (OnFloor(coord) || slot.hasAnyWall))
+                if (slot != null && ((furnitureBase && (OnFloor(coord) || slot.hasAnyWall)) || (!furnitureBase)))
                 {
                     validSlot = true;
                 }
@@ -550,6 +567,7 @@ public class HousingGrid : MonoBehaviour
 
     #endregion
 
+    #region --- Pick & Place ---
     public bool PickOrPlace()
     {
         if (currentFurniture != null)
@@ -563,9 +581,9 @@ public class HousingGrid : MonoBehaviour
         return false;
     }
 
-    #region --- Place Furniture ---
+    #region -- Place Furniture --
 
-    public bool PlaceFurniture()
+    public bool PlaceFurniture(bool _defaultFurniture = false)
     {
         Debug.LogWarning("START PLACE FURNITURE");
         bool result = false;
@@ -638,14 +656,14 @@ public class HousingGrid : MonoBehaviour
                 }
             }
 
-                result = true;
+            result = true;
+            //Check for furnitureBase
+            SetFurnitureBase(currentFurniture);
         }
         if (result)
         {
-            //Check for furnitureBase
-            SetFurnitureBase(currentFurniture);
-
             StopHighlightPickedFurniture(currentSlotCoord);
+            currentFurniture.defaultFurniture = _defaultFurniture;
             currentFurniture = null;
             SelectSlotAt(currentSlotCoord);
         }
@@ -862,14 +880,14 @@ public class HousingGrid : MonoBehaviour
                 }
             }
         }
-            result = true;
+        result = true;
 
         return result;
     }
 
     bool CheckIfFurnitureSlotCanBePlaced(HousingFurniture _furniture, HousingGridCoordinates coord, bool furnitureBase)
     {
-        Debug.LogWarning("START CHECK IF FURNITURE SLOT CAN BE PLACED: coord = "+ coord.printString);
+        Debug.LogWarning("START CHECK IF FURNITURE SLOT CAN BE PLACED: coord = " + coord.printString);
         bool result = false;
         if (IsCoordValid(coord))
         {
@@ -882,11 +900,11 @@ public class HousingGrid : MonoBehaviour
                 switch (_furniture.furnitureMeta.furnitureType)
                 {
                     case FurnitureType.Floor:
-                        if (currentSlot.free && (furnitureBase && OnFloor(coord)) || !furnitureBase)
+                        if (currentSlot.free && ((furnitureBase && OnFloor(coord)) || !furnitureBase))
                             result = true;
                         break;
                     case FurnitureType.Floor_Small:
-                        if (currentSlot.free && (furnitureBase && (OnFloor(coord) || OnTopOfPile(coord))) || !furnitureBase)
+                        if (currentSlot.free && ((furnitureBase && (OnFloor(coord) || OnTopOfPile(coord))) || !furnitureBase))
                             result = true;
                         break;
                     case FurnitureType.Wall:
@@ -906,7 +924,7 @@ public class HousingGrid : MonoBehaviour
 
     #endregion
 
-    #region --- Pick Furniture ---
+    #region -- Pick Furniture --
 
     public bool PickFurniture()
     {
@@ -917,12 +935,17 @@ public class HousingGrid : MonoBehaviour
             Debug.LogError("HousingGrid -> PickFurniture: Can't pick furniture because currentFurniture != null or highlightedFurniture == null.");
             return false;
         }
+        if (highlightedFurniture.defaultFurniture)
+        {
+            Debug.LogError("HousingGrid -> PickFurniture: Can't pick furniture because it is a default furniture");
+            return false;
+        }
         //if (highlightedFurniture.smallFurnitureOn.Count > 0)
         //{
         //    Debug.LogError("PickFurniture: Can't pick furniture because there is a small furniture on it.");
         //    return false;
         //}
-
+        Debug.Log("highlightedFurniture = " + highlightedFurniture.name);
         for (int k = 0; k < highlightedFurniture.height; k++)//for every furniture level
         {
             for (int i = 0; i < highlightedFurniture.depth; i++)//for every furniture row
@@ -1058,9 +1081,11 @@ public class HousingGrid : MonoBehaviour
 
     #endregion
 
+    #endregion
+
     #region --- Highlight Slots ---
 
-    bool HighlightSlotFull(HousingGridCoordinates coord, int state)//0 == good; 1 == bad; 2 == pointer; 3 == placed
+    bool HighlightSlotFull(HousingGridCoordinates coord)//0 == good; 1 == bad; 2 == pointer; 3 == placed
     {
         Debug.LogWarning("START HIGHLIGHT SLOT FULL");
         HousingSlot slot = GetSlotAt(coord);
@@ -1096,7 +1121,7 @@ public class HousingGrid : MonoBehaviour
                     else
                     {
                         bool wallFurnitureFound = false;
-                        for (int i = 0; i < slot.myWallFurnitures.Length; i++)
+                        for (int i = 0; i < slot.myWallFurnitures.Length && !wallFurnitureFound; i++)
                         {
                             if (slot.myWallFurnitures[i] != null && slot.myWallFurnitures[i].furnitureMeta != null)
                             {
@@ -1112,7 +1137,7 @@ public class HousingGrid : MonoBehaviour
                     }
                 }
             }
-            if (!HighlightSlot(coord, state))
+            if (!HighlightSlot(coord, 2))
             {
                 Debug.LogError("HousingGrid -> Couldn't highlight slot " + coord.printString);
                 return false;
@@ -1312,6 +1337,7 @@ public class HousingGrid : MonoBehaviour
             Debug.LogError("HousingGrid -> HighlightPickedFurniture: there is not picked furniture");
             return false;
         }
+        Debug.Log("currentFurniture = " + currentFurniture.name);
 
         HousingFurniture furnitureUnder = null;
         for (int k = 0; k < currentFurniture.height; k++)//for every furniture level
@@ -1663,7 +1689,7 @@ public class HousingGrid : MonoBehaviour
             StopHighlightSlot(currentSlotCoord);
             StopHighlightPlacedFurniture();
 
-            result = HighlightSlotFull(coord, 2);
+            result = HighlightSlotFull(coord);
             if (result) currentSlotCoord = coord;
             else
             {
@@ -1675,6 +1701,7 @@ public class HousingGrid : MonoBehaviour
         #region --- With Furniture Picked ---
         else// select a slot while having a furniture picked. Always move anchor and then check furniture around it
         {
+            Debug.Log("currentFurniture = " + currentFurniture.name);
             HousingGridCoordinates oldAnchorPos = currentFurniture.currentAnchorGridPos;
             for (int k = coord.y; k < height && !foundValid; k++)//Check upwards
             {
@@ -1790,7 +1817,7 @@ public class HousingGrid : MonoBehaviour
             StopHighlightSlot(currentSlotCoord);
             StopHighlightPlacedFurniture();
 
-            result = HighlightSlotFull(coord, 2);
+            result = HighlightSlotFull(coord);
             if (result) currentSlotCoord = coord;
             else
             {
@@ -1876,8 +1903,16 @@ public class HousingGrid : MonoBehaviour
         return result;
     }
 
+    public bool ReSelectSlot()
+    {
+        if (currentFurniture != null) return false;
+        StopHighlightPlacedFurniture();
+        return HighlightSlotFull(currentSlotCoord); ;
+    }
+
     public bool MoveSelectSlot(Direction inputDir)
     {
+        Debug.LogWarning("START MOVE SELECT SLOT: inputDir = " + inputDir);
         bool result = false;
         bool oldStickToWall = stickToWall;
         HousingGridCoordinates oldCoord;
@@ -2069,6 +2104,36 @@ public class HousingGrid : MonoBehaviour
         if (coord.y < 0 || coord.y >= slots.GetLength(0) || coord.z < 0 || coord.z >= slots.GetLength(1) ||
             coord.x < 0 || coord.x >= slots.GetLength(2)) Debug.LogError("HousingGrid ->Can't get slot at " + coord.printString);
         return slots[coord.y, coord.z, coord.x];
+    }
+
+    public bool lookingAtLargeFurniture
+    {
+        get
+        {
+            HousingFurniture lookAtFurn = currentFurniture != null ? currentFurniture : highlightedFurniture != null ? highlightedFurniture : null;
+            if (lookAtFurn != null)
+            {
+                Vector3 min = GetSlotAt(lookAtFurn.min).transform.position;
+                Vector3 max = GetSlotAt(lookAtFurn.max).transform.position;
+                float diameter = (max - min).magnitude;
+                return diameter > 4;
+            }
+            else return false;
+        }
+    }
+
+    public Vector3 GetCameraLookPosition(EditCameraMode camMode = EditCameraMode.FollowSelection)
+    {
+        HousingFurniture lookAtFurn = currentFurniture != null ? currentFurniture : highlightedFurniture != null ? highlightedFurniture : null;
+        if (lookAtFurn == null) return GetSlotAt(currentSlotCoord).transform.position;
+        else 
+        {
+            Vector3 min = camMode == EditCameraMode.FollowSelection? GetSlotAt(lookAtFurn.minFull).transform.position :
+                GetSlotAt(lookAtFurn.min).transform.position;
+            Vector3 max = camMode == EditCameraMode.FollowSelection ? GetSlotAt(lookAtFurn.maxFull).transform.position :
+                GetSlotAt(lookAtFurn.max).transform.position;
+            return VectorMath.MiddlePoint(min, max);
+        }
     }
 
     #endregion

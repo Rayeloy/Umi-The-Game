@@ -5,6 +5,8 @@ using UnityEngine;
 public class HousingFurniture : MonoBehaviour
 {
     [HideInInspector]
+    public bool defaultFurniture = false;
+    [HideInInspector]
     public HousingGrid grid;
     public HousingFurnitureData furnitureMeta;
     public Direction currentOrientation;
@@ -46,6 +48,136 @@ public class HousingFurniture : MonoBehaviour
             int result = -1;
             if (validCurrentSpaces) result = currentSpaces.Length;
             return result;
+        }
+    }
+    public HousingGridCoordinates min
+    {
+        get
+        {
+            HousingGridCoordinates auxMin = currentAnchorGridPos;
+            for (int k = 0; k < height; k++)
+            {
+                for (int i = 0; i < depth; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        bool val;
+                        HousingGridCoordinates currentCheckCoord = GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
+                        if (!val) continue;
+                        if (currentCheckCoord.y < auxMin.y) auxMin.y = currentCheckCoord.y;
+                        if (currentCheckCoord.z < auxMin.z) auxMin.z = currentCheckCoord.z;
+                        if (currentCheckCoord.x < auxMin.x) auxMin.x = currentCheckCoord.x;
+                    }
+                }
+            }
+            return auxMin;
+        }
+    }
+    public HousingGridCoordinates max
+    {
+        get
+        {
+            HousingGridCoordinates auxMax = currentAnchorGridPos;
+            for (int k = 0; k < height; k++)
+            {
+                for (int i = 0; i < depth; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        bool val;
+                        HousingGridCoordinates currentCheckCoord = GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
+                        if (!val) continue;
+                        if (currentCheckCoord.y > auxMax.y) auxMax.y = currentCheckCoord.y;
+                        if (currentCheckCoord.z > auxMax.z) auxMax.z = currentCheckCoord.z;
+                        if (currentCheckCoord.x > auxMax.x) auxMax.x = currentCheckCoord.x;
+                    }
+                }
+            }
+            return auxMax;
+        }
+    }
+    public HousingGridCoordinates minFull
+    {
+        get
+        {
+            HousingGridCoordinates auxMin = currentAnchorGridPos;
+            for (int k = 0; k < height; k++)
+            {
+                for (int i = 0; i < depth; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        bool val;
+                        HousingGridCoordinates currentCheckCoord = GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
+                        if (!val) continue;
+                        if (currentCheckCoord.y < auxMin.y) auxMin.y = currentCheckCoord.y;
+                        if (currentCheckCoord.z < auxMin.z) auxMin.z = currentCheckCoord.z;
+                        if (currentCheckCoord.x < auxMin.x) auxMin.x = currentCheckCoord.x;
+                    }
+                }
+            }
+            for (int m = 0; m < smallFurnitureOn.Count; m++)
+            {
+                HousingFurniture auxFurn = smallFurnitureOn[m];
+                for (int k = 0; k < auxFurn.height; k++)
+                {
+                    for (int i = 0; i < auxFurn.depth; i++)
+                    {
+                        for (int j = 0; j < auxFurn.width; j++)
+                        {
+                            bool val;
+                            HousingGridCoordinates currentCheckCoord = auxFurn.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
+                            if (!val) continue;
+                            if (currentCheckCoord.y < auxMin.y) auxMin.y = currentCheckCoord.y;
+                            if (currentCheckCoord.z < auxMin.z) auxMin.z = currentCheckCoord.z;
+                            if (currentCheckCoord.x < auxMin.x) auxMin.x = currentCheckCoord.x;
+                        }
+                    }
+                }
+            }
+            return auxMin;
+        }
+    }
+    public HousingGridCoordinates maxFull
+    {
+        get
+        {
+            HousingGridCoordinates auxMax = currentAnchorGridPos;
+            for (int k = 0; k < height; k++)
+            {
+                for (int i = 0; i < depth; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        bool val;
+                        HousingGridCoordinates currentCheckCoord = GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
+                        if (!val) continue;
+                        if (currentCheckCoord.y > auxMax.y) auxMax.y = currentCheckCoord.y;
+                        if (currentCheckCoord.z > auxMax.z) auxMax.z = currentCheckCoord.z;
+                        if (currentCheckCoord.x > auxMax.x) auxMax.x = currentCheckCoord.x;
+                    }
+                }
+            }
+            for (int m = 0; m < smallFurnitureOn.Count; m++)
+            {
+                HousingFurniture auxFurn = smallFurnitureOn[m];
+                for (int k = 0; k < auxFurn.height; k++)
+                {
+                    for (int i = 0; i < auxFurn.depth; i++)
+                    {
+                        for (int j = 0; j < auxFurn.width; j++)
+                        {
+                            bool val;
+                            HousingGridCoordinates currentCheckCoord = auxFurn.GetGridCoord(new HousingGridCoordinates(k, i, j), out val);
+                            if (!val) continue;
+                            if (currentCheckCoord.y > auxMax.y) auxMax.y = currentCheckCoord.y;
+                            if (currentCheckCoord.z > auxMax.z) auxMax.z = currentCheckCoord.z;
+                            if (currentCheckCoord.x > auxMax.x) auxMax.x = currentCheckCoord.x;
+                        }
+                    }
+                }
+            }
+            return auxMax;
         }
     }
 
@@ -180,14 +312,14 @@ public class HousingFurniture : MonoBehaviour
         for (int i = 0; i < smallFurnitureOn.Count; i++)
         {
             HousingFurniture auxFurn = smallFurnitureOn[i];
-            Debug.Log("HousingFurniture -> auxFurn.currentAnchorGridPos = "+ auxFurn.currentAnchorGridPos.printString+
+            Debug.Log("HousingFurniture -> auxFurn.currentAnchorGridPos = " + auxFurn.currentAnchorGridPos.printString +
                 "; currentAnchorGridPos = " + currentAnchorGridPos.printString);
 
             int yDif = auxFurn.currentAnchorGridPos.y - currentAnchorGridPos.y;
             int zDif = auxFurn.currentAnchorGridPos.z - currentAnchorGridPos.z;
             int xDif = auxFurn.currentAnchorGridPos.x - currentAnchorGridPos.x;
             auxFurn.currentAnchorGridPos = new HousingGridCoordinates(newAnchorPos.y + yDif, newAnchorPos.z + zDif, newAnchorPos.x + xDif);
-            Debug.Log("HousingFurniture -> ChangePos: smallFurnitureOn["+ i + "].currentAnchorGridPos = " + auxFurn.currentAnchorGridPos.printString);
+            Debug.Log("HousingFurniture -> ChangePos: smallFurnitureOn[" + i + "].currentAnchorGridPos = " + auxFurn.currentAnchorGridPos.printString);
         }
         currentAnchorGridPos = newAnchorPos;
 
@@ -326,7 +458,6 @@ public class HousingFurniture : MonoBehaviour
         int xDif = localCoord.x - anchor.x;
         HousingGridCoordinates gridCoord = new HousingGridCoordinates(currentAnchorGridPos.y + yDif, currentAnchorGridPos.z + zDif, currentAnchorGridPos.x + xDif);
         value = GetAtIndex(localCoord);
-        Debug.Log("HousingFurniture -> GetGridCoord: currentAnchorGridPos = " + currentAnchorGridPos.printString);
         return gridCoord;
     }
 
@@ -396,7 +527,7 @@ public class HousingFurniture : MonoBehaviour
 }
 
 public class FurnitureRotationData
-    {
+{
     public Direction currentOrientation;
     public FurnitureLevel[] currentSpaces;
     public HousingGridCoordinates anchor;

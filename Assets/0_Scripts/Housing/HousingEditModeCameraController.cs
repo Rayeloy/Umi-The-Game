@@ -48,12 +48,12 @@ public class HousingEditModeCameraController : MonoBehaviour
     float currentCamDist;
     public float followModeCamHeight = 3;
     public float zoomedInModeCamHeight = 1;
-    Vector3 followSelectionPos;
+
     Vector3 followSelectionPosWithOffset
     {
         get
         {
-            return followSelectionPos + Vector3.up * (currentCameraMode == EditCameraMode.FollowSelection ? followModeCamHeight : zoomedInModeCamHeight);
+            return houseGrid.GetCameraLookPosition(currentCameraMode) + Vector3.up * (currentCameraMode == EditCameraMode.FollowSelection ? followModeCamHeight : zoomedInModeCamHeight);
         }
     }
 
@@ -276,7 +276,6 @@ public class HousingEditModeCameraController : MonoBehaviour
 
     public void KonoLateUpdate()
     {
-        followSelectionPos = houseGrid.GetSlotAt(houseGrid.currentSlotCoord).transform.position;
         //Debug.LogWarning("Edit Camera is in mode " + currentCameraMode);
         if (actions.ZoomIn.WasPressed) SwitchCameraMode();
 
@@ -299,6 +298,7 @@ public class HousingEditModeCameraController : MonoBehaviour
                 break;
             case EditCameraMode.FollowSelection:
                 targetCamBasePos = followSelectionPosWithOffset;
+                targetCamZoom = houseGrid.lookingAtLargeFurniture ? followSelectionZoom + 2 : followSelectionZoom;
                 //myCameraObject.transform.LookAt(followSelectionPos);
 
                 //Inputs
@@ -352,10 +352,10 @@ public class HousingEditModeCameraController : MonoBehaviour
         {
             case EditCameraMode.ZoomedOut:
                 currentCameraMode = EditCameraMode.FollowSelection;
-                targetCamZoom = followSelectionZoom;
+                targetCamZoom = houseGrid.lookingAtLargeFurniture? followSelectionZoom+2: followSelectionZoom;
                 targetCamBasePos = followSelectionPosWithOffset;
                 Vector3 futureCamPos = targetCamBasePos - originalForwardVector * targetCamZoom;
-                targetCamRot = Quaternion.LookRotation(followSelectionPos - futureCamPos, Vector3.up).eulerAngles;
+                targetCamRot = Quaternion.LookRotation(houseGrid.GetCameraLookPosition() - futureCamPos, Vector3.up).eulerAngles;
                 Debug.LogWarning("targetCamRot = " + targetCamRot.ToString("F4") + "; currentCamRot = " + currentCamRot.ToString("F4") + "; futureCamPos = " + futureCamPos.ToString("F4"));
                 break;
             case EditCameraMode.FollowSelection:
@@ -363,7 +363,7 @@ public class HousingEditModeCameraController : MonoBehaviour
                 targetCamBasePos = followSelectionPosWithOffset;
                 targetCamZoom = zoomedInCamZoom;
                 futureCamPos = targetCamBasePos - originalForwardVector * targetCamZoom;
-                targetCamRot = Quaternion.LookRotation(followSelectionPos - futureCamPos, Vector3.up).eulerAngles;
+                targetCamRot = Quaternion.LookRotation(houseGrid.GetCameraLookPosition(EditCameraMode.ZoomedIn) - futureCamPos, Vector3.up).eulerAngles;
                 Debug.LogWarning("targetCamRot = " + targetCamRot.ToString("F4") + "; currentCamRot = " + currentCamRot.ToString("F4"));
                 break;
             case EditCameraMode.ZoomedIn:
@@ -519,11 +519,11 @@ public class HousingEditModeCameraController : MonoBehaviour
         switch (currentCameraMode)
         {
             case EditCameraMode.FollowSelection:
-                rayDir = followSelectionPos - rayOrigin;
+                rayDir = houseGrid.GetCameraLookPosition(currentCameraMode) - rayOrigin;
                 rayLength = rayDir.magnitude;
                 break;
             case EditCameraMode.ZoomedIn:
-                rayDir = followSelectionPos - rayOrigin;
+                rayDir = houseGrid.GetCameraLookPosition(currentCameraMode) - rayOrigin;
                 rayLength = rayDir.magnitude;
                 break;
             case EditCameraMode.ZoomedOut:
