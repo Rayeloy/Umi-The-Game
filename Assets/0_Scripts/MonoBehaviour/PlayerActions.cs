@@ -63,6 +63,7 @@ public class PlayerActions : PlayerActionSet
     public PlayerAction HousingRotateFurnitureClockwise;
     public PlayerAction HousingRotateFurnitureCounterClockwise;
     public PlayerAction HousingPickFurniture;
+    public PlayerAction HousingSwitchFurnitureMenu;
 
 
     public PlayerActions()
@@ -114,6 +115,7 @@ public class PlayerActions : PlayerActionSet
         HousingRotateFurnitureClockwise = CreatePlayerAction("HousingRotateFurnitureClockwise");
         HousingRotateFurnitureCounterClockwise = CreatePlayerAction("HousingRotateFurnitureCounterClockwise");
         HousingPickFurniture = CreatePlayerAction("HousingPickFurniture");
+        HousingSwitchFurnitureMenu = CreatePlayerAction("HousingSwitchFurnitureMenu");
     }
 
     static void SetUpXboxControllerActions(ref PlayerActions actions) 
@@ -164,6 +166,7 @@ public class PlayerActions : PlayerActionSet
         actions.HousingRotateFurnitureClockwise.AddDefaultBinding(InputControlType.RightBumper);
         actions.HousingRotateFurnitureCounterClockwise.AddDefaultBinding(InputControlType.LeftBumper);
         actions.HousingPickFurniture.AddDefaultBinding(InputControlType.Action1);
+        actions.HousingPickFurniture.AddDefaultBinding(InputControlType.Action4);
     }
 
     static void SetUpKeyboardAndMouseActions(ref PlayerActions actions)
@@ -214,6 +217,7 @@ public class PlayerActions : PlayerActionSet
         actions.HousingRotateFurnitureClockwise.AddDefaultBinding(Key.E);
         actions.HousingRotateFurnitureCounterClockwise.AddDefaultBinding(Key.Q);
         actions.HousingPickFurniture.AddDefaultBinding(Key.Space);
+        actions.HousingPickFurniture.AddDefaultBinding(Key.T);
     }
 
     public static PlayerActions CreateDefaultBindings()

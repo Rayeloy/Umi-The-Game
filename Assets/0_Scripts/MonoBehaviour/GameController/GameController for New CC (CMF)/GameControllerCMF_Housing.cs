@@ -24,6 +24,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
 
     //EDIT MODE
     bool editHouseOn = false;
+    bool furnitureMenuOn = false;
     EloyAdvancedAxisControls myLeftJoyStickControls;
     EloyAdvancedButtonControls selectUp;
     EloyAdvancedButtonControls selectDown;
@@ -31,6 +32,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
     EloyAdvancedButtonControls rotateCounterClockwise;
 
     [Header(" - Edit Mode - ")]
+    public HousingFurnitureMenu furnitureMenu;
     [Range(0, 1)]
     public float leftJoyStickDeadzone = 0.6f;
     public HousingEditModeCameraController editModeCameraController;
@@ -64,63 +66,72 @@ public class GameControllerCMF_Housing : GameControllerCMF
         }
         if (editHouseOn)
         {
-            currentGrid.KonoUpdate();
+            if (allPlayers[0].actions.HousingSwitchFurnitureMenu.WasPressed) SwitchHousingFurnitureMenu();
 
-            if (myLeftJoyStickControls.LeftWasPressed)
+            if (furnitureMenuOn)
             {
-                currentGrid.MoveSelectSlot(Direction.Left);
-            }
-            if (myLeftJoyStickControls.RightWasPressed)
-            {
-                currentGrid.MoveSelectSlot(Direction.Right);
-            }
-            if (myLeftJoyStickControls.UpWasPressed)
-            {
-                currentGrid.MoveSelectSlot(Direction.Up);
-            }
-            if (myLeftJoyStickControls.DownWasPressed)
-            {
-                currentGrid.MoveSelectSlot(Direction.Down);
-            }
 
-            if (rotateClockwise.WasPressed)
-            {
-                if (!currentGrid.RotateFurniture(true)) Debug.LogError("GameControllerCMF_Housing: Can't rotate furniture clockwise!");
             }
-            if (rotateCounterClockwise.WasPressed)
+            else
             {
-                if (!currentGrid.RotateFurniture(false)) Debug.LogError("GameControllerCMF_Housing: Can't rotate furniture counter clockwise!");
-            }
-            if (allPlayers[0].actions.HousingPickFurniture.WasPressed)
-            {
-                currentGrid.PickOrPlace();
-            }
+                currentGrid.KonoUpdate();
+
+                if (myLeftJoyStickControls.LeftWasPressed)
+                {
+                    currentGrid.MoveSelectSlot(Direction.Left);
+                }
+                if (myLeftJoyStickControls.RightWasPressed)
+                {
+                    currentGrid.MoveSelectSlot(Direction.Right);
+                }
+                if (myLeftJoyStickControls.UpWasPressed)
+                {
+                    currentGrid.MoveSelectSlot(Direction.Up);
+                }
+                if (myLeftJoyStickControls.DownWasPressed)
+                {
+                    currentGrid.MoveSelectSlot(Direction.Down);
+                }
+
+                if (rotateClockwise.WasPressed)
+                {
+                    if (!currentGrid.RotateFurniture(true)) Debug.LogError("GameControllerCMF_Housing: Can't rotate furniture clockwise!");
+                }
+                if (rotateCounterClockwise.WasPressed)
+                {
+                    if (!currentGrid.RotateFurniture(false)) Debug.LogError("GameControllerCMF_Housing: Can't rotate furniture counter clockwise!");
+                }
+                if (allPlayers[0].actions.HousingPickFurniture.WasPressed)
+                {
+                    currentGrid.PickOrPlace();
+                }
 
 
-            if (Input.GetKeyDown(KeyCode.Alpha9))
-            {
-                HousingFurniture aux;
-                currentGrid.SpawnFurniture(testFurniture, out aux);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha8))
-            {
-                HousingFurniture aux;
-                currentGrid.SpawnFurniture(testSmallFurniture, out aux);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha7))
-            {
-                HousingFurniture aux;
-                currentGrid.SpawnFurniture(testSmallFurniture2, out aux);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha6))
-            {
-                HousingFurniture aux;
-                currentGrid.SpawnFurniture(testWallFurniture, out aux);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha5))
-            {
-                HousingFurniture aux;
-                currentGrid.SpawnFurniture(testWallFurniture2, out aux);
+                if (Input.GetKeyDown(KeyCode.Alpha9))
+                {
+                    HousingFurniture aux;
+                    currentGrid.SpawnFurniture(testFurniture, out aux);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha8))
+                {
+                    HousingFurniture aux;
+                    currentGrid.SpawnFurniture(testSmallFurniture, out aux);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha7))
+                {
+                    HousingFurniture aux;
+                    currentGrid.SpawnFurniture(testSmallFurniture2, out aux);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha6))
+                {
+                    HousingFurniture aux;
+                    currentGrid.SpawnFurniture(testWallFurniture, out aux);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha5))
+                {
+                    HousingFurniture aux;
+                    currentGrid.SpawnFurniture(testWallFurniture2, out aux);
+                }
             }
         }
 
@@ -212,6 +223,22 @@ public class GameControllerCMF_Housing : GameControllerCMF
         //Call Interface
     }
 
+    void SwitchHousingFurnitureMenu()
+    {
+        if (editHouseOn)
+        {
+            furnitureMenuOn = !furnitureMenuOn;
+            if (furnitureMenuOn)
+            {
+                furnitureMenu.OpenFurnitureMenu();
+            }
+            else
+            {
+                furnitureMenu.CloseFurnitureMenu();
+            }
+        }
+    }
+
     void DeactivateHostPlayer()
     {
         allPlayers[0].transform.position = new Vector3(-200, -200, -200);
@@ -228,5 +255,8 @@ public class GameControllerCMF_Housing : GameControllerCMF
         AudioListener audioListener = allPlayers[0].myCamera.myCamera.GetComponent<AudioListener>();
         if (audioListener != null) audioListener.enabled = true;
     }
+
+
+    //INTERFACE
 
 }

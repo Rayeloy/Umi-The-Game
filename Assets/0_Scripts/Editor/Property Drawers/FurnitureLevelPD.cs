@@ -1,6 +1,4 @@
-﻿using UnityEditor.UIElements;
-using UnityEngine.UIElements;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 [CustomPropertyDrawer(typeof(FurnitureLevel))]
