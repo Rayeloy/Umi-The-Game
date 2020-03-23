@@ -1309,9 +1309,6 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: Water
     m_EventTreshold: 0
-  - m_ConditionMode: 1
-    m_ConditionEvent: IdleW
-    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -8067599457769530521}
   m_Solo: 0
@@ -2051,11 +2048,6 @@ AnimatorStateMachine:
   m_AnyStateTransitions: []
   m_EntryTransitions: []
   m_StateMachineTransitions:
-  - first: {fileID: 5077036053559880634}
-    second:
-    - {fileID: -3829732962549298416}
-    - {fileID: -5443808571027776597}
-    - {fileID: 2680009488630955408}
   - first: {fileID: -129770182439568170}
     second:
     - {fileID: -5162788320293386888}
@@ -2066,6 +2058,11 @@ AnimatorStateMachine:
     - {fileID: -8973407928978725719}
     - {fileID: 3102400165847104633}
     - {fileID: -1871349851788785588}
+  - first: {fileID: 5077036053559880634}
+    second:
+    - {fileID: -3829732962549298416}
+    - {fileID: -5443808571027776597}
+    - {fileID: 2680009488630955408}
   - first: {fileID: -8001579794134558855}
     second:
     - {fileID: -3186963099527691371}

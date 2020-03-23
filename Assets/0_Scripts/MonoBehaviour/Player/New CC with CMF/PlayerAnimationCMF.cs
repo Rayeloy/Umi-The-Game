@@ -190,7 +190,7 @@ public class PlayerAnimationCMF : MonoBehaviour
             startJump = false;
             animator.SetBool(startJumpHash, startJump);
         }
-
+             
         //animator.SetBool("StartJump", startJump);
 
         ////if (myPlayerMovement.wallJumpAnim)
@@ -474,6 +474,9 @@ public class PlayerAnimationCMF : MonoBehaviour
             //TO DO:
             water = true;
 
+            air = false;
+            animator.SetBool(airHash, air);
+
             jumpout = false;
             animator.SetBool(jumpOutHash, jumpout);
             //Activate particle system
@@ -486,7 +489,7 @@ public class PlayerAnimationCMF : MonoBehaviour
             //TO DO:
 
             water = false;
-
+            animator.SetBool(waterHash, water);
             jumpout = true;
             animator.SetBool(jumpOutHash, jumpout);
 
@@ -522,6 +525,8 @@ public class PlayerAnimationCMF : MonoBehaviour
             }
             if (water)
             {
+
+
                 falling = false;
                 animator.SetBool(fallingHash, falling);
             }
@@ -555,14 +560,17 @@ public class PlayerAnimationCMF : MonoBehaviour
 
         }
 
-        if ((myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.collCheck.below && timeToLand <= maxTimeToLand)
-    || (falling && myPlayerMovement.collCheck.below))
-
+    //    if ((myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.collCheck.below && timeToLand <= maxTimeToLand)
+    //|| (falling && myPlayerMovement.collCheck.below))
+      if (water)
             if (myPlayerMovement.vertMovSt == VerticalMovementState.FloatingInWater && myPlayerMovement.currentSpeed > 0)
             {
 
                 swimming = true;
                 animator.SetBool(swimmingHash, swimming);
+
+                idleW = false;
+                animator.SetBool(idleWHash, idleW);
             }
             else if (myPlayerMovement.vertMovSt == VerticalMovementState.FloatingInWater && myPlayerMovement.currentSpeed == 0)
             {
