@@ -9,5 +9,6 @@ public class HousingSettings : ScriptableObject
     public GameObject slotPrefab;
     public float slotSize = 1.3f;
     public Material[] highlightedSlotMats;//0 == good; 1 == bad; 2 == pointer; 3 == placed
+    public HousingFurnitureData[] allFurnitureList;
 }
 

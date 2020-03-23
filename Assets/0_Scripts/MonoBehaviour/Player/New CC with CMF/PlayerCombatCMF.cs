@@ -154,6 +154,7 @@ public class PlayerCombatCMF : MonoBehaviour
     public void KonoUpdate()
     {
         //print("Trigger = " + Input.GetAxis(myPlayerMovement.contName + "LT"));
+        if (myPlayerMovement.gC.gameMode == GameMode.Housing) return;
 
         if (hasWeapon)
         {

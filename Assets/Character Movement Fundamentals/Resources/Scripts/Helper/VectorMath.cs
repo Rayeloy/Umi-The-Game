@@ -115,4 +115,35 @@ public static class VectorMath {
         Vector3 dir = (pointB - pointA);
         return pointA + (dir / 2);
     }
+
+    public static Vector3 MiddlePoint(Transform[] transforms)
+    {
+        Vector3[] points = new Vector3[transforms.Length];
+        for (int i = 0; i < transforms.Length; i++)
+        {
+            points[i] = transforms[i].position;
+        }
+        return MiddlePoint(points);
+    }
+
+    public static Vector3 MiddlePoint(Vector3[] points)
+    {
+        if (points.Length == 0)
+            return Vector3.zero;
+        if (points.Length == 1)
+            return points[0];
+        Vector3 min = points[0];
+        Vector3 max = points[0];
+
+        for (int i = 0; i < points.Length; i++)
+        {
+            if (points[i].x < min.x) min.x = points[i].x;
+            if (points[i].x > max.x) max.x = points[i].x;
+            if (points[i].y < min.y) min.y = points[i].y;
+            if (points[i].y > max.y) max.y = points[i].y;
+            if (points[i].z < min.z) min.z = points[i].z;
+            if (points[i].z > max.z) max.z = points[i].z;
+        }
+        return MiddlePoint(min, max);
+    }
 }

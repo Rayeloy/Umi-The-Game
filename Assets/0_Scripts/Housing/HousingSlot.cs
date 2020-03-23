@@ -67,8 +67,8 @@ public class HousingSlot : MonoBehaviour
         get
         {
             //if (baseFurniture) Debug.LogError("Not free because baseFurniture = true");
-            if (thickness) Debug.LogError("Not free because thickness = true");
-            if (hasFurniture) Debug.LogError("Not free because hasFurniture = true");
+            if (thickness) Debug.Log("Not free because thickness = true");
+            if (hasFurniture) Debug.Log("Not free because hasFurniture = true");
 
             return !thickness && !hasFurniture;
         }

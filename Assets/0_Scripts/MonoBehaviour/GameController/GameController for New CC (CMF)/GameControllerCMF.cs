@@ -232,48 +232,10 @@ public class GameControllerCMF : MonoBehaviour
     #region Start
     protected virtual void Start()
     {
-        //if (!online)
-        //{
-        // Check for Crest Ocean
-        if (myOceanRenderer != null && myOceanRenderer.isActiveAndEnabled)
-        {
-            if(MasterManager.GameSettings.online || (!MasterManager.GameSettings.online && playerNum == 1))
-            {
-                //Set Crest Ocean viewpoint for Ocean LOD
-                myOceanRenderer.Viewpoint = allPlayers[0].transform;
-            }
-        }
+        StartOceanRendererViewpoint();
         StartPlayers();
         StartGame();
-        //}
-        //else
-        //{
-        //    allPlayers[0].KonoStart();
-        //    //StartPlayer(0);
-        //    //playing = true;
-        //    //gamePaused = false;
 
-        //    allPlayers[0].SetVelocity(Vector3.zero);
-        //    //allPlayers[0].myCamera.InstantPositioning();
-        //    //allPlayers[0].myCamera.InstantRotation();
-        //    //allPlayers[0].ResetPlayer();
-        //    //allPlayers[0].myPlayerAnimation.RestartAnimation();
-
-        //    Debug.Log("PhotonNetwork.IsMasterClient = " + PhotonNetwork.IsMasterClient + "; PhotonNetwork.CurrentRoom.PlayerCount = " + PhotonNetwork.CurrentRoom.PlayerCount);
-        //    if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount >= 1)
-        //    {
-        //        StartGame();
-        //    }
-        //    else
-        //    {
-        //        StartGame();
-        //    }
-
-        //    //if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
-        //    //{
-        //    //    Debug.Log("GameControllerBase: Empezamos el juego pues se han unido todos los jugadores");
-        //    //}
-        //}
         Application.targetFrameRate = 60;
         if(debugModeOn) Debug.Log("GameController Start finished");
     }
@@ -318,22 +280,23 @@ public class GameControllerCMF : MonoBehaviour
         //if (scoreManager.End) return;
         SlowMotion();
         SwitchLockMouse();
+        UpdateOceanRendererViewpoint();
 
-        if (!gamePaused && playing)
+        if (!gamePaused && playing)// PLAYING NORMALLY
         {
                 UpdatePlayers();
                 UpdateModeExclusiveClasses();
         }
         else
         {
-            if (playing)
+            if (playing)//PLAYING BUT PAUSED
             {
                 if (RenController.instance.currentControls.B.WasPressed || RenController.instance.currentControls.Start.WasPressed)
                 {
                     UnPauseGame();
                 }
             }
-            else
+            else// NOT PLAYING ANYMORE, GAME OVER
             {
                 if (gameOverStarted && !myGameInterface.gameOverMenuOn)
                 {
@@ -958,7 +921,6 @@ public class GameControllerCMF : MonoBehaviour
             }
         }
     }
-
     #endregion
 
     #region --- MENU --- 
@@ -1084,6 +1046,49 @@ public class GameControllerCMF : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             playersCanvasParent.GetChild(i).gameObject.SetActive(false);
+        }
+    }
+
+    #endregion
+
+    #region --- Ocean Renderer ---
+
+    void StartOceanRendererViewpoint()
+    {
+        // Check for Crest Ocean
+        if (myOceanRenderer != null && myOceanRenderer.isActiveAndEnabled)
+        {
+            if (MasterManager.GameSettings.online || (!MasterManager.GameSettings.online && playerNum == 1))
+            {
+                //Set Crest Ocean viewpoint for Ocean LOD
+                myOceanRenderer.Viewpoint = allPlayers[0].transform;
+            }
+            else
+            {
+                if (myOceanRenderer.Viewpoint == null) Debug.LogError("GameControllerCMF -> There is no defaultViewpoint to move around");
+                else
+                {
+                    Vector3[] points = new Vector3[playerNum];
+                    for (int i = 0; i < playerNum; i++)
+                    {
+                        points[i] = allPlayers[i].transform.position;
+                    }
+                    myOceanRenderer.Viewpoint.position = VectorMath.MiddlePoint(points);
+                }
+            }
+        }
+    }
+
+    void UpdateOceanRendererViewpoint()
+    {
+        if (myOceanRenderer != null && myOceanRenderer.isActiveAndEnabled && myOceanRenderer.Viewpoint != null && !MasterManager.GameSettings.online && playerNum > 1)
+        {
+            Vector3[] points = new Vector3[playerNum];
+            for (int i = 0; i < playerNum; i++)
+            {
+                points[i] = allPlayers[i].transform.position;
+            }
+            myOceanRenderer.Viewpoint.position = VectorMath.MiddlePoint(points);
         }
     }
 

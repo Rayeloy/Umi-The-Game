@@ -50,9 +50,13 @@ public class GameControllerCMF_Housing : GameControllerCMF
         currentGridObject = Instantiate(MasterManager.HousingSettings.gridPrefab, houseSpawnPos, Quaternion.identity, housingParent);
         currentGrid = currentGridObject.GetComponent<HousingGrid>();
         currentGrid.KonoAwake(houseMeta, housingFurnituresParent, wallPrefab, houseSpawnPos, MasterManager.HousingSettings.highlightedSlotMats, editModeCameraController);
+
         //Spawn House
         SpawnHouse(houseMeta);
         editModeCameraController.KonoAwake(currentGrid, houseSpawnPos);
+
+        //FurnitureMenu
+        furnitureMenu.KonoAwake();
     }
 
     protected override void SpecificUpdate()
@@ -60,17 +64,16 @@ public class GameControllerCMF_Housing : GameControllerCMF
         //Camera Update
         if(editHouseOn) editModeCameraController.KonoUpdate();
 
-        if (allPlayers[0].actions.Select.WasPressed)
-        {
-            SwitchPlayAndHousingMode();
-        }
+        if (allPlayers[0].actions.Select.WasPressed) SwitchPlayAndHousingMode();
+
+
         if (editHouseOn)
         {
             if (allPlayers[0].actions.HousingSwitchFurnitureMenu.WasPressed) SwitchHousingFurnitureMenu();
 
             if (furnitureMenuOn)
             {
-
+                furnitureMenu.KonoUpdate();
             }
             else
             {
@@ -256,7 +259,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
         if (audioListener != null) audioListener.enabled = true;
     }
 
-
     //INTERFACE
+
 
 }

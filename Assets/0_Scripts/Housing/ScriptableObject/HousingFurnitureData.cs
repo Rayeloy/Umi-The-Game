@@ -13,7 +13,16 @@ public enum FurnitureType
 
 public enum FurnitureTag
 {
-
+    chair,
+    illumination,
+    wardrove,
+    decoration,
+    table,
+    Stinray,
+    Eridon,
+    Sochi,
+    Vanilla,
+    Oktirome
 }
 
 [ExecuteInEditMode]
@@ -21,6 +30,8 @@ public enum FurnitureTag
 public class HousingFurnitureData : ScriptableObject
 {
     public string furnitureName;
+    public FurnitureTag[] tags;
+    public Sprite icon;
     public FurnitureType furnitureType = FurnitureType.None;
     public GameObject prefab;
     [Tooltip("The default rotation of the furniture. Normal value = Up. Left means looking to the positive X, " +
@@ -42,7 +53,6 @@ public class HousingFurnitureData : ScriptableObject
     [Header(" -- WALL FURNITURE -- ")]
     [Tooltip("Only for wall furniture.")]
     public bool thickness = false;
-
 
     public bool validFurnitureSpace
     {
@@ -459,6 +469,15 @@ public class HousingFurnitureData : ScriptableObject
         //        }
         //    }
         anchor = center;
+    }
+
+    public bool HasTag(FurnitureTag tag)
+    {
+        for (int i = 0; i < tags.Length; i++)
+        {
+            if (tags[i] == tag) return true;
+        }
+        return false;
     }
 
     //bool CheckValidAnchor()
