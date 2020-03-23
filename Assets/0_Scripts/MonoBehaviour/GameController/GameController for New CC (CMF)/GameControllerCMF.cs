@@ -232,12 +232,14 @@ public class GameControllerCMF : MonoBehaviour
     #region Start
     protected virtual void Start()
     {
-        StartOceanRendererViewpoint();
+        Application.targetFrameRate = 60;
+
         StartPlayers();
         StartGame();
 
-        Application.targetFrameRate = 60;
-        if(debugModeOn) Debug.Log("GameController Start finished");
+        StartOceanRendererViewpoint();
+
+        if (debugModeOn) Debug.Log("GameController Start finished");
     }
 
     //Funcion que llama al Start de los jugadores. Eloy: Juan, ¿solo pantalla dividida?, JUAN: Sí Eloy, sólo pantalla dividida.
@@ -1063,7 +1065,7 @@ public class GameControllerCMF : MonoBehaviour
                 //Set Crest Ocean viewpoint for Ocean LOD
                 myOceanRenderer.Viewpoint = allPlayers[0].transform;
             }
-            else
+            else//offline and more than 1 player
             {
                 if (myOceanRenderer.Viewpoint == null) Debug.LogError("GameControllerCMF -> There is no defaultViewpoint to move around");
                 else
@@ -1071,6 +1073,7 @@ public class GameControllerCMF : MonoBehaviour
                     Vector3[] points = new Vector3[playerNum];
                     for (int i = 0; i < playerNum; i++)
                     {
+                        allCameraBases[i].myCamera.GetComponent<OceanPlanarReflection>().enabled = false;
                         points[i] = allPlayers[i].transform.position;
                     }
                     myOceanRenderer.Viewpoint.position = VectorMath.MiddlePoint(points);

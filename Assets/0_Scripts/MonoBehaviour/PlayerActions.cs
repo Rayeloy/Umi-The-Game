@@ -166,7 +166,7 @@ public class PlayerActions : PlayerActionSet
         actions.HousingRotateFurnitureClockwise.AddDefaultBinding(InputControlType.RightBumper);
         actions.HousingRotateFurnitureCounterClockwise.AddDefaultBinding(InputControlType.LeftBumper);
         actions.HousingPickFurniture.AddDefaultBinding(InputControlType.Action1);
-        actions.HousingPickFurniture.AddDefaultBinding(InputControlType.Action4);
+        actions.HousingSwitchFurnitureMenu.AddDefaultBinding(InputControlType.Action4);
     }
 
     static void SetUpKeyboardAndMouseActions(ref PlayerActions actions)
@@ -217,7 +217,7 @@ public class PlayerActions : PlayerActionSet
         actions.HousingRotateFurnitureClockwise.AddDefaultBinding(Key.E);
         actions.HousingRotateFurnitureCounterClockwise.AddDefaultBinding(Key.Q);
         actions.HousingPickFurniture.AddDefaultBinding(Key.Space);
-        actions.HousingPickFurniture.AddDefaultBinding(Key.T);
+        actions.HousingSwitchFurnitureMenu.AddDefaultBinding(Key.T);
     }
 
     public static PlayerActions CreateDefaultBindings()

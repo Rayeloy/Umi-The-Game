@@ -18,14 +18,21 @@ public class HousingFurnitureMenu : MonoBehaviour
     List<List<RenButton>> furnitureIcons;
     FurnitureMenuState furnitureMenuState = FurnitureMenuState.family;
 
+    //OPEN / CLOSE ANIMATION 
+    [Header(" - Open / Close Animation - ")]
+    public float openCloseAnimMaxTime = 0.4f;
+    public Transform menuPos;
+    public Transform hiddenMenuPos;
     bool openMenuAnimStarted = false;
     bool closeMenuAnimStarted = false;
-    public float openCloseAnimMaxTime = 0.5f;
+    float currentAnimVal = 0;
     float openCloseAnimTime = 0;
+    float animStartingX = 0;
 
     public void KonoAwake()
     {
-        furnitureMenuParent.SetActive(false);
+        furnitureMenuParent.SetActive(true);
+        furnitureMenuParent.transform.position = hiddenMenuPos.position;
     }
 
     public void KonoUpdate()
@@ -36,7 +43,6 @@ public class HousingFurnitureMenu : MonoBehaviour
    
     public void OpenFurnitureMenu()
     {
-        furnitureMenuParent.SetActive(true);
         furnitureIcons = new List<List<RenButton>>();
         furnitureMenuState = FurnitureMenuState.family;
         InstantiateRenButtons(FurnitureTag.chair);
@@ -49,13 +55,16 @@ public class HousingFurnitureMenu : MonoBehaviour
     }
 
     #region --- Open / Close Animation ---
-
+    //OPEN MENU ANIM
     void StartOpenMenuAnim()
     {
         if (!openMenuAnimStarted)
         {
             openMenuAnimStarted = true;
+            closeMenuAnimStarted = false;
             openCloseAnimTime = 0;
+            currentAnimVal = 0;
+            animStartingX = furnitureMenuParent.transform.position.x;
         }
     }
 
@@ -63,7 +72,13 @@ public class HousingFurnitureMenu : MonoBehaviour
     {
         if (openMenuAnimStarted)
         {
+            if (currentAnimVal >= 1) return;
             openCloseAnimTime += Time.deltaTime;
+            currentAnimVal = Mathf.Clamp01(openCloseAnimTime / openCloseAnimMaxTime);
+            float x = EasingFunction.EaseOutBack(animStartingX, menuPos.position.x, currentAnimVal);
+            Vector3 currentMenuParentPos = new Vector3(x, menuPos.position.y, 0);
+            furnitureMenuParent.transform.position = currentMenuParentPos;
+
             if(openCloseAnimTime >= openCloseAnimMaxTime)
             {
                 StopOpenMenuAnim();
@@ -76,16 +91,19 @@ public class HousingFurnitureMenu : MonoBehaviour
         if (openMenuAnimStarted)
         {
             openMenuAnimStarted = false;
-            furnitureMenuParent.SetActive(false);
         }
     }
 
+    //CLOSE MENU ANIM
     void StartCloseMenuAnim()
     {
         if (!closeMenuAnimStarted)
         {
             closeMenuAnimStarted = true;
+            openMenuAnimStarted = false;
             openCloseAnimTime = 0;
+            currentAnimVal = 0;
+            animStartingX = furnitureMenuParent.transform.position.x;
         }
     }
 
@@ -93,7 +111,13 @@ public class HousingFurnitureMenu : MonoBehaviour
     {
         if (closeMenuAnimStarted)
         {
+            if (currentAnimVal >= 1) return;
             openCloseAnimTime += Time.deltaTime;
+            currentAnimVal = Mathf.Clamp01(openCloseAnimTime / openCloseAnimMaxTime);
+            float x = EasingFunction.EaseInBack(animStartingX, hiddenMenuPos.position.x, currentAnimVal);
+            Vector3 currentMenuParentPos = new Vector3(x, menuPos.position.y, 0);
+            furnitureMenuParent.transform.position = currentMenuParentPos;
+
             if (openCloseAnimTime >= openCloseAnimMaxTime)
             {
                 StopCloseMenuAnim();

@@ -70,15 +70,16 @@ public class GameControllerCMF_Housing : GameControllerCMF
         if (editHouseOn)
         {
             if (allPlayers[0].actions.HousingSwitchFurnitureMenu.WasPressed) SwitchHousingFurnitureMenu();
+            furnitureMenu.KonoUpdate();//Needs to be always running for animations
 
             if (furnitureMenuOn)
             {
-                furnitureMenu.KonoUpdate();
             }
             else
             {
                 currentGrid.KonoUpdate();
 
+                //Moving Furniture
                 if (myLeftJoyStickControls.LeftWasPressed)
                 {
                     currentGrid.MoveSelectSlot(Direction.Left);
@@ -95,7 +96,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
                 {
                     currentGrid.MoveSelectSlot(Direction.Down);
                 }
-
+                //Rotate Furniture
                 if (rotateClockwise.WasPressed)
                 {
                     if (!currentGrid.RotateFurniture(true)) Debug.LogError("GameControllerCMF_Housing: Can't rotate furniture clockwise!");
@@ -104,12 +105,13 @@ public class GameControllerCMF_Housing : GameControllerCMF
                 {
                     if (!currentGrid.RotateFurniture(false)) Debug.LogError("GameControllerCMF_Housing: Can't rotate furniture counter clockwise!");
                 }
+                //Pick of Place Furniture
                 if (allPlayers[0].actions.HousingPickFurniture.WasPressed)
                 {
                     currentGrid.PickOrPlace();
                 }
 
-
+                //Test Spawn Furniture
                 if (Input.GetKeyDown(KeyCode.Alpha9))
                 {
                     HousingFurniture aux;
@@ -150,8 +152,11 @@ public class GameControllerCMF_Housing : GameControllerCMF
     {
         if (editHouseOn)
         {
-            //move camera
-            editModeCameraController.KonoLateUpdate();
+            if (!furnitureMenuOn)
+            {
+                //move camera
+                editModeCameraController.KonoLateUpdate();
+            }
         }
     }
 
