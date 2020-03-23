@@ -4,8 +4,9 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: OceanAlpha_CrestLogo
   m_Shader: {fileID: 4800000, guid: 2d1af474b068d704284d3480b6d80201, type: 3}
   m_ShaderKeywords: 
@@ -24,4 +25,6 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Alpha: 0.5
+    - _BlendModeSrc: 5
+    - _BlendModeTgt: 10
     m_Colors: []
