@@ -17,6 +17,7 @@ public class PlayerVFXCMF : MonoBehaviour
     public TrailRenderer dashTrail;
     [HideInInspector]
     public TrailRenderer[] weaponTrailRenderers;
+    public GameObject moveWavesCollider;
     #endregion
 
     #region ----[ PROPERTIES ]----
@@ -34,6 +35,7 @@ public class PlayerVFXCMF : MonoBehaviour
         {
             effects[i].KonoAwake();
         }
+        DeactivateMoveWaves();
     }
     #endregion
 
@@ -141,18 +143,16 @@ public class PlayerVFXCMF : MonoBehaviour
             weaponTrailRenderers[i].emitting = false;
         }
     }
-    #endregion
 
-    #region ----[ PUN CALLBACKS ]----
-    #endregion
+    public void ActivateMoveWaves()
+    {
+        moveWavesCollider.SetActive(true);
+    }
 
-    #region ----[ RPC ]----
-    #endregion
-
-    #region ----[ NETWORK FUNCTIONS ]----
-    #endregion
-
-    #region ----[ IPUNOBSERVABLE ]----
+    public void DeactivateMoveWaves()
+    {
+        moveWavesCollider.SetActive(false);
+    }
     #endregion
 }
 #region ----[ STRUCTS & CLASSES ]----

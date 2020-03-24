@@ -2672,6 +2672,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             {
                 (gC as GameControllerCMF_FlagMode).myScoreManager.PlayerEliminado();
             }
+            myPlayerVFX.ActivateMoveWaves();
             myPlayerVFX.ActivateEffect(PlayerVFXType.SwimmingEffect);
 
             Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;
@@ -2706,6 +2707,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             myPlayerAnimation.exitWater = true;
             //vertMovSt = ;
             myPlayerWeap.AttatchWeapon();
+
+            myPlayerVFX.DeactivateMoveWaves();
             myPlayerVFX.DeactivateEffect(PlayerVFXType.SwimmingEffect);
 
             Vector3 waterSplashPos = myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position;
