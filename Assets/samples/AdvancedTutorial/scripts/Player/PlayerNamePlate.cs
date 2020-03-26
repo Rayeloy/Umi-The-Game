@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Bolt.AdvancedTutorial
 {
-	public class PlayerNamePlate : Bolt.EntityBehaviour<IPlayerState>
+	public class PlayerNamePlate : Bolt.EntityBehaviour<IUmiPlayerState>
 	{
 		[SerializeField]
 		Vector3 offset;
@@ -11,22 +11,22 @@ namespace Bolt.AdvancedTutorial
 		[SerializeField]
 		TextMesh text;
 
-		void NameChanged ()
-		{
-			text.text = state.name;
-		}
+		//void NameChanged ()
+		//{
+		//	text.text = state.name;
+		//}
 
-		void TeamChanged ()
-		{
-			switch (state.team) {
-			case Player.TEAM_RED:
-				text.GetComponent<Renderer> ().material.color = Color.red;
-				break;
-			case Player.TEAM_BLUE:
-				text.GetComponent<Renderer> ().material.color = Color.blue;
-				break;
-			}
-		}
+		//void TeamChanged ()
+		//{
+		//	switch (state.team) {
+		//	case Player.TEAM_RED:
+		//		text.GetComponent<Renderer> ().material.color = Color.red;
+		//		break;
+		//	case Player.TEAM_BLUE:
+		//		text.GetComponent<Renderer> ().material.color = Color.blue;
+		//		break;
+		//	}
+		//}
 
 		void Update ()
 		{
@@ -42,10 +42,10 @@ namespace Bolt.AdvancedTutorial
 			}
 		}
 
-		public override void Attached ()
-		{
-			state.AddCallback ("name", NameChanged);
-			state.AddCallback ("team", TeamChanged);
-		}
+		//public override void Attached ()
+		//{
+		//	state.AddCallback ("name", NameChanged);
+		//	state.AddCallback ("team", TeamChanged);
+		//}
 	}
 }

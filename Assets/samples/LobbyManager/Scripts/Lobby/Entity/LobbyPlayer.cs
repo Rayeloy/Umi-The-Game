@@ -5,15 +5,15 @@ using Random = UnityEngine.Random;
 
 namespace Bolt.Samples.Photon.Lobby
 {
-    public class LobbyPlayer : Bolt.EntityEventListener<ILobbyPlayerInfoState>
+    public class LobbyPlayer : Bolt.EntityEventListener<IUmiPlayerState>
     {
         // Bolt
         public BoltConnection connection;
 
-        public bool IsReady
-        {
-            get { return state.Ready; }
-        }
+        //public bool IsReady
+        //{
+        //    get { return state.Ready; }
+        //}
 
         // Lobby
         public string playerName
@@ -48,26 +48,26 @@ namespace Bolt.Samples.Photon.Lobby
 
         public static LobbyPlayer localPlayer;
 
-        public override void Attached()
-        {
-            state.AddCallback("Name", () => nameInput.text = state.Name);
-            state.AddCallback("Color", () => playerColor = state.Color);
-            state.AddCallback("Ready", callback: () => OnClientReady(state.Ready));
+        //public override void Attached()
+        //{
+        //    state.AddCallback("Name", () => nameInput.text = state.Name);
+        //    state.AddCallback("Color", () => playerColor = state.Color);
+        //    state.AddCallback("Ready", callback: () => OnClientReady(state.Ready));
             
-            if (entity.IsOwner)
-            {
-                state.Color = Random.ColorHSV();
-                state.Name = string.Format("{0} #{1}", GenerateFullName(), Random.Range(1, 100));
-                state.Ready = ready = false;
-            }
-        }
+        //    if (entity.IsOwner)
+        //    {
+        //        state.Color = Random.ColorHSV();
+        //        state.Name = string.Format("{0} #{1}", GenerateFullName(), Random.Range(1, 100));
+        //        state.Ready = ready = false;
+        //    }
+        //}
 
         public override void ControlGained()
         {
             BoltConsole.Write("ControlGained", Color.blue);
 
             readyButton.transform.GetChild(0).GetComponent<Text>().color = Color.white;
-            SetupPlayer();
+            //SetupPlayer();
         }
 
         public void OnPlayerListChanged(int idx)
@@ -102,72 +102,72 @@ namespace Bolt.Samples.Photon.Lobby
             entity.QueueInput(input);
         }
 
-        public override void ExecuteCommand(Command command, bool resetState)
-        {
-            if (!entity.IsOwner) { return; }
+        //public override void ExecuteCommand(Command command, bool resetState)
+        //{
+        //    if (!entity.IsOwner) { return; }
 
-            if (!resetState && command.IsFirstExecution)
-            {
-                LobbyCommand lobbyCommand = command as LobbyCommand;
+        //    if (!resetState && command.IsFirstExecution)
+        //    {
+        //        LobbyCommand lobbyCommand = command as LobbyCommand;
 
-                state.Name = lobbyCommand.Input.Name;
-                state.Color = lobbyCommand.Input.Color;
-                state.Ready = lobbyCommand.Input.Ready;
-            }
-        }
+        //        state.Name = lobbyCommand.Input.Name;
+        //        state.Color = lobbyCommand.Input.Color;
+        //        state.Ready = lobbyCommand.Input.Ready;
+        //    }
+        //}
 
         // Commands
 
-        public void SetupOtherPlayer()
-        {
-            BoltConsole.Write("SetupOtherPlayer", Color.green);
+        //public void SetupOtherPlayer()
+        //{
+        //    BoltConsole.Write("SetupOtherPlayer", Color.green);
 
-            nameInput.interactable = false;
+        //    nameInput.interactable = false;
 
-            removePlayerButton.gameObject.SetActive(BoltNetwork.IsServer);
-            removePlayerButton.interactable = BoltNetwork.IsServer;
+        //    removePlayerButton.gameObject.SetActive(BoltNetwork.IsServer);
+        //    removePlayerButton.interactable = BoltNetwork.IsServer;
 
-            ChangeReadyButtonColor(NotReadyColor);
+        //    ChangeReadyButtonColor(NotReadyColor);
 
-            readyButton.transform.GetChild(0).GetComponent<Text>().text = "...";
-            readyButton.interactable = false;
+        //    readyButton.transform.GetChild(0).GetComponent<Text>().text = "...";
+        //    readyButton.interactable = false;
 
-            OnClientReady(state.Ready);
-        }
+        //    OnClientReady(state.Ready);
+        //}
 
-        public void SetupPlayer()
-        {
-            BoltConsole.Write("SetupPlayer", Color.green);
+//        public void SetupPlayer()
+//        {
+//            BoltConsole.Write("SetupPlayer", Color.green);
 
-            localPlayer = this;
+//            localPlayer = this;
 
-            nameInput.interactable = true;
-            remoteIcone.gameObject.SetActive(false);
-            localIcone.gameObject.SetActive(true);
+//            nameInput.interactable = true;
+//            remoteIcone.gameObject.SetActive(false);
+//            localIcone.gameObject.SetActive(true);
 
-            removePlayerButton.gameObject.SetActive(false);
-            removePlayerButton.interactable = false;
+//            removePlayerButton.gameObject.SetActive(false);
+//            removePlayerButton.interactable = false;
 
-            ChangeReadyButtonColor(JoinColor);
+//            ChangeReadyButtonColor(JoinColor);
 
-            readyButton.transform.GetChild(0).GetComponent<Text>().text = "JOIN";
-            readyButton.interactable = true;
+//            readyButton.transform.GetChild(0).GetComponent<Text>().text = "JOIN";
+//            readyButton.interactable = true;
 
-            //we switch from simple name display to name input
-            colorButton.interactable = true;
-            nameInput.interactable = true;
+//            //we switch from simple name display to name input
+//            colorButton.interactable = true;
+//            nameInput.interactable = true;
 
-            nameInput.onEndEdit.RemoveAllListeners();
-//            nameInput.onEndEdit.AddListener((text => { playerName = text; }));
+//            nameInput.onEndEdit.RemoveAllListeners();
+////            nameInput.onEndEdit.AddListener((text => { playerName = text; }));
 
-            colorButton.onClick.RemoveAllListeners();
-            colorButton.onClick.AddListener(() => { playerColor = Random.ColorHSV(); });
+//            colorButton.onClick.RemoveAllListeners();
+//            colorButton.onClick.AddListener(() => { playerColor = Random.ColorHSV(); });
 
-            readyButton.onClick.RemoveAllListeners();
-            readyButton.onClick.AddListener(OnReadyClicked);
+//            readyButton.onClick.RemoveAllListeners();
+//            readyButton.onClick.AddListener(OnReadyClicked);
 
-            OnClientReady(state.Ready);
-        }
+//            OnClientReady(state.Ready);
+//        }
 
         public void RemovePlayer()
         {

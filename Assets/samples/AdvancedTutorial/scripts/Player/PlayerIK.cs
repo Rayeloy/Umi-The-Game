@@ -2,7 +2,7 @@
 
 namespace Bolt.AdvancedTutorial
 {
-    public class PlayerIK : Bolt.EntityBehaviour<IPlayerState>
+    public class PlayerIK : Bolt.EntityBehaviour<IUmiPlayerState>
     {
 #pragma warning disable 414
         // weight blending
@@ -24,34 +24,34 @@ namespace Bolt.AdvancedTutorial
 
         void OnAnimatorIK()
         {
-            //TODO: FIX PITCH OFFSET CALCULATION
+            ////TODO: FIX PITCH OFFSET CALCULATION
 
-            //			float pitchOffsetArm = -state.pitch * 0.025f;
-            float pitchOffsetHead = -state.pitch * 0.01f;
+            ////			float pitchOffsetArm = -state.pitch * 0.025f;
+            //float pitchOffsetHead = -state.pitch * 0.01f;
 
-            _animator.SetLookAtPosition(transform.position + transform.forward + new Vector3(0, 1.5f + pitchOffsetHead, 0f));
-            _animator.SetLookAtWeight(1f);
+            //_animator.SetLookAtPosition(transform.position + transform.forward + new Vector3(0, 1.5f + pitchOffsetHead, 0f));
+            //_animator.SetLookAtWeight(1f);
 
-            if (_aiming)
-            {
-                if (state.Aiming == false)
-                {
-                    weightacc = 0f;
-                    weightfrom = weight;
-                    weightto = 0f;
-                    _aiming = false;
-                }
-            }
-            else
-            {
-                if (state.Aiming)
-                {
-                    weightacc = 0f;
-                    weightfrom = weight;
-                    weightto = 1f;
-                    _aiming = true;
-                }
-            }
+            //if (_aiming)
+            //{
+            //    if (state.Aiming == false)
+            //    {
+            //        weightacc = 0f;
+            //        weightfrom = weight;
+            //        weightto = 0f;
+            //        _aiming = false;
+            //    }
+            //}
+            //else
+            //{
+            //    if (state.Aiming)
+            //    {
+            //        weightacc = 0f;
+            //        weightfrom = weight;
+            //        weightto = 1f;
+            //        _aiming = true;
+            //    }
+            //}
         }
     }
 }

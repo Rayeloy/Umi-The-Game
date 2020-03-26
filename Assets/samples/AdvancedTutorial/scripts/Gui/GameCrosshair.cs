@@ -5,7 +5,7 @@ namespace Bolt.AdvancedTutorial {
 
 	public class GameCrosshair : Bolt.GlobalEventListener {
 	  BoltEntity me;
-	  IPlayerState meState;
+	  //IPlayerState meState;
 
 	  float previousSpread = float.MaxValue;
 
@@ -23,42 +23,42 @@ namespace Bolt.AdvancedTutorial {
 
 	  public override void ControlOfEntityGained(BoltEntity arg) {
 	    me = arg;
-	    meState = arg.GetState<IPlayerState>();
+	    //meState = arg.GetState<IPlayerState>();
 	  }
 
-	  public override void ControlOfEntityLost(BoltEntity arg) {
-	    me = null;
-	    meState = null;
-	  }
+	  //public override void ControlOfEntityLost(BoltEntity arg) {
+	  //  me = null;
+	  //  meState = null;
+	  //}
 
-	  void Update() {
-	    if (me && meState != null && meState.Aiming) {
-	      Left.gameObject.SetActive(true);
-	      Right.gameObject.SetActive(true);
-	      Top.gameObject.SetActive(true);
-	      Bottom.gameObject.SetActive(true);
+	  //void Update() {
+	  //  if (me && meState != null && meState.Aiming) {
+	  //    Left.gameObject.SetActive(true);
+	  //    Right.gameObject.SetActive(true);
+	  //    Top.gameObject.SetActive(true);
+	  //    Bottom.gameObject.SetActive(true);
 
-	      Spread = Mathf.Clamp01(Spread);
-	      Spread -= 0.01f;
+	  //    Spread = Mathf.Clamp01(Spread);
+	  //    Spread -= 0.01f;
 
-	      if (Spread != previousSpread) {
-	        int pixelSpread = Mathf.Clamp(Mathf.RoundToInt(Spread * MaxSpred), MinSpred, MaxSpred);
+	  //    if (Spread != previousSpread) {
+	  //      int pixelSpread = Mathf.Clamp(Mathf.RoundToInt(Spread * MaxSpred), MinSpred, MaxSpred);
 
-	        Left.position = ToScreenPosition(new Vector3(-PixelHeight - pixelSpread, (PixelWidth / 2), 1));
-	        Right.position = ToScreenPosition(new Vector3(pixelSpread, (PixelWidth / 2), 1));
-	        Top.position = ToScreenPosition(new Vector3(-(PixelWidth / 2), PixelHeight + pixelSpread, 1));
-	        Bottom.position = ToScreenPosition(new Vector3(-(PixelWidth / 2), -pixelSpread, 1));
+	  //      Left.position = ToScreenPosition(new Vector3(-PixelHeight - pixelSpread, (PixelWidth / 2), 1));
+	  //      Right.position = ToScreenPosition(new Vector3(pixelSpread, (PixelWidth / 2), 1));
+	  //      Top.position = ToScreenPosition(new Vector3(-(PixelWidth / 2), PixelHeight + pixelSpread, 1));
+	  //      Bottom.position = ToScreenPosition(new Vector3(-(PixelWidth / 2), -pixelSpread, 1));
 
-	        previousSpread = Spread;
-	      }
-	    }
-	    else {
-	      Left.gameObject.SetActive(false);
-	      Right.gameObject.SetActive(false);
-	      Top.gameObject.SetActive(false);
-	      Bottom.gameObject.SetActive(false);
-	    }
-	  }
+	  //      previousSpread = Spread;
+	  //    }
+	  //  }
+	  //  else {
+	  //    Left.gameObject.SetActive(false);
+	  //    Right.gameObject.SetActive(false);
+	  //    Top.gameObject.SetActive(false);
+	  //    Bottom.gameObject.SetActive(false);
+	  //  }
+	  //}
 
 	  static Vector3 ToScreenPosition(Vector3 pos) {
 	    pos.x = Mathf.RoundToInt(pos.x);

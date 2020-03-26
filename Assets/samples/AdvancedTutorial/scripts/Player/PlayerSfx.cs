@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace Bolt.AdvancedTutorial
 {
-	public class PlayerSfx : Bolt.EntityBehaviour<IPlayerState>
+	public class PlayerSfx : Bolt.EntityBehaviour<IUmiPlayerState>
 	{
 		int prevHealth;
 		float playTime;
@@ -35,26 +35,26 @@ namespace Bolt.AdvancedTutorial
 			}
 		}
 
-		public override void ControlGained ()
-		{
-			prevHealth = 100;
+		//public override void ControlGained ()
+		//{
+		//	prevHealth = 100;
 
-			// assign callback
-			state.AddCallback ("health", HealthChanged);
-		}
+		//	// assign callback
+		//	state.AddCallback ("health", HealthChanged);
+		//}
 
-		public override void ControlLost ()
-		{
-			state.RemoveCallback ("health", HealthChanged);
-		}
+		//public override void ControlLost ()
+		//{
+		//	state.RemoveCallback ("health", HealthChanged);
+		//}
 
-		void HealthChanged ()
-		{
-			if ((state.health < prevHealth) && hit) {
-				_sourceHit.PlayOneShot (hit);
-			}
+		//void HealthChanged ()
+		//{
+		//	if ((state.health < prevHealth) && hit) {
+		//		_sourceHit.PlayOneShot (hit);
+		//	}
 
-			prevHealth = state.health;
-		}
+		//	prevHealth = state.health;
+		//}
 	}
 }

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Bolt.AdvancedTutorial
 {
-	public class PlayerController : Bolt.EntityEventListener<IPlayerState>
+	public class PlayerController : Bolt.EntityEventListener<IUmiPlayerState>
 	{
 		const float MOUSE_SENSEITIVITY = 2f;
 
@@ -29,10 +29,10 @@ namespace Bolt.AdvancedTutorial
 		[SerializeField]
 		AudioSource _weaponSfxSource;
 
-		public WeaponBase activeWeapon
-		{
-			get { return _weapons[state.weapon]; }
-		}
+		//public WeaponBase activeWeapon
+		//{
+		//	get { return _weapons[state.weapon]; }
+		//}
 
 
 
@@ -83,195 +83,195 @@ namespace Bolt.AdvancedTutorial
 			}
 		}
 
-		public override void Attached()
-		{
-			if (entity.IsOwner)
-			{
-				state.tokenTest = new TestToken() { Number = 1337 };
-			}
+		//public override void Attached()
+		//{
+		//	if (entity.IsOwner)
+		//	{
+		//		state.tokenTest = new TestToken() { Number = 1337 };
+		//	}
 
-			state.AddCallback("tokenTest", () =>
-			{
-				BoltLog.Info("Received token in .tokenTest property {0}", state.tokenTest);
-			});
+		//	state.AddCallback("tokenTest", () =>
+		//	{
+		//		BoltLog.Info("Received token in .tokenTest property {0}", state.tokenTest);
+		//	});
 
-			state.SetTransforms(state.transform, transform);
-			state.SetAnimator(GetComponentInChildren<Animator>());
+		//	state.SetTransforms(state.transform, transform);
+		//	state.SetAnimator(GetComponentInChildren<Animator>());
 
-			// setting layerweights 
-			state.Animator.SetLayerWeight(0, 1);
-			state.Animator.SetLayerWeight(1, 1);
+		//	// setting layerweights 
+		//	state.Animator.SetLayerWeight(0, 1);
+		//	state.Animator.SetLayerWeight(1, 1);
 
-			state.OnFire += OnFire;
-			state.AddCallback("weapon", WeaponChanged);
+		//	state.OnFire += OnFire;
+		//	state.AddCallback("weapon", WeaponChanged);
 
-			// setup weapon
-			WeaponChanged();
-		}
+		//	// setup weapon
+		//	WeaponChanged();
+		//}
 
-		void WeaponChanged()
-		{
-			// setup weapon
-			for (int i = 0; i < _weapons.Length; ++i)
-			{
-				_weapons[i].gameObject.SetActive(false);
-			}
+		//void WeaponChanged()
+		//{
+		//	// setup weapon
+		//	for (int i = 0; i < _weapons.Length; ++i)
+		//	{
+		//		_weapons[i].gameObject.SetActive(false);
+		//	}
 
-			_weapons[state.weapon].gameObject.SetActive(true);
-		}
+		//	_weapons[state.weapon].gameObject.SetActive(true);
+		//}
 
-		void OnFire()
-		{
-			// play sfx
-			_weaponSfxSource.PlayOneShot(activeWeapon.fireSound);
+		//void OnFire()
+		//{
+		//	// play sfx
+		//	_weaponSfxSource.PlayOneShot(activeWeapon.fireSound);
 
-			GameUI.instance.crosshair.Spread += 0.1f;
+		//	GameUI.instance.crosshair.Spread += 0.1f;
 
-			// 
-			activeWeapon.Fx(entity);
-		}
+		//	// 
+		//	activeWeapon.Fx(entity);
+		//}
 
-		public void ApplyDamage(byte damage)
-		{
-			if (!state.Dead)
-			{
+		//public void ApplyDamage(byte damage)
+		//{
+		//	if (!state.Dead)
+		//	{
 
-				state.health -= damage;
+		//		state.health -= damage;
 
-				if (state.health > 100 || state.health < 0)
-				{
-					state.health = 0;
-				}
-			}
+		//		if (state.health > 100 || state.health < 0)
+		//		{
+		//			state.health = 0;
+		//		}
+		//	}
 
-			if (state.health == 0)
-			{
-				entity.Controller.GetPlayer().Kill();
-			}
-		}
+		//	if (state.health == 0)
+		//	{
+		//		entity.Controller.GetPlayer().Kill();
+		//	}
+		//}
 
-		public override void SimulateOwner()
-		{
-			if ((BoltNetwork.Frame % 5) == 0 && (state.Dead == false))
-			{
-				state.health = (byte)Mathf.Clamp(state.health + 1, 0, 100);
-			}
-		}
+		//public override void SimulateOwner()
+		//{
+		//	if ((BoltNetwork.Frame % 5) == 0 && (state.Dead == false))
+		//	{
+		//		state.health = (byte)Mathf.Clamp(state.health + 1, 0, 100);
+		//	}
+		//}
 
-		public override void SimulateController()
-		{
-			PollKeys(false);
+		//public override void SimulateController()
+		//{
+		//	PollKeys(false);
 
-			IPlayerCommandInput input = PlayerCommand.Create();
+		//	IPlayerCommandInput input = PlayerCommand.Create();
 
-			input.forward = forward;
-			input.backward = backward;
-			input.left = left;
-			input.right = right;
-			input.jump = jump;
+		//	input.forward = forward;
+		//	input.backward = backward;
+		//	input.left = left;
+		//	input.right = right;
+		//	input.jump = jump;
 
-			input.aiming = aiming;
-			input.fire = fire;
+		//	input.aiming = aiming;
+		//	input.fire = fire;
 
-			input.yaw = yaw;
-			input.pitch = pitch;
+		//	input.yaw = yaw;
+		//	input.pitch = pitch;
 
-			input.weapon = weapon;
-			input.Token = new TestToken();
+		//	input.weapon = weapon;
+		//	input.Token = new TestToken();
 
-			entity.QueueInput(input);
-		}
+		//	entity.QueueInput(input);
+		//}
 
-		public override void ExecuteCommand(Bolt.Command c, bool resetState)
-		{
-			if (state.Dead)
-			{
-				return;
-			}
+		//public override void ExecuteCommand(Bolt.Command c, bool resetState)
+		//{
+		//	if (state.Dead)
+		//	{
+		//		return;
+		//	}
 
-			PlayerCommand cmd = (PlayerCommand)c;
+		//	PlayerCommand cmd = (PlayerCommand)c;
 
-			if (resetState)
-			{
-				_motor.SetState(cmd.Result.position, cmd.Result.velocity, cmd.Result.isGrounded, cmd.Result.jumpFrames);
-			}
-			else
-			{
-				// move and save the resulting state
-				var result = _motor.Move(cmd.Input.forward, cmd.Input.backward, cmd.Input.left, cmd.Input.right, cmd.Input.jump, cmd.Input.yaw);
+		//	if (resetState)
+		//	{
+		//		_motor.SetState(cmd.Result.position, cmd.Result.velocity, cmd.Result.isGrounded, cmd.Result.jumpFrames);
+		//	}
+		//	else
+		//	{
+		//		// move and save the resulting state
+		//		var result = _motor.Move(cmd.Input.forward, cmd.Input.backward, cmd.Input.left, cmd.Input.right, cmd.Input.jump, cmd.Input.yaw);
 
-				cmd.Result.position = result.position;
-				cmd.Result.velocity = result.velocity;
-				cmd.Result.jumpFrames = result.jumpFrames;
-				cmd.Result.isGrounded = result.isGrounded;
+		//		cmd.Result.position = result.position;
+		//		cmd.Result.velocity = result.velocity;
+		//		cmd.Result.jumpFrames = result.jumpFrames;
+		//		cmd.Result.isGrounded = result.isGrounded;
 
-				if (cmd.IsFirstExecution)
-				{
-					// animation
-					AnimatePlayer(cmd);
+		//		if (cmd.IsFirstExecution)
+		//		{
+		//			// animation
+		//			AnimatePlayer(cmd);
 
-					// set state pitch
-					state.pitch = cmd.Input.pitch;
-					state.weapon = cmd.Input.weapon;
-					state.Aiming = cmd.Input.aiming;
+		//			// set state pitch
+		//			state.pitch = cmd.Input.pitch;
+		//			state.weapon = cmd.Input.weapon;
+		//			state.Aiming = cmd.Input.aiming;
 
-					// deal with weapons
-					if (cmd.Input.aiming && cmd.Input.fire)
-					{
-						FireWeapon(cmd);
-					}
-				}
+		//			// deal with weapons
+		//			if (cmd.Input.aiming && cmd.Input.fire)
+		//			{
+		//				FireWeapon(cmd);
+		//			}
+		//		}
 
-				if (entity.IsOwner)
-				{
-					cmd.Result.Token = new TestToken();
-				}
-			}
-		}
+		//		if (entity.IsOwner)
+		//		{
+		//			cmd.Result.Token = new TestToken();
+		//		}
+		//	}
+		//}
 
-		void AnimatePlayer(PlayerCommand cmd)
-		{
-			// FWD <> BWD movement
-			if (cmd.Input.forward ^ cmd.Input.backward)
-			{
-				state.MoveZ = cmd.Input.forward ? 1 : -1;
-			}
-			else
-			{
-				state.MoveZ = 0;
-			}
+		//void AnimatePlayer(PlayerCommand cmd)
+		//{
+		//	// FWD <> BWD movement
+		//	if (cmd.Input.forward ^ cmd.Input.backward)
+		//	{
+		//		state.MoveZ = cmd.Input.forward ? 1 : -1;
+		//	}
+		//	else
+		//	{
+		//		state.MoveZ = 0;
+		//	}
 
-			// LEFT <> RIGHT movement
-			if (cmd.Input.left ^ cmd.Input.right)
-			{
-				state.MoveX = cmd.Input.right ? 1 : -1;
-			}
-			else
-			{
-				state.MoveX = 0;
-			}
+		//	// LEFT <> RIGHT movement
+		//	if (cmd.Input.left ^ cmd.Input.right)
+		//	{
+		//		state.MoveX = cmd.Input.right ? 1 : -1;
+		//	}
+		//	else
+		//	{
+		//		state.MoveX = 0;
+		//	}
 
-			// JUMP
-			if (_motor.jumpStartedThisFrame)
-			{
-				state.Jump();
-			}
-		}
+		//	// JUMP
+		//	if (_motor.jumpStartedThisFrame)
+		//	{
+		//		state.Jump();
+		//	}
+		//}
 
-		void FireWeapon(PlayerCommand cmd)
-		{
-			if (activeWeapon.fireFrame + activeWeapon.refireRate <= BoltNetwork.ServerFrame)
-			{
-				activeWeapon.fireFrame = BoltNetwork.ServerFrame;
+		//void FireWeapon(PlayerCommand cmd)
+		//{
+		//	if (activeWeapon.fireFrame + activeWeapon.refireRate <= BoltNetwork.ServerFrame)
+		//	{
+		//		activeWeapon.fireFrame = BoltNetwork.ServerFrame;
 
-				state.Fire();
+		//		state.Fire();
 
-				// if we are the owner and the active weapon is a hitscan weapon, do logic
-				if (entity.IsOwner)
-				{
-					activeWeapon.OnOwner(cmd, entity);
-				}
-			}
-		}
+		//		// if we are the owner and the active weapon is a hitscan weapon, do logic
+		//		if (entity.IsOwner)
+		//		{
+		//			activeWeapon.OnOwner(cmd, entity);
+		//		}
+		//	}
+		//}
 	}
 }

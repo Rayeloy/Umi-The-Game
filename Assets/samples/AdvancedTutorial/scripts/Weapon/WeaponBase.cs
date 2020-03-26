@@ -33,10 +33,10 @@ namespace Bolt.AdvancedTutorial
 		public int refireRate = 5;
 		public int fireFrame;
 
-		public virtual void OnOwner (PlayerCommand cmd, BoltEntity entity)
-		{
+		//public virtual void OnOwner (PlayerCommand cmd, BoltEntity entity)
+		//{
 
-		}
+		//}
 
 		public virtual void Fx (BoltEntity entity)
 		{

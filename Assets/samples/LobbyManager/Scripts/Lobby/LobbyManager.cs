@@ -73,26 +73,26 @@ namespace Bolt.Samples.Photon.Lobby
 
         private void VerifyReady()
         {
-            var allReady = true;
-            var readyCount = 0;
+            //var allReady = true;
+            //var readyCount = 0;
 
-            foreach (var entity in BoltNetwork.Entities)
-            {
-                if (entity.StateIs<ILobbyPlayerInfoState>() == false) continue;
+            //foreach (var entity in BoltNetwork.Entities)
+            //{
+            //    if (entity.StateIs<ILobbyPlayerInfoState>() == false) continue;
 
-                var lobbyPlayer = entity.GetState<ILobbyPlayerInfoState>();
+            //    var lobbyPlayer = entity.GetState<ILobbyPlayerInfoState>();
 
-                allReady &= lobbyPlayer.Ready;
+            //    allReady &= lobbyPlayer.Ready;
 
-                if (allReady == false) break;
-                readyCount++;
-            }
+            //    if (allReady == false) break;
+            //    readyCount++;
+            //}
 
-            if (allReady && readyCount >= minPlayers)
-            {
-                isCountdown = true;
-                StartCoroutine(ServerCountdownCoroutine());
-            }
+            //if (allReady && readyCount >= minPlayers)
+            //{
+            //    isCountdown = true;
+            //    StartCoroutine(ServerCountdownCoroutine());
+            //}
         }
 
         private IEnumerator ServerCountdownCoroutine()
@@ -230,23 +230,23 @@ namespace Bolt.Samples.Photon.Lobby
             });
         }
 
-        public override void EntityAttached(BoltEntity entity)
-        {
-            EntityAttachedEventHandler(entity);
+        //public override void EntityAttached(BoltEntity entity)
+        //{
+        //    EntityAttachedEventHandler(entity);
 
-            var photonPlayer = entity.gameObject.GetComponent<LobbyPlayer>();
-            if (photonPlayer)
-            {
-                if (entity.IsControlled)
-                {
-                    photonPlayer.SetupPlayer();
-                }
-                else
-                {
-                    photonPlayer.SetupOtherPlayer();
-                }
-            }
-        }
+        //    var photonPlayer = entity.gameObject.GetComponent<LobbyPlayer>();
+        //    if (photonPlayer)
+        //    {
+        //        if (entity.IsControlled)
+        //        {
+        //            photonPlayer.SetupPlayer();
+        //        }
+        //        else
+        //        {
+        //            photonPlayer.SetupOtherPlayer();
+        //        }
+        //    }
+        //}
 
         public override void Connected(BoltConnection connection)
         {
@@ -264,20 +264,20 @@ namespace Bolt.Samples.Photon.Lobby
             }
         }
 
-        public override void Disconnected(BoltConnection connection)
-        {
-            foreach (var entity in BoltNetwork.Entities)
-            {
-                if (entity.StateIs<ILobbyPlayerInfoState>() == false || entity.IsController(connection) == false) continue;
+        //public override void Disconnected(BoltConnection connection)
+        //{
+        //    foreach (var entity in BoltNetwork.Entities)
+        //    {
+        //        if (entity.StateIs<ILobbyPlayerInfoState>() == false || entity.IsController(connection) == false) continue;
                 
-                var player = entity.GetComponent<LobbyPlayer>();
+        //        var player = entity.GetComponent<LobbyPlayer>();
 
-                if (player)
-                {
-                    player.RemovePlayer();
-                }
-            }
-        }
+        //        if (player)
+        //        {
+        //            player.RemovePlayer();
+        //        }
+        //    }
+        //}
 
         public override void ConnectFailed(UdpEndPoint endpoint, IProtocolToken token)
         {
