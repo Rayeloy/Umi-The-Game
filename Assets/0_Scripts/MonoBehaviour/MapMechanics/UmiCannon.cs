@@ -58,7 +58,7 @@ public class UmiCannon : MonoBehaviour
             {
                 Vector3 coneDir = (parabolePoints[i - 1] - parabolePoints[i]).normalized;
                 Vector3 coneBase = parabolePoints[i] + coneDir * 3;
-                GizmoTools.DrawConeGizmo(coneBase, parabolePoints[i], color, 8, 0.3f);
+                DrawConeGizmo(coneBase, parabolePoints[i], color, 8, 0.3f);
                 //arrowIndicator.localPosition = Vector3.zero;
                 //Vector3 arrowDir = (parabolePoints[i] - parabolePoints[i - 1]).normalized;
                 //arrowIndicator.position += -arrowDir * 0.12f;
@@ -102,5 +102,21 @@ public class UmiCannon : MonoBehaviour
         lastOrigin = origin;
         lastGravity = _gravity;
         return result;
+    }
+
+    void DrawConeGizmo(Vector3 baseCenter, Vector3 vertex, Color color, int rays=5, float radius=0.5f)
+    {
+        Vector3 coneDir = vertex - baseCenter;
+        Vector3 coneDirPerp = Vector3.Cross(coneDir, Vector3.up).normalized;
+        float anglePartition = 360 / rays;
+        for(int i = 0; i<rays; i++)
+        {
+            float angle = anglePartition * i;
+            Vector3 radiusDir = Quaternion.AngleAxis(angle, coneDir.normalized) * coneDirPerp;
+            Vector3 basePoint = baseCenter + radiusDir.normalized * radius;
+
+            Gizmos.DrawLine(baseCenter, basePoint);
+            Gizmos.DrawLine(basePoint, vertex);
+        }
     }
 }
