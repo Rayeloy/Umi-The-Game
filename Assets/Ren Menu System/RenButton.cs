@@ -39,6 +39,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     [Header("NAVIGATION")]
     public RenButtonNavigationMode navigationMode = RenButtonNavigationMode.Manual;
+    public int buttonGroup = 0;
     public RenButton nextUpButton;
     public RenButton nextDownButton;
     public RenButton nextRightButton;
@@ -92,6 +93,66 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         for (int i = 0; i < targetImages.Length; i++)
         {
             targetImages[i].color = normalColor;
+        }
+        if (buttonGroup == 0) RenController.instance.AddButton(0, this);
+    }
+
+    private void Start()
+    {
+        SetNextButtons();
+    }
+
+
+    void SetNextButtons()
+    {
+        if(navigationMode == RenButtonNavigationMode.Automatic)
+        {
+            Debug.Log(" --- Setting Button Navegation for " + name);
+            RenController.SetButtonNavigation(this);
+        }
+    }
+
+
+    private void OnDrawGizmos()
+    {
+        ShowNavigationGizmos();
+    }
+
+    void ShowNavigationGizmos()
+    {
+        Vector3 origin = transform.position;
+
+        if (nextUpButton != null)
+        {
+            Vector3 auxOrigin = origin;
+            auxOrigin.y += GetComponent<RectTransform>().rect.height / 2;
+            Vector3 auxEnd = nextUpButton.transform.position;
+            auxEnd.y -= nextUpButton.GetComponent<RectTransform>().rect.height / 2;
+            GizmoTools.DrawCurveArrow(auxOrigin, auxEnd, Color.yellow, Color.blue, 4, 3, 20, 40);
+        }
+        if (nextLeftButton != null)
+        {
+            Vector3 auxOrigin = origin;
+            auxOrigin.x -= GetComponent<RectTransform>().rect.width / 2;
+            Vector3 auxEnd = nextLeftButton.transform.position;
+            auxEnd.x += nextLeftButton.GetComponent<RectTransform>().rect.width / 2;
+            GizmoTools.DrawCurveArrow(auxOrigin, auxEnd, Color.yellow, Color.blue, 4, 3, 20, 40);
+        }
+        if (nextRightButton != null)
+        {
+            Vector3 auxOrigin = origin;
+            auxOrigin.x += GetComponent<RectTransform>().rect.width / 2;
+            Vector3 auxEnd = nextRightButton.transform.position;
+            auxEnd.x -= nextRightButton.GetComponent<RectTransform>().rect.width / 2;
+            GizmoTools.DrawCurveArrow(auxOrigin, auxEnd, Color.yellow, Color.blue, 4, 3, 20, 40);
+        }
+        if (nextDownButton != null)
+        {
+            Vector3 auxOrigin = origin;
+            auxOrigin.y -= GetComponent<RectTransform>().rect.height / 2;
+            Vector3 auxEnd = nextDownButton.transform.position;
+            auxEnd.y += nextDownButton.GetComponent<RectTransform>().rect.height / 2;
+            GizmoTools.DrawCurveArrow(auxOrigin, auxEnd, Color.yellow, Color.blue, 4, 3, 20, 40);
         }
     }
 
