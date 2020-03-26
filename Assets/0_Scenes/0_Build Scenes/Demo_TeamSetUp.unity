@@ -2794,18 +2794,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &881859527 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6660218516581674225, guid: f077ba0cb33143f42ae57c30c08d4ed9,
-    type: 3}
-  m_PrefabInstance: {fileID: 7787893271554404388}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &894256196
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4168,6 +4156,16 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 7112525591032193002, guid: b307589e2b431cd47a4bcf08f0b0299b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7112525589534474050, guid: b307589e2b431cd47a4bcf08f0b0299b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2743339769304100587, guid: b307589e2b431cd47a4bcf08f0b0299b,
         type: 3}
       propertyPath: localRotation.y
@@ -4182,16 +4180,6 @@ PrefabInstance:
         type: 3}
       propertyPath: localRotation.y
       value: 74
-      objectReference: {fileID: 0}
-    - target: {fileID: 7112525591032193002, guid: b307589e2b431cd47a4bcf08f0b0299b,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7112525589534474050, guid: b307589e2b431cd47a4bcf08f0b0299b,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b307589e2b431cd47a4bcf08f0b0299b, type: 3}
@@ -4554,13 +4542,13 @@ MonoBehaviour:
   - {fileID: 1676408105}
   - {fileID: 1338664858}
   tutorialMapVariationNames:
-  - Colisiones Tuto
+  - Tutorial_UmilandRevestir_WIP
   CTWMapVariationNames:
   - Capture The Whale
-  - CTW_Gamescom_LOD
+  - CTWLOD_Gamescom_High 1
   mapVariationsSpritesParent: {fileID: 763265346}
-  CTWHigh: CTW_Gamescom_High
-  CTWLOD: CTW_Gamescom_LOD
+  CTWHigh: CTWLOD_Gamescom_High 1
+  CTWLOD: CTWLOD_Gamescom_High 1
 --- !u!4 &1104156485
 Transform:
   m_ObjectHideFlags: 0
@@ -5522,18 +5510,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 737631499}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1946396751 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4032991752381984219, guid: f077ba0cb33143f42ae57c30c08d4ed9,
-    type: 3}
-  m_PrefabInstance: {fileID: 7787893271554404388}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1954069101
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6901,6 +6877,16 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 7112525591032193002, guid: b307589e2b431cd47a4bcf08f0b0299b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7112525589534474050, guid: b307589e2b431cd47a4bcf08f0b0299b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2743339769304100587, guid: b307589e2b431cd47a4bcf08f0b0299b,
         type: 3}
       propertyPath: localRotation.y
@@ -6915,16 +6901,6 @@ PrefabInstance:
         type: 3}
       propertyPath: localRotation.y
       value: 74
-      objectReference: {fileID: 0}
-    - target: {fileID: 7112525591032193002, guid: b307589e2b431cd47a4bcf08f0b0299b,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7112525589534474050, guid: b307589e2b431cd47a4bcf08f0b0299b,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b307589e2b431cd47a4bcf08f0b0299b, type: 3}
@@ -53675,13 +53651,25 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1104156484}
     - target: {fileID: 387966779, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
+      propertyPath: onButtonHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MakeSpriteBig
+      objectReference: {fileID: 0}
+    - target: {fileID: 387966779, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
       propertyPath: onButtonStopHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1104156484}
     - target: {fileID: 387966779, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
+      propertyPath: onButtonStopHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MakeSpriteSmall
+      objectReference: {fileID: 0}
+    - target: {fileID: 387966779, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
       propertyPath: onButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1104156484}
+    - target: {fileID: 387966779, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
+      propertyPath: onButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LockSelectNumberOfPlayers
+      objectReference: {fileID: 0}
     - target: {fileID: 7538191969898249658, guid: f077ba0cb33143f42ae57c30c08d4ed9,
         type: 3}
       propertyPath: onButtonHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -53689,47 +53677,76 @@ PrefabInstance:
       objectReference: {fileID: 1104156484}
     - target: {fileID: 7538191969898249658, guid: f077ba0cb33143f42ae57c30c08d4ed9,
         type: 3}
+      propertyPath: onButtonHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MakeSpriteBig
+      objectReference: {fileID: 0}
+    - target: {fileID: 7538191969898249658, guid: f077ba0cb33143f42ae57c30c08d4ed9,
+        type: 3}
       propertyPath: onButtonStopHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1104156484}
     - target: {fileID: 7538191969898249658, guid: f077ba0cb33143f42ae57c30c08d4ed9,
         type: 3}
+      propertyPath: onButtonStopHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MakeSpriteSmall
+      objectReference: {fileID: 0}
+    - target: {fileID: 7538191969898249658, guid: f077ba0cb33143f42ae57c30c08d4ed9,
+        type: 3}
       propertyPath: onButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1104156484}
+    - target: {fileID: 7538191969898249658, guid: f077ba0cb33143f42ae57c30c08d4ed9,
+        type: 3}
+      propertyPath: onButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LockSelectNumberOfPlayers
+      objectReference: {fileID: 0}
     - target: {fileID: 1332771727, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
       propertyPath: onButtonHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1104156484}
     - target: {fileID: 1332771727, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
+      propertyPath: onButtonHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MakeSpriteBig
+      objectReference: {fileID: 0}
+    - target: {fileID: 1332771727, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
       propertyPath: onButtonStopHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1104156484}
     - target: {fileID: 1332771727, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
+      propertyPath: onButtonStopHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MakeSpriteSmall
+      objectReference: {fileID: 0}
+    - target: {fileID: 1332771727, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
       propertyPath: onButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1104156484}
-    - target: {fileID: 4836888055625011862, guid: f077ba0cb33143f42ae57c30c08d4ed9,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
+    - target: {fileID: 1332771727, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
+      propertyPath: onButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LockSelectNumberOfPlayers
       objectReference: {fileID: 0}
     - target: {fileID: 1689950797, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
       propertyPath: onButtonHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1104156484}
     - target: {fileID: 1689950797, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
+      propertyPath: onButtonHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MakeSpriteBig
+      objectReference: {fileID: 0}
+    - target: {fileID: 1689950797, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
       propertyPath: onButtonStopHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1104156484}
     - target: {fileID: 1689950797, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
+      propertyPath: onButtonStopHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MakeSpriteSmall
+      objectReference: {fileID: 0}
+    - target: {fileID: 1689950797, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
       propertyPath: onButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1104156484}
-    - target: {fileID: 4235803298494984175, guid: f077ba0cb33143f42ae57c30c08d4ed9,
-        type: 3}
-      propertyPath: targetTexts.Array.size
-      value: 1
+    - target: {fileID: 1689950797, guid: f077ba0cb33143f42ae57c30c08d4ed9, type: 3}
+      propertyPath: onButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LockSelectNumberOfPlayers
       objectReference: {fileID: 0}
     - target: {fileID: 4235803298494984175, guid: f077ba0cb33143f42ae57c30c08d4ed9,
         type: 3}
@@ -53738,9 +53755,19 @@ PrefabInstance:
       objectReference: {fileID: 1104156484}
     - target: {fileID: 4235803298494984175, guid: f077ba0cb33143f42ae57c30c08d4ed9,
         type: 3}
+      propertyPath: onButtonHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MakeSpriteBig
+      objectReference: {fileID: 0}
+    - target: {fileID: 4235803298494984175, guid: f077ba0cb33143f42ae57c30c08d4ed9,
+        type: 3}
       propertyPath: onButtonStopHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1104156484}
+    - target: {fileID: 4235803298494984175, guid: f077ba0cb33143f42ae57c30c08d4ed9,
+        type: 3}
+      propertyPath: onButtonStopHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MakeSpriteSmall
+      objectReference: {fileID: 0}
     - target: {fileID: 4235803298494984175, guid: f077ba0cb33143f42ae57c30c08d4ed9,
         type: 3}
       propertyPath: onButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -53748,13 +53775,8 @@ PrefabInstance:
       objectReference: {fileID: 1104156484}
     - target: {fileID: 4235803298494984175, guid: f077ba0cb33143f42ae57c30c08d4ed9,
         type: 3}
-      propertyPath: targetTexts.Array.data[0]
-      value: 
-      objectReference: {fileID: 881859527}
-    - target: {fileID: 9024942660365805304, guid: f077ba0cb33143f42ae57c30c08d4ed9,
-        type: 3}
-      propertyPath: targetTexts.Array.size
-      value: 1
+      propertyPath: onButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LockMapVariation
       objectReference: {fileID: 0}
     - target: {fileID: 9024942660365805304, guid: f077ba0cb33143f42ae57c30c08d4ed9,
         type: 3}
@@ -53763,9 +53785,19 @@ PrefabInstance:
       objectReference: {fileID: 1104156484}
     - target: {fileID: 9024942660365805304, guid: f077ba0cb33143f42ae57c30c08d4ed9,
         type: 3}
+      propertyPath: onButtonHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MakeSpriteBig
+      objectReference: {fileID: 0}
+    - target: {fileID: 9024942660365805304, guid: f077ba0cb33143f42ae57c30c08d4ed9,
+        type: 3}
       propertyPath: onButtonStopHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1104156484}
+    - target: {fileID: 9024942660365805304, guid: f077ba0cb33143f42ae57c30c08d4ed9,
+        type: 3}
+      propertyPath: onButtonStopHighlight.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MakeSpriteSmall
+      objectReference: {fileID: 0}
     - target: {fileID: 9024942660365805304, guid: f077ba0cb33143f42ae57c30c08d4ed9,
         type: 3}
       propertyPath: onButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -53773,9 +53805,9 @@ PrefabInstance:
       objectReference: {fileID: 1104156484}
     - target: {fileID: 9024942660365805304, guid: f077ba0cb33143f42ae57c30c08d4ed9,
         type: 3}
-      propertyPath: targetTexts.Array.data[0]
-      value: 
-      objectReference: {fileID: 1946396751}
+      propertyPath: onButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LockMapVariation
+      objectReference: {fileID: 0}
     - target: {fileID: 6572414557123942113, guid: f077ba0cb33143f42ae57c30c08d4ed9,
         type: 3}
       propertyPath: m_LocalPosition.x

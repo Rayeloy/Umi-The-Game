@@ -9,6 +9,7 @@ using UnityEngine.Events;
 
 public enum TransitionMode
 {
+    None,
     ColorTint,
     SpriteSwap
     //Animation
@@ -23,7 +24,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 {
     public bool disabled = false;
 
-    public TransitionMode transition;
+    public TransitionMode transition = TransitionMode.ColorTint;
     public Image[] targetImages;
     [Header("TRANSITION: COLOR TINT")]
     public Text[] targetTexts;
@@ -94,7 +95,10 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         {
             targetImages[i].color = normalColor;
         }
-        if (buttonGroup == 0) RenController.instance.AddButton(0, this);
+        if (Application.isPlaying)
+        {
+            if (buttonGroup == 0) RenController.instance.AddButton(0, this);
+        }
     }
 
     private void Start()
@@ -167,10 +171,11 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
             isMouseOver = true;
             //Debug.Log("Mouse enter");
-            for (int i = 0; i < targetImages.Length; i++)
-            {
-                targetImages[i].color = highlightedColor;
-            }
+            //for (int i = 0; i < targetImages.Length; i++)
+            //{
+            //    targetImages[i].color = highlightedColor;
+            //}
+            HighlightButtonsAndTexts();
 
             onMouseEnter.Invoke();
         }
@@ -180,15 +185,12 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (!disabled && RenController.instance.useMouse)
         {
-            if (RenController.instance.currentButton != null)
-                RenController.instance.currentButton.HighlightButtonsAndTexts();
-
             isMouseOver = false;
             //Debug.Log("Mouse exit");
-            for (int i = 0; i < targetImages.Length; i++)
-            {
-                targetImages[i].color = normalColor;
-            }
+            //for (int i = 0; i < targetImages.Length; i++)
+            //{
+            //    targetImages[i].color = normalColor;
+            //}
             onMouseExit.Invoke();
         }
     }
@@ -227,7 +229,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (!disabled)
         {
-            //Debug.Log("BUTTON STOP HIGHLIGHTED");
+            Debug.Log("BUTTON STOP HIGHLIGHTED");
             switch (transition)
             {
                 case TransitionMode.ColorTint:
@@ -248,7 +250,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (!disabled)
         {
-            //Debug.Log("BUTTON HIGHLIGHTED");
+            Debug.Log("BUTTON HIGHLIGHTED: transition mode = "+transition);
             switch (transition)
             {
                 case TransitionMode.ColorTint:

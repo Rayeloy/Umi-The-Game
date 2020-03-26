@@ -49,7 +49,6 @@ public class Demo_MainMenu : MonoBehaviour
 
     public GameObject umiLogo;
     bool umilogo = false;
-    public GameObject play;
 
 
     private void Awake()
@@ -198,7 +197,6 @@ public class Demo_MainMenu : MonoBehaviour
         {
 
             umiLogo.SetActive(true);
-            play.SetActive(true);
             umilogo = true;
         }
         else if (umilogo == true)
@@ -206,7 +204,6 @@ public class Demo_MainMenu : MonoBehaviour
             //Fade Out
 
             umiLogo.SetActive(false);
-            play.SetActive(false);
             scene = 1;
             SelectScene();
         }

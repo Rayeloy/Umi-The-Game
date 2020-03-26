@@ -140,6 +140,7 @@ MonoBehaviour:
   pressedSprite: {fileID: 0}
   disabledSprite: {fileID: 0}
   navigationMode: 1
+  buttonGroup: 0
   nextUpButton: {fileID: 7538191969898249658}
   nextDownButton: {fileID: 7538191969898249658}
   nextRightButton: {fileID: 1689950797}
@@ -296,6 +297,7 @@ MonoBehaviour:
   pressedSprite: {fileID: 0}
   disabledSprite: {fileID: 0}
   navigationMode: 1
+  buttonGroup: 0
   nextUpButton: {fileID: 1332771727}
   nextDownButton: {fileID: 1332771727}
   nextRightButton: {fileID: 387966779}
@@ -525,6 +527,7 @@ MonoBehaviour:
   pressedSprite: {fileID: 0}
   disabledSprite: {fileID: 0}
   navigationMode: 1
+  buttonGroup: 0
   nextUpButton: {fileID: 1689950797}
   nextDownButton: {fileID: 1689950797}
   nextRightButton: {fileID: 7538191969898249658}
@@ -791,6 +794,7 @@ MonoBehaviour:
   pressedSprite: {fileID: 0}
   disabledSprite: {fileID: 0}
   navigationMode: 1
+  buttonGroup: 0
   nextUpButton: {fileID: 387966779}
   nextDownButton: {fileID: 387966779}
   nextRightButton: {fileID: 1332771727}
@@ -937,7 +941,8 @@ MonoBehaviour:
   transition: 0
   targetImages:
   - {fileID: 7502264866779048300}
-  targetTexts: []
+  targetTexts:
+  - {fileID: 6660218516581674225}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   highlightedColor: {r: 1, g: 1, b: 1, a: 1}
   pressedColor: {r: 1, g: 1, b: 1, a: 1}
@@ -947,6 +952,7 @@ MonoBehaviour:
   pressedSprite: {fileID: 0}
   disabledSprite: {fileID: 0}
   navigationMode: 1
+  buttonGroup: 0
   nextUpButton: {fileID: 9024942660365805304}
   nextDownButton: {fileID: 9024942660365805304}
   nextRightButton: {fileID: 0}
@@ -992,7 +998,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
-        m_MethodName: LockMapVariation
+        m_MethodName: 
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1093,7 +1099,8 @@ MonoBehaviour:
   transition: 0
   targetImages:
   - {fileID: 8237347527859686480}
-  targetTexts: []
+  targetTexts:
+  - {fileID: 4032991752381984219}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   highlightedColor: {r: 1, g: 1, b: 1, a: 1}
   pressedColor: {r: 1, g: 1, b: 1, a: 1}
@@ -1103,6 +1110,7 @@ MonoBehaviour:
   pressedSprite: {fileID: 0}
   disabledSprite: {fileID: 0}
   navigationMode: 1
+  buttonGroup: 0
   nextUpButton: {fileID: 4235803298494984175}
   nextDownButton: {fileID: 4235803298494984175}
   nextRightButton: {fileID: 0}
@@ -1148,7 +1156,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
-        m_MethodName: LockMapVariation
+        m_MethodName: 
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1634,6 +1642,16 @@ PrefabInstance:
     - target: {fileID: 880503870005479700, guid: c1c04725e7d5ab246893de4c4dc8faad,
         type: 3}
       propertyPath: automaticButtonFlowOnError
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 880503870005479700, guid: c1c04725e7d5ab246893de4c4dc8faad,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 880503870005479700, guid: c1c04725e7d5ab246893de4c4dc8faad,
+        type: 3}
+      propertyPath: useMouse
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

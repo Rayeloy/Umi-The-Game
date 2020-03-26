@@ -20,8 +20,8 @@ namespace Crest
         [Range(0f, 1f), SerializeField]
         float _noiseAmp = 0.5f;
 
-        [Range(-1f, 1f), SerializeField]
-        float _weight = 1f;
+        [Range(-1f, 10f), SerializeField]
+        float _weight = 5f;
         [Range(0f, 2f), SerializeField]
         float _weightUpDownMul = 0.5f;
 
@@ -111,7 +111,10 @@ namespace Crest
                 return;
 
             var disp = _boat.CalculateDisplacementToObject();
-            transform.position = transform.parent.TransformPoint(_localOffset) - disp + _velocityPositionOffset * _boat.Velocity;
+            Debug.Log("boatDisp = " + disp);
+            Debug.Log("Velocity = " + _boat.Velocity);
+
+            //transform.position = transform.parent.TransformPoint(_localOffset) - disp + _velocityPositionOffset * _boat.Velocity;
 
             var ocean = OceanRenderer.Instance;
 
@@ -125,6 +128,7 @@ namespace Crest
 
             if (QueryFlow.Instance)
             {
+                Debug.Log("Width = " + _boat.ObjectWidth);
                 _sampleFlowHelper.Init(transform.position, _boat.ObjectWidth);
                 Vector2 surfaceFlow = Vector2.zero;
                 _sampleFlowHelper.Sample(ref surfaceFlow);
@@ -156,6 +160,7 @@ namespace Crest
 
             float dt; int steps;
             ocean._lodDataDynWaves.GetSimSubstepData(ocean.DeltaTimeDynamics, out steps, out dt);
+            Debug.Log("Floating? " + (_boat.InWater));
             float weight = _boat.InWater ? _weight / simsActive : 0f;
 
             _renderer.GetPropertyBlock(_mpb);

@@ -96,6 +96,7 @@ public class Alpha_Team_Select : MonoBehaviour
         numPlayerSpritesParent.gameObject.SetActive(false);
         mapVariationsSpritesParent.gameObject.SetActive(true);
 
+        Debug.Log("Gamemode = " + GameInfo.instance.currentGameMode);
         switch (GameInfo.instance.currentGameMode)
         {
             case GameMode.Tutorial:
@@ -204,6 +205,8 @@ public class Alpha_Team_Select : MonoBehaviour
                                 }
                                 break;
                             case GameMode.Tutorial:
+                                Debug.Log("currentMapIndex = " + currentMapIndex);
+                                Debug.Log("mapVariationNames.Length = " + mapVariationNames.Length);
                                 SceneManager.LoadScene(mapVariationNames[currentMapIndex]);
                                 break;
                             default:

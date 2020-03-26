@@ -21,7 +21,7 @@ public class PlayerBodyCMF : MonoBehaviour
     public float floatingSlack = 0.7f;
     [HideInInspector]
     public float waterSurfaceHeight = 0;
-    Vector3 displacementToObject = Vector3.zero;
+    [HideInInspector] public Vector3 displacementToObject = Vector3.zero;
 
     SampleHeightHelper _sampleHeightHelper = new SampleHeightHelper();
     SampleFlowHelper _sampleFlowHelper = new SampleFlowHelper();

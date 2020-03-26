@@ -342,7 +342,6 @@ GameObject:
   - component: {fileID: 4140875912955519260}
   - component: {fileID: 4140875912955519249}
   - component: {fileID: 4140875912955519262}
-  - component: {fileID: 4140875912955519263}
   - component: {fileID: 4349400938508234398}
   m_Layer: 5
   m_Name: Restart - Button
@@ -407,61 +406,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4140875912955519263
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4140875912955519261}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 3
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 2
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 21300000, guid: f12e1190c27c09747a1612c13e6c6ef2,
-      type: 3}
-    m_PressedSprite: {fileID: 21300000, guid: 6250da9d1e587464f996aecb25a57cb7, type: 3}
-    m_SelectedSprite: {fileID: 21300000, guid: f12e1190c27c09747a1612c13e6c6ef2, type: 3}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Highlighted
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 4140875912955519262}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: ResetGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &4349400938508234398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -488,6 +432,7 @@ MonoBehaviour:
   pressedSprite: {fileID: 21300000, guid: 6250da9d1e587464f996aecb25a57cb7, type: 3}
   disabledSprite: {fileID: 0}
   navigationMode: 1
+  buttonGroup: 0
   nextUpButton: {fileID: 7403124338849428644}
   nextDownButton: {fileID: 7403124338849428644}
   nextRightButton: {fileID: 0}
@@ -720,6 +665,7 @@ MonoBehaviour:
   pressedSprite: {fileID: 21300000, guid: 698f960138251704ca417e6f3373a587, type: 3}
   disabledSprite: {fileID: 0}
   navigationMode: 1
+  buttonGroup: 0
   nextUpButton: {fileID: 1771360812266515165}
   nextDownButton: {fileID: 414941945811464980}
   nextRightButton: {fileID: 0}
@@ -993,7 +939,6 @@ GameObject:
   - component: {fileID: 4140875913390696376}
   - component: {fileID: 4140875913390696377}
   - component: {fileID: 4140875913390696326}
-  - component: {fileID: 4140875913390696327}
   - component: {fileID: 7403124338849428644}
   m_Layer: 5
   m_Name: Menu - Button
@@ -1058,61 +1003,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4140875913390696327
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4140875913390696324}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 3
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 2
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 21300000, guid: f12e1190c27c09747a1612c13e6c6ef2,
-      type: 3}
-    m_PressedSprite: {fileID: 21300000, guid: 6250da9d1e587464f996aecb25a57cb7, type: 3}
-    m_SelectedSprite: {fileID: 21300000, guid: f12e1190c27c09747a1612c13e6c6ef2, type: 3}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Highlighted
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 4140875913390696326}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: GoBackToMenu
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &7403124338849428644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1139,6 +1029,7 @@ MonoBehaviour:
   pressedSprite: {fileID: 21300000, guid: 6250da9d1e587464f996aecb25a57cb7, type: 3}
   disabledSprite: {fileID: 0}
   navigationMode: 1
+  buttonGroup: 0
   nextUpButton: {fileID: 4349400938508234398}
   nextDownButton: {fileID: 4349400938508234398}
   nextRightButton: {fileID: 0}
@@ -1448,6 +1339,7 @@ MonoBehaviour:
   pressedSprite: {fileID: 21300000, guid: 698f960138251704ca417e6f3373a587, type: 3}
   disabledSprite: {fileID: 0}
   navigationMode: 1
+  buttonGroup: 0
   nextUpButton: {fileID: 6875512511693731378}
   nextDownButton: {fileID: 1771360812266515165}
   nextRightButton: {fileID: 0}
@@ -1744,6 +1636,7 @@ MonoBehaviour:
   pressedSprite: {fileID: 21300000, guid: 698f960138251704ca417e6f3373a587, type: 3}
   disabledSprite: {fileID: 0}
   navigationMode: 1
+  buttonGroup: 0
   nextUpButton: {fileID: 414941945811464980}
   nextDownButton: {fileID: 6875512511693731378}
   nextRightButton: {fileID: 0}
@@ -2112,7 +2005,7 @@ MonoBehaviour:
     finalPos: {x: 0, y: 335}
   gameOverPressStart: {fileID: 4140875913576641464}
   gameOverFirstButton: {fileID: 414941945811464980}
-  menuScene: Demo_MainMenu1
+  menuScene: Demo_MainMenu 1
   teamSelectScene: Demo_TeamSetUp
   pauseRestartButton: {fileID: 4349400938508234398}
   pauseMenu: {fileID: 4140875914103391668}
@@ -2419,6 +2312,11 @@ PrefabInstance:
     - target: {fileID: 880503870005479700, guid: c1c04725e7d5ab246893de4c4dc8faad,
         type: 3}
       propertyPath: automaticButtonFlowOnError
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 880503870005479700, guid: c1c04725e7d5ab246893de4c4dc8faad,
+        type: 3}
+      propertyPath: useMouse
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

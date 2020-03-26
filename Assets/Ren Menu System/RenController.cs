@@ -88,6 +88,7 @@ public class RenController : MonoBehaviour
 
     private void Update()
     {
+
         if (!disabled)
         {
             if ((currentControls.leftJoystcikAsButtons.right.wasPressed || currentControls.leftJoystcikAsButtons.right.wasPressedLong) && validInput)
@@ -327,6 +328,7 @@ public class RenController : MonoBehaviour
             RenButton nextButton = null;
             if (currentButton.nextRightButton.disabled && automaticButtonFlowOnError)
             {
+                Debug.LogWarning("next right Button is disabled and automaticButtonFlowOnError is on");
                 RenButton auxCurrentButton = currentButton.nextRightButton;
                 int i = 0;
                 while (auxCurrentButton.disabled || i > 5)
@@ -373,6 +375,7 @@ public class RenController : MonoBehaviour
             RenButton nextButton = null;
             if (currentButton.nextLeftButton.disabled && automaticButtonFlowOnError)
             {
+                Debug.LogWarning("next left Button is disabled and automaticButtonFlowOnError is on");
                 RenButton auxCurrentButton = currentButton.nextLeftButton;
                 int i = 0;
                 while (auxCurrentButton.disabled || i > 5)
@@ -412,14 +415,16 @@ public class RenController : MonoBehaviour
 
     void MoveUp()
     {
-        //Debug.Log("CurrentButton = "+ currentButton + "; currentButton.nextUpButton = " + currentButton.nextUpButton);
+        Debug.Log("CurrentButton = "+ currentButton + "; currentButton.nextUpButton = " + currentButton.nextUpButton);
         if (currentButton.nextUpButton != null)
         {
+            Debug.Log("Move up");
             List<RenButton> listOfSeenButtons = new List<RenButton>();
 
             RenButton nextButton = null;
             if (currentButton.nextUpButton.disabled && automaticButtonFlowOnError)
             {
+                Debug.LogWarning("next up Button is disabled and automaticButtonFlowOnError is on");
                 RenButton auxCurrentButton = currentButton.nextUpButton;
                 int i = 0;
                 while (auxCurrentButton.disabled || i > 5)
@@ -467,6 +472,7 @@ public class RenController : MonoBehaviour
             RenButton nextButton = null;
             if (currentButton.nextDownButton.disabled && automaticButtonFlowOnError)
             {
+                Debug.LogWarning("next down Button is disabled and automaticButtonFlowOnError is on");
                 RenButton auxCurrentButton = currentButton.nextDownButton;
                 int i = 0;
                 while (auxCurrentButton.disabled || i >= 5)
