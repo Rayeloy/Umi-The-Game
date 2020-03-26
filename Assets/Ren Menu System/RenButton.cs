@@ -57,15 +57,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public UnityEvent onButtonPressed;
     bool isMouseOver = false;
 
-    private void OnDisable()
-    {
-        DisableButtonsAndText();
-    }
-
-    private void OnEnable()
-    {
-        EnableButtonsAndText();
-    }
+    bool lastEnabled;
 
     private void OnGUI()
     {
@@ -104,8 +96,23 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     private void Start()
     {
         SetNextButtons();
+        lastEnabled = this.enabled;
     }
 
+    private void Update()
+    {
+        if(this.enabled != lastEnabled)
+        {
+            if (this.enabled)
+            {
+                EnableButtonsAndText();
+            }
+            else
+            {
+                DisableButtonsAndText();
+            }
+        }
+    }
 
     void SetNextButtons()
     {

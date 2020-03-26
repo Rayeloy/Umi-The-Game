@@ -96,7 +96,7 @@ public class Alpha_Team_Select : MonoBehaviour
         numPlayerSpritesParent.gameObject.SetActive(false);
         mapVariationsSpritesParent.gameObject.SetActive(true);
 
-        Debug.Log("Gamemode = " + GameInfo.instance.currentGameMode);
+        //Debug.Log("Gamemode = " + GameInfo.instance.currentGameMode);
         switch (GameInfo.instance.currentGameMode)
         {
             case GameMode.Tutorial:
@@ -283,6 +283,21 @@ public class Alpha_Team_Select : MonoBehaviour
         RenController.instance.SetSelectedButton(chooseMapVariationButtons[0]);
         numPlayerSpritesParent.gameObject.SetActive(false);
         //MakeSpriteBig(mapVariationsSprites[currentMapIndex]);
+        //switch (GameInfo.instance.currentGameMode)
+        //{
+        //    case GameMode.Tutorial:
+        //        chooseMapVariationButtons[1].DisableButtonsAndText();
+        //        chooseMapVariationButtons[0].targetTexts[0].text = "Dummies Tutorial";
+        //        Debug.Log("tutorialMapVariationNames = (" + tutorialMapVariationNames[0] + ")");
+        //        mapVariationNames = tutorialMapVariationNames;
+        //        break;
+        //    case GameMode.CaptureTheFlag:
+        //        mapVariationNames = CTWMapVariationNames;
+        //        break;
+        //    default:
+        //        mapVariationNames = CTWMapVariationNames;
+        //        break;
+        //}
 
         teamSelectMenuSt = TeamSelectMenuState.ChoosingMapVariation;
         Debug.Log("BACK TO CHOOSE MAP VARIATION");
