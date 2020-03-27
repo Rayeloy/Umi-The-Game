@@ -71,7 +71,7 @@ namespace Crest
 
             AddForce(Vector3.down * gravity);
 
-            UnityEngine.Profiling.Profiler.BeginSample("BoatAlignNormal.FixedUpdate");
+            UnityEngine.Profiling.Profiler.BeginSample("KinematicFloatingObject.FixedUpdate");
 
             if (OceanRenderer.Instance != null)
             {
@@ -149,15 +149,10 @@ namespace Crest
                     FixedUpdateOrientation(normal);
 
                     //collProvider.ReturnSamplingData(_samplingData);
-
-                    UnityEngine.Profiling.Profiler.EndSample();
                 }
             }
-            else
-            {
-                UnityEngine.Profiling.Profiler.EndSample();
-            }
 
+            UnityEngine.Profiling.Profiler.EndSample();
 
         }
 

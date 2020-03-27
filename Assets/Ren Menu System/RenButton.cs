@@ -236,7 +236,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (!disabled)
         {
-            Debug.Log("BUTTON STOP HIGHLIGHTED");
+            //Debug.Log("BUTTON STOP HIGHLIGHTED");
             switch (transition)
             {
                 case TransitionMode.ColorTint:
@@ -257,7 +257,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (!disabled)
         {
-            Debug.Log("BUTTON HIGHLIGHTED: transition mode = "+transition);
+            //Debug.Log("BUTTON HIGHLIGHTED: transition mode = "+transition);
             switch (transition)
             {
                 case TransitionMode.ColorTint:

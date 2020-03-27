@@ -27,6 +27,8 @@ public class GameControllerCMF_FlagMode : GameControllerCMF
         CreateFlag();
         HideFlagHomeLightBeam(Team.A);
         HideFlagHomeLightBeam(Team.B);
+
+        flagsParent.GetComponent<FlagsParent>().KonoAwake(flags[0]);
     }
 
     public override void StartGame()

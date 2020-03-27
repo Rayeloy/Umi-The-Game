@@ -52,15 +52,15 @@ public class FlagCMF : MonoBehaviour
 
 
     [Header("Idle Animation Param")]
-    [Tooltip("Distance from the middle (default) position to the max height and min height. The total distance of the animation will be the double of this value")]
-    public float idleAnimVertDist;
+    [Tooltip("When player drops flag: Distance from the middle (default) position to the max height and min height. The total distance of the animation will be the double of this value")]
     public float idleAnimVertDistDropFromPlayer;
+    public float idleAnimVertDist = 4;
     float currentIdleAnimVertDist;
     [Tooltip("Not in use yet")]
     public float idleAnimHorDist;
-    [Tooltip("How much seconds per half animation cycle (i.e. from bottom to top height). The shorter the time, the faster the animation.")]
-    public float idleAnimFrequency;
+    [Tooltip("When player drops flag: How much seconds per half animation cycle (i.e. from bottom to top height). The shorter the time, the faster the animation.")]
     public float idleAnimFrequencyDropFromPlayer;
+    public float idleAnimFrequency = 4;
     float currentIdleAnimFrequency;
     float idleAnimTime = 0;
     float maxHeight, minHeight;

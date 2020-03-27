@@ -126,7 +126,7 @@ public class PlayerBodyCMF : MonoBehaviour
     #region FLOATING SYSTEM FOR CREST OCEAN
     void ProcessInWater()
     {
-        UnityEngine.Profiling.Profiler.BeginSample("SimpleFloatingObject.FixedUpdate");
+        UnityEngine.Profiling.Profiler.BeginSample("UmiPlayerBody.FixedUpdate");
 
         if (OceanRenderer.Instance != null)
         {
