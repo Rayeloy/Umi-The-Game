@@ -47,7 +47,6 @@ public class Demo_MainMenu : MonoBehaviour
     public GameObject askToGo;
     bool exit2 = false;
 
-    public GameObject umiLogo;
     bool umilogo = false;
 
 
@@ -196,14 +195,12 @@ public class Demo_MainMenu : MonoBehaviour
         if (umilogo == false)
         {
 
-            umiLogo.SetActive(true);
             umilogo = true;
         }
         else if (umilogo == true)
         {
             //Fade Out
 
-            umiLogo.SetActive(false);
             scene = 1;
             SelectScene();
         }
