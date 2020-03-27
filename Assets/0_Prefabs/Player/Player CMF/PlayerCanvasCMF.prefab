@@ -165,7 +165,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 27
+  m_fontSize: 27.25
   m_fontSizeBase: 35.7
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -264,7 +264,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.47300002, y: 0.2745532}
   m_AnchorMax: {x: 0.6758877, y: 0.768}
-  m_AnchoredPosition: {x: 15.813904, y: 0}
+  m_AnchoredPosition: {x: 16.3909, y: 0.0000076293945}
   m_SizeDelta: {x: 0, y: 49}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8258912662097885003
@@ -708,7 +708,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 27
+  m_fontSize: 27.25
   m_fontSizeBase: 35.7
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1670,7 +1670,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 61.05
+  m_fontSize: 61.5
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1979,6 +1979,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a44e9d21389d16438d97081a8388530, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugModeOn: 0
   gC: {fileID: 0}
   myPlayerMov: {fileID: 0}
   myPlayerCombat: {fileID: 0}
@@ -2018,6 +2019,8 @@ MonoBehaviour:
   maxProportionWhenOnCamera: 0.7
   minProportionWOCMaxDist: 100
   maxProportionWOCMinDist: 30
+  flagArrowElipse: {x: 0.423, y: 0.19}
+  flagArrowElipseFlat: {x: 0.437, y: 0.185}
   flagArrowWhale: {fileID: 2582027392473338290}
   flagArrowArrow: {fileID: 4367195809013815023}
   flagArrowRing: {fileID: 6127974170371216362}
@@ -2412,7 +2415,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 71
+  m_fontSize: 71.55
   m_fontSizeBase: 35.7
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -3034,7 +3037,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.319663, y: 0.22500001}
   m_AnchorMax: {x: 0.36681646, y: 0.768}
-  m_AnchoredPosition: {x: 15.813995, y: 0}
+  m_AnchoredPosition: {x: 16.39096, y: -0.000015258789}
   m_SizeDelta: {x: 0, y: 47}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1633071735473570766
@@ -3378,7 +3381,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.39170414, y: 0.2745532}
   m_AnchorMax: {x: 0.44452056, y: 0.7254468}
-  m_AnchoredPosition: {x: 15.813904, y: 0}
+  m_AnchoredPosition: {x: 16.391052, y: 0}
   m_SizeDelta: {x: 44, y: 37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2703899131658997125
@@ -4040,36 +4043,36 @@ MonoBehaviour:
   - {fileID: 4923668173252538136}
   layoutElements:
   - rect: {fileID: 1465514114836269969}
-    horDistToNextElement: 61.95822
+    horDistToNextElement: 62.78446
   - rect: {fileID: 6710003629636376967}
-    horDistToNextElement: 92.06858
+    horDistToNextElement: 94.036575
   - rect: {fileID: 4923668173252538136}
     horDistToNextElement: 0
   transformInfos:
   - transform: {fileID: 8775341499719078485}
-    position: {x: 883.50006, y: 352.04166, z: 0}
+    position: {x: 890.50006, y: 354.875, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 1, y: 1, z: 1}
-    width: 1769.5428
-    height: 233.59003
+    width: 1783.563
+    height: 235.46997
   - transform: {fileID: 1465514114836269969}
-    position: {x: 637.30914, y: 351.2241, z: 0}
+    position: {x: 627.2992, y: 354.05084, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 0.6042296, y: 0.6042296, z: 0.6042296}
-    width: 96.00003
-    height: 173.83939
+    width: 95.99995
+    height: 174.8602
   - transform: {fileID: 6710003629636376967}
-    position: {x: 769.7994, y: 352.04166, z: 0}
+    position: {x: 760.83936, y: 354.875, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 0.6042296, y: 0.6042296, z: 0.6042296}
-    width: 137.46094
-    height: 142.32425
+    width: 138.20142
+    height: 143.1719
   - transform: {fileID: 4923668173252538136}
-    position: {x: 1046.4346, y: 357.01166, z: 0}
+    position: {x: 1039.6663, y: 359.885, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 0.6042296, y: 0.6042296, z: 0.6042296}
     width: 473.45453
-    height: 164.26425
+    height: 165.19191
   executeAutoCenter: 0
   updateFreq: 2
 --- !u!1 &6284845259844254222

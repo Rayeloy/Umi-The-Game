@@ -70,6 +70,8 @@ public class PlayerHUDCMF : MonoBehaviour
     public float minProportionWOCMaxDist = 70;
     [Tooltip("The Distance at which the Ball Pointer has the max proportion size When On Camera. This should be always lower than the minProportionWOCMaxDist")]
     public float maxProportionWOCMinDist = 30;
+    public Vector2 flagArrowElipse = new Vector2(0.45f,0.22f);
+    public Vector2 flagArrowElipseFlat = new Vector2(0.445f,0.21f);
 
     [Header("Flag Arrow")]
     public Transform flagArrowWhale;
@@ -168,31 +170,6 @@ public class PlayerHUDCMF : MonoBehaviour
     #region Start
     public void KonoStart()
     {
-        //if (gC.online)
-        //{
-        //    if (gC.gameMode == GameMode.CaptureTheFlag)
-        //    {
-        //            //flag = GameObject.FindGameObjectWithTag("Flag").GetComponent<Flag>();
-        //            //Debug.Log("FLAG POS = "+FindObjectOfType<Flag>().transform.position);
-        //            //Debug.Log("flag = " + flag);
-        //    }
-
-        //    Interaction_Message.SetActive(false);
-        //    crosshair.enabled = false;
-        //    crosshairReduced.enabled = false;
-
-        //    //SETUP HUDS
-        //    //SetupFlagSlider();
-        //    SetUpScoreBoard();
-        //    SetUpFlagHomeArrow();
-        //    SetupArrowToFlag();
-        //    pressButtonToGrappleMessage.SetActive(false);
-        //    SetUpCameraCenter();
-        //    SetupDashHUD();
-        //    SetUpHookUI();
-        //}
-        //else
-        //{
         if (gC.gameMode == GameMode.CaptureTheFlag)
         {
             flag = (gC as GameControllerCMF_FlagMode).flags[0];
@@ -403,6 +380,7 @@ public class PlayerHUDCMF : MonoBehaviour
     {
         if (gC.gameMode == GameMode.CaptureTheFlag)
         {
+            Debug.Log("PlayerHUDCMF: Setup Arrow To Flag");
             flagSpawn = (gC as GameControllerCMF_FlagMode).flagsParent;
             flagArrowFollowTarget = flagTransform;
             DeactivateArrowToFlagOffScreen();
@@ -481,31 +459,11 @@ public class PlayerHUDCMF : MonoBehaviour
 
     void ProcessArrowToFlag()
     {
-
-        //if (flagArrowSt == FlagArrowState.activated_OffScreen || flagArrowSt == FlagArrowState.activated_OnScreen)
-        //{
         ArrowToFlagStopPickup();
         ArrowToFlagStartPickup();
         ArrowToFlagSetNewOwner();
         ArrowToFlagStartRespawn();
         ArrowToFlagStopRespawn();
-        //}
-
-        //float pixelW = myCamera.pixelWidth;
-        //float pixelH = myCamera.pixelHeight;
-        //Vector3 dir = myCamera.WorldToScreenPoint(flag.position);
-
-        //float offsetX = -((pixelW / 2) + (myCamera.rect.x * 2 * pixelW));
-        //float offsetY = -((pixelH / 2) + (myCamera.rect.y * 2 * pixelH));
-        //RectTransform arrowRect = Arrow.GetComponent<RectTransform>();
-        //arrowRect.localPosition = new Vector3(dir.x + offsetX, dir.y + offsetY, 0);
-
-        //ArrowPointing.z = Mathf.Atan2((arrowRect.localPosition.y - dir.y), (arrowRect.localPosition.x - dir.x)) * Mathf.Rad2Deg - 90;
-
-        //arrowRect.localRotation = Quaternion.Euler(ArrowPointing);
-        ////Arrow.position = new Vector3(Mathf.Clamp(dir.x, offsetPantalla, Screen.width - offsetPantalla), Mathf.Clamp(dir.y, offsetPantalla, Screen.height - offsetPantalla), 0);
-        //RectTransform waleRect = Wale.GetComponent<RectTransform>();
-        //waleRect.localPosition = arrowRect.localPosition;
 
         switch (flagArrowSt)
         {
@@ -520,8 +478,9 @@ public class PlayerHUDCMF : MonoBehaviour
 
                 float fAngle = Mathf.Atan2(flagArrowPos.x, flagArrowPos.y);
 
-                float yProportion = myCamera.rect.height < 1 ? 0.21f : 0.22f;
-                float xProportion = myCamera.rect.width < 1 ? 0.445f : 0.45f;
+                float scale = myUICamera.rect.width - myUICamera.rect.height;
+                float yProportion = scale > 0 ? flagArrowElipseFlat.y: flagArrowElipse.y;//0.21f / 0.22f
+                float xProportion = scale > 0 ? flagArrowElipseFlat.x : flagArrowElipse.x;//0.445f / 0.45f
                 flagArrowPos.x = xProportion * Mathf.Sin(fAngle) + 0.5f;  // Place on ellipse touching 
                 flagArrowPos.y = yProportion * Mathf.Cos(fAngle) + 0.5f;  //   side of viewport
                 if (flagViewportPos.z < myCamera.nearClipPlane)
@@ -530,7 +489,7 @@ public class PlayerHUDCMF : MonoBehaviour
                     flagArrowPos.y = 1 - flagArrowPos.y;
                 }
                 //Debug.LogWarning(" flagArrowPos = " + flagArrowPos.ToString("F4"));
-                flagArrowPos.z = myCamera.nearClipPlane + 0.001f;  // Looking from neg to pos Z;
+                flagArrowPos.z = myCamera.nearClipPlane + myCanvas.planeDistance;  // Looking from neg to pos Z;
                 float finalAngle = 180 + (-fAngle * Mathf.Rad2Deg) + (flagViewportPos.z < myCamera.nearClipPlane ? 0 : 180);
                 flagArrowArrow.localEulerAngles = new Vector3(0.0f, 0.0f, finalAngle);
                 flagArrowWhale.position = myCamera.ViewportToWorldPoint(flagArrowPos);
@@ -549,7 +508,8 @@ public class PlayerHUDCMF : MonoBehaviour
                 flagArrowWhale.localScale = new Vector3(flagArrowWhaleOriginalProportion.x * currentProportion, flagArrowWhaleOriginalProportion.y * currentProportion, 1);
                 flagArrowPos = flagArrowFollowTarget.position; flagArrowPos.y += 3;
                 Vector3 flagArrowViewportPos = myCamera.WorldToViewportPoint(flagArrowPos);
-                flagArrowViewportPos.z = myCamera.nearClipPlane + 0.001f;
+                flagArrowViewportPos.z = myCamera.nearClipPlane + myCanvas.planeDistance;
+                Debug.Log("flagArrowViewportPos = " + flagArrowViewportPos + "; myCamera.ViewportToWorldPoint(flagArrowViewportPos)  = " + myCamera.ViewportToWorldPoint(flagArrowViewportPos));
                 flagArrowWhale.position = myCamera.ViewportToWorldPoint(flagArrowViewportPos);
                 flagArrowFixedRing.position = flagArrowWhale.position;
                 break;
@@ -558,6 +518,8 @@ public class PlayerHUDCMF : MonoBehaviour
 
     void ArrowToFlagUpdate()
     {
+        Debug.Log("PlayerHUDCMF: ArrowToFlagUpdate");
+
         if (myPlayerMov.haveFlag)
         {
             DeactivateArrowToFlagOnScreen();
@@ -566,7 +528,7 @@ public class PlayerHUDCMF : MonoBehaviour
         else
         {
             Vector3 flagViewportPos = myCamera.WorldToViewportPoint(flagArrowFollowTarget.position + Vector3.up * 3);
-            if (flagViewportPos.z > myCamera.nearClipPlane && (flagViewportPos.x >= 0.05f && flagViewportPos.x <= 0.95f && flagViewportPos.y >= 0.2f && flagViewportPos.y <= 0.75f))
+            if (flagViewportPos.z > myCamera.nearClipPlane && (flagViewportPos.x >= 0.05f && flagViewportPos.x <= 0.95f && flagViewportPos.y >= 0.20f && flagViewportPos.y <= 0.75f))
             {
                 DeactivateArrowToFlagOffScreen();
                 float distToFlag = (flagArrowFollowTarget.position - myPlayerMov.transform.position).magnitude;
@@ -803,8 +765,9 @@ public class PlayerHUDCMF : MonoBehaviour
 
                 float fAngle = Mathf.Atan2(flagHomeArrowPos.x, flagHomeArrowPos.y);
 
-                float yProportion = myCamera.rect.height < 1 ? 0.21f : 0.22f;
-                float xProportion = myCamera.rect.width < 1 ? 0.445f : 0.45f;
+                float scale = myUICamera.rect.width - myUICamera.rect.height;
+                float yProportion = scale > 0 ? flagArrowElipseFlat.y : flagArrowElipse.y;//0.21f / 0.22f
+                float xProportion = scale > 0 ? flagArrowElipseFlat.x : flagArrowElipse.x;//0.445f / 0.45f
                 flagHomeArrowPos.x = xProportion * Mathf.Sin(fAngle) + 0.5f;  // Place on ellipse touching 
                 flagHomeArrowPos.y = yProportion * Mathf.Cos(fAngle) + 0.5f;  //   side of viewport
                 if (flagHomeViewportPos.z < myCamera.nearClipPlane)
@@ -813,7 +776,7 @@ public class PlayerHUDCMF : MonoBehaviour
                     flagHomeArrowPos.y = 1 - flagHomeArrowPos.y;
                 }
                 //Debug.LogWarning(" flagArrowPos = " + flagArrowPos.ToString("F4"));
-                flagHomeArrowPos.z = myCamera.nearClipPlane + 0.001f;  // Looking from neg to pos Z;
+                flagHomeArrowPos.z = myCamera.nearClipPlane + myCanvas.planeDistance;  // Looking from neg to pos Z;
                 float finalAngle = 180 + (-fAngle * Mathf.Rad2Deg) + (flagHomeViewportPos.z < myCamera.nearClipPlane ? 0 : 180);
                 flagHomeArrowArrow.localEulerAngles = new Vector3(0.0f, 0.0f, finalAngle);
                 flagHomeArrowIconOutline.position = myCamera.ViewportToWorldPoint(flagHomeArrowPos);
@@ -831,7 +794,7 @@ public class PlayerHUDCMF : MonoBehaviour
 
                 flagHomeArrowIconOutline.localScale = new Vector3(flagHomeArrowIconOriginalProportion.x * currentProportion, flagHomeArrowIconOriginalProportion.y * currentProportion, 1);
                 Vector3 flagHomeArrowViewportPos = myCamera.WorldToViewportPoint(flagHomeArrowFlagHomePos);
-                flagHomeArrowViewportPos.z = myCamera.nearClipPlane + 0.001f;
+                flagHomeArrowViewportPos.z = myCamera.nearClipPlane + myCanvas.planeDistance;
                 flagHomeArrowIconOutline.position = myCamera.ViewportToWorldPoint(flagHomeArrowViewportPos);
                 //flagArrowFixedRing.position = flagArrowWhale.position;
                 break;
