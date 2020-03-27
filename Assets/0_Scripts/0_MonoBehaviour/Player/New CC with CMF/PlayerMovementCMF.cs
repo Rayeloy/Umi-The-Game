@@ -2682,6 +2682,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
             myPlayerCombat.StopDoingCombat();
             myPlayerHook.StopHook();
+            mover.stickToGround = false;
         }
     }
 
@@ -2715,6 +2716,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             waterSplashPos.y = myPlayerBody.waterSurfaceHeight;
             myPlayerVFX.GetEffectGO(PlayerVFXType.WaterSplash).transform.position = waterSplashPos;
             myPlayerVFX.ActivateEffect(PlayerVFXType.WaterSplash);
+            mover.stickToGround = true;
         }
     }
     #endregion
