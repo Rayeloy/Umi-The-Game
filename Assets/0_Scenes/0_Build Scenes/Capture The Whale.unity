@@ -7180,7 +7180,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 9.275518e-39, y: 8.449009e-39, z: 9.367351e-39, w: 8.448992e-39}
+  m_BoundingSphereOverride: {x: 0, y: 9.404242e-38, z: 2.92008e-40, w: 1.704e-41}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -20085,6 +20085,11 @@ PrefabInstance:
         type: 3}
       propertyPath: idleAnimFrequency
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1904892426199952814, guid: 8b9ec6333648efe49b070e5f4618ae30,
+        type: 3}
+      propertyPath: _createDynamicWaveSim
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8b9ec6333648efe49b070e5f4618ae30, type: 3}
