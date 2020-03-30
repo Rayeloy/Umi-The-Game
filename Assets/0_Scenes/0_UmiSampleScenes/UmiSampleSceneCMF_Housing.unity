@@ -167,7 +167,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &484431178
 Transform:
   m_ObjectHideFlags: 0
@@ -197,6 +197,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PaintingLong
+      objectReference: {fileID: 0}
+    - target: {fileID: 2487262098663287415, guid: 2be3dc5d2a5829640815b682ab53385d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6471579758299980325, guid: 2be3dc5d2a5829640815b682ab53385d,
         type: 3}
@@ -352,7 +357,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1028290409
 Transform:
   m_ObjectHideFlags: 0
@@ -430,7 +435,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1100652772
 Transform:
   m_ObjectHideFlags: 0
@@ -714,6 +719,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0.099975586
       objectReference: {fileID: 0}
+    - target: {fileID: 9080193105827176625, guid: 745c7a9479b52c44080e54fad3e9c870,
+        type: 3}
+      propertyPath: houseMeta
+      value: 
+      objectReference: {fileID: 11400000, guid: 3e8c3a1b9e9ea1840bee87175ee048c6,
+        type: 2}
+    - target: {fileID: 9080193105827176625, guid: 745c7a9479b52c44080e54fad3e9c870,
+        type: 3}
+      propertyPath: debugModeOn
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9080193105827176625, guid: 745c7a9479b52c44080e54fad3e9c870,
+        type: 3}
+      propertyPath: slowMoButtonOn
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 745c7a9479b52c44080e54fad3e9c870, type: 3}
 --- !u!1 &1479371767
@@ -733,7 +754,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1479371768
 Transform:
   m_ObjectHideFlags: 0
@@ -883,6 +904,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SofaTest
       objectReference: {fileID: 0}
+    - target: {fileID: 5895197047451423881, guid: e569fd02c480654489919c4b648b2a74,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3988612516462352290, guid: e569fd02c480654489919c4b648b2a74,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -995,7 +1021,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!33 &5512243861548538639
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1015,6 +1041,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Plant
+      objectReference: {fileID: 0}
+    - target: {fileID: 229296903700564160, guid: 33e5953677ff2024cacb4019ba659cfa,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6524191728569593197, guid: 33e5953677ff2024cacb4019ba659cfa,
         type: 3}

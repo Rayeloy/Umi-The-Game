@@ -115,6 +115,11 @@ public class HousingGrid : MonoBehaviour
 
     #endregion
 
+    public void DeactivateEditMode()
+    {
+        PutAwayFurniture();
+    }
+
     #region --- Create & Setup house ---
 
     public void CreateGrid(bool showSlotMeshes = false)
@@ -314,6 +319,8 @@ public class HousingGrid : MonoBehaviour
 
     public bool SpawnFurniture(HousingFurnitureData _furnitureMeta, out HousingFurniture _furniture)
     {
+        PutAwayFurniture();
+
         Debug.LogWarning("START SPAWN FURNITURE ");
         bool result = false;
         //In case we can't spawn at center, we get a list of close coordinates with distance levels, to check through it
@@ -563,6 +570,22 @@ public class HousingGrid : MonoBehaviour
         }
 
         return validSlot;
+    }
+
+    void PutAwayFurniture()
+    {
+        if(currentFurniture != null)
+        {
+            StopHighlightPickedFurniture(currentSlotCoord);
+            Destroy(currentFurniture.gameObject);
+
+            currentFurniture = null;
+        }
+        else if(highlightedFurniture != null)
+        {
+            StopHighlightPlacedFurniture();
+            highlightedFurniture = null;
+        }
     }
 
     #endregion

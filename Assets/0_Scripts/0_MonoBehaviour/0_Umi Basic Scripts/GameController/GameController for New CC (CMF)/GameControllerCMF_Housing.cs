@@ -224,7 +224,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
             editModeCameraController.DeActivate();
 
             //stop hightlight current slot
-            currentGrid.StopHighlightSlot(currentGrid.currentSlotCoord);
+            currentGrid.DeactivateEditMode();
         }
         editHouseOn = !editHouseOn;
         playing = !playing;

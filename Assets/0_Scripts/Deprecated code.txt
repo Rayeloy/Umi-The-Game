@@ -1692,7 +1692,7 @@ void VerticalCollisions(ref Vector3 vel)
                                     collisions.foward = directionZ == 1;
                                     break;
                             }
-                            //TO TEST: Esto debería ser en un rayo a la altura de los pies(done)
+                            //TO TEST: Esto deberú} ser en un rayo a la altura de los pies(done)
                             RaycastHit hitAux;
                             Vector3 origin = collisions.closestHorRaycast.origin;
                             origin.y = collisions.horRaycastsX[0, 0].origin.y;
@@ -1824,7 +1824,7 @@ void VerticalCollisions(ref Vector3 vel)
     //    if (!differentWallRay.hit)
     //    {
     //        Debug.LogWarning("WALL EDGE: SEGUNDA COMPROBACION START");
-    //        bool seikai = false;//seikai = correcto en japonés. es que quería usar "success" pero ya estaba usado
+    //        bool seikai = false;//seikai = correcto en japonés. es que querú} usar "success" pero ya estaba usado
     //        int column = closestHorRaycast.column;
     //        int row = closestHorRaycast.row;
     //        Axis originalAxis = closestHorRaycast.axis;
@@ -2163,7 +2163,7 @@ public class PlayerCombat : MonoBehaviour
     float attackTime = 0;
     [HideInInspector]
     public int attackIndex = 0;//index: 0 = X ->Basic Attack; 1 = Y -> Strong Attack; 2 = B -> Special Attack
-    //tiempos máximos para cada fase. Honestamente guardarlos aparte puede ser una tontería ya que los tenemos ya dentro del AttackData
+    //tiempos máximos para cada fase. Honestamente guardarlos aparte puede ser una tonterú} ya que los tenemos ya dentro del AttackData
     float chargingTime;
     float startupTime;
     float activeTime;
@@ -2315,7 +2315,7 @@ public class PlayerCombat : MonoBehaviour
         recoveryTime = attack.recoveryPhase.duration;
         knockBackSpeed = attack.knockbackSpeed;
 
-        ChangeAttackPhase(AttackPhaseType.ready);//puede ser algo inutil cuando ya se está en ready
+        ChangeAttackPhase(AttackPhaseType.ready);//puede ser algo inutil cuando ya se estEen ready
     }
 
     void ChangeAttackPhase(AttackPhaseType attackStage)
