@@ -7,9 +7,11 @@ using System.Collections;
 [ExecuteInEditMode]
 public class Mover : MonoBehaviour {
     public bool debugModeOn = true;
-    public bool movementDebugsOn = false;
-    public bool instantGroundAdjustment = true;//if false, it will be "smoothen", or moved little by little in every Update frame in between fixed updates
-    public bool instantPlatformMovement = true; //if false, it will be "smoothen", or moved little by little in every Update frame in between fixed updates
+    public bool movementDebugsOn = true;
+    [Tooltip("if false, it will be 'smoothen', or moved little by little in every Update frame in between fixed updates")]
+    public bool instantGroundAdjustment = true;
+    [Tooltip("if false, it will be 'smoothen', or moved little by little in every Update frame in between fixed updates")]
+    public bool instantPlatformMovement = true;
 
 	//Collider variables;
 	[Range(0f, 1f)] public float stepHeightRatio = 0.25f;
@@ -291,6 +293,8 @@ public class Mover : MonoBehaviour {
 	{
         if (!instantPlatformMovement) currentPlatformMovement = platformMovement * (1 / Time.fixedDeltaTime);
         else currentPlatformMovement = Vector3.zero;
+
+        if (currentGroundAdjustmentVelocity.magnitude != 0) currentPlatformMovement.y = 0;
 
         rig.velocity = _velocity + currentPlatformMovement;
         if (instantGroundAdjustment && onMovingPlatform) rig.position += currentGroundAdjustmentVelocity;

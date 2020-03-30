@@ -509,7 +509,7 @@ public class PlayerHUDCMF : MonoBehaviour
                 flagArrowPos = flagArrowFollowTarget.position; flagArrowPos.y += 3;
                 Vector3 flagArrowViewportPos = myCamera.WorldToViewportPoint(flagArrowPos);
                 flagArrowViewportPos.z = myCamera.nearClipPlane + myCanvas.planeDistance;
-                Debug.Log("flagArrowViewportPos = " + flagArrowViewportPos + "; myCamera.ViewportToWorldPoint(flagArrowViewportPos)  = " + myCamera.ViewportToWorldPoint(flagArrowViewportPos));
+                //Debug.Log("flagArrowViewportPos = " + flagArrowViewportPos + "; myCamera.ViewportToWorldPoint(flagArrowViewportPos)  = " + myCamera.ViewportToWorldPoint(flagArrowViewportPos));
                 flagArrowWhale.position = myCamera.ViewportToWorldPoint(flagArrowViewportPos);
                 flagArrowFixedRing.position = flagArrowWhale.position;
                 break;
@@ -518,7 +518,7 @@ public class PlayerHUDCMF : MonoBehaviour
 
     void ArrowToFlagUpdate()
     {
-        Debug.Log("PlayerHUDCMF: ArrowToFlagUpdate");
+        //Debug.Log("PlayerHUDCMF: ArrowToFlagUpdate");
 
         if (myPlayerMov.haveFlag)
         {

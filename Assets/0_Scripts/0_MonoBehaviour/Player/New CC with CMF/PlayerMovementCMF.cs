@@ -1831,7 +1831,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 //FAIL?
                 if (chargedJumpCurrentReleaseTime >= chargedJumpReleaseTimeBeforeLand)//FAIL: Released too early
                 {
-                    Debug.LogWarning("Charged Jump-> FAILED JUMP: RELEASED TOO EARLY");
+                    if(!disableAllDebugs && vertMovementDebugsOn) Debug.LogWarning("Charged Jump-> FAILED JUMP: RELEASED TOO EARLY");
                     failedJump = true;
                     return;
                 }
@@ -1844,7 +1844,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             {
                 if (chargedJumpLandedTime >= chargedJumpReleaseTimeAfterLand)//FAIL: Released too late
                 {
-                    Debug.LogWarning("Charged Jump-> FAILED JUMP: RELEASED TOO LATE");
+                    if (!disableAllDebugs && vertMovementDebugsOn) Debug.LogWarning("Charged Jump-> FAILED JUMP: RELEASED TOO LATE");
                     StopChargingChargedJump();
                     StartBounceJump();
                     return;
@@ -1993,12 +1993,14 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void StartFixedJump(Vector3 vel, float _noMoveMaxTime, float maxTime, bool _bounceEnabled = false)
     {
+        StopJump();
         StopFixedJump();
 
         if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("FIXED JUMP START");
         StopBoost();
         myPlayerCombat.StopDoingCombat();
         StopSufferingEffect();
+
 
         fixedJumping = true;
         fixedJumpDone = false;

@@ -521,9 +521,9 @@ public class PlayerHookCMF : MonoBehaviour
             if (Physics.Linecast(rayOrigin, rayEnd, out hit, grappleColMask, QueryTriggerInteraction.Collide))
             {
                 //print("AUTOGRAPPLE: collided with something in the middle: " + hit.transform.name);
-                if (hit.transform.tag == "Stage")
+                if (hit.collider.transform.tag == "Stage")
                 {
-                    if (debugModeOn) Debug.LogWarning("Warning: Can't grapple because there is a wall or something similar in the middle (" + hit.transform.name + ")");
+                    if (debugModeOn) Debug.LogWarning("Warning: Can't grapple because there is a wall or something similar in the middle (" + hit.collider.transform.name + ")");
                     return;
                 }
                 else
@@ -619,6 +619,7 @@ public class PlayerHookCMF : MonoBehaviour
 
                 if (currentDistance <= grappleStopMinDistance)//CHECK IF ARRIVED OR STUCK
                 {
+                    //Debug.Log("FINISH AUTOGRAPPLE: currentDistance = " + currentDistance + "; grappleStopMinDistance = " + grappleStopMinDistance);
                     FinishAutoGrapple();
                 }
                 else if (lastFrameDist < 0.01f && timeGrappling > 0.1f)
