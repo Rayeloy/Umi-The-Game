@@ -1827,6 +1827,7 @@ GameObject:
   - component: {fileID: 2678540160481364082}
   - component: {fileID: 2678540160481364081}
   - component: {fileID: 2678540160481364080}
+  - component: {fileID: 5993221680948666070}
   m_Layer: 9
   m_Name: TrampolinArte (5)
   m_TagString: Untagged
@@ -1914,6 +1915,29 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 14
   m_Mesh: {fileID: 4300148, guid: dc308b4c818c32f4fb181ca3d6d94f05, type: 3}
+--- !u!114 &5993221680948666070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2678540160481364078}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d7d3aa1f5ed5ce438640f5fe68a3e25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  JiggleTiltValue: 9
+  JiggleFrequency: 30
+  JiggleDecelerate: 1.5
+  AdditionalSpeedValue: 1
+  ConstantJiggleValue: 0
+  RandomLevel: 1
+  drawGizmo: 1
+  TransformToAnimate: {fileID: 0}
+  ScaleAxesMultiplier: {x: 1, y: 1, z: -14.4}
+  RotationAxesMultiplier: {x: 1, y: 0, z: 1}
+  ReJigglePower: 2
 --- !u!1 &2678540161393291110
 GameObject:
   m_ObjectHideFlags: 0
