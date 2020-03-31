@@ -25,11 +25,11 @@ public class GameControllerCMF_Housing : GameControllerCMF
     //EDIT MODE
     bool editHouseOn = false;
     bool furnitureMenuOn = false;
-    EloyAdvancedAxisControls myLeftJoyStickControls;
-    EloyAdvancedButtonControls selectUp;
-    EloyAdvancedButtonControls selectDown;
-    EloyAdvancedButtonControls rotateClockwise;
-    EloyAdvancedButtonControls rotateCounterClockwise;
+    EAITwoAxisControls myLeftJoyStickControls;
+    EAIButtonControls selectUp;
+    EAIButtonControls selectDown;
+    EAIButtonControls rotateClockwise;
+    EAIButtonControls rotateCounterClockwise;
 
     [Header(" - Edit Mode - ")]
     public HousingFurnitureMenu furnitureMenu;
@@ -41,11 +41,11 @@ public class GameControllerCMF_Housing : GameControllerCMF
 
     protected override void SpecificAwake()
     {
-        myLeftJoyStickControls = new EloyAdvancedAxisControls(allPlayers[0].actions.LeftJoystick, leftJoyStickDeadzone);
-        selectUp = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingMoveUp);
-        selectDown = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingMoveDown);
-        rotateClockwise = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingRotateFurnitureClockwise);
-        rotateCounterClockwise = new EloyAdvancedButtonControls(allPlayers[0].actions.HousingRotateFurnitureCounterClockwise);
+        myLeftJoyStickControls = new EAITwoAxisControls(allPlayers[0].actions.LeftJoystick, leftJoyStickDeadzone);
+        selectUp = new EAIButtonControls(allPlayers[0].actions.HousingMoveUp);
+        selectDown = new EAIButtonControls(allPlayers[0].actions.HousingMoveDown);
+        rotateClockwise = new EAIButtonControls(allPlayers[0].actions.HousingRotateFurnitureClockwise);
+        rotateCounterClockwise = new EAIButtonControls(allPlayers[0].actions.HousingRotateFurnitureCounterClockwise);
 
         currentGridObject = Instantiate(MasterManager.HousingSettings.gridPrefab, houseSpawnPos, Quaternion.identity, housingParent);
         currentGrid = currentGridObject.GetComponent<HousingGrid>();

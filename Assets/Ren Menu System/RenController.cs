@@ -38,6 +38,9 @@ public class RenController : MonoBehaviour
     [HideInInspector] public PlayerActions currentControls;
     public List<ButtonGroup> buttonGroups;
 
+    public delegate void RenInputPress();
+    public static event RenInputPress OnRenInputPressed;
+
     bool validInput
     {
         get
@@ -93,26 +96,32 @@ public class RenController : MonoBehaviour
         {
             if ((currentControls.leftJoystcikAsButtons.right.wasPressed || currentControls.leftJoystcikAsButtons.right.wasPressedLong) && validInput)
             {
+                if(OnRenInputPressed!=null) OnRenInputPressed();
                 MoveRight();
             }
             else if ((currentControls.leftJoystcikAsButtons.left.wasPressed || currentControls.leftJoystcikAsButtons.left.wasPressedLong) && validInput)
             {
+                if (OnRenInputPressed != null) OnRenInputPressed();
                 MoveLeft();
             }
             else if ((currentControls.leftJoystcikAsButtons.up.wasPressed || currentControls.leftJoystcikAsButtons.up.wasPressedLong) && validInput)
             {
+                if (OnRenInputPressed != null) OnRenInputPressed();
                 MoveUp();
             }
             else if ((currentControls.leftJoystcikAsButtons.down.wasPressed || currentControls.leftJoystcikAsButtons.down.wasPressedLong) && validInput)
             {
+                if (OnRenInputPressed != null) OnRenInputPressed();
                 MoveDown();
             }
             else if (currentControls.A.WasPressed && validInput)
             {
+                if (OnRenInputPressed != null) OnRenInputPressed();
                 PressButton();
             }
             else if (currentControls.A.WasReleased && validInput)
             {
+                if (OnRenInputPressed != null) OnRenInputPressed();
                 ReleaseButton();
             }
         }

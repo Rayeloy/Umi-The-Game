@@ -643,7 +643,7 @@ public class SelectPlayer
     [Range(0, 1)]
     [HideInInspector] public float deadzone = 0.2f;
     [HideInInspector] public PlayerActions myControls;
-    EloyAdvancedAxisControls myJoyStickControls;
+    EAITwoAxisControls myJoyStickControls;
 
     [Header("TEAM SELECT PLAYER HUD")]
     public TeamSelectPlayerCanvas myTeamSelectPlayerCanvas;
@@ -755,7 +755,7 @@ public class SelectPlayer
                 }
                 break;
         }
-        myJoyStickControls = new EloyAdvancedAxisControls(GameInfo.instance.myControls.LeftJoystick, deadzone);
+        myJoyStickControls = new EAITwoAxisControls(GameInfo.instance.myControls.LeftJoystick, deadzone);
 
         // AJUSTE DE ESCALA DE LA HUD PARA CAMARAS CON RECT DESPROPORCIONADO
         RectTransform teamText = myTeamSelectPlayerCanvas.teamNameText.GetComponent<RectTransform>();

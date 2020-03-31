@@ -49,6 +49,11 @@ public class PlayerActions : PlayerActionSet
     public PlayerAction Start;
     public PlayerAction Select;
 
+    public PlayerAction MouseWheelUp;
+    public PlayerAction MouseWheelDown;
+    public PlayerOneAxisAction MouseWheel;
+    public EAIMouseWheelControls EAIMouseWheel;
+
     public PlayerAction ThrowHook;
 
     //Housing Edit Mode
@@ -64,7 +69,6 @@ public class PlayerActions : PlayerActionSet
     public PlayerAction HousingRotateFurnitureCounterClockwise;
     public PlayerAction HousingPickFurniture;
     public PlayerAction HousingSwitchFurnitureMenu;
-
 
     public PlayerActions()
     {
@@ -103,7 +107,12 @@ public class PlayerActions : PlayerActionSet
         Start = CreatePlayerAction("Start");
         Select = CreatePlayerAction("Select");
 
+        MouseWheelUp = CreatePlayerAction("MouseScrollUp");
+        MouseWheelDown = CreatePlayerAction("MouseScrollDown");
+        MouseWheel = CreateOneAxisPlayerAction(MouseWheelDown, MouseWheelUp);
+
         ThrowHook = CreatePlayerAction("ThrowHook");
+
         RotateCameraHEMLeft = CreatePlayerAction("RotateCameraHEMLeft");
         RotateCameraHEMRight = CreatePlayerAction("RotateCameraHEMRight");
         RotateCameraHEMDown = CreatePlayerAction("RotateCameraHEMDown");
@@ -205,6 +214,9 @@ public class PlayerActions : PlayerActionSet
         actions.Start.AddDefaultBinding(Key.Escape);
         actions.Select.AddDefaultBinding(Key.Tab);
 
+        actions.MouseWheelUp.AddDefaultBinding(Mouse.PositiveScrollWheel);
+        actions.MouseWheelDown.AddDefaultBinding(Mouse.NegativeScrollWheel);
+
         //GAME IN GAME ACTIONS
         actions.ThrowHook.AddDefaultBinding(Mouse.LeftButton);
         actions.RotateCameraHEMLeft.AddDefaultBinding(Key.LeftArrow);
@@ -253,6 +265,8 @@ public class PlayerActions : PlayerActionSet
         actions.Start.AddDefaultBinding(Key.Escape);
         actions.Start.AddDefaultBinding(Key.Return);
         //actions.Start.AddDefaultBinding(Key.Space);
+        actions.MouseWheelUp.AddDefaultBinding(Mouse.PositiveScrollWheel);
+        actions.MouseWheelDown.AddDefaultBinding(Mouse.NegativeScrollWheel);
 
 
         // JOYSTICK
@@ -289,6 +303,7 @@ public class PlayerActions : PlayerActionSet
 
 
         actions.leftJoystcikAsButtons  = new TwoAxisButtons(actions.LeftJoystick, _deadzone);
+        actions.EAIMouseWheel = new EAIMouseWheelControls(actions.MouseWheel);
 
         return actions;
     }
@@ -328,6 +343,254 @@ public class PlayerActions : PlayerActionSet
             //}
         }
         return false;
+    }        
+}
+
+public class EAITwoAxisControls
+{
+    PlayerTwoAxisAction joyStick;
+    float deadzone;
+    float timeToTurbo = 0.4f;
+    float turboFrequency = 0.1f;
+
+    public bool leftIsPressed = false;
+    public bool rightIsPressed = false;
+    public bool downIsPressed = false;
+    public bool upIsPressed = false;
+
+    int lastPressedDir = -1; //0 -> up; 1 -> right; 2 -> down; 3 -> left
+
+    public bool LeftWasPressed
+    {
+        get
+        {
+            bool result = joyStick.X < -deadzone && (!leftIsPressed || (leftIsPressed && turboStarted && turboPressedTime >= turboFrequency) && (!diagonal || (diagonal && lastPressedDir != 3)));
+            if (result)
+            {
+                turboPressedTime = 0;
+                leftIsPressed = true;
+                lastPressedDir = 3;
+            }
+            return result;
+        }
+    }
+    public bool RightWasPressed
+    {
+        get
+        {
+            bool result = joyStick.X > deadzone && (!rightIsPressed || (rightIsPressed && turboStarted && turboPressedTime >= turboFrequency) && (!diagonal || (diagonal && lastPressedDir != 1)));
+            if (result)
+            {
+                turboPressedTime = 0;
+                rightIsPressed = true;
+                lastPressedDir = 1;
+            }
+            return result;
+        }
+    }
+    public bool DownWasPressed
+    {
+        get
+        {
+            bool result = joyStick.Y < -deadzone && (!downIsPressed || (downIsPressed && turboStarted && turboPressedTime >= turboFrequency) && (!diagonal || (diagonal && lastPressedDir != 2)));
+            if (result)
+            {
+                turboPressedTime = 0;
+                downIsPressed = true;
+                lastPressedDir = 2;
+            }
+            return result;
+        }
+    }
+    public bool UpWasPressed
+    {
+        get
+        {
+            bool result = joyStick.Y > deadzone && (!upIsPressed || (upIsPressed && turboStarted && turboPressedTime >= turboFrequency) && (!diagonal || (diagonal && lastPressedDir != 0)));
+            if (result)
+            {
+                turboPressedTime = 0;
+                upIsPressed = true;
+                lastPressedDir = 0;
+            }
+            return result;
+        }
+    }
+
+    bool diagonal
+    {
+        get
+        {
+            int counter = 0;
+            if (joyStick.X < -deadzone) counter++;
+            if (joyStick.X > deadzone) counter++;
+            if (joyStick.Y < -deadzone) counter++;
+            if (joyStick.Y > deadzone) counter++;
+            if (counter > 1) Debug.LogWarning("Diagonal! leftIsPressed = " + leftIsPressed + "; rightIsPressed = " + rightIsPressed + "; downIsPressed = " + downIsPressed + "; upIsPressed = " + upIsPressed);
+            return counter > 1;
+        }
+    }
+
+    bool turboStarted = false;
+
+    float turboPressedTime = 0;
+
+    public EAITwoAxisControls(PlayerTwoAxisAction _joyStick, float _deadzone = 0.2f, float _timeToTurbo = 0.4f, float _turboFrequency = 0.1f)
+    {
+        joyStick = _joyStick;
+        deadzone = _deadzone;
+        timeToTurbo = _timeToTurbo;
+        turboFrequency = _turboFrequency;
+    }
+
+    /// <summary>
+    /// IMPORTANT to do it ALWAYS, and at the END of the Update.
+    /// </summary>
+    public void ResetJoyStick()
+    {
+        if (joyStick.X > -deadzone && leftIsPressed)
+        {
+            leftIsPressed = false;
+            //leftTurboStarted = false;
+        }
+        if (joyStick.X < deadzone && rightIsPressed)
+        {
+            rightIsPressed = false;
+            //rightTurboStarted = false;
+        }
+        if (joyStick.Y > -deadzone && downIsPressed)
+        {
+            downIsPressed = false;
+            //downTurboStarted = false;
+        }
+        if (joyStick.Y < deadzone && upIsPressed)
+        {
+            upIsPressed = false;
+            //upTurboStarted = false;
+        }
+
+        //TURBO
+        Vector2 input = new Vector2(joyStick.X, joyStick.Y);
+        if (input.magnitude < deadzone)
+        {
+            turboStarted = false;
+        }
+        else if (leftIsPressed || rightIsPressed || downIsPressed || upIsPressed)
+        {
+            turboPressedTime += Time.deltaTime;
+            if (!turboStarted && turboPressedTime >= timeToTurbo)
+            {
+                turboStarted = true;
+                turboPressedTime = 0;
+            }
+        }
+    }
+}
+
+public class EAIMouseWheelControls
+{
+    PlayerOneAxisAction joyStick;
+
+    float value
+    {
+        get
+        {
+            return joyStick.Value * 10;
+        }
+    }
+
+    public bool NegWasPressed
+    {
+        get
+        {
+            return value < 0;
+        }
+    }
+    public bool PosWasPressed
+    {
+        get
+        {
+            return value > 0;
+        }
+    }
+    public bool NegWasPressedGreatly
+    {
+        get
+        {
+            return value ==-1;
+        }
+    }
+    public bool PosWasPressedGreatly
+    {
+        get
+        {
+            return value == 1;
+        }
+    }
+
+
+    public EAIMouseWheelControls(PlayerOneAxisAction _joyStick)
+    {
+        joyStick = _joyStick;
+    }
+}
+
+public class EAIButtonControls
+{
+    PlayerAction button;
+
+    bool isPressed = false;
+
+    bool turboMode = false;
+    float timeToTurbo = 0.4f;
+    float turboFrequency = 0.1f;
+    float turboPressedTime = 0;
+
+    public bool WasPressed
+    {
+        get
+        {
+            bool result = false;
+
+            if (button.IsPressed && (!isPressed || (isPressed && turboMode && turboPressedTime >= turboFrequency)))
+            {
+                turboPressedTime = 0;
+                isPressed = true;
+                result = true;
+            }
+
+            return result;
+        }
+    }
+
+    public EAIButtonControls(PlayerAction _button, float _timeToTurbo = 0.4f, float _turboFrequency = 0.1f)
+    {
+        button = _button;
+        timeToTurbo = _timeToTurbo;
+        turboFrequency = _turboFrequency;
+    }
+
+    /// <summary>
+    /// IMPORTANT to do it ALWAYS, and at the END of the Update.
+    /// </summary>
+    public void ResetButton()
+    {
+        if (!button.IsPressed && isPressed)
+        {
+            turboPressedTime = 0;
+            turboMode = false;
+            isPressed = false;
+        }
+
+        if (isPressed)
+        {
+            turboPressedTime += Time.deltaTime;
+            if (turboPressedTime >= timeToTurbo && !turboMode)
+            {
+
+                turboMode = true;
+            }
+        }
     }
 }
 
@@ -351,6 +614,7 @@ public class TwoAxisButtons
     }
 
 }
+
 public enum AxisDir
 {
     none,
@@ -359,6 +623,7 @@ public enum AxisDir
     Up,
     Down
 }
+
 public class ButtonForTwoAxisButtons
 {
     public AxisDir axisDir;
@@ -405,9 +670,9 @@ public class ButtonForTwoAxisButtons
             return false;
         }
     }
-    float contInputFreq = 0.1f;
-    float timeToStartContInput = 0.6f;
-    float currentContInputFreq = 0.6f;
+    float turboModeFreq = 0.1f;
+    float timeToStartTurboMode = 0.6f;
+    float currentTurboModeFreq = 0.6f;
 
     AxisDir lastDirPressed = AxisDir.none;
 
@@ -464,19 +729,19 @@ public class ButtonForTwoAxisButtons
             else
             {
                 wasPressedTime = 0;
-                if (currentContInputFreq != timeToStartContInput)
+                if (currentTurboModeFreq != timeToStartTurboMode)
                 {
                     //Debug.Log("was Pressed Long "+axisDir+": stop being pressed");
-                    currentContInputFreq = timeToStartContInput;
+                    currentTurboModeFreq = timeToStartTurboMode;
                 }
             }
 
-            if (wasPressedTime >= currentContInputFreq)
+            if (wasPressedTime >= currentTurboModeFreq)
             {
                 //Debug.Log("was Pressed Long "+ axisDir+": is pressed and input true");
                 wasPressedTime = 0;
-                if(currentContInputFreq != contInputFreq)
-                currentContInputFreq = contInputFreq;
+                if(currentTurboModeFreq != turboModeFreq)
+                    currentTurboModeFreq = turboModeFreq;
                 return true;
             }
             return false;
@@ -489,7 +754,7 @@ public class ButtonForTwoAxisButtons
         axisDir = _axisDir;
         twoAxis = _twoAxis;
         deadzone = _deadzone;
-        currentContInputFreq = timeToStartContInput;
+        currentTurboModeFreq = timeToStartTurboMode;
         wasPressedTime = 0;
     }
 }

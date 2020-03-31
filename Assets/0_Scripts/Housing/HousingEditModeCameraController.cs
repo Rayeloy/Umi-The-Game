@@ -22,7 +22,7 @@ public class HousingEditModeCameraController : MonoBehaviour
     PlayerActions actions;
     [Range(0, 1)]
     public float deadZone = 0.2f;
-    EloyAdvancedAxisControls myRightJoyStickControls;
+    EAITwoAxisControls myRightJoyStickControls;
 
     [HideInInspector]
     public EditCameraDirection currentCameraDir = EditCameraDirection.ZPos;
@@ -112,7 +112,7 @@ public class HousingEditModeCameraController : MonoBehaviour
         myCameraObject.gameObject.SetActive(false);
         Debug.Log("EditCameraBase: My camera = " + myCameraObject);
         middleCameraBase = transform.GetChild(0);
-        myRightJoyStickControls = new EloyAdvancedAxisControls(GameInfo.instance.myControls.HousingRotateCamera, deadZone);
+        myRightJoyStickControls = new EAITwoAxisControls(GameInfo.instance.myControls.HousingRotateCamera, deadZone);
         houseGrid = _houseGrid;
         housePos = _housePos;
         CalculateHouseViewPoints();
