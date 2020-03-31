@@ -63,15 +63,18 @@ public class CameraControllerCMF : MonoBehaviour
     public float smoothCamMoveTime = 0.2f;
 
     [Header("Smoothing")]
-    float smoothPosSpeedX, smoothPosSpeedY, smoothPosSpeedZ;
     public float smoothPositioningTime = 0.2f;
+    float smoothPosSpeedX, smoothPosSpeedY, smoothPosSpeedZ;
     float smoothRotSpeedX, smoothRotSpeedY, smoothRotSpeedZ;
     public float smoothRotationTime = 0.2f;
 
     //reset camera pos and rot "R3"
     [Header("Reset Camera")]
-    bool resetingCamera = false;
     public float cameraResetVerticalAngle;
+    bool resetingCamera = false;
+    public float resetMaxTime=0.1f;
+    float currentResetMaxTime;
+
 
     //Switch camera
     bool switching = false;
@@ -210,7 +213,7 @@ public class CameraControllerCMF : MonoBehaviour
                     if (myPlayerMov.actions.R3.WasPressed)
                     {
                         print("R3 pulsado");
-                        StartResetCamera();
+                        StartResetCamera(myPlayerMov.rotateObj.localRotation.eulerAngles.y);
                     }
                     if ((finalInputX != 0 || finalInputZ != 0) && resetingCamera)
                     {
@@ -220,14 +223,15 @@ public class CameraControllerCMF : MonoBehaviour
 
                     if (resetingCamera)
                     {
-                        print("reseting camera");
+                        //print("reseting camera");
                         SmoothRotReset();
                         targetCamPos = cameraFollowObj.position;
                         currentCamPos = targetCamPos;
                         float step = cameraMoveSpeed * Time.deltaTime;
                         transform.position = Vector3.MoveTowards(transform.position, currentCamPos, step);
                         //SmoothPos();
-                        if (currentCamRot == targetCamRot)
+                        float rotDif = (currentCamRot - targetCamRot).magnitude;
+                        if (rotDif<0.005f)
                         {
                             print("STOP RESETING CAMERA");
                             StopResetCamera();
@@ -357,9 +361,12 @@ public class CameraControllerCMF : MonoBehaviour
     }
 
     #region Reset Camera
-    void StartResetCamera()
+    public void StartResetCamera(float targetYAngle, float resetTime=-1)
     {
-        float yRot = myPlayerMov.rotateObj.localRotation.eulerAngles.y;
+        if (resetingCamera) return;
+
+        currentResetMaxTime = resetTime==-1? resetMaxTime : resetTime;
+        float yRot = targetYAngle;
         targetCamRot = transform.localRotation.eulerAngles;
         targetCamRot.y = TransformTargetRotationForReset(currentCamRot.y, yRot);
         targetCamRot.x = TransformTargetRotationForReset(currentCamRot.x, cameraResetVerticalAngle);
@@ -378,11 +385,11 @@ public class CameraControllerCMF : MonoBehaviour
     void SmoothRotReset()
     {
         float xRot = TransformCurrentRotationForReset(currentCamRot.x, targetCamRot.x);
-        currentCamRot.x = Mathf.SmoothDamp(xRot, targetCamRot.x, ref smoothRotSpeedX, smoothRotationTime);
+        currentCamRot.x = Mathf.SmoothDamp(xRot, targetCamRot.x, ref smoothRotSpeedX, currentResetMaxTime);
         float yRot = TransformCurrentRotationForReset(currentCamRot.y, targetCamRot.y);
-        currentCamRot.y = Mathf.SmoothDamp(yRot, targetCamRot.y, ref smoothRotSpeedY, smoothRotationTime);
-        currentCamRot.z = Mathf.SmoothDamp(currentCamRot.z, targetCamRot.z, ref smoothRotSpeedZ, smoothRotationTime);
-        print("NEW CURRENT CAM ROT = " + currentCamRot.x + "; TARGET CAM ROT = " + targetCamRot.ToString("F4"));
+        currentCamRot.y = Mathf.SmoothDamp(yRot, targetCamRot.y, ref smoothRotSpeedY, currentResetMaxTime);
+        currentCamRot.z = Mathf.SmoothDamp(currentCamRot.z, targetCamRot.z, ref smoothRotSpeedZ, currentResetMaxTime);
+        //print("NEW CURRENT CAM ROT = " + currentCamRot.x + "; TARGET CAM ROT = " + targetCamRot.ToString("F4"));
     }
 
     float TransformTargetRotationForReset(float current, float target)

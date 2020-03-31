@@ -1035,7 +1035,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     currentSpeed = horizontalVel.magnitude;
                     currentSpeed = Mathf.Clamp(currentSpeed, 0, maxKnockbackSpeed);
                     fixedJumpDone = true;
-
+                    RotateCharacter();
+                    myCamera.StartResetCamera(targetRotAngle, 0.2f);
                     moveSt = MoveState.NotBreaking;
                     break;
                 case MoveState.NotBreaking:
@@ -1993,6 +1994,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void StartFixedJump(Vector3 vel, float _noMoveMaxTime, float maxTime, bool _bounceEnabled = false)
     {
+        ExitWater();
         StopJump();
         StopFixedJump();
 

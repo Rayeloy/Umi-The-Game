@@ -107,6 +107,7 @@ public class PlayerBodyCMF : MonoBehaviour
                 UmiCannon cannon = col.GetComponent<UmiCannon>();
                 Vector3 dir = cannon.CalculateVelocity(transform.position, myPlayerMov.currentGravity);
                 myPlayerMov.StartFixedJump(dir, cannon.timeToReach * cannon.noInputPercentage, cannon.timeToReach, cannon.bounceEnabled);
+                cannon.PlayEffects();
                 break;
         }
     }
@@ -174,7 +175,7 @@ public class PlayerBodyCMF : MonoBehaviour
             {
                 myPlayerMov.EnterWater();
             }
-            else if (myPlayerMov.vertMovSt == VerticalMovementState.FloatingInWater && myPlayerMov.vertMovSt != VerticalMovementState.Jumping &&!inWater)//TO CHANGE
+            else if (myPlayerMov.vertMovSt == VerticalMovementState.FloatingInWater && !inWater)//TO CHANGE
             {
                 myPlayerMov.ExitWater();
             }

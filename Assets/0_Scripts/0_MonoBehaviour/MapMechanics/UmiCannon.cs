@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using FIMSpace.Jiggling;
 
 [ExecuteAlways]
 public class UmiCannon : MonoBehaviour
@@ -11,6 +12,9 @@ public class UmiCannon : MonoBehaviour
     public int gizmoRays = 20;
     public Color normalTrajectoryColor = Color.blue;
     public Color playerTrajectoryColor = Color.red;
+    public ParticleSystem[] effects;
+    public FJiggling_Base FJigglingEffect;
+
 
     [Header(" --- CANNON PARAMETERS ---")]
     public Transform targetPosition;
@@ -29,6 +33,15 @@ public class UmiCannon : MonoBehaviour
     bool showLastUse = false;
     float lastGravity = 0;
     Vector3 lastOrigin = Vector3.zero;
+
+    public void PlayEffects()
+    {
+        for (int i = 0; i < effects.Length; i++)
+        {
+            effects[i].Play();
+        }
+        if(FJigglingEffect!=null) FJigglingEffect.StartJiggle();
+    }
 
     void ShowParabole(Vector3 _origin,  float _gravity, Color color)
     {

@@ -45246,7 +45246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d98ace8715c2a184ca85247b18eb0853, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugModeOn: 1
+  debugModeOn: 0
   movementDebugsOn: 1
   instantGroundAdjustment: 1
   instantPlatformMovement: 1
@@ -45258,7 +45258,7 @@ MonoBehaviour:
   sensorType: 1
   sensorLayermask:
     serializedVersion: 2
-    m_Bits: 16900
+    m_Bits: 16896
   sensorArrayRows: 1
   sensorArrayRayCount: 5
   sensorArrayRowsAreOffset: 0
@@ -45273,13 +45273,13 @@ MonoBehaviour:
     castType: 1
     layermask:
       serializedVersion: 2
-      m_Bits: 16900
+      m_Bits: 16896
     calculateRealSurfaceNormal: 1
     calculateRealDistance: 1
     arrayRayCount: 5
     ArrayRows: 1
     offsetArrayRows: 0
-    isInDebugMode: 1
+    isInDebugMode: 0
 --- !u!114 &4826634726855863062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45348,13 +45348,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcb1f6fd1a158a74f9c7f9580017ee6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableAllDebugs: 1
+  disableAllDebugs: 0
   updateDebugsOn: 0
   startDebugsOn: 0
   charContDebugsOn: 0
   horMovementDebugsOn: 0
   vertMovementDebugsOn: 0
-  waterDebugsOn: 0
+  waterDebugsOn: 1
   collCheck: {fileID: 4826634726855863062}
   mover: {fileID: 2655243504092265548}
   myPlayerCombat: {fileID: 8719508589324532801}
