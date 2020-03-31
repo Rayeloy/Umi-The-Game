@@ -73,6 +73,12 @@ public class PlayerAnimationCMF : MonoBehaviour
 
     int noControlHash = Animator.StringToHash("NoControl");
     bool noControl;
+    //{
+    //    get
+    //    {
+    //        return myPlayerMovement.moveSt == MoveState.Hooked || myPlayerMovement.moveSt == MoveState.Boost || myPlayerMovement.sufferingEffect != EffectType.none;
+    //    }
+    //}
 
     int dashHash = Animator.StringToHash("Dash"); //Done
     [HideInInspector]
@@ -187,6 +193,7 @@ public class PlayerAnimationCMF : MonoBehaviour
             animator.SetBool(safeBelowHash, safeBelow);
             falling = false;
             animator.SetBool(fallingHash, falling);
+            Debug.LogWarning("START JUMP FALSE");
             startJump = false;
             animator.SetBool(startJumpHash, startJump);
         }
@@ -314,6 +321,7 @@ public class PlayerAnimationCMF : MonoBehaviour
 
         if (ground && startJump)
         {
+            Debug.LogWarning("START JUMP FALSE");
             startJump = false;
             animator.SetBool(startJumpHash, startJump);
         }
@@ -520,6 +528,7 @@ public class PlayerAnimationCMF : MonoBehaviour
             }
             if (startJump)
             {
+                Debug.LogWarning("START JUMP FALSE");
                 startJump = false;
                 animator.SetBool(startJumpHash, startJump);
             }
@@ -551,13 +560,19 @@ public class PlayerAnimationCMF : MonoBehaviour
             //Debug.Log("vel.y = " + myPlayerMovement.currentVel.y + "; below = " + myPlayerMovement.collCheck.below
             //+ "; timeToLand = " + timeToLand + "; falling = " + falling + "; below = " + myPlayerMovement.collCheck.below);
 
-            startJump = false;
-            animator.SetBool(startJumpHash, startJump);
-            toGroundTime = 0;
-            toGround = true;
-            animator.SetBool(toGroundHash, toGround);
+            if (startJump)
+            {
+                Debug.LogWarning("START JUMP FALSE");
+                startJump = false;
+                animator.SetBool(startJumpHash, startJump);
+            }
 
-
+            if (!toGround)
+            {
+                toGroundTime = 0;
+                toGround = true;
+                animator.SetBool(toGroundHash, toGround);
+            }
         }
 
     //    if ((myPlayerMovement.currentVel.y < 0 && !myPlayerMovement.collCheck.below && timeToLand <= maxTimeToLand)
@@ -596,6 +611,7 @@ public class PlayerAnimationCMF : MonoBehaviour
         air = _jump;
         animator.SetBool(airHash, air);
 
+        if(!_jump) Debug.LogWarning("START JUMP FALSE");
         startJump = _jump;
         animator.SetBool(startJumpHash, startJump);
 

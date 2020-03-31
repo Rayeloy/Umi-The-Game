@@ -419,7 +419,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     LayerMask auxLM;//LM = Layer Mask
 
     //Attack effect suffering
-    EffectType sufferingEffect;
+    public EffectType sufferingEffect;
     float effectTime = 0;
     float effectMaxTime = 0;
     bool knockbackDone;
@@ -1530,7 +1530,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     void StopJump()
     {
-        myPlayerAnimation.SetJump(false);
+        //myPlayerAnimation.SetJump(false);
         if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("StopJump: JumpSt = None");
         vertMovSt = VerticalMovementState.None;
         timePressingJump = 0;
