@@ -117,6 +117,7 @@ public class HousingGrid : MonoBehaviour
 
     public void DeactivateEditMode()
     {
+        StopHighlightSlot(currentSlotCoord);
         PutAwayFurniture();
     }
 
