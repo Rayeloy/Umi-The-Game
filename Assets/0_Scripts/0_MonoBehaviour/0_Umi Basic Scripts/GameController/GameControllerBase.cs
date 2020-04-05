@@ -24,6 +24,7 @@ public class GameControllerBase : MonoBehaviour
 
     //referencias
     [Header(" --- Referencias --- ")]
+    public RenController myRenCont;
     public GameInterface myGameInterface;
     //este parámetro es para poner slowmotion al juego (como estados: 0=normal,1=slowmo,2=slowestmo),
     // solo se debe usar para testeo, hay que QUITARLO para la build "comercial".
@@ -308,7 +309,7 @@ public class GameControllerBase : MonoBehaviour
     {
         playing = true;
         gamePaused = false;
-        RenController.instance.disabled = true;
+        myRenCont.disabled = true;
         for (int i = 0; i < playerNum; i++)
         {
             RespawnPlayer(allPlayers[i]);
@@ -340,7 +341,7 @@ public class GameControllerBase : MonoBehaviour
         {
             if (playing)
             {
-                if (RenController.instance.currentControls.B.WasPressed || RenController.instance.currentControls.Start.WasPressed)
+                if (myRenCont.currentControls.B.WasPressed || myRenCont.currentControls.Start.WasPressed)
                 {
                     UnPauseGame();
                 }
@@ -351,7 +352,7 @@ public class GameControllerBase : MonoBehaviour
                 {
                     for (int i = 0; i < playerNum; i++)
                     {
-                        if (RenController.instance.currentControls.Start.WasReleased)
+                        if (myRenCont.currentControls.Start.WasReleased)
                         {
                             SwitchGameOverMenu();
                             i = playerNum;//BREAK
@@ -964,7 +965,7 @@ public class GameControllerBase : MonoBehaviour
             myGameInterface.PauseGame();
             playerActions = p;
             gamePaused = true;
-            RenController.instance.disabled = false;
+            myRenCont.disabled = false;
         //}
     }
 
@@ -987,7 +988,7 @@ public class GameControllerBase : MonoBehaviour
         }
         myGameInterface.UnPauseGame();
         gamePaused = false;
-        RenController.instance.disabled = true;
+        myRenCont.disabled = true;
     }
 
     #endregion

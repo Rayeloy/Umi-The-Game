@@ -11,7 +11,7 @@ public enum ButtonControlsMode
 }
 public class RenController : MonoBehaviour
 {
-    public static RenController instance;
+    //public static RenController instance;
     [HideInInspector] public bool disabled = false;
     public bool useMouse = false;
     public bool useControllers = true;
@@ -23,6 +23,7 @@ public class RenController : MonoBehaviour
 
     [Range(0, 1)]
     public float deadZone = 0.5f;
+    public float turboFrequency = 0.4f;
     [Header(" -- BUTTON NAVIGATION --")]
     public RenButton initialButton;
     [Tooltip("If next button on the right/left/up/down direction is disabled, should we find a new button to go to, or just not move? Basically, jump through disabled buttons or not.")]
@@ -51,7 +52,7 @@ public class RenController : MonoBehaviour
 
     private void Awake()
     {
-        instance = this;
+        //instance = this;
         if (inControlManager == null)
         {
             //Debug.LogWarning("RenController warning: RenController needs a GameObject with InControlManager script on it to control buttons," +
@@ -66,7 +67,7 @@ public class RenController : MonoBehaviour
 
     private void Start()
     {
-        currentControls = PlayerActions.CreateDefaultMenuBindings(deadZone);
+        currentControls = PlayerActions.CreateDefaultMenuBindings(deadZone, turboFrequency);
         if (inControlManager == null)
         {
             Debug.LogWarning("RenController warning: RenController needs a GameObject with InControlManager script on it to control buttons," +
@@ -74,8 +75,19 @@ public class RenController : MonoBehaviour
             inControlManager = FindObjectOfType<InControlManager>();
             if (inControlManager == null) Debug.LogError("RenController error: no InControlManager could be found!");
         }
+        if (initialButton == null)
+        {
+            ButtonGroup standardGroup = GetGroup(0);
+            if (standardGroup != null && standardGroup.buttons.Count > 0)
+            {
+                initialButton = standardGroup.buttons[0];
+            }
+        }
         if (initialButton != null)
+        {
+            currentButton = initialButton;
             initialButton.HighlightButtonsAndTexts();
+        }
     }
 
     private void OnEnable()
@@ -94,22 +106,22 @@ public class RenController : MonoBehaviour
 
         if (!disabled)
         {
-            if ((currentControls.leftJoystcikAsButtons.right.wasPressed || currentControls.leftJoystcikAsButtons.right.wasPressedLong) && validInput)
+            if ((currentControls.leftJoystcikAsButtons.RightWasPressed) && validInput)
             {
-                if(OnRenInputPressed!=null) OnRenInputPressed();
+                if (OnRenInputPressed != null) OnRenInputPressed();
                 MoveRight();
             }
-            else if ((currentControls.leftJoystcikAsButtons.left.wasPressed || currentControls.leftJoystcikAsButtons.left.wasPressedLong) && validInput)
+            else if ((currentControls.leftJoystcikAsButtons.LeftWasPressed) && validInput)
             {
                 if (OnRenInputPressed != null) OnRenInputPressed();
                 MoveLeft();
             }
-            else if ((currentControls.leftJoystcikAsButtons.up.wasPressed || currentControls.leftJoystcikAsButtons.up.wasPressedLong) && validInput)
+            else if ((currentControls.leftJoystcikAsButtons.UpWasPressed) && validInput)
             {
                 if (OnRenInputPressed != null) OnRenInputPressed();
                 MoveUp();
             }
-            else if ((currentControls.leftJoystcikAsButtons.down.wasPressed || currentControls.leftJoystcikAsButtons.down.wasPressedLong) && validInput)
+            else if ((currentControls.leftJoystcikAsButtons.DownWasPressed) && validInput)
             {
                 if (OnRenInputPressed != null) OnRenInputPressed();
                 MoveDown();
@@ -124,12 +136,13 @@ public class RenController : MonoBehaviour
                 if (OnRenInputPressed != null) OnRenInputPressed();
                 ReleaseButton();
             }
+            currentControls.leftJoystcikAsButtons.ResetJoyStick();
         }
     }
 
     #region --- Button Navigation ---
 
-    public static GameObject InstantiateButton(GameObject buttonPrefab, Vector3 pos, Quaternion rot, Transform parent, int buttonGroup)
+    public GameObject InstantiateButton(GameObject buttonPrefab, Vector3 pos, Quaternion rot, Transform parent, int buttonGroup)
     {
         GameObject auxButtonObject = Instantiate(buttonPrefab, pos, rot, parent);
         RenButton renButton = auxButtonObject.GetComponent<RenButton>();
@@ -138,14 +151,14 @@ public class RenController : MonoBehaviour
             Debug.LogError("This button has no RenButton script!");
             return null;
         }
-        instance.AddButton(buttonGroup, renButton);
+        AddButton(buttonGroup, renButton);
         renButton.buttonGroup = buttonGroup;
         return auxButtonObject;
     }
 
-    public static void DestroyButton(RenButton renButton)
+    public void DestroyButton(RenButton renButton)
     {
-        ButtonGroup buttonGroup = instance.GetGroup(renButton.buttonGroup);
+        ButtonGroup buttonGroup = GetGroup(renButton.buttonGroup);
         for (int i = 0; i < buttonGroup.buttons.Count; i++)
         {
             if (buttonGroup.buttons[i] == renButton)
@@ -188,9 +201,14 @@ public class RenController : MonoBehaviour
         return null;
     }
 
-    public static void SetButtonNavigation(RenButton renButton)
+    public void SetButtonNavigation(RenButton renButton)
     {
-        ButtonGroup buttonGroup = instance.GetGroup(renButton.buttonGroup);
+        ButtonGroup buttonGroup = GetGroup(renButton.buttonGroup);
+        if (buttonGroup == null)
+        {
+            Debug.LogWarning("The button " + renButton.name + " is trying to set up its Button Navigation (because it is on automatic), but the buttonGroup " + renButton.buttonGroup + " doesn't exist.");
+            return;
+        }
         RenButton right, left, up, down;
         right = left = up = down = null;
         float rightDist, leftDist, upDist, downDist;
@@ -201,59 +219,59 @@ public class RenController : MonoBehaviour
         {
             if (buttonGroup.buttons[i].disabled || buttonGroup.buttons[i] == renButton) continue;
 
-                Vector3 distVector = buttonGroup.buttons[i].transform.position - renButton.transform.position;
-                Debug.Log("SetButtonNavigation: objective = " + buttonGroup.buttons[i].name + "; distVector = " + distVector);
-                //Right
-                if (distVector.x > 0)
+            Vector3 distVector = buttonGroup.buttons[i].transform.position - renButton.transform.position;
+            //Debug.Log("SetButtonNavigation: objective = " + buttonGroup.buttons[i].name + "; distVector = " + distVector);
+            //Right
+            if (distVector.x > 0)
+            {
+                if (Mathf.Abs(distVector.x) > minDist && distVector.magnitude < rightDist)
                 {
-                    if (Mathf.Abs(distVector.x) > instance.minDist && distVector.magnitude < rightDist)
-                    {
-                        right = buttonGroup.buttons[i];
-                        rightDist = distVector.magnitude;
-                    }
+                    right = buttonGroup.buttons[i];
+                    rightDist = distVector.magnitude;
                 }
-                //Left
-                if (distVector.x < 0)
+            }
+            //Left
+            if (distVector.x < 0)
+            {
+                if (Mathf.Abs(distVector.x) > minDist && distVector.magnitude < leftDist)
                 {
-                    if (Mathf.Abs(distVector.x) > instance.minDist && distVector.magnitude < leftDist)
-                    {
-                        left = buttonGroup.buttons[i];
-                        leftDist = distVector.magnitude;
-                    }
+                    left = buttonGroup.buttons[i];
+                    leftDist = distVector.magnitude;
                 }
-                //Up
-                if (distVector.y > 0)
+            }
+            //Up
+            if (distVector.y > 0)
+            {
+                if (Mathf.Abs(distVector.y) > minDist && distVector.magnitude < upDist)
                 {
-                    if (Mathf.Abs(distVector.y) > instance.minDist && distVector.magnitude < upDist)
-                    {
-                        up = buttonGroup.buttons[i];
-                        upDist = distVector.magnitude;
-                    }
+                    up = buttonGroup.buttons[i];
+                    upDist = distVector.magnitude;
                 }
-                //Down
-                if (distVector.y < 0)
+            }
+            //Down
+            if (distVector.y < 0)
+            {
+                if (Mathf.Abs(distVector.y) > minDist && distVector.magnitude < downDist)
                 {
-                    if (Mathf.Abs(distVector.y) > instance.minDist && distVector.magnitude < downDist)
-                    {
-                        down = buttonGroup.buttons[i];
-                        downDist = distVector.magnitude;
-                    }
+                    down = buttonGroup.buttons[i];
+                    downDist = distVector.magnitude;
                 }
+            }
         }
         #endregion
 
         #region --Jump Connections --
         RenButton jumpLeft, jumpRight, jumpUp, jumpDown;
         jumpLeft = jumpRight = jumpDown = jumpUp = null;
-        if ((instance.verticalJump && (up == null || down == null)) || (instance.horizontalJump &&  (right == null || left == null)))
+        if ((verticalJump && (up == null || down == null)) || (horizontalJump && (right == null || left == null)))
         {
-            Debug.Log("Look for button Jump");
+            // Debug.Log("Look for button Jump");
             rightDist = leftDist = upDist = downDist = float.MinValue;
             float minY, maxY, minX, maxX;
-            minY = down == null ? -instance.maxPerpDist: down.transform.position.y - renButton.transform.position.y;minY = Mathf.Clamp(minY, float.MinValue, -instance.maxPerpDist);
-            maxY = up == null ? instance.maxPerpDist : up.transform.position.y - renButton.transform.position.y; maxY = Mathf.Clamp(maxY, instance.maxPerpDist, float.MaxValue);
-            minX = left == null ? -instance.maxPerpDist : left.transform.position.x - renButton.transform.position.x; minX = Mathf.Clamp(minX, float.MinValue, -instance.maxPerpDist);
-            maxX = right == null ? instance.maxPerpDist : right.transform.position.x - renButton.transform.position.x; maxX = Mathf.Clamp(maxX, instance.maxPerpDist, float.MaxValue);
+            minY = down == null ? -maxPerpDist : down.transform.position.y - renButton.transform.position.y; minY = Mathf.Clamp(minY, float.MinValue, -maxPerpDist);
+            maxY = up == null ? maxPerpDist : up.transform.position.y - renButton.transform.position.y; maxY = Mathf.Clamp(maxY, maxPerpDist, float.MaxValue);
+            minX = left == null ? -maxPerpDist : left.transform.position.x - renButton.transform.position.x; minX = Mathf.Clamp(minX, float.MinValue, -maxPerpDist);
+            maxX = right == null ? maxPerpDist : right.transform.position.x - renButton.transform.position.x; maxX = Mathf.Clamp(maxX, maxPerpDist, float.MaxValue);
 
             for (int i = 0; i < buttonGroup.buttons.Count; i++)
             {
@@ -261,9 +279,9 @@ public class RenController : MonoBehaviour
 
                 Vector3 targetPos = buttonGroup.buttons[i].transform.position;
                 Vector3 distVector = targetPos - renButton.transform.position;
-                Debug.Log("SetButtonNavigation: objective = " + buttonGroup.buttons[i].name + "; distVector = " + distVector);
+                //Debug.Log("SetButtonNavigation: objective = " + buttonGroup.buttons[i].name + "; distVector = " + distVector);
                 //Right
-                if (instance.horizontalJump && right==null && distVector.x < 0)
+                if (horizontalJump && right == null && distVector.x < 0)
                 {
                     if (distVector.y < maxY && distVector.y > minY && Mathf.Abs(distVector.x) > rightDist)
                     {
@@ -272,7 +290,7 @@ public class RenController : MonoBehaviour
                     }
                 }
                 //Left
-                if (instance.horizontalJump && left == null && distVector.x > 0)
+                if (horizontalJump && left == null && distVector.x > 0)
                 {
                     if (distVector.y < maxY && distVector.y > minY && Mathf.Abs(distVector.x) > leftDist)
                     {
@@ -281,7 +299,7 @@ public class RenController : MonoBehaviour
                     }
                 }
                 //Up
-                if (instance.verticalJump && up == null && distVector.y < 0)
+                if (verticalJump && up == null && distVector.y < 0)
                 {
                     if (distVector.x < maxX && distVector.x > minX && Mathf.Abs(distVector.y) > upDist)
                     {
@@ -290,11 +308,11 @@ public class RenController : MonoBehaviour
                     }
                 }
                 //Down
-                if (instance.verticalJump && down == null && distVector.y > 0)
+                if (verticalJump && down == null && distVector.y > 0)
                 {
                     if (distVector.x < maxX && distVector.x > minX && Mathf.Abs(distVector.y) > downDist)
                     {
-                        Debug.Log("Down Jump Button found");
+                        //Debug.Log("Down Jump Button found");
                         jumpDown = buttonGroup.buttons[i];
                         downDist = Mathf.Abs(distVector.y);
                     }
@@ -304,12 +322,12 @@ public class RenController : MonoBehaviour
         #endregion
 
         string nullGameObject = "null gameObject";
-        Debug.Log("SetNextButtons: right = " + (right == null ? null : (right.gameObject == null ? nullGameObject : right.gameObject.name)));
-        Debug.Log("SetNextButtons: left = " + (left == null ? null : (left.gameObject == null ? nullGameObject : left.gameObject.name)));
-        Debug.Log("SetNextButtons: up = " + (up == null ? null : (up.gameObject == null ? nullGameObject : up.gameObject.name)));
-        Debug.Log("SetNextButtons: down = " + (down == null ? null : (down.gameObject == null ? nullGameObject : down.gameObject.name)));
+        //Debug.Log("SetNextButtons: right = " + (right == null ? null : (right.gameObject == null ? nullGameObject : right.gameObject.name)));
+        //Debug.Log("SetNextButtons: left = " + (left == null ? null : (left.gameObject == null ? nullGameObject : left.gameObject.name)));
+        //Debug.Log("SetNextButtons: up = " + (up == null ? null : (up.gameObject == null ? nullGameObject : up.gameObject.name)));
+        //Debug.Log("SetNextButtons: down = " + (down == null ? null : (down.gameObject == null ? nullGameObject : down.gameObject.name)));
         //+ "; left = " + left == null ? null : left.gameObject +"; up = " + up == null ? null : up.gameObject + "; down = " + down == null ? null : down.gameObject);
-        renButton.nextRightButton = right!=null? right : jumpRight;
+        renButton.nextRightButton = right != null ? right : jumpRight;
         renButton.nextLeftButton = left != null ? left : jumpLeft;
         renButton.nextUpButton = up != null ? up : jumpUp;
         renButton.nextDownButton = down != null ? down : jumpDown;
@@ -320,17 +338,24 @@ public class RenController : MonoBehaviour
     #region --- Button Interaction ---
     void PressButton()
     {
+        if (currentButton == null) return;
         currentButton.PressButtonsAndText();
     }
 
     void ReleaseButton()
     {
+        if (currentButton == null) return;
         currentButton.ReleaseButtonsAndText();
     }
 
     void MoveRight()
     {
-        if (currentButton.nextRightButton != null)
+        if (currentButton == null)
+        {
+            currentButton = initialButton;
+            currentButton.HighlightButtonsAndTexts();
+        }
+        else if (currentButton.nextRightButton != null)
         {
             List<RenButton> listOfSeenButtons = new List<RenButton>();
 
@@ -377,7 +402,12 @@ public class RenController : MonoBehaviour
 
     void MoveLeft()
     {
-        if (currentButton.nextLeftButton != null)
+        if (currentButton == null)
+        {
+            currentButton = initialButton;
+            currentButton.HighlightButtonsAndTexts();
+        }
+        else if (currentButton.nextLeftButton != null)
         {
             List<RenButton> listOfSeenButtons = new List<RenButton>();
 
@@ -424,10 +454,14 @@ public class RenController : MonoBehaviour
 
     void MoveUp()
     {
-        Debug.Log("CurrentButton = "+ currentButton + "; currentButton.nextUpButton = " + currentButton.nextUpButton);
-        if (currentButton.nextUpButton != null)
+        if (currentButton == null)
         {
-            Debug.Log("Move up");
+            currentButton = initialButton;
+            currentButton.HighlightButtonsAndTexts();
+        }
+        else if (currentButton.nextUpButton != null)
+        {
+            //Debug.Log("Move up");
             List<RenButton> listOfSeenButtons = new List<RenButton>();
 
             RenButton nextButton = null;
@@ -473,8 +507,12 @@ public class RenController : MonoBehaviour
 
     void MoveDown()
     {
-        //Debug.Log("CurrentButton = " + currentButton + "; currentButton.nextDownButton = " + currentButton.nextDownButton);
-        if (currentButton.nextDownButton != null)
+        if (currentButton == null)
+        {
+            currentButton = initialButton;
+            currentButton.HighlightButtonsAndTexts();
+        }
+        else if (currentButton.nextDownButton != null)
         {
             List<RenButton> listOfSeenButtons = new List<RenButton>();
 

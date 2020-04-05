@@ -17,6 +17,7 @@ public class GameControllerCMF : MonoBehaviour
     //referencias
     [Header(" --- Referencias --- ")]
     public GameInterfaceCMF myGameInterface;
+    RenController myRenCont;
     //este parámetro es para poner slowmotion al juego (como estados: 0=normal,1=slowmo,2=slowestmo),
     // solo se debe usar para testeo, hay que QUITARLO para la build "comercial".
     [Header(" --- Variables generales ---")]
@@ -152,6 +153,11 @@ public class GameControllerCMF : MonoBehaviour
         }
         //}
 
+        myRenCont = myGameInterface.GetComponentInChildren<RenController>();
+        if(myRenCont == null)
+        {
+            Debug.LogError("GameControllerCMF-> No RenController could be found!");
+        }
         //Deactivate test player components. DO NOT MOVE!
         DeactivatePlayerComponents();
 
@@ -263,7 +269,7 @@ public class GameControllerCMF : MonoBehaviour
     {
         playing = true;
         gamePaused = false;
-        RenController.instance.disabled = true;
+        myRenCont.disabled = true;
         for (int i = 0; i < playerNum; i++)
         {
             Debug.Log("Respawning player " + (i+1) + "/" + (playerNum));
@@ -293,7 +299,7 @@ public class GameControllerCMF : MonoBehaviour
         {
             if (playing)//PLAYING BUT PAUSED
             {
-                if (RenController.instance.currentControls.B.WasPressed || RenController.instance.currentControls.Start.WasPressed)
+                if (myRenCont.currentControls.B.WasPressed || myRenCont.currentControls.Start.WasPressed)
                 {
                     UnPauseGame();
                 }
@@ -304,7 +310,7 @@ public class GameControllerCMF : MonoBehaviour
                 {
                     for (int i = 0; i < playerNum; i++)
                     {
-                        if (RenController.instance.currentControls.Start.WasReleased)
+                        if (myRenCont.currentControls.Start.WasReleased)
                         {
                             SwitchGameOverMenu();
                             i = playerNum;//BREAK
@@ -942,7 +948,7 @@ public class GameControllerCMF : MonoBehaviour
         myGameInterface.PauseGame();
         playerActions = p;
         gamePaused = true;
-        RenController.instance.disabled = false;
+        myRenCont.disabled = false;
         //}
     }
 
@@ -965,7 +971,7 @@ public class GameControllerCMF : MonoBehaviour
         }
         myGameInterface.UnPauseGame();
         gamePaused = false;
-        RenController.instance.disabled = true;
+        myRenCont.disabled = true;
     }
 
     #endregion

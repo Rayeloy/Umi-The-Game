@@ -46,14 +46,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   disabled: 0
-  useMouse: 0
+  useMouse: 1
   useControllers: 1
   useKeyboard: 1
   inControlManager: {fileID: 0}
   controlsType: 0
+  deadZone: 0.85
+  turboFrequency: 0.1
   initialButton: {fileID: 0}
   automaticButtonFlowOnError: 1
-  deadZone: 0.85
+  verticalJump: 1
+  horizontalJump: 1
+  minDist: 25
+  maxPerpDist: 200
   currentButton: {fileID: 0}
   testImage: {fileID: 0}
 --- !u!114 &8693383356436219397

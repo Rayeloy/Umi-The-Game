@@ -41,7 +41,7 @@ public class PlayerActions : PlayerActionSet
     public PlayerAction LJDown;
     public PlayerAction LJUp;
     public PlayerTwoAxisAction LeftJoystick;
-    public TwoAxisButtons leftJoystcikAsButtons;
+    public EAITwoAxisControls leftJoystcikAsButtons;
 
     public PlayerAction R3;
     public PlayerAction L3;
@@ -242,7 +242,7 @@ public class PlayerActions : PlayerActionSet
         return actions;
     }
 
-    public static PlayerActions CreateDefaultMenuBindings(float _deadzone)
+    public static PlayerActions CreateDefaultMenuBindings(float _deadzone, float _turboFrequency)
     {
         var actions = new PlayerActions();
 
@@ -302,7 +302,7 @@ public class PlayerActions : PlayerActionSet
         actions.Start.AddDefaultBinding(InputControlType.Start);
 
 
-        actions.leftJoystcikAsButtons  = new TwoAxisButtons(actions.LeftJoystick, _deadzone);
+        actions.leftJoystcikAsButtons  = new EAITwoAxisControls(actions.LeftJoystick, _deadzone, 0.4f, _turboFrequency);
         actions.EAIMouseWheel = new EAIMouseWheelControls(actions.MouseWheel);
 
         return actions;
@@ -594,167 +594,167 @@ public class EAIButtonControls
     }
 }
 
-public class TwoAxisButtons
-{
-    public PlayerTwoAxisAction twoAxis;
-    public float deadzone = 0.5f;
-    public ButtonForTwoAxisButtons left;
-    public ButtonForTwoAxisButtons right;
-    public ButtonForTwoAxisButtons up;
-    public ButtonForTwoAxisButtons down;
-    public TwoAxisButtons(PlayerTwoAxisAction _twoAxis, float _deadzone)
-    {
-        twoAxis = _twoAxis;
-        deadzone= _deadzone;
+//public class TwoAxisButtons
+//{
+//    public PlayerTwoAxisAction twoAxis;
+//    public float deadzone = 0.5f;
+//    public ButtonForTwoAxisButtons left;
+//    public ButtonForTwoAxisButtons right;
+//    public ButtonForTwoAxisButtons up;
+//    public ButtonForTwoAxisButtons down;
+//    public TwoAxisButtons(PlayerTwoAxisAction _twoAxis, float _deadzone, float _turboFrequency)
+//    {
+//        twoAxis = _twoAxis;
+//        deadzone= _deadzone;
 
-        left = new ButtonForTwoAxisButtons(AxisDir.Left, twoAxis, deadzone);
-        right = new ButtonForTwoAxisButtons(AxisDir.Right, twoAxis, deadzone);
-        up = new ButtonForTwoAxisButtons(AxisDir.Up, twoAxis, deadzone);
-        down = new ButtonForTwoAxisButtons(AxisDir.Down, twoAxis, deadzone);
-    }
+//        left = new ButtonForTwoAxisButtons(AxisDir.Left, twoAxis, deadzone, _turboFrequency);
+//        right = new ButtonForTwoAxisButtons(AxisDir.Right, twoAxis, deadzone, _turboFrequency);
+//        up = new ButtonForTwoAxisButtons(AxisDir.Up, twoAxis, deadzone, _turboFrequency);
+//        down = new ButtonForTwoAxisButtons(AxisDir.Down, twoAxis, deadzone, _turboFrequency);
+//    }
 
-}
+//}
 
-public enum AxisDir
-{
-    none,
-    Right,
-    Left,
-    Up,
-    Down
-}
+//public enum AxisDir
+//{
+//    none,
+//    Right,
+//    Left,
+//    Up,
+//    Down
+//}
 
-public class ButtonForTwoAxisButtons
-{
-    public AxisDir axisDir;
-    public PlayerTwoAxisAction twoAxis;
-    public float deadzone = 0.5f;
+//public class ButtonForTwoAxisButtons
+//{
+//    public AxisDir axisDir;
+//    public PlayerTwoAxisAction twoAxis;
+//    public float deadzone = 0.5f;
 
-    public bool isPressed
-    {
-        get
-        {
-            //bool result = false;
-            bool result = false;
-            switch (axisDir)
-            {
-                case AxisDir.Right:
-                    if (twoAxis.X >= deadzone)
-                    {
-                        lastDirPressed = axisDir;
-                        result = true;
-                    }
-                    return result;
-                case AxisDir.Left:
-                    if (twoAxis.X <= -deadzone)
-                    {
-                        lastDirPressed = axisDir;
-                        result = true;
-                    }
-                    return result;
-                case AxisDir.Up:
-                    if (twoAxis.Y >= deadzone)
-                    {
-                        lastDirPressed = axisDir;
-                        result = true;
-                    }
-                    return result;
-                case AxisDir.Down:
-                    if (twoAxis.Y <= -deadzone)
-                    {
-                        lastDirPressed = axisDir;
-                        result = true;
-                    }
-                    return result;
-            }
-            return false;
-        }
-    }
-    float turboModeFreq = 0.1f;
-    float timeToStartTurboMode = 0.6f;
-    float currentTurboModeFreq = 0.6f;
+//    public bool isPressed
+//    {
+//        get
+//        {
+//            //bool result = false;
+//            bool result = false;
+//            switch (axisDir)
+//            {
+//                case AxisDir.Right:
+//                    if (twoAxis.X >= deadzone)
+//                    {
+//                        lastDirPressed = axisDir;
+//                        result = true;
+//                    }
+//                    return result;
+//                case AxisDir.Left:
+//                    if (twoAxis.X <= -deadzone)
+//                    {
+//                        lastDirPressed = axisDir;
+//                        result = true;
+//                    }
+//                    return result;
+//                case AxisDir.Up:
+//                    if (twoAxis.Y >= deadzone)
+//                    {
+//                        lastDirPressed = axisDir;
+//                        result = true;
+//                    }
+//                    return result;
+//                case AxisDir.Down:
+//                    if (twoAxis.Y <= -deadzone)
+//                    {
+//                        lastDirPressed = axisDir;
+//                        result = true;
+//                    }
+//                    return result;
+//            }
+//            return false;
+//        }
+//    }
+//    float turboModeFreq = 0.1f;
+//    float timeToStartTurboMode = 0.6f;
+//    float currentTurboModeFreq = 0.6f;
 
-    AxisDir lastDirPressed = AxisDir.none;
+//    AxisDir lastDirPressed = AxisDir.none;
 
-    public bool hasBeenPressed = false;
-    public bool wasPressed
-    {
-        get
-        {
-            bool result = false;
-            if(!hasBeenPressed && isPressed)
-            {
-                hasBeenPressed = true;
-                hasBeenReleased = false;
-                result = true;
-            }else if(hasBeenPressed && !isPressed)
-            {
-                hasBeenPressed = false;
-            }
-            return result;
-        }
-    }
-    float wasPressedTime = 0;
+//    public bool hasBeenPressed = false;
+//    public bool wasPressed
+//    {
+//        get
+//        {
+//            bool result = false;
+//            if(!hasBeenPressed && isPressed)
+//            {
+//                hasBeenPressed = true;
+//                hasBeenReleased = false;
+//                result = true;
+//            }else if(hasBeenPressed && !isPressed)
+//            {
+//                hasBeenPressed = false;
+//            }
+//            return result;
+//        }
+//    }
+//    float wasPressedTime = 0;
 
-    public bool hasBeenReleased = false;
-    public bool wasReleased
-    {
-        get
-        {
-            bool result = false;
-            if (!hasBeenReleased && !isPressed)
-            {
-                hasBeenPressed = false;
-                hasBeenReleased = true;
-                result = true;
-            }
-            else if (hasBeenReleased && isPressed)
-            {
-                hasBeenReleased = false;
-            }
-            return result;
-        }
-    }
+//    public bool hasBeenReleased = false;
+//    public bool wasReleased
+//    {
+//        get
+//        {
+//            bool result = false;
+//            if (!hasBeenReleased && !isPressed)
+//            {
+//                hasBeenPressed = false;
+//                hasBeenReleased = true;
+//                result = true;
+//            }
+//            else if (hasBeenReleased && isPressed)
+//            {
+//                hasBeenReleased = false;
+//            }
+//            return result;
+//        }
+//    }
 
-    public bool wasPressedLong
-    {
-        get
-        {
-            //Debug.Log("was Pressed Long: Start");
-            if (isPressed)
-            {
-                //Debug.Log("was Pressed Long "+ axisDir + ": is pressed. wasPressedTime = "+ wasPressedTime.ToString("F4"));
-                wasPressedTime += Time.fixedDeltaTime;
-            }
-            else
-            {
-                wasPressedTime = 0;
-                if (currentTurboModeFreq != timeToStartTurboMode)
-                {
-                    //Debug.Log("was Pressed Long "+axisDir+": stop being pressed");
-                    currentTurboModeFreq = timeToStartTurboMode;
-                }
-            }
+//    public bool wasPressedLong
+//    {
+//        get
+//        {
+//            //Debug.Log("was Pressed Long: Start");
+//            if (isPressed)
+//            {
+//                //Debug.Log("was Pressed Long "+ axisDir + ": is pressed. wasPressedTime = "+ wasPressedTime.ToString("F4"));
+//                wasPressedTime += Time.fixedDeltaTime;
+//            }
+//            else
+//            {
+//                wasPressedTime = 0;
+//                if (currentTurboModeFreq != timeToStartTurboMode)
+//                {
+//                    //Debug.Log("was Pressed Long "+axisDir+": stop being pressed");
+//                    currentTurboModeFreq = timeToStartTurboMode;
+//                }
+//            }
 
-            if (wasPressedTime >= currentTurboModeFreq)
-            {
-                //Debug.Log("was Pressed Long "+ axisDir+": is pressed and input true");
-                wasPressedTime = 0;
-                if(currentTurboModeFreq != turboModeFreq)
-                    currentTurboModeFreq = turboModeFreq;
-                return true;
-            }
-            return false;
-        }
-    }
+//            if (wasPressedTime >= currentTurboModeFreq)
+//            {
+//                //Debug.Log("was Pressed Long "+ axisDir+": is pressed and input true");
+//                wasPressedTime = 0;
+//                if(currentTurboModeFreq != turboModeFreq)
+//                    currentTurboModeFreq = turboModeFreq;
+//                return true;
+//            }
+//            return false;
+//        }
+//    }
 
 
-    public ButtonForTwoAxisButtons(AxisDir _axisDir, PlayerTwoAxisAction _twoAxis, float _deadzone)
-    {
-        axisDir = _axisDir;
-        twoAxis = _twoAxis;
-        deadzone = _deadzone;
-        currentTurboModeFreq = timeToStartTurboMode;
-        wasPressedTime = 0;
-    }
-}
+//    public ButtonForTwoAxisButtons(AxisDir _axisDir, PlayerTwoAxisAction _twoAxis, float _deadzone, float _turboFrequency)
+//    {
+//        axisDir = _axisDir;
+//        twoAxis = _twoAxis;
+//        deadzone = _deadzone;
+//        currentTurboModeFreq = timeToStartTurboMode;
+//        wasPressedTime = 0;
+//    }
+//}

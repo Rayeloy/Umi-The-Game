@@ -22,6 +22,8 @@ public enum RenButtonNavigationMode
 [ExecuteAlways]
 public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
 {
+    RenController myRenCont;
+
     public bool disabled = false;
 
     public TransitionMode transition = TransitionMode.ColorTint;
@@ -59,6 +61,14 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     bool lastEnabled;
 
+    public bool isPartOfScroll
+    {
+        get
+        {
+            return GetComponentInParent<RenScroll>() != null;
+        }
+    }
+
     private void OnGUI()
     {
 
@@ -83,20 +93,34 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     private void Awake()
     {
+        Canvas myCanvas = GetComponentInParent<Canvas>();
+        if(myCanvas == null)
+        {
+            Debug.LogError("RenButton "+name+" : this button has no parent canvas!");
+        }
+        myRenCont = myCanvas.GetComponentInChildren<RenController>();
+        if (myRenCont == null)
+        {
+            Debug.LogError("RenButton " + name + " : this button has no RenController in its canvas!");
+        }
+
         for (int i = 0; i < targetImages.Length; i++)
         {
             targetImages[i].color = normalColor;
         }
         if (Application.isPlaying)
         {
-            if (buttonGroup == 0) RenController.instance.AddButton(0, this);
+            myRenCont.AddButton(buttonGroup, this);
         }
     }
 
     private void Start()
     {
-        SetNextButtons();
-        lastEnabled = this.enabled;
+        if (Application.isPlaying)
+        {
+            SetNextButtons();
+            lastEnabled = this.enabled;
+        }
     }
 
     private void Update()
@@ -118,8 +142,8 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if(navigationMode == RenButtonNavigationMode.Automatic)
         {
-            Debug.Log(" --- Setting Button Navegation for " + name);
-            RenController.SetButtonNavigation(this);
+            //Debug.Log(" --- Setting Button Navegation for " + name);
+            myRenCont.SetButtonNavigation(this);
         }
     }
 
@@ -170,11 +194,11 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     //MOUSE EVENTS
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!disabled && RenController.instance.useMouse)
+        if (!disabled && myRenCont.useMouse)
         {
-            if (RenController.instance.currentButton != null)
-                RenController.instance.currentButton.StopHighlightButtonsAndText();
-            RenController.instance.currentButton = this;
+            if (myRenCont.currentButton != null)
+                myRenCont.currentButton.StopHighlightButtonsAndText();
+            myRenCont.currentButton = this;
 
             isMouseOver = true;
             //Debug.Log("Mouse enter");
@@ -190,8 +214,13 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (!disabled && RenController.instance.useMouse)
+        if (!disabled && myRenCont.useMouse)
         {
+            if (myRenCont.currentButton == this)
+            {
+                myRenCont.currentButton.StopHighlightButtonsAndText();
+                myRenCont.currentButton = null;
+            }
             isMouseOver = false;
             //Debug.Log("Mouse exit");
             //for (int i = 0; i < targetImages.Length; i++)
@@ -204,7 +233,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (!disabled && RenController.instance.useMouse)
+        if (!disabled && myRenCont.useMouse)
         {
             PressButtonsAndText();
         }
@@ -212,21 +241,10 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (!disabled && RenController.instance.useMouse)
+        if (!disabled && myRenCont.useMouse)
         {
             Debug.Log("Mouse up");
-            for (int i = 0; i < targetImages.Length; i++)
-            {
-                if (isMouseOver)
-                {
-                    targetImages[i].color = highlightedColor;
-
-                }
-                else
-                {
-                    targetImages[i].color = normalColor;
-                }
-            }
+            ReleaseButtonsAndText();
             onButtonPressed.Invoke();
         }
     }

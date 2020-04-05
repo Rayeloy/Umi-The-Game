@@ -10,6 +10,8 @@ public enum FurnitureMenuState
 }
 public class HousingFurnitureMenu : MonoBehaviour
 {
+    [Header(" --- References ---")]
+    public RenController myRenCont;
     public GameObject furnitureMenuParent;
     public RectTransform scrollRect;
     public Vector2 furnitureIconSize;
@@ -151,7 +153,7 @@ public class HousingFurnitureMenu : MonoBehaviour
             {
                 Debug.Log("InstantiateRenButtons: currentPos = " + currentPos);
                 //instantiate
-                GameObject auxButton = RenController.InstantiateButton(furnitureIconRenButtonPrefab, Vector3.zero, Quaternion.identity, scrollRect.transform,1);
+                GameObject auxButton = myRenCont.InstantiateButton(furnitureIconRenButtonPrefab, Vector3.zero, Quaternion.identity, scrollRect.transform,1);
                 RectTransform rectTrans = auxButton.GetComponent<RectTransform>();
                 rectTrans.localPosition = currentPos;
                 furnitureIcons[row].Add(auxButton.GetComponent<RenButton>());

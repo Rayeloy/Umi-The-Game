@@ -10,7 +10,7 @@ public class GameInterfaceCMF : MonoBehaviour
 {
 
     [Header("References")]
-
+    RenController myRenCont;
     private GameControllerCMF gC;
 
     //GAME OVER MENU
@@ -40,7 +40,11 @@ public class GameInterfaceCMF : MonoBehaviour
     public void KonoAwake(GameControllerCMF _gC)
     {
         gC = _gC;
-
+        myRenCont = GetComponentInChildren<RenController>();
+        if(myRenCont == null)
+        {
+            Debug.LogError("GameInterfaceCMF -> no RenController could be found!");
+        }
         sceneLoadedOnReset = SceneManager.GetActiveScene().name;
 
         gameOverMenu.SetActive(false);
@@ -134,8 +138,8 @@ public class GameInterfaceCMF : MonoBehaviour
             gameOverMenuOn = true;
             gameOverMenu.SetActive(true);
             gameOverPressStart.enabled = false;
-            RenController.instance.disabled = false;
-            RenController.instance.SetSelectedButton(gameOverFirstButton);
+            myRenCont.disabled = false;
+            myRenCont.SetSelectedButton(gameOverFirstButton);
         }
     }
 
@@ -206,7 +210,7 @@ public class GameInterfaceCMF : MonoBehaviour
 
 
         //EventSystem.current.SetSelectedGameObject(pauseRestartButton);
-        RenController.instance.SetSelectedButton(pauseRestartButton);
+        myRenCont.SetSelectedButton(pauseRestartButton);
     }
 
     public void UnPauseGame()

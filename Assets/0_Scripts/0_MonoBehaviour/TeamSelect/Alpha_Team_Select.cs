@@ -17,6 +17,7 @@ public enum TeamSelectMenuState
 public class Alpha_Team_Select : MonoBehaviour
 {
     public static Alpha_Team_Select instance;
+    public RenController myRenCont;
     //Variables
     //public GameObject stockGameInfo;
     //public GameObject stockInControlManager;
@@ -123,14 +124,14 @@ public class Alpha_Team_Select : MonoBehaviour
         switch (teamSelectMenuSt)
         {
             case TeamSelectMenuState.ChoosingMapVariation:
-                if (RenController.instance.currentControls.B.WasReleased)
+                if (myRenCont.currentControls.B.WasReleased)
                 {
                     SceneManager.LoadScene("Demo_MainMenu 1");
                 }
                 break;
 
             case TeamSelectMenuState.ChoosingNumberOfPlayers:
-                if (RenController.instance.currentControls.B.WasReleased)
+                if (myRenCont.currentControls.B.WasReleased)
                 {
                     BackToChooseMapVariation();
                 }
@@ -216,7 +217,7 @@ public class Alpha_Team_Select : MonoBehaviour
                     }
                 }
 
-                if (RenController.instance.currentControls.B.WasReleased)
+                if (myRenCont.currentControls.B.WasReleased)
                 {
                     bool allNotJoined = true;
                     for (int i = 0; i < selectPlayers.Length; i++)
@@ -258,7 +259,7 @@ public class Alpha_Team_Select : MonoBehaviour
     {
         currentMapIndex = mapIndex;
         numPlayerSpritesParent.gameObject.SetActive(true);
-        RenController.instance.SetSelectedButton(chooseNumOfPlayersButtons[0]);
+        myRenCont.SetSelectedButton(chooseNumOfPlayersButtons[0]);
         mapVariationsSpritesParent.gameObject.SetActive(false);
 
         //MakeSpriteBig(numPlayerSprites[nPlayers - 1]);
@@ -280,7 +281,7 @@ public class Alpha_Team_Select : MonoBehaviour
     void BackToChooseMapVariation()
     {
         mapVariationsSpritesParent.gameObject.SetActive(true);
-        RenController.instance.SetSelectedButton(chooseMapVariationButtons[0]);
+        myRenCont.SetSelectedButton(chooseMapVariationButtons[0]);
         numPlayerSpritesParent.gameObject.SetActive(false);
         //MakeSpriteBig(mapVariationsSprites[currentMapIndex]);
         //switch (GameInfo.instance.currentGameMode)
@@ -313,7 +314,7 @@ public class Alpha_Team_Select : MonoBehaviour
         {
             selectPlayers[i].KonoAwake(nPlayers, i);
         }
-        RenController.instance.disabled = true;
+        myRenCont.disabled = true;
         Debug.Log("LOCK PLAYER NUM");
     }
 
@@ -321,8 +322,8 @@ public class Alpha_Team_Select : MonoBehaviour
     {
         selectNumberOfPlayersCam.gameObject.SetActive(true);
         menusCanvas.SetActive(true);
-        RenController.instance.disabled = false;
-        RenController.instance.SetSelectedButton(chooseNumOfPlayersButtons[0]);
+        myRenCont.disabled = false;
+        myRenCont.SetSelectedButton(chooseNumOfPlayersButtons[0]);
         for (int i = 0; i < selectPlayers.Length; i++)
         {
             selectPlayers[i].ResetSelectPlayer();

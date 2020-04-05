@@ -430,7 +430,7 @@ MonoBehaviour:
   normalSprite: {fileID: 21300000, guid: 33402741dd52a344f80a36fdc36bfa5b, type: 3}
   highlightedSprite: {fileID: 21300000, guid: f12e1190c27c09747a1612c13e6c6ef2, type: 3}
   pressedSprite: {fileID: 21300000, guid: 6250da9d1e587464f996aecb25a57cb7, type: 3}
-  disabledSprite: {fileID: 0}
+  disabledSprite: {fileID: 21300000, guid: 33402741dd52a344f80a36fdc36bfa5b, type: 3}
   navigationMode: 1
   buttonGroup: 0
   nextUpButton: {fileID: 7403124338849428644}
@@ -1027,7 +1027,7 @@ MonoBehaviour:
   normalSprite: {fileID: 21300000, guid: 33402741dd52a344f80a36fdc36bfa5b, type: 3}
   highlightedSprite: {fileID: 21300000, guid: f12e1190c27c09747a1612c13e6c6ef2, type: 3}
   pressedSprite: {fileID: 21300000, guid: 6250da9d1e587464f996aecb25a57cb7, type: 3}
-  disabledSprite: {fileID: 0}
+  disabledSprite: {fileID: 21300000, guid: 33402741dd52a344f80a36fdc36bfa5b, type: 3}
   navigationMode: 1
   buttonGroup: 0
   nextUpButton: {fileID: 4349400938508234398}
@@ -2243,6 +2243,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4140875914313342576}
     m_Modifications:
+    - target: {fileID: 880503870005479700, guid: c1c04725e7d5ab246893de4c4dc8faad,
+        type: 3}
+      propertyPath: initialButton
+      value: 
+      objectReference: {fileID: 372520760291350279, guid: 1fee3160f8150c24aa073abf819b9465,
+        type: 3}
+    - target: {fileID: 880503870005479700, guid: c1c04725e7d5ab246893de4c4dc8faad,
+        type: 3}
+      propertyPath: automaticButtonFlowOnError
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 880503870005479700, guid: c1c04725e7d5ab246893de4c4dc8faad,
+        type: 3}
+      propertyPath: useMouse
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 880503870005479701, guid: c1c04725e7d5ab246893de4c4dc8faad,
         type: 3}
       propertyPath: m_Name
@@ -2302,22 +2318,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 880503870005479700, guid: c1c04725e7d5ab246893de4c4dc8faad,
-        type: 3}
-      propertyPath: initialButton
-      value: 
-      objectReference: {fileID: 372520760291350279, guid: 1fee3160f8150c24aa073abf819b9465,
-        type: 3}
-    - target: {fileID: 880503870005479700, guid: c1c04725e7d5ab246893de4c4dc8faad,
-        type: 3}
-      propertyPath: automaticButtonFlowOnError
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 880503870005479700, guid: c1c04725e7d5ab246893de4c4dc8faad,
-        type: 3}
-      propertyPath: useMouse
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c1c04725e7d5ab246893de4c4dc8faad, type: 3}
