@@ -49,11 +49,13 @@ public class HousingFurnitureMenu : MonoBehaviour
         furnitureIcons = new List<List<RenButton>>();
         furnitureMenuState = FurnitureMenuState.family;
         InstantiateFurnitureButtons(FurnitureTag.chair);
+        myRenCont.disabled = false;
         StartOpenMenuAnim();
     }
 
     public void CloseFurnitureMenu()
     {
+        myRenCont.disabled = true;
         StartCloseMenuAnim();
     }
 

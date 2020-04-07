@@ -528,7 +528,7 @@ public class PlayerAnimationCMF : MonoBehaviour
             }
             if (startJump)
             {
-                Debug.LogWarning("START JUMP FALSE");
+                //Debug.LogWarning("START JUMP FALSE");
                 startJump = false;
                 animator.SetBool(startJumpHash, startJump);
             }

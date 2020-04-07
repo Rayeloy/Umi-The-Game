@@ -41,7 +41,7 @@ public class PlayerActions : PlayerActionSet
     public PlayerAction LJDown;
     public PlayerAction LJUp;
     public PlayerTwoAxisAction LeftJoystick;
-    public EAITwoAxisControls leftJoystcikAsButtons;
+    public EAITwoAxisControls leftJoystickAsButtons;
 
     public PlayerAction R3;
     public PlayerAction L3;
@@ -302,7 +302,7 @@ public class PlayerActions : PlayerActionSet
         actions.Start.AddDefaultBinding(InputControlType.Start);
 
 
-        actions.leftJoystcikAsButtons  = new EAITwoAxisControls(actions.LeftJoystick, _deadzone, 0.4f, _turboFrequency);
+        actions.leftJoystickAsButtons = new EAITwoAxisControls(actions.LeftJoystick, _deadzone, 0.4f, _turboFrequency);
         actions.EAIMouseWheel = new EAIMouseWheelControls(actions.MouseWheel);
 
         return actions;
@@ -413,6 +413,7 @@ public class EAITwoAxisControls
                 upIsPressed = true;
                 lastPressedDir = 0;
             }
+            //Debug.Log("result = " + result+"; turboPressedTime = " + turboPressedTime);
             return result;
         }
     }
@@ -478,6 +479,7 @@ public class EAITwoAxisControls
         else if (leftIsPressed || rightIsPressed || downIsPressed || upIsPressed)
         {
             turboPressedTime += Time.deltaTime;
+            Debug.Log("turboPressedTime = " + turboPressedTime);
             if (!turboStarted && turboPressedTime >= timeToTurbo)
             {
                 turboStarted = true;

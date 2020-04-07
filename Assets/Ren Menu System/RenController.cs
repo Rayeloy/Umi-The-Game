@@ -12,7 +12,7 @@ public enum ButtonControlsMode
 public class RenController : MonoBehaviour
 {
     //public static RenController instance;
-    [HideInInspector] public bool disabled = false;
+    public bool disabled = false;
     public bool useMouse = false;
     public bool useControllers = true;
     public bool useKeyboard = true;
@@ -106,22 +106,22 @@ public class RenController : MonoBehaviour
 
         if (!disabled)
         {
-            if ((currentControls.leftJoystcikAsButtons.RightWasPressed) && validInput)
+            if ((currentControls.leftJoystickAsButtons.RightWasPressed) && validInput)
             {
                 if (OnRenInputPressed != null) OnRenInputPressed();
                 MoveRight();
             }
-            else if ((currentControls.leftJoystcikAsButtons.LeftWasPressed) && validInput)
+            else if ((currentControls.leftJoystickAsButtons.LeftWasPressed) && validInput)
             {
                 if (OnRenInputPressed != null) OnRenInputPressed();
                 MoveLeft();
             }
-            else if ((currentControls.leftJoystcikAsButtons.UpWasPressed) && validInput)
+            else if ((currentControls.leftJoystickAsButtons.UpWasPressed) && validInput)
             {
                 if (OnRenInputPressed != null) OnRenInputPressed();
                 MoveUp();
             }
-            else if ((currentControls.leftJoystcikAsButtons.DownWasPressed) && validInput)
+            else if ((currentControls.leftJoystickAsButtons.DownWasPressed) && validInput)
             {
                 if (OnRenInputPressed != null) OnRenInputPressed();
                 MoveDown();
@@ -136,7 +136,7 @@ public class RenController : MonoBehaviour
                 if (OnRenInputPressed != null) OnRenInputPressed();
                 ReleaseButton();
             }
-            currentControls.leftJoystcikAsButtons.ResetJoyStick();
+            currentControls.leftJoystickAsButtons.ResetJoyStick();
         }
     }
 

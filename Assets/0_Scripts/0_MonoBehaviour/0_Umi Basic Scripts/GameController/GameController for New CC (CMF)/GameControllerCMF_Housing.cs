@@ -41,6 +41,7 @@ public class GameControllerCMF_Housing : GameControllerCMF
 
     protected override void SpecificAwake()
     {
+        playersCanvasParent.gameObject.SetActive(false);
         myLeftJoyStickControls = new EAITwoAxisControls(allPlayers[0].actions.LeftJoystick, leftJoyStickDeadzone);
         selectUp = new EAIButtonControls(allPlayers[0].actions.HousingMoveUp);
         selectDown = new EAIButtonControls(allPlayers[0].actions.HousingMoveDown);

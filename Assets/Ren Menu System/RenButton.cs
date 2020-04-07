@@ -233,7 +233,7 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (!disabled && myRenCont.useMouse)
+        if (!disabled && myRenCont.useMouse && isMouseOver)
         {
             PressButtonsAndText();
         }
@@ -241,11 +241,10 @@ public class RenButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (!disabled && myRenCont.useMouse)
+        if (!disabled && myRenCont.useMouse && isMouseOver)
         {
             Debug.Log("Mouse up");
             ReleaseButtonsAndText();
-            onButtonPressed.Invoke();
         }
     }
 
