@@ -69,6 +69,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
     public PlayerActions actions { get; set; }
     public InputsInfo inputsInfo;
 
+    public Rigidbody rbody;
+    Transform mirrorPlayer;
+
 
     //GROUND VARIABLES
 
@@ -614,6 +617,12 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             inputsInfo.ResetInputs();
 
             collCheck.SavePlatformPoint();
+        }
+
+        if (mirrorPlayer)
+        {
+            mirrorPlayer.localPosition = transform.position;
+
         }
 
     }
@@ -2656,13 +2665,34 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
     #region ----[ BOLT CALLBACKS ]----
     public override void Attached()
     {
+        rbody = GetComponent<Rigidbody>();
+
         state.SetTransforms(state.transform_Pos, transform);
         state.SetTransforms(state.Transform_Rot, rotateObj);
+
+        Invoke("test0", 1.0f);
     }
 
     #endregion
 
     #region ----[ NETWORK FUNCTIONS ]----
+
+    void test0()
+    {
+        if (entity.HasControl == false)
+        {
+            CreateMirror();
+        }
+    }
+
+    public void CreateMirror()
+    {
+        GameObject mirrorPlayer = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        mirrorPlayer.GetComponent<MeshRenderer>().enabled = false;
+        mirrorPlayer.transform.SetParent(StaticTest.mirrorRoot);
+        mirrorPlayer.transform.localPosition = transform.position;
+    }
+
     public override void SimulateController()
     {
 
@@ -2696,10 +2726,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
 
     public override void ExecuteCommand(Command command, bool resetState)
     {
-        Debug.Log("333 jump state " + jumpSt);
-        Debug.Log("333 gravity " + gravity);
-        Debug.Log("333 reset " + resetState);
-        Debug.Log("333 water " + inWater);
         UmiPlayerCommand cmd = (UmiPlayerCommand)command;
         lastPos = transform.position;
         frameCounter++;
@@ -2710,16 +2736,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             ResetMovementVariables();
             collCheck.UpdateCollisionVariables(mover, jumpSt);
             HandleSlopes();
-            if ((transform.position - cmd.Result.Position).magnitude > 1 || (cmd.Result.velocity.magnitude < 1 || currentVel.magnitude < 1))
-            {
                 collCheck.UpdateCollisionChecks(cmd.Result.velocity);
                 OnlineProcessWallJump(cmd.Result.JumpState);
                 mover.SetVelocity(cmd.Result.velocity, platformMovement);
-            }
-            if ((transform.position - cmd.Result.Position).magnitude > 3)
-            {
                 transform.position = cmd.Result.Position;
-            }
         }
         else
         {
@@ -2743,6 +2763,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             collCheck.UpdateCollisionChecks(currentVel);
             mover.SetVelocity(currentVel, platformMovement);
             mover.SetExtendSensorRange(collCheck.below);
+
+            StaticTest.localPhysicsScene.Simulate(Time.fixedDeltaTime);
 
             cmd.Result.Position = transform.position;
             cmd.Result.JumpState = cmd.Input.JumpReleased;

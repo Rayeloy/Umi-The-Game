@@ -1,10 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ManagerCallback : Bolt.GlobalEventListener
 {
     public GameControllerCMF Manage;
+
+    void Start()
+    {
+
+        var loadParams = new LoadSceneParameters(LoadSceneMode.Additive, LocalPhysicsMode.Physics3D);
+        StaticTest.localSimScene = SceneManager.LoadScene("CMF_Online_TestMirror", loadParams);
+        StaticTest.localPhysicsScene = StaticTest.localSimScene.GetPhysicsScene();
+
+    }
+
 
     public override void SceneLoadRemoteDone(BoltConnection connection)
     {
