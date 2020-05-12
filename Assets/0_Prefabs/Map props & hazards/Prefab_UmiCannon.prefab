@@ -857,6 +857,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2870438950231951542}
   - component: {fileID: 7990220798079397755}
+  - component: {fileID: 6154197589239035766}
   m_Layer: 0
   m_Name: Art_UmiCannon
   m_TagString: Untagged
@@ -920,6 +921,28 @@ MonoBehaviour:
   ScaleAxesMultiplier: {x: 1, y: 1, z: -8}
   RotationAxesMultiplier: {x: 1, y: 0, z: 1}
   ReJigglePower: 2
+--- !u!114 &6154197589239035766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2870438950231951543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beab4fd4e4349a849a16f0e9b9e8bff9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  JiggleTiltValue: 1
+  JiggleFrequency: 8.6
+  JiggleDecelerate: 1.5
+  AdditionalSpeedValue: 1
+  ConstantJiggleValue: 0
+  RandomLevel: 1
+  drawGizmo: 1
+  TransformToAnimate: {fileID: 0}
+  ScaleAxesMultiplier: {x: 2, y: 2, z: 2}
+  RotationAxesMultiplier: {x: 0.3, y: 0, z: 0.3}
 --- !u!1 &2870438950327312642
 GameObject:
   m_ObjectHideFlags: 0
