@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 6245871468616810817}
   - component: {fileID: 5084642248728848886}
   - component: {fileID: 4050719938440761376}
-  - component: {fileID: 8748264788110905473}
   - component: {fileID: 2161944845201668395}
   m_Layer: 8
   m_Name: Main Camera
@@ -223,28 +222,6 @@ MonoBehaviour:
   _clearFlags: 2
   RefreshPerFrames: 1
   _frameRefreshOffset: 0
---- !u!114 &8748264788110905473
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1096734978991451412}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f524cac4f2747b4fb11c694dd9b39b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lensFlareType: 0
-  saturation: 0.9
-  threshold: 1
-  flareIntensity: 0.4
-  bloomIntensity: 0.4
-  iterations: 10
-  blurSpread: 0
-  downsample: 12
-  useDirt: 1
-  screenDirt: {fileID: 2800000, guid: 1ed6631114000f245a2723f75e5cd9da, type: 3}
 --- !u!114 &2161944845201668395
 MonoBehaviour:
   m_ObjectHideFlags: 0
