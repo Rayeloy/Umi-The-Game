@@ -53,6 +53,7 @@ public class Alpha_Team_Select : MonoBehaviour
     public Transform[] mapVariationsSprites;
     public string[] tutorialMapVariationNames;
     public string[] CTWMapVariationNames;
+    public string[] HubVariationNames;
     string[] mapVariationNames;
     public Transform mapVariationsSpritesParent;
     public string CTWHigh;
@@ -102,12 +103,17 @@ public class Alpha_Team_Select : MonoBehaviour
         {
             case GameMode.Tutorial:
                 chooseMapVariationButtons[1].DisableButtonsAndText();
-                chooseMapVariationButtons[0].targetTexts[0].text = "Dummies Tutorial";
+                chooseMapVariationButtons[0].targetTexts[0].text = "Tutorial";
                 Debug.Log("tutorialMapVariationNames = (" + tutorialMapVariationNames[0] + ")");
                 mapVariationNames = tutorialMapVariationNames;
                 break;
             case GameMode.CaptureTheFlag:
                 mapVariationNames = CTWMapVariationNames;
+                break;
+            case GameMode.Hub:
+                chooseMapVariationButtons[1].DisableButtonsAndText();
+                chooseMapVariationButtons[0].targetTexts[0].text = "Hub";
+                mapVariationNames = HubVariationNames;
                 break;
             default:
                 mapVariationNames = CTWMapVariationNames;

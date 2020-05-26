@@ -106,8 +106,9 @@ public class Demo_MainMenu : MonoBehaviour
             }
             else if (scene == 4)//Hub
             {
+               GameInfo.instance.currentGameMode = GameMode.Hub; 
                 Alpha_Team_Select.startFromMap = false;
-                SceneManager.LoadScene("UmiLand");
+                SceneManager.LoadScene(teamSetupScene);
                 //SceneManager.LoadScene("Tutorial_v2");
             }
             else if (scene == 3)
