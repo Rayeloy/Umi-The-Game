@@ -1,9 +1,8 @@
-﻿using Bolt.Matchmaking;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 
-public class UMILauncher: Bolt.GlobalEventListener
+public class UMILauncher: MonoBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]---- 
     [Tooltip("Panel que controla el nombre de usuario y el botón de login")]
@@ -68,13 +67,13 @@ public class UMILauncher: Bolt.GlobalEventListener
         LoadingPanel.SetActive(true);
 
         MasterManager.GameSettings.online = true;
-        BoltLauncher.StartServer();
+        //BoltLauncher.StartServer();
     }
 
     public void StartClient()
     {
         MasterManager.GameSettings.online = true;
-        BoltLauncher.StartClient();
+        //BoltLauncher.StartClient();
     }
     #endregion
 
@@ -160,25 +159,25 @@ public class UMILauncher: Bolt.GlobalEventListener
     #endregion
 
     #region ----[ BOLT Callbacks]----
-    public override void BoltStartBegin()
-    {
-        // añadir esto later
-        //BoltNetwork.RegisterTokenClass<>();
-    }
+    //public override void BoltStartBegin()
+    //{
+    //    // añadir esto later
+    //    //BoltNetwork.RegisterTokenClass<>();
+    //}
 
-    public override void BoltStartDone()
-    {
-        if (BoltNetwork.IsServer)
-        {
-            BoltMatchmaking.CreateSession(
-                sessionID: matchName,
-                sceneToLoad: BoltScenes.CMF_Online_Test
-            );
-        }
-        else
-        {
-            BoltMatchmaking.JoinRandomSession();
-        }
-    }
+    //public override void BoltStartDone()
+    //{
+    //    if (BoltNetwork.IsServer)
+    //    {
+    //        BoltMatchmaking.CreateSession(
+    //            sessionID: matchName,
+    //            sceneToLoad: BoltScenes.CMF_Online_Test
+    //        );
+    //    }
+    //    else
+    //    {
+    //        BoltMatchmaking.JoinRandomSession();
+    //    }
+    //}
     #endregion
 }

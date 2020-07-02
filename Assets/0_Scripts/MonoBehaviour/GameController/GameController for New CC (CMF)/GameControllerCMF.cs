@@ -75,10 +75,10 @@ public class GameControllerCMF : MonoBehaviour
     public bool gameOverStarted = false;
 
     //Player components lists
-    protected List<PlayerMovementCMF> allPlayers;//Array que contiene a los PlayerMovementCMF
-    protected List<CameraControllerCMF> allCameraBases;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
-    protected List<GameObject> allCanvas;//Array que contiene los objetos de los canvas de cada jugador, solo util en Pantalla Dividida
-    protected List<Camera> allUICameras;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
+    public List<PlayerMovementCMF> allPlayers;//Array que contiene a los PlayerMovementCMF
+    public List<CameraControllerCMF> allCameraBases;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
+    public List<GameObject> allCanvas;//Array que contiene los objetos de los canvas de cada jugador, solo util en Pantalla Dividida
+    public List<Camera> allUICameras;//Array que contiene todas las cameras bases, solo util en Pantalla Dividida
 
     //Number of players in the game. In online it will start at 0 and add +1 every time a player joins. In offline it stays constant since the game scene starts
     [HideInInspector]
@@ -1113,50 +1113,50 @@ public class GameControllerCMF : MonoBehaviour
     #endregion
 
     #region ----[ BOLT CALLBACKS ]----
-    public void EntityReceivedOrCreated(BoltEntity entity)
-    {
-        if (entity.IsControlled || BoltNetwork.IsServer)
-        {
-            PlayerMovementCMF player = entity.GetComponent<PlayerMovementCMF>();
-            if (player != null && (((allPlayers.Count > 0 && player != allPlayers[0]) || BoltNetwork.IsServer)))
-            {
-                Debug.Log("entity \"" + entity + "\" is player and starting !");
-                Debug.Log("entity awake");
-                player.KonoAwake(false);
-                Debug.Log("entity start");
-                player.KonoStart();
-                Debug.Log("entity add to list");
-                allPlayers.Add(player);
-                player.gC = this;
-            }
-        }
-    }
+    //public void EntityReceivedOrCreated(BoltEntity entity)
+    //{
+    //    if (entity.IsControlled || BoltNetwork.IsServer)
+    //    {
+    //        PlayerMovementCMF player = entity.GetComponent<PlayerMovementCMF>();
+    //        if (player != null && (((allPlayers.Count > 0 && player != allPlayers[0]) || BoltNetwork.IsServer)))
+    //        {
+    //            Debug.Log("entity \"" + entity + "\" is player and starting !");
+    //            Debug.Log("entity awake");
+    //            player.KonoAwake(false);
+    //            Debug.Log("entity start");
+    //            player.KonoStart();
+    //            Debug.Log("entity add to list");
+    //            allPlayers.Add(player);
+    //            player.gC = this;
+    //        }
+    //    }
+    //}
 
-    public void ControlOfEntityGained(BoltEntity entity)
-    {
-        if (BoltNetwork.IsClient)
-        {
-            PlayerMovementCMF newPlayer = entity.GetComponent<PlayerMovementCMF>();
-            newPlayer.online_isLocal = true;
-            GameObject newPlayerCanvas;
-            CameraControllerCMF newPlayerCamera;
-            Camera newPlayerUICamera;
-            newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
-            newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();
-            newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
-            InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
-            newPlayer.mySpawnInfo = new PlayerSpawnInfo();
-            GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
-            Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
-            CheckValidInputsBuffer();
-            allPlayers[0].actions = GameInfo.instance.myControls;
-            allCanvas[0].GetComponent<PlayerHUDCMF>().AdaptCanvasHeightScale();
-            allCameraBases[0].KonoAwake();
-            allPlayers[0].KonoAwake(true);
-            PlayersSetup();
-            OnlineStartGame();
-        }
-    }
+    //public void ControlOfEntityGained(BoltEntity entity)
+    //{
+    //    if (BoltNetwork.IsClient)
+    //    {
+    //        PlayerMovementCMF newPlayer = entity.GetComponent<PlayerMovementCMF>();
+    //        newPlayer.online_isLocal = true;
+    //        GameObject newPlayerCanvas;
+    //        CameraControllerCMF newPlayerCamera;
+    //        Camera newPlayerUICamera;
+    //        newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
+    //        newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();
+    //        newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
+    //        InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
+    //        newPlayer.mySpawnInfo = new PlayerSpawnInfo();
+    //        GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
+    //        Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
+    //        CheckValidInputsBuffer();
+    //        allPlayers[0].actions = GameInfo.instance.myControls;
+    //        allCanvas[0].GetComponent<PlayerHUDCMF>().AdaptCanvasHeightScale();
+    //        allCameraBases[0].KonoAwake();
+    //        allPlayers[0].KonoAwake(true);
+    //        PlayersSetup();
+    //        OnlineStartGame();
+    //    }
+    //}
     #endregion
 
     #region ----[ NETWORK FUNCTIONS ]----

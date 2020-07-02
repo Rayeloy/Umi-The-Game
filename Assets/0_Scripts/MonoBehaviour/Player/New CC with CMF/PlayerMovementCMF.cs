@@ -1,4 +1,4 @@
-﻿using Bolt;
+﻿using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,7 +38,7 @@ using UnityEngine.UI;
 
 #region ----[ REQUIRECOMPONENT ]----
 #endregion
-public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
+public class PlayerMovementCMF : NetworkBehaviour
 {
     #region ----[ VARIABLES FOR DESIGNERS ]----
     [Header(" --- Referencias --- ")]
@@ -443,7 +443,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
         }
         else
         {
-            if (BoltNetwork.IsServer)
+            if (true /*BoltNetwork.IsServer*/)
             {
                 mover = GetComponent<Mover>();
                 collCheck.KonoAwake(mover.capsuleCollider);
@@ -512,7 +512,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
         }
         else
         {
-            if (BoltNetwork.IsServer)
+            if (true /*BoltNetwork.IsServer*/)
             {
                 Debug.Log("Start Player On server Called !");
                 gravity = -(2 * jumpHeight) / Mathf.Pow(jumpApexTime, 2);
@@ -562,7 +562,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             myPlayerWeap.KonoUpdate();
             myPlayerHook.KonoUpdate();
         }
-        if(BoltNetwork.IsServer)
+        if(true /*BoltNetwork.IsServer*/)
         {
             myPlayerCombatNew.KonoUpdate();
         }
@@ -720,7 +720,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
 
     public void StopBufferedInput(PlayerInput _inputType)
     {
-        if (BoltNetwork.IsClient)
+        if (true /*BoltNetwork.IsClient*/)
         {
             for (int i = 0; i < inputsBuffer.Length; i++)
             {
@@ -1365,7 +1365,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             if (!disableAllDebugs) Debug.LogWarning("Warning: Can't jump because: player is in noInput mode(" + !noInput + ") / moveSt != Boost (" + (moveSt != MoveState.Boost) + ")");
         }
 
-        if (!result && !calledFromBuffer && BoltNetwork.IsClient)
+        if (!result && !calledFromBuffer && true /*BoltNetwork.IsClient*/)
         {
             BufferInput(PlayerInput.Jump);
         }
@@ -1462,7 +1462,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
         }
         if (!result && !calledFromBuffer)
         {
-            if (BoltNetwork.IsClient)
+            if (true /*BoltNetwork.IsClient*/)
             {
                 BufferInput(PlayerInput.WallJump);
             }
@@ -1588,7 +1588,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             Debug.Log("Start Charging Jump");
         }
 
-        if (!result && !calledFromBuffer && BoltNetwork.IsClient)
+        if (!result && !calledFromBuffer && true /*BoltNetwork.IsClient*/)
         {
             BufferInput(PlayerInput.StartChargingChargeJump);
         }
@@ -1762,12 +1762,12 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             else//sin tocar ninguna dirección/joystick
             {
                 Vector3 newMoveDir = boostDir = new Vector3(currentCamFacingDir.x, 0, currentCamFacingDir.z);//nos movemos en la dirección en la que mire la cámara
-                if (BoltNetwork.IsClient)
+                if (true /*BoltNetwork.IsClient*/)
                 {
                     RotateCharacter(newMoveDir);
                 }
             }
-            if (BoltNetwork.IsClient)
+            if (true /*BoltNetwork.IsClient*/)
             {
                 myPlayerHUD.StartCamVFX(CameraVFXType.Dash);
                 myPlayerVFX.ActivateEffect(PlayerVFXType.DashWaterImpulse);
@@ -1778,7 +1778,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
         }
         else
         {
-            if (BoltNetwork.IsClient)
+            if (true /*BoltNetwork.IsClient*/)
             {
                 myPlayerHUD.StartDashHUDCantDoAnimation();
             }
@@ -1825,7 +1825,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             if (!disableAllDebugs) Debug.LogWarning("stickToGround On");
             moveSt = MoveState.None;
             StartBoostCD();
-            if (BoltNetwork.IsClient)
+            if (true /*BoltNetwork.IsClient*/)
             {
                 myPlayerHUD.StopCamVFX(CameraVFXType.Dash);
                 myPlayerVFX.DeactivateEffect(PlayerVFXType.DashWaterImpulse);
@@ -2368,7 +2368,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             inWater = true;
             jumpedOutOfWater = false;
             maxTimePressingJump = 0f;
-            if (BoltNetwork.IsClient)
+            if (true/* BoltNetwork.IsClient*/)
             {
                 myPlayerWeap.AttachWeaponToBack();
             
@@ -2383,7 +2383,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
             {
                 (gC as GameControllerCMF_FlagMode).myScoreManager.PlayerEliminado();
             }
-            if (BoltNetwork.IsClient)
+            if (true /*BoltNetwork.IsClient*/)
             {
                 myPlayerVFX.ActivateEffect(PlayerVFXType.SwimmingEffect);
                 if (waterTrigger != null)
@@ -2417,7 +2417,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
         if (inWater)
         {
             inWater = false;
-            if (BoltNetwork.IsClient)
+            if (true/*BoltNetwork.IsClient*/)
             {
                 myPlayerAnimation.exitWater = true;
                 myPlayerWeap.AttatchWeapon();
@@ -2663,12 +2663,12 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
     #endregion
 
     #region ----[ BOLT CALLBACKS ]----
-    public override void Attached()
+    public override void OnStartLocalPlayer()
     {
         rbody = GetComponent<Rigidbody>();
 
-        state.SetTransforms(state.transform_Pos, transform);
-        state.SetTransforms(state.Transform_Rot, rotateObj);
+        //state.SetTransforms(state.transform_Pos, transform);
+        //state.SetTransforms(state.Transform_Rot, rotateObj);
 
         Invoke("test0", 1.0f);
     }
@@ -2677,101 +2677,89 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
 
     #region ----[ NETWORK FUNCTIONS ]----
 
-    void test0()
-    {
-        if (entity.HasControl == false)
-        {
-            CreateMirror();
-        }
-    }
 
-    public void CreateMirror()
-    {
-        GameObject mirrorPlayer = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        mirrorPlayer.GetComponent<MeshRenderer>().enabled = false;
-        mirrorPlayer.transform.SetParent(StaticTest.mirrorRoot);
-        mirrorPlayer.transform.localPosition = transform.position;
-    }
+    //public override void SimulateController()
+    //{
 
-    public override void SimulateController()
-    {
+    //    IUmiPlayerCommandInput input = UmiPlayerCommand.Create();
+    //    input.Joystick = actions.LeftJoystick;
+    //    input.Cam = (transform.position - myCamera.transform.GetChild(0).position).normalized;
+    //    input.R2Pressed = inputsInfo.R2WasPressed;
+    //    input.JumpPressed = inputsInfo.JumpWasPressed;
+    //    input.JumpReleased = inputsInfo.JumpWasReleased || !actions.A.IsPressed;
+    //    switch (myCamera.camMode)
+    //    {
+    //        case cameraMode.Fixed:
+    //            input.camMode = 1;
+    //            break;
+    //        case cameraMode.Shoulder:
+    //            input.camMode = 2;
+    //            break;
+    //        case cameraMode.Free:
+    //            input.camMode = 3;
+    //            break;
+    //    }
 
-        IUmiPlayerCommandInput input = UmiPlayerCommand.Create();
-        input.Joystick = actions.LeftJoystick;
-        input.Cam = (transform.position - myCamera.transform.GetChild(0).position).normalized;
-        input.R2Pressed = inputsInfo.R2WasPressed;
-        input.JumpPressed = inputsInfo.JumpWasPressed;
-        input.JumpReleased = inputsInfo.JumpWasReleased || !actions.A.IsPressed;
-        switch (myCamera.camMode)
-        {
-            case cameraMode.Fixed:
-                input.camMode = 1;
-                break;
-            case cameraMode.Shoulder:
-                input.camMode = 2;
-                break;
-            case cameraMode.Free:
-                input.camMode = 3;
-                break;
-        }
+    //    UpdateFlagLightBeam();
+    //    ProcessInputsBuffer();
+    //    UpdateFacingDir();
 
-        UpdateFlagLightBeam();
-        ProcessInputsBuffer();
-        UpdateFacingDir();
+    //    entity.QueueInput(input);
+    //    // RESET InputsInfo class to get new possible inputs during the next Update frames
+    //    inputsInfo.ResetInputs();
+    //}
 
-        entity.QueueInput(input);
-        // RESET InputsInfo class to get new possible inputs during the next Update frames
-        inputsInfo.ResetInputs();
-    }
+    //public override void ExecuteCommand(Command command, bool resetState)
+    //{
+    //    UmiPlayerCommand cmd = (UmiPlayerCommand)command;
+    //    frameCounter++;
+    //    lastPos = transform.position;
+    //    if (resetState)
+    //    {
+    //        transform.position = cmd.Result.Position;
 
-    public override void ExecuteCommand(Command command, bool resetState)
-    {
-        UmiPlayerCommand cmd = (UmiPlayerCommand)command;
-        lastPos = transform.position;
-        frameCounter++;
-        if (resetState)
-        {
-            Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
-            collCheck.ResetVariables();
-            ResetMovementVariables();
-            collCheck.UpdateCollisionVariables(mover, jumpSt);
-            HandleSlopes();
-                collCheck.UpdateCollisionChecks(cmd.Result.velocity);
-                OnlineProcessWallJump(cmd.Result.JumpState);
-                mover.SetVelocity(cmd.Result.velocity, platformMovement);
-                transform.position = cmd.Result.Position;
-        }
-        else
-        {
-            Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
-            collCheck.ResetVariables();
-            ResetMovementVariables();
-            collCheck.UpdateCollisionVariables(mover, jumpSt);
+    //        Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
+    //        collCheck.ResetVariables();
+    //        ResetMovementVariables();
+    //        collCheck.UpdateCollisionVariables(mover, jumpSt);
 
-            #region --- Calculate Movement ---
+    //        collCheck.UpdateCollisionChecks(cmd.Result.velocity);
+    //        mover.SetVelocity(cmd.Result.velocity, platformMovement);
+    //        mover.SetExtendSensorRange(collCheck.below);
 
-            HorizontalOnlineMovement(cmd.Input.Joystick, cmd.Input.Cam, cmd.Input.R2Pressed, cmd.Input.camMode);
+    //        StaticTest.localPhysicsScene.Simulate(Time.fixedDeltaTime);
+    //    }
+    //    else
+    //    {
+    //        cmd.Result.Position = transform.position;
+    //        Vector3 platformMovement = collCheck.ChangePositionWithPlatform(mover.instantPlatformMovement);
+    //        collCheck.ResetVariables();
+    //        ResetMovementVariables();
+    //        collCheck.UpdateCollisionVariables(mover, jumpSt);
 
-            VerticalOnlineMovement(cmd.Input.JumpPressed, cmd.Input.JumpReleased);
+    //        #region --- Calculate Movement ---
 
-            HandleSlopes();
+    //        HorizontalOnlineMovement(cmd.Input.Joystick, cmd.Input.Cam, cmd.Input.R2Pressed, cmd.Input.camMode);
 
-            OnlineProcessWallJump(cmd.Input.JumpReleased);//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "mover.SetVelocity"
+    //        VerticalOnlineMovement(cmd.Input.JumpPressed, cmd.Input.JumpReleased);
 
-            #endregion
+    //        HandleSlopes();
 
-            collCheck.UpdateCollisionChecks(currentVel);
-            mover.SetVelocity(currentVel, platformMovement);
-            mover.SetExtendSensorRange(collCheck.below);
+    //        OnlineProcessWallJump(cmd.Input.JumpReleased);//IMPORTANTE QUE VAYA ANTES DE LLAMAR A "mover.SetVelocity"
 
-            StaticTest.localPhysicsScene.Simulate(Time.fixedDeltaTime);
+    //        #endregion
 
-            cmd.Result.Position = transform.position;
-            cmd.Result.JumpState = cmd.Input.JumpReleased;
-            cmd.Result.velocity = currentVel;
-        }
-        collCheck.SavePlatformPoint();
-    }
+    //        collCheck.UpdateCollisionChecks(currentVel);
+    //        mover.SetVelocity(currentVel, platformMovement);
+    //        mover.SetExtendSensorRange(collCheck.below);
+
+    //        StaticTest.localPhysicsScene.Simulate(Time.fixedDeltaTime);
+
+    //        cmd.Result.JumpState = cmd.Input.JumpReleased;
+    //        cmd.Result.velocity = currentVel;
+    //    }
+    //    collCheck.SavePlatformPoint();
+    //}
 
     void HorizontalOnlineMovement(Vector3 joystick, Vector3 camDir, bool R2, int camMode)
     {
@@ -3293,7 +3281,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IUmiPlayerState>
                                 hardSteerDir = currentInputDir;
                             }
                         }
-                        if (BoltNetwork.IsClient)
+                        if (true/*BoltNetwork.IsClient*/)
                         {
                             RotateCharacter();
                         }
