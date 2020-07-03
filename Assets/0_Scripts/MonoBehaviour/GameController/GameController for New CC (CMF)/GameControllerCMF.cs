@@ -1132,31 +1132,27 @@ public class GameControllerCMF : MonoBehaviour
     //    }
     //}
 
-    //public void ControlOfEntityGained(BoltEntity entity)
-    //{
-    //    if (BoltNetwork.IsClient)
-    //    {
-    //        PlayerMovementCMF newPlayer = entity.GetComponent<PlayerMovementCMF>();
-    //        newPlayer.online_isLocal = true;
-    //        GameObject newPlayerCanvas;
-    //        CameraControllerCMF newPlayerCamera;
-    //        Camera newPlayerUICamera;
-    //        newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
-    //        newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();
-    //        newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
-    //        InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
-    //        newPlayer.mySpawnInfo = new PlayerSpawnInfo();
-    //        GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
-    //        Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
-    //        CheckValidInputsBuffer();
-    //        allPlayers[0].actions = GameInfo.instance.myControls;
-    //        allCanvas[0].GetComponent<PlayerHUDCMF>().AdaptCanvasHeightScale();
-    //        allCameraBases[0].KonoAwake();
-    //        allPlayers[0].KonoAwake(true);
-    //        PlayersSetup();
-    //        OnlineStartGame();
-    //    }
-    //}
+    public void ControlOfEntityGained(PlayerMovementCMF newPlayer)
+    {
+            newPlayer.online_isLocal = true;
+            GameObject newPlayerCanvas;
+            CameraControllerCMF newPlayerCamera;
+            Camera newPlayerUICamera;
+            newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
+            newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();
+            newPlayerUICamera = Instantiate(playerUICameraPrefab, newPlayerCamera.myCamera).GetComponent<Camera>();
+            InitializePlayerReferences(newPlayer, newPlayerCanvas, newPlayerCamera, newPlayerUICamera);
+            newPlayer.mySpawnInfo = new PlayerSpawnInfo();
+            GameInfo.instance.myControls = PlayerActions.CreateDefaultBindings();
+            Debug.Log("Mis actions son = " + GameInfo.instance.myControls);
+            CheckValidInputsBuffer();
+            allPlayers[0].actions = GameInfo.instance.myControls;
+            allCanvas[0].GetComponent<PlayerHUDCMF>().AdaptCanvasHeightScale();
+            allCameraBases[0].KonoAwake();
+            allPlayers[0].KonoAwake(true);
+            PlayersSetup();
+            OnlineStartGame();
+    }
     #endregion
 
     #region ----[ NETWORK FUNCTIONS ]----

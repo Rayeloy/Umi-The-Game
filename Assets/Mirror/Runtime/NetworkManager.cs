@@ -687,7 +687,7 @@ namespace Mirror
 #endif
         }
 
-        bool InitializeSingleton()
+         bool InitializeSingleton()
         {
             if (singleton != null && singleton == this) return true;
 
