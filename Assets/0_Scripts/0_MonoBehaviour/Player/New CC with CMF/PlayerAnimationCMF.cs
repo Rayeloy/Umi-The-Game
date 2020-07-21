@@ -29,9 +29,6 @@ public class PlayerAnimationCMF : MonoBehaviour
     int safeBelowHash = Animator.StringToHash("SafeBelow"); //Done
     bool safeBelow;
 
-    //int walkHash = Animator.StringToHash("Walk");
-    //bool walk;
-
     int runHash = Animator.StringToHash("Run"); //Done
     bool run;
 
@@ -52,9 +49,6 @@ public class PlayerAnimationCMF : MonoBehaviour
     float maxToGroundTime = 0.2f;
     float toGroundTime = 0;
 
-    //int toWaterHash = Animator.StringToHash("ToWater");
-    //bool toWater;
-
     int waterHash = Animator.StringToHash("Water"); //Done
     bool water = false;
     [HideInInspector]
@@ -73,12 +67,6 @@ public class PlayerAnimationCMF : MonoBehaviour
 
     int noControlHash = Animator.StringToHash("NoControl");
     bool noControl;
-    //{
-    //    get
-    //    {
-    //        return myPlayerMovement.moveSt == MoveState.Hooked || myPlayerMovement.moveSt == MoveState.Boost || myPlayerMovement.sufferingEffect != EffectType.none;
-    //    }
-    //}
 
     int dashHash = Animator.StringToHash("Dash"); //Done
     [HideInInspector]
@@ -90,23 +78,15 @@ public class PlayerAnimationCMF : MonoBehaviour
     int frontHitHash = Animator.StringToHash("FrontHit");
     bool frontHit;
 
-    //int backHitHash = Animator.StringToHash("BackHit");
-    //bool backHit;
 
+    //ALL REFERENCES TO BE ADDED
+
+    //El bounce no tengo claro si necesitamos un estado especial para que haga una animación diferente o lo dejamos con falling, supongo que lo podremos determinar una vez tengamos todo montado y veamos cómo queda.
     int bounceHash = Animator.StringToHash("Bounce");
     bool bounce;
 
-    int attackHash = Animator.StringToHash("Attack");
-    bool attack;
-
-    int softHitHash = Animator.StringToHash("SoftHit");
-    bool softhit;
-
-    int hardHitHash = Animator.StringToHash("HardHit");
-    bool hardhit;
-
-    int spAtHash = Animator.StringToHash("SpAt");
-    bool spAt;
+    // Arma equipada, esto va a determinar prácticamente todas las animaciones, asi que será un valor que se determinará al principio del árbol y se quedará ahí, es posible que necesite hacer un animator controller override para cada arma.
+    // Si consideras que es una locura el tenerlo todo en el mismo ábrol, dímelo y preparo 3 overrides x 4 personajes. Esta opción creo que es la óptima.
 
     int q_TipHash = Animator.StringToHash("Q_Tip");
     bool q_Tip;
@@ -114,29 +94,65 @@ public class PlayerAnimationCMF : MonoBehaviour
     int hammerHash = Animator.StringToHash("Hammer");
     bool hammer;
 
-    //All the combat bools to be added
+    int glovesHash = Animator.StringToHash("Gloves");
 
 
 
-    ////int jumpHash = Animator.StringToHash("Jump");
-    ////int jumpingHash = Animator.StringToHash("Jumping");
-    ////bool jumpingValue;
+    // Starting Basic Attack
+    // Ahora depende de si queremos separar el golpe final del combo del resto de golpes básicos para que se diferencie, por ejemplo que se quede más tiempo en la pose o que haga una naimación especial.
+    // No es necesario diferenciar si es el 1, 2 o 3 golpe del autocombo, pero es una cosa que tendremos que hablar de cara al producto final, dado que es importante que se diferencie el último golpe del combo, pero esto lo podemos solucionar por otros medios que no sean animaciones.
 
-    ////int landHash = Animator.StringToHash("Land");
-    ////bool landBool;
+    int qTip_basicAtt = Animator.StringToHash("qTip_basicAttack");
+    bool qTip_basicAttack;
 
-    ////int jumpStateHash = Animator.StringToHash("Ascender");
-    ////int swimmingIdleHash = Animator.StringToHash("SwimmingIdle");
-    ////bool swimmingIdle;
-    ////int swimmingHash = Animator.StringToHash("Swimming");
-    ////bool swimming;
-    ////int runningHash = Animator.StringToHash("Running");
-    ////bool runningValue;
-    ////int basicSwingHash = Animator.StringToHash("BasicSwing");
+    int hammer_basicAtt = Animator.StringToHash("hammer_basicAttack");
+    bool hammer_basicAttack;
+
+    int gloves_basicAtt = Animator.StringToHash("gloves_basicAttack");
+    bool gloves_basicAttack;
+
+    // Ahora depende de si queremos separar el golpe final del combo del resto de golpes básicos para que se diferencie, por ejemplo que se quede más tiempo en la pose o que haga una naimación especial.
+    // No es necesario diferenciar si es el 1, 2 o 3 golpe del autocombo, pero es una cosa que tendremos que hablar de cara al producto final, dado que es importante que se diferencie el último golpe del combo, pero esto lo podemos solucionar por otros medios que no sean animaciones.
 
 
-    ////bool basicSwingValue;
-    ////int endGameHash = Animator.StringToHash("EndGame");
+    // ABILITIES
+    // Necesito saber si está ejecutando la animación para decirle al animator que empiece a hacer la animación, también necesito una variable que me avise cuándo se acaba la animación para pasar al siguiente estado en el árbol.
+    // Me sirve una variable que sea algo como "Habilidad Activada" y la ponemos a false cuando se termine o se corte y así entramso y pasamos de estado con una sola variable.
+
+    int qTip_Ability_01 = Animator.StringToHash("qTip_ab1");
+    bool qTip_ab1;
+
+    int qTip_Ability_02 = Animator.StringToHash("qTip_ab2");
+    bool qTip_ab2;
+
+    int hammer_Ability_01 = Animator.StringToHash("hammer_ab1");
+    bool hammer_ab1;
+
+    int hammer_Ability_02 = Animator.StringToHash("hammer_ab2");
+    bool hammer_ab2;
+
+    int gloves_Ability_01 = Animator.StringToHash("gloves_ab1");
+    bool gloves_ab1;
+
+    int gloves_Ability_02 = Animator.StringToHash("gloves_ab2");
+    bool gloves_ab2;
+
+
+    // Salto en Pared
+    // La animación del salto en pared va a estar dividida en 3 estados:
+    // 1er estado = Estamos acercándonos a la pared para hacer un salto en pared.
+    // 2do estado = Estamos pegados a la pared y podemos cambiar la dirección en la que vamos a saltar mientras nos escurrimos.
+    // 3er estado = Saltamos de la pared propulsados en la dirección elegida.
+
+    int startWallJump = Animator.StringToHash("startWJ");
+    bool startWJ;
+
+    int keppWallJump = Animator.StringToHash("keepWJ");
+    bool keepWJ;
+
+    int exitWallJump = Animator.StringToHash("exitWJ");
+    bool exitWJ;
+
 
 
     [Tooltip("Distance to floor at which the landing animation will start")]
