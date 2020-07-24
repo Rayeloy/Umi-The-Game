@@ -6,6 +6,7 @@ using UnityEditor;
 
 public enum WeaponType
 {
+    None,
     QTip,
     Hammer,
     Boxing_gloves,

@@ -491,8 +491,6 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             hardSteerAcc = Mathf.Clamp(hardSteerAcc, hardSteerAcc, breakAcc);
             airHardSteerAcc = Mathf.Clamp(airHardSteerAcc, airHardSteerAcc, airBreakAcc);
 
-            //PLAYER MODEL
-            SwitchTeam(team);
 
             //WALLJUMP
             wallJumpCheckRaysRows = 5;
@@ -502,6 +500,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             auxLM = LayerMask.GetMask("Stage", "Slide");
 
             PlayerAwakes();
+
+            //PLAYER MODEL
+            SwitchTeam(team);
         }
     }
 
@@ -1588,7 +1589,9 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             {
                 /*if (!disableAllDebugs)*/
                 if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("Wall jumping start");
-                //PARA ORTU: PlayerAnimation_01.startJump = true;
+                //PARA ORTU: 
+                myPlayerAnimation.startWJ = true;
+
                 vertMovSt = VerticalMovementState.WallJumping;
                 result = true;
                 //wallJumped = true;
@@ -1747,7 +1750,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         Vector3 newMoveDir = new Vector3(finalDir.x, 0, finalDir.z);
         RotateCharacter(newMoveDir);
 
-        //myPlayerAnimation.SetJump(true);
+        //PARA ORTU: 
+        myPlayerAnimation.exitWJ = true;
 
         Debug.DrawLine(anchorPoint, circleCenter, Color.white, 20);
         Debug.DrawLine(anchorPoint, circumfPoint, Color.yellow, 20);
@@ -1976,6 +1980,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 StopBufferedInput(PlayerInput.Jump);
                 StopBufferedInput(PlayerInput.WallJump);
 
+                myPlayerAnimation.bounce = true;//For Animator
                 if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("JumpSt = BounceJumping" + "; chargeJumpJumpVelocity = " + chargeJumpJumpVelocity);
                 result = true;
             }

@@ -168,6 +168,7 @@ public class PlayerWeaponsCMF : MonoBehaviour
         myPlayerMovement.maxMoveSpeed = weaponData.playerMaxSpeed;
         myPlayerMovement.bodyMass = weaponData.playerWeight;
         AttatchWeapon(weaponData);
+        myPlayerAnim.weaponType = weaponData.weaponType;
         //myPlayerCombat.FillMyAttacks(currentWeapon.weaponData);
         /*if(!myPlayerMovement.online || (myPlayerMovement.online && base.photonView.IsMine))*/
         myPlayerCombatNew.InitializeCombatSystem(weaponData);

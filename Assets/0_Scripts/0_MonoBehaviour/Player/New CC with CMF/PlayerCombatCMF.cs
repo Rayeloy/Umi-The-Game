@@ -78,7 +78,7 @@ public class PlayerCombatCMF : MonoBehaviour
     bool hitParryStarted = false;
 
     //SKILLS
-    int weaponSkillIndex = -1;//can be 0 or 1;
+    byte weaponSkillIndex = 255;//can be 0 or 1;
     [HideInInspector]
     public bool weaponSkillStarted
     {
@@ -447,7 +447,7 @@ public class PlayerCombatCMF : MonoBehaviour
             autocomboStarted = true;
             lastAutocomboAttackFinished = true;
             autocomboTime = 0;
-            autocomboIndex = 255;
+            autocomboIndex = 255;//it's a byte, so 255+1 =0
             StartNextAttackAutocombo();
         }
         return exito;
@@ -461,6 +461,8 @@ public class PlayerCombatCMF : MonoBehaviour
             exito = true;
             autocomboIndex++;
             lastAutocomboAttackFinished = false;
+
+            myPlayerMovement.myPlayerAnimation.currentBasicAttack = autocomboIndex;
             StartAttack(autocombo.attacks[autocomboIndex]);
         }
         return exito;
@@ -523,6 +525,7 @@ public class PlayerCombatCMF : MonoBehaviour
             lastAutocomboAttackFinished = false;
             autocomboTime = 0;
             autocomboIndex = 255;
+            myPlayerMovement.myPlayerAnimation.currentBasicAttack = autocomboIndex;
         }
     }
 
@@ -712,12 +715,13 @@ public class PlayerCombatCMF : MonoBehaviour
     #endregion
 
     #region --- SKILLS ---
-    public void StartWeaponSkill(int _weaponSkillIndex)
+    public void StartWeaponSkill(byte _weaponSkillIndex)
     {
         if (canDoCombat && !weaponSkillStarted && equipedWeaponSkills[_weaponSkillIndex].weaponSkillSt == WeaponSkillState.ready)
         {
             StopDoingCombat();
             weaponSkillIndex = _weaponSkillIndex;
+            myPlayerMovement.myPlayerAnimation.currentSkill = weaponSkillIndex;
             skillCurrentTime = 0;
             if (debugModeOn) Debug.Log("Skill " + currentWeaponSkill.myWeaponSkillData.skillName + " started!");
             switch (currentWeaponSkill.myWeaponSkillData.weaponSkillType)
@@ -768,7 +772,7 @@ public class PlayerCombatCMF : MonoBehaviour
             {
                 case WeaponSkillType.attack:
                     WeaponSkillCMF auxWeapSkill = currentWeaponSkill;
-                    weaponSkillIndex = -1;
+                    weaponSkillIndex = 255;
                     auxWeapSkill.StopSkill();
                     break;
                 case WeaponSkillType.attack_extend:
@@ -780,11 +784,12 @@ public class PlayerCombatCMF : MonoBehaviour
                     {
                         (currentWeaponSkill as WeaponSkillCMF_AttackExtend).attackExtendStg = AttackExtendStage.notStarted;
                         auxWeapSkill = currentWeaponSkill;
-                        weaponSkillIndex = -1;
+                        weaponSkillIndex = 255;
                         (auxWeapSkill as WeaponSkillCMF_AttackExtend).StopSkill();
                     }
                     break;
             }
+            myPlayerMovement.myPlayerAnimation.currentSkill = weaponSkillIndex;
         }
     }
 

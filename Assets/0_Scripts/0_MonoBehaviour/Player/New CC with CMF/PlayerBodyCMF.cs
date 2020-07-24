@@ -10,6 +10,9 @@ public class PlayerBodyCMF : MonoBehaviour
     public PlayerMovementCMF myPlayerMov;
     PlayerWeaponsCMF myPlayerWeapons;
 
+    [Header("PLAYER MODEL PREFABS")]
+    public GameObject[] playerModels;
+
     //OCEAN RENDERER FOR FLOATING
     [Header("Ocean Renderer")]
     public float bodyWidth = 4;
@@ -35,6 +38,8 @@ public class PlayerBodyCMF : MonoBehaviour
     public void KonoAwake()
     {
         myPlayerWeapons = myPlayerMov.myPlayerWeap;
+        GameObject myPlayerModel = Instantiate(playerModels[0], transform);
+        myPlayerMov.myPlayerModel = myPlayerModel.GetComponent<PlayerModel>();
     }
 
     public void KonoFixedUpdate()
