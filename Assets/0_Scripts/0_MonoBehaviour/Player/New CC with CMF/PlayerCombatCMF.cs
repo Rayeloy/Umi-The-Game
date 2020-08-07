@@ -84,7 +84,7 @@ public class PlayerCombatCMF : MonoBehaviour
     {
         get
         {
-            return weaponSkillIndex >= 0;
+            return weaponSkillIndex !=255;
         }
     }
     [HideInInspector]
@@ -92,8 +92,9 @@ public class PlayerCombatCMF : MonoBehaviour
     {
         get
         {
-            if (weaponSkillIndex >= 0)
+            if (weaponSkillIndex !=255)
             {
+                PrintEquipedWeaponSkills();
                 return equipedWeaponSkills[weaponSkillIndex];
             }
             else
@@ -791,6 +792,21 @@ public class PlayerCombatCMF : MonoBehaviour
             }
             myPlayerMovement.myPlayerAnimation.currentSkill = weaponSkillIndex;
         }
+    }
+
+    void PrintEquipedWeaponSkills()
+    {
+        string print = "PlayerCombatCMF: Player "+myPlayerMovement.playerNumber+" Weapon Skills: (";
+        for (int i = 0; i < equipedWeaponSkills.Length; i++)
+        {
+            print += equipedWeaponSkills[i].myWeaponSkillData.skillName;
+            if(i+1 < equipedWeaponSkills.Length)
+            {
+                print += ",";
+            }
+        }
+        print += ")";
+        Debug.Log(print);
     }
 
     #endregion

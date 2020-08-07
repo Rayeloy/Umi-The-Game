@@ -100,6 +100,18 @@ public class GameInfo : MonoBehaviour
             return Team.A;
     }
 
+    public void PrintTeamList()
+    {
+        string print = "GameInfo PlayerTeamList: (";
+        for (int i = 0; i < playerTeamList.Count; i++)
+        {
+            print += playerTeamList[i];
+            if (i + 1 < playerTeamList.Count) print += ",";
+        }
+        print += ")";
+        Debug.Log(print);
+    }
+
     #region Controls
     //bool ButtonWasPressedOnListener(PlayerActions actions)
     //{

@@ -43,7 +43,9 @@ public class PlayerBodyCMF : MonoBehaviour
         myAnimator = GetComponent<Animator>();
         myPlayerWeapons = myPlayerMov.myPlayerWeap;
 
-        GameObject myBody = Instantiate(bodyPrefabs[0]);//This number changes with whatever body they select
+        Debug.Log("LOAD BODY TYPE");
+        GameObject myBody = Instantiate(bodyPrefabs[0], transform);//This number changes with whatever body they select
+        myBody.SetActive(true);
         myAnimator.runtimeAnimatorController = animators[0];
         myAnimator.avatar = avatars[0];
         myPlayerMov.myPlayerModel = myBody.GetComponent<PlayerModel>();

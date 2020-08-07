@@ -153,6 +153,8 @@ public class GameControllerCMF : MonoBehaviour
         }
         //}
 
+        //GameInfo.instance.PrintTeamList();
+
         myRenCont = myGameInterface.GetComponentInChildren<RenController>();
         if(myRenCont == null)
         {
@@ -417,9 +419,12 @@ public class GameControllerCMF : MonoBehaviour
 
                 if (GameInfo.instance.playerTeamList[i] == Team.none)
                 {
+                    //Debug.Log("Randomizing Team for player " + i);
                     GameInfo.instance.playerTeamList[i] = GameInfo.instance.NoneTeamSelect();
                 }
 
+                //GameInfo.instance.PrintTeamList();
+                //Debug.Log("GameController: The player " + i + " is given the team " + GameInfo.instance.playerTeamList[i]);
                 allPlayers[i].team = GameInfo.instance.playerTeamList[i];
             }
         }
