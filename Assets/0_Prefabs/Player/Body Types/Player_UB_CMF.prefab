@@ -45536,7 +45536,6 @@ MonoBehaviour:
   hitboxesParent: {fileID: 7735381457242634366}
   weaponEdge: {fileID: 0}
   weaponHandle: {fileID: 0}
-  nHit: 0
   currentWeapon: {fileID: 0}
   invulnerable: 0
   attackStg: 0
@@ -45628,6 +45627,12 @@ MonoBehaviour:
   enterWater: 0
   exitWater: 0
   dash: 0
+  bounce: 0
+  weaponType: 0
+  currentBasicAttack: 255
+  currentSkill: 255
+  startWJ: 0
+  exitWJ: 0
   maxTimeToLand: 0.154
 --- !u!114 &852548598361810586
 MonoBehaviour:
@@ -66195,6 +66200,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugAllRaycasts: 1
   myPlayerMov: {fileID: 873758771431004316}
+  playerModels: []
   bodyWidth: 4
   raiseBody: 8.5
   buoyancyCoeff: 0.05
@@ -81040,7 +81046,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 154827e1ad6f3614fad2f3b5deda8985,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.079
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 154827e1ad6f3614fad2f3b5deda8985,
         type: 3}
@@ -81050,7 +81056,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 154827e1ad6f3614fad2f3b5deda8985,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.072
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 154827e1ad6f3614fad2f3b5deda8985,
         type: 3}

@@ -1590,7 +1590,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 /*if (!disableAllDebugs)*/
                 if (!disableAllDebugs && vertMovementDebugsOn) Debug.Log("Wall jumping start");
                 //PARA ORTU: 
-                myPlayerAnimation.startWJ = true;
+                myPlayerAnimation.stickWJ = true;
 
                 vertMovSt = VerticalMovementState.WallJumping;
                 result = true;
@@ -1751,7 +1751,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         RotateCharacter(newMoveDir);
 
         //PARA ORTU: 
-        myPlayerAnimation.exitWJ = true;
+        myPlayerAnimation.doWJ = true;
 
         Debug.DrawLine(anchorPoint, circleCenter, Color.white, 20);
         Debug.DrawLine(anchorPoint, circumfPoint, Color.yellow, 20);
@@ -1765,6 +1765,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             wallJumping = false;
             wallJumpAnim = true;
             vertMovSt = VerticalMovementState.None;
+            myPlayerAnimation.dropWJ = true;
         }
     }
     #endregion

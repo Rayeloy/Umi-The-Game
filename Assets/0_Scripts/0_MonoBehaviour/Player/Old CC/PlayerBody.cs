@@ -7,6 +7,7 @@ public class PlayerBody : MonoBehaviour {
     public PlayerMovement myPlayerMov;
     PlayerWeapons myPlayerWeapons;
 
+
     public void KonoAwake()
     {
         myPlayerWeapons = myPlayerMov.myPlayerWeap;

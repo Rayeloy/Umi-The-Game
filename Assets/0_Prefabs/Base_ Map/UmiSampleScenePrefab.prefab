@@ -312,6 +312,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfab2a61bb0e4d2419f0a0c8c19959a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3540189425072659142 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3782864480632898095, guid: 1fee3160f8150c24aa073abf819b9465,
+    type: 3}
+  m_PrefabInstance: {fileID: 386791378515777769}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b25bc8d39754e544da67b24e9d78c672, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &386791378663606891
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -591,11 +603,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4120796423089476643}
     m_Modifications:
-    - target: {fileID: 8947901335320472749, guid: 32b3f05e8af7f7b40a84cb6ace97c28a,
-        type: 3}
-      propertyPath: m_Name
-      value: SpawnPrefab_A
-      objectReference: {fileID: 0}
     - target: {fileID: 8947901335320472748, guid: 32b3f05e8af7f7b40a84cb6ace97c28a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -650,6 +657,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947901335320472749, guid: 32b3f05e8af7f7b40a84cb6ace97c28a,
+        type: 3}
+      propertyPath: m_Name
+      value: SpawnPrefab_A
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32b3f05e8af7f7b40a84cb6ace97c28a, type: 3}
@@ -891,11 +903,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2025176536319260699}
     m_Modifications:
-    - target: {fileID: 214530146000281683, guid: 40c5f63b51d8fcf4f9461625d5e5d8e3,
-        type: 3}
-      propertyPath: m_Name
-      value: GameController_Test
-      objectReference: {fileID: 0}
     - target: {fileID: 38931708321270835, guid: 40c5f63b51d8fcf4f9461625d5e5d8e3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -951,6 +958,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 214530146000281683, guid: 40c5f63b51d8fcf4f9461625d5e5d8e3,
+        type: 3}
+      propertyPath: m_Name
+      value: GameController_Test
+      objectReference: {fileID: 0}
     - target: {fileID: 7459265799143252258, guid: 40c5f63b51d8fcf4f9461625d5e5d8e3,
         type: 3}
       propertyPath: myGameInterface
@@ -986,6 +998,11 @@ PrefabInstance:
       propertyPath: teamBSpawns.Array.data[0]
       value: 
       objectReference: {fileID: 3383723937291094814}
+    - target: {fileID: 7459265799143252258, guid: 40c5f63b51d8fcf4f9461625d5e5d8e3,
+        type: 3}
+      propertyPath: myRenCont
+      value: 
+      objectReference: {fileID: 3540189425072659142}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 40c5f63b51d8fcf4f9461625d5e5d8e3, type: 3}
 --- !u!4 &2591620184040517914 stripped
@@ -1001,11 +1018,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4120796423089476643}
     m_Modifications:
-    - target: {fileID: 1642463834897241382, guid: 33efd69311deb4241b61e4d23efd82c7,
-        type: 3}
-      propertyPath: m_Name
-      value: Post-process Volume Actual(NO BORRAR)
-      objectReference: {fileID: 0}
     - target: {fileID: 1642463834897241381, guid: 33efd69311deb4241b61e4d23efd82c7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1060,6 +1072,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1642463834897241382, guid: 33efd69311deb4241b61e4d23efd82c7,
+        type: 3}
+      propertyPath: m_Name
+      value: Post-process Volume Actual(NO BORRAR)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33efd69311deb4241b61e4d23efd82c7, type: 3}

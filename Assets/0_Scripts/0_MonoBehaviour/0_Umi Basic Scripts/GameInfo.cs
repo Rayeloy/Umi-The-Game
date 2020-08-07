@@ -18,6 +18,9 @@ public class GameInfo : MonoBehaviour
     public static GameInfo instance;
     public GameMode currentGameMode;
     public GameObject inControlManager;
+    [HideInInspector]
+    public RenController currentRenCont = null;
+    RenController lastRenCont = null;
     public List<PlayerActions> playerActionsList;
     public List<Team> playerTeamList;
     public int nPlayers;
@@ -123,9 +126,9 @@ public class GameInfo : MonoBehaviour
 
     public void ErasePlayerControls()
     {
-        while(playerActionsList.Count>0)
+        while (playerActionsList.Count > 0)
         {
-            playerActionsList[playerActionsList.Count-1].Destroy();
+            playerActionsList[playerActionsList.Count - 1].Destroy();
             playerActionsList.RemoveAt(playerActionsList.Count - 1);
         }
     }
@@ -198,6 +201,34 @@ public class GameInfo : MonoBehaviour
                 uIAnimations.RemoveAt(i);
             }
         }
+    }
+    #endregion
+
+    #region RenController
+    public void SetRenController(RenController newRenController)
+    {
+        lastRenCont = currentRenCont;
+
+        if (currentRenCont != null) currentRenCont.disabled = true;
+        newRenController.disabled = false;
+        currentRenCont = newRenController;
+    }
+
+    public void QuitRenController()
+    {
+        if (currentRenCont != null) currentRenCont.disabled = true;
+        currentRenCont = null;
+    }
+
+    public void ReturnToLastRenController()
+    {
+        RenController newLastRenCont = currentRenCont;
+
+        if (currentRenCont != null) currentRenCont.disabled = true;
+        if (lastRenCont != null) lastRenCont.disabled = false;
+        currentRenCont = lastRenCont;
+
+        lastRenCont = newLastRenCont;
     }
     #endregion
 }

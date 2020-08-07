@@ -948,8 +948,8 @@ public class GameControllerCMF : MonoBehaviour
         myGameInterface.PauseGame();
         playerActions = p;
         gamePaused = true;
-        myRenCont.disabled = false;
-        //}
+        GameInfo.instance.SetRenController(myRenCont);
+            //}
     }
 
     public void UnPauseGame()
@@ -971,7 +971,7 @@ public class GameControllerCMF : MonoBehaviour
         }
         myGameInterface.UnPauseGame();
         gamePaused = false;
-        myRenCont.disabled = true;
+        GameInfo.instance.ReturnToLastRenController();
     }
 
     #endregion
@@ -991,6 +991,7 @@ public class GameControllerCMF : MonoBehaviour
             gamePaused = true;
             gameOverStarted = true;
             winner = _winnerTeam;
+            GameInfo.instance.SetRenController(myRenCont);
             myGameInterface.StartGameOver(winner);
         }
     }

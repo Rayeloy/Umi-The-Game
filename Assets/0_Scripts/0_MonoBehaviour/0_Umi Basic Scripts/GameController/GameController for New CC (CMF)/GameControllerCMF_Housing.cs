@@ -62,16 +62,18 @@ public class GameControllerCMF_Housing : GameControllerCMF
 
     protected override void SpecificUpdate()
     {
+        if (gamePaused) return;
+
         //Camera Update
         if(editHouseOn) editModeCameraController.KonoUpdate();
 
         if (allPlayers[0].actions.Select.WasPressed) SwitchPlayAndHousingMode();
 
+        furnitureMenu.KonoUpdate();//Needs to be always running for animations
 
         if (editHouseOn)
         {
             if (allPlayers[0].actions.HousingSwitchFurnitureMenu.WasPressed) SwitchHousingFurnitureMenu();
-            furnitureMenu.KonoUpdate();//Needs to be always running for animations
 
             if (furnitureMenuOn)
             {
@@ -226,6 +228,10 @@ public class GameControllerCMF_Housing : GameControllerCMF
 
             //stop hightlight current slot
             currentGrid.DeactivateEditMode();
+
+            //hide furniture menu
+            furnitureMenu.CloseFurnitureMenu();
+            furnitureMenuOn = false;
         }
         editHouseOn = !editHouseOn;
         playing = !playing;

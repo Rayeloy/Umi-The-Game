@@ -83,7 +83,7 @@ public class PlayerAnimationCMF : MonoBehaviour
 
     //El bounce no tengo claro si necesitamos un estado especial para que haga una animación diferente o lo dejamos con falling, supongo que lo podremos determinar una vez tengamos todo montado y veamos cómo queda.
     int bounceHash = Animator.StringToHash("Bounce");
-    public bool bounce;
+    public bool bounce;//interruptor
 
     // Arma equipada, esto va a determinar prácticamente todas las animaciones, asi que será un valor que se determinará al principio del árbol y se quedará ahí, es posible que necesite hacer un animator controller override para cada arma.
     // Si consideras que es una locura el tenerlo todo en el mismo ábrol, dímelo y preparo 3 overrides x 4 personajes. Esta opción creo que es la óptima.
@@ -98,7 +98,7 @@ public class PlayerAnimationCMF : MonoBehaviour
     // No es necesario diferenciar si es el 1, 2 o 3 golpe del autocombo, pero es una cosa que tendremos que hablar de cara al producto final, dado que es importante que se diferencie el último golpe del combo, pero esto lo podemos solucionar por otros medios que no sean animaciones.
 
     int basicAttackHash = Animator.StringToHash("BasicAttack");//
-    public byte currentBasicAttack =255;//255=none, 0= first hit, 1 = second hit, 2 = final hit
+    public byte currentBasicAttack =255;//255=none, 0= first hit, 1 = second hit, 2 = third hit .... etc
 
     // Ahora depende de si queremos separar el golpe final del combo del resto de golpes básicos para que se diferencie, por ejemplo que se quede más tiempo en la pose o que haga una naimación especial.
     // No es necesario diferenciar si es el 1, 2 o 3 golpe del autocombo, pero es una cosa que tendremos que hablar de cara al producto final, dado que es importante que se diferencie el último golpe del combo, pero esto lo podemos solucionar por otros medios que no sean animaciones.
@@ -109,7 +109,7 @@ public class PlayerAnimationCMF : MonoBehaviour
     // Me sirve una variable que sea algo como "Habilidad Activada" y la ponemos a false cuando se termine o se corte y así entramso y pasamos de estado con una sola variable.
 
     int skill1Hash = Animator.StringToHash("Skill1");//Boolean State
-    public byte currentSkill=255;//255=none, 0= first skill, 2 = second skill
+    public byte currentSkill=255;//255=none, 0= first skill, 1 = second skill
 
 
 
@@ -120,11 +120,14 @@ public class PlayerAnimationCMF : MonoBehaviour
     // 2do estado = Estamos pegados a la pared y podemos cambiar la dirección en la que vamos a saltar mientras nos escurrimos.
     // 3er estado = Saltamos de la pared propulsados en la dirección elegida.
 
-    int startWJHash = Animator.StringToHash("StartWJ");
-    public bool startWJ;
+    int stickWJHash = Animator.StringToHash("StickWJ");
+    public bool stickWJ;//interruptor, Stick to wall, 
 
-    int exitWJHash = Animator.StringToHash("ExitWJ");
-    public bool exitWJ;
+    int doWJHash = Animator.StringToHash("DoWJ");
+    public bool doWJ;//interruptor
+
+    int dropWJHash = Animator.StringToHash("DropWJ");
+    public bool dropWJ;//interruptor
 
 
 

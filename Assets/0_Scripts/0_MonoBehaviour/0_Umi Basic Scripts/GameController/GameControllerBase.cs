@@ -965,7 +965,7 @@ public class GameControllerBase : MonoBehaviour
             myGameInterface.PauseGame();
             playerActions = p;
             gamePaused = true;
-            myRenCont.disabled = false;
+            //myRenCont.disabled = false;
         //}
     }
 

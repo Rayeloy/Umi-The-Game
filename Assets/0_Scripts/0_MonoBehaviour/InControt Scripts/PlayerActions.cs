@@ -479,7 +479,6 @@ public class EAITwoAxisControls
         else if (leftIsPressed || rightIsPressed || downIsPressed || upIsPressed)
         {
             turboPressedTime += Time.deltaTime;
-            Debug.Log("turboPressedTime = " + turboPressedTime);
             if (!turboStarted && turboPressedTime >= timeToTurbo)
             {
                 turboStarted = true;

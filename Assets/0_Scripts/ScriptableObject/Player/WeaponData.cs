@@ -6,12 +6,10 @@ using UnityEditor;
 
 public enum WeaponType
 {
-    None,
-    QTip,
-    Hammer,
-    Boxing_gloves,
-    Sword,
-    Donut
+    None=0,
+    QTip=1,
+    Hammer=2,
+    Boxing_gloves=3,
 }
 
 [CreateAssetMenu(fileName = "New weapon", menuName = "Combat/Weapon")]
