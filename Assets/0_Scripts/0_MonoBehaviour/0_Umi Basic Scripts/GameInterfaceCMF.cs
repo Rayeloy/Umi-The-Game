@@ -220,7 +220,6 @@ public class GameInterfaceCMF : MonoBehaviour
 
         veil.SetActive(false);
         pauseMenu.SetActive(false);
-
     }
     #endregion
 }

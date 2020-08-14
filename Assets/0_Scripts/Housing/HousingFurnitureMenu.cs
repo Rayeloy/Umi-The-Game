@@ -49,20 +49,28 @@ public class HousingFurnitureMenu : MonoBehaviour
         furnitureIcons = new List<List<RenButton>>();
         furnitureMenuState = FurnitureMenuState.family;
         InstantiateFurnitureButtons(FurnitureTag.chair);
-        myRenCont.disabled = false;
+        GameInfo.instance.SetRenController(myRenCont);
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         StartOpenMenuAnim();
     }
 
     public void CloseFurnitureMenu()
     {
-        myRenCont.disabled = true;
+        GameInfo.instance.QuitRenController();
         StartCloseMenuAnim();
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     #region --- Open / Close Animation ---
     //OPEN MENU ANIM
     void StartOpenMenuAnim()
     {
+        Debug.Log("openMenuAnimStarted = " + openMenuAnimStarted);
         if (!openMenuAnimStarted)
         {
             openMenuAnimStarted = true;
@@ -170,6 +178,7 @@ public class HousingFurnitureMenu : MonoBehaviour
                 }
             }
         }
+        myRenCont.initialButton = furnitureIcons[0][0];
     }
 
     void ConnectFurnitureButtons()

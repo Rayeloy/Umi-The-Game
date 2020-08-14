@@ -20,7 +20,13 @@ public class RenScroll : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     RenScrollState scrollSt = RenScrollState.None;
     public bool disabled = false;
+    RectTransform scrollMask;
+    public RectTransform scroll;
+    bool isMouseOver = false;
     public int buttonsGroupNum;
+
+    [Header("--- Mouse Wheel Scroll ---")]
+    public float fastScrollFactor = 6f;
     public float breakAcc;
     public float scrollAcc;
     float currentScrollSpeed;
@@ -28,11 +34,9 @@ public class RenScroll : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     float currentY;
     float maxY;
     float minY;
-    RectTransform scrollMask;
-    public RectTransform scroll;
-    bool isMouseOver = false;
 
-    [Header("Auto Scroll")]
+
+    [Header("--- Auto Scroll ---")]
     public float autoScrollMaxTime = 0.3f;
     float autoScrollTime = 0;
     float autoScrollTargetY = 0;
@@ -45,7 +49,7 @@ public class RenScroll : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (Application.isPlaying)
         {
-            Debug.Log("AWAKE");
+            Debug.Log("RenScroll "+name+": AWAKE");
             Canvas myCanvas = GetComponentInParent<Canvas>();
             if (myCanvas == null)
             {
@@ -56,6 +60,7 @@ public class RenScroll : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             {
                 Debug.LogError("RenButton " + name + " : this button has no RenController in its canvas!");
             }
+            Debug.Log("Ren Scroll " + name + ":  my RenController is " + myRenCont);
 
             //set to top of scroll
             if (scrollMask == null) scrollMask = GetComponent<RectTransform>();
@@ -115,19 +120,21 @@ public class RenScroll : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
         else
         {
+            if (myRenCont.disabled) return;
+            
             float currentScrollAcc = 0;
             if (isMouseOver)
             {
                 if (myRenCont.currentControls.EAIMouseWheel.PosWasPressed)
                 {
                     Debug.LogWarning("SCROLL UP");
-                    currentScrollAcc = myRenCont.currentControls.EAIMouseWheel.PosWasPressedGreatly ? -scrollAcc * 6 : -scrollAcc;
+                    currentScrollAcc = myRenCont.currentControls.EAIMouseWheel.PosWasPressedGreatly ? -scrollAcc * fastScrollFactor : -scrollAcc;
                     StartMouseScrolling(currentScrollAcc);
                 }
                 else if (myRenCont.currentControls.EAIMouseWheel.NegWasPressed)
                 {
                     Debug.LogWarning("SCROLL DOWN");
-                    currentScrollAcc = myRenCont.currentControls.EAIMouseWheel.NegWasPressedGreatly ? scrollAcc * 6 : scrollAcc;
+                    currentScrollAcc = myRenCont.currentControls.EAIMouseWheel.NegWasPressedGreatly ? scrollAcc * fastScrollFactor : scrollAcc;
                     StartMouseScrolling(currentScrollAcc);
                 }
             }
@@ -220,7 +227,7 @@ public class RenScroll : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                 return false;
             }
             distance = button.GetComponent<RectTransform>().localPosition.y + scroll.localPosition.y;
-            distance += ((button.GetComponent<RectTransform>().rect.height / 2) + margin) * Mathf.Sign(distance) ;
+            distance += ((button.GetComponent<RectTransform>().rect.height / 2) + margin) * Mathf.Sign(distance);
             //distance += scrollMask.rect.height / 2 * -Mathf.Sign(distance);
             Debug.Log("CheckIfButtonOutOfMask: distance = " + distance);
             if (Mathf.Abs(distance) > scrollMask.rect.height / 2)

@@ -153,6 +153,8 @@ public class GameControllerCMF : MonoBehaviour
         }
         //}
 
+        //GameInfo.instance.PrintTeamList();
+
         myRenCont = myGameInterface.GetComponentInChildren<RenController>();
         if(myRenCont == null)
         {
@@ -417,9 +419,12 @@ public class GameControllerCMF : MonoBehaviour
 
                 if (GameInfo.instance.playerTeamList[i] == Team.none)
                 {
+                    //Debug.Log("Randomizing Team for player " + i);
                     GameInfo.instance.playerTeamList[i] = GameInfo.instance.NoneTeamSelect();
                 }
 
+                //GameInfo.instance.PrintTeamList();
+                //Debug.Log("GameController: The player " + i + " is given the team " + GameInfo.instance.playerTeamList[i]);
                 allPlayers[i].team = GameInfo.instance.playerTeamList[i];
             }
         }
@@ -948,8 +953,8 @@ public class GameControllerCMF : MonoBehaviour
         myGameInterface.PauseGame();
         playerActions = p;
         gamePaused = true;
-        myRenCont.disabled = false;
-        //}
+        GameInfo.instance.SetRenController(myRenCont);
+            //}
     }
 
     public void UnPauseGame()
@@ -971,7 +976,7 @@ public class GameControllerCMF : MonoBehaviour
         }
         myGameInterface.UnPauseGame();
         gamePaused = false;
-        myRenCont.disabled = true;
+        GameInfo.instance.ReturnToLastRenController();
     }
 
     #endregion
@@ -991,6 +996,7 @@ public class GameControllerCMF : MonoBehaviour
             gamePaused = true;
             gameOverStarted = true;
             winner = _winnerTeam;
+            GameInfo.instance.SetRenController(myRenCont);
             myGameInterface.StartGameOver(winner);
         }
     }

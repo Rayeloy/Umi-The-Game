@@ -89,6 +89,7 @@ public class Alpha_Team_Select : MonoBehaviour
         {
             if(GameInfo.instance.inControlManager == null)
             GameInfo.instance.inControlManager = GameObject.Find("InControl manager");
+            GameInfo.instance.playerTeamList.Clear();
         }
         else
         {
@@ -169,7 +170,7 @@ public class Alpha_Team_Select : MonoBehaviour
                 bool allReady = true;
                 for (int i = 0; i < selectPlayers.Length; i++)
                 {
-                    if (i < nPlayers && selectPlayers[i].teamSelectPlayerSt != TeamSelectPlayerState.TeamLocked)
+                    if (i < nPlayers && selectPlayers[i].teamSelectPlayerSt != TeamSelectPlayerState.Locked)
                     {
                         allReady = false;
                     }
@@ -181,6 +182,8 @@ public class Alpha_Team_Select : MonoBehaviour
                         //GameInfo.playerActionsList[i] = players[i].Actions;
                         GameInfo.instance.playerActionsList.Add(selectPlayers[i].myControls);
                         GameInfo.instance.playerTeamList.Add(selectPlayers[i].myTeam);
+                        //Debug.Log("ALL READY: adding player of team " + selectPlayers[i].myTeam);
+                        //GameInfo.instance.PrintTeamList();
                         //Debug.Log(ps.Actions);
                     }
                     GameInfo.instance.nPlayers = playersJoined;
@@ -635,7 +638,9 @@ public enum TeamSelectPlayerState
 {
     NotJoined,
     SelectingTeam,
-    TeamLocked
+    SelectingCharacter,
+    SelectingWeapon,
+    Locked
 }
 [System.Serializable]
 public class SelectPlayer
@@ -787,6 +792,10 @@ public class SelectPlayer
     {
         if (myControls != null)
         {
+            if (myControls.B.WasReleased || (myControls.Device == null && myControls.Start.WasReleased))
+            {
+                GoBack();
+            }
             //Debug.Log("My controls exist: teamSelectPlayerSt = "+ teamSelectPlayerSt);
             ProcessChangeTeamAnimation();
             switch (teamSelectPlayerSt)
@@ -811,21 +820,18 @@ public class SelectPlayer
                     }
                     else if (myControls.A.WasReleased)
                     {
-                        LockTeam();
-                    }
-                    else if (myControls.B.WasReleased || (myControls.Device == null && myControls.Start.WasReleased))
-                    {
-                        ExitTeamSelect();
+                        SelectTeam();
                     }
 
                     IluminateArrows();
                     break;
-                case TeamSelectPlayerState.TeamLocked:
-                    if (myControls.B.WasPressed)
-                    {
-                        UnlockTeam();
-                    }
+                case TeamSelectPlayerState.SelectingCharacter:
                     break;
+                case TeamSelectPlayerState.SelectingWeapon:
+                    break;
+                case TeamSelectPlayerState.Locked:
+                    break;
+
             }
 
             myJoyStickControls.ResetJoyStick();
@@ -901,6 +907,7 @@ public class SelectPlayer
         }
     }
 
+    #region --- TEAM SELECTION ---
     void ChangeTeam(int direction) // 0 es izda y 1 es derecha
     {
         switch (direction)
@@ -995,12 +1002,12 @@ public class SelectPlayer
         myTeamSelectPlayerCanvas.teamIcon.sprite = myTeamSelectPlayerCanvas.teamIcons[(int)team];
     }
 
-    void LockTeam()
+    void SelectTeam()
     {
         if (teamSelectPlayerSt == TeamSelectPlayerState.SelectingTeam)
         {
-            Debug.Log("LOCK TEAM");
-            teamSelectPlayerSt = TeamSelectPlayerState.TeamLocked;
+            Debug.Log("LOCK TEAM: " + myTeam);
+            teamSelectPlayerSt = TeamSelectPlayerState.SelectingCharacter;
             //Visual Lock
             Debug.Log("ANIMATOR = " + animators[(int)myTeam].gameObject);
             animators[(int)myTeam].SetBool("IdleReady", true);
@@ -1017,26 +1024,73 @@ public class SelectPlayer
             }
         }
     }
+    #endregion
 
-    void UnlockTeam()
+    #region --- CHARACTER SELECTION ---
+    void StartCharacterSelection()
     {
-        if (teamSelectPlayerSt == TeamSelectPlayerState.TeamLocked)
+        teamSelectPlayerSt = TeamSelectPlayerState.SelectingCharacter;
+    }
+    void StopCharacterSelection()
+    {
+        teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
+        //Visual Back
+        animators[(int)myTeam].SetBool("IdleReady", false);
+
+        //HUD VISUAL Back
+        for (int i = 0; i < myTeamSelectPlayerCanvas.lockStateDeactivateImages.Length; i++)
         {
-            Debug.Log("UNLOCK TEAM");
-            teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
-            //Visual Unlock
-            animators[(int)myTeam].SetBool("IdleReady", false);
+            myTeamSelectPlayerCanvas.lockStateDeactivateImages[i].gameObject.SetActive(true);
+        }
 
-            //HUD VISUAL UNLOCK
-            for (int i = 0; i < myTeamSelectPlayerCanvas.lockStateDeactivateImages.Length; i++)
-            {
-                myTeamSelectPlayerCanvas.lockStateDeactivateImages[i].gameObject.SetActive(true);
-            }
+        for (int i = 0; i < myTeamSelectPlayerCanvas.lockStateActivateImages.Length; i++)
+        {
+            myTeamSelectPlayerCanvas.lockStateActivateImages[i].gameObject.SetActive(false);
+        }
+    }
+    #endregion
 
-            for (int i = 0; i < myTeamSelectPlayerCanvas.lockStateActivateImages.Length; i++)
-            {
-                myTeamSelectPlayerCanvas.lockStateActivateImages[i].gameObject.SetActive(false);
-            }
+    #region --- WEAPON SELECTION ---
+    void StartWeaponSelection()
+    {
+        teamSelectPlayerSt = TeamSelectPlayerState.SelectingWeapon;
+    }
+    void StopWeaponSelection()
+    {
+        teamSelectPlayerSt = TeamSelectPlayerState.SelectingCharacter;
+    }
+    #endregion
+
+    #region --- LOCK ---
+    void Lock()
+    {
+        teamSelectPlayerSt = TeamSelectPlayerState.Locked;
+    }
+    void Unlock()
+    {
+        teamSelectPlayerSt = TeamSelectPlayerState.SelectingWeapon;
+
+    }
+    #endregion
+
+    void GoBack()
+    {
+        Debug.Log("Go Back");
+        switch (teamSelectPlayerSt)
+        {
+            case TeamSelectPlayerState.SelectingTeam:
+                ExitTeamSelect();
+                break;
+            case TeamSelectPlayerState.SelectingCharacter:
+                StopCharacterSelection();
+                break;
+            case TeamSelectPlayerState.SelectingWeapon:
+                StopWeaponSelection();
+                break;
+            case TeamSelectPlayerState.Locked:
+                Debug.Log("UNLOCK Weapon");
+                Lock();
+                break;
         }
     }
 }

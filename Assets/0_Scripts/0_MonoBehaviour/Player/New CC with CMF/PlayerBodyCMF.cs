@@ -11,7 +11,10 @@ public class PlayerBodyCMF : MonoBehaviour
     PlayerWeaponsCMF myPlayerWeapons;
 
     [Header("PLAYER MODEL PREFABS")]
-    public GameObject[] playerModels;
+    public GameObject[] bodyPrefabs;//0 -> umiBoy, 1 -> umiBigBoy, 2 -> umiGirl, 3 -> umiBigGirl
+    public RuntimeAnimatorController[] animators;
+    public Avatar[] avatars;
+    Animator myAnimator;
 
     //OCEAN RENDERER FOR FLOATING
     [Header("Ocean Renderer")]
@@ -37,9 +40,15 @@ public class PlayerBodyCMF : MonoBehaviour
 
     public void KonoAwake()
     {
+        myAnimator = GetComponent<Animator>();
         myPlayerWeapons = myPlayerMov.myPlayerWeap;
-        GameObject myPlayerModel = Instantiate(playerModels[0], transform);
-        myPlayerMov.myPlayerModel = myPlayerModel.GetComponent<PlayerModel>();
+
+        Debug.Log("LOAD BODY TYPE");
+        GameObject myBody = Instantiate(bodyPrefabs[0], transform);//This number changes with whatever body they select
+        myBody.SetActive(true);
+        myAnimator.runtimeAnimatorController = animators[0];
+        myAnimator.avatar = avatars[0];
+        myPlayerMov.myPlayerModel = myBody.GetComponent<PlayerModel>();
     }
 
     public void KonoFixedUpdate()
