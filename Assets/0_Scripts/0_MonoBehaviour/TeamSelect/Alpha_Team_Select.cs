@@ -651,7 +651,7 @@ public class SelectPlayer
     public Camera myUICamera;
     public GameObject myCanvas;
     public GameObject notJoinedScreen;
-    public Transform playerModelsParent;
+    public TeamSelectPlatform myTeamSelectPlatform;
     [Range(0, 1)]
     [HideInInspector] public float deadzone = 0.2f;
     [HideInInspector] public PlayerActions myControls;
@@ -784,7 +784,7 @@ public class SelectPlayer
         }
 
         changeTeamAnimationInitialRot = changeTeamAnimationTargetRot = changeTeamAnimationRealTargetRot =
-            changeTeamAnimationOriginalRot = playerModelsParent.localRotation.eulerAngles.y;
+            changeTeamAnimationOriginalRot = myTeamSelectPlatform.rotationParent.localRotation.eulerAngles.y;
 
     }
 
@@ -846,6 +846,7 @@ public class SelectPlayer
             notJoinedScreen.SetActive(false);
             teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
             ChangeHUDTeam(myTeam);
+            myTeamSelectPlatform.StartTeamSelect();
         }
     }
 
@@ -872,7 +873,7 @@ public class SelectPlayer
 
         if (changeTeamAnimationOriginalRot != 0)
         {
-            playerModelsParent.localRotation = Quaternion.Euler(0, changeTeamAnimationOriginalRot, 0);
+            myTeamSelectPlatform.rotationParent.localRotation = Quaternion.Euler(0, changeTeamAnimationOriginalRot, 0);
         }
     }
 
@@ -952,7 +953,7 @@ public class SelectPlayer
         StopChangeTeamAnimation();
         if (!changeTeamAnimationStarted)
         {
-            changeTeamAnimationInitialRot = playerModelsParent.localRotation.eulerAngles.y;
+            changeTeamAnimationInitialRot = myTeamSelectPlatform.rotationParent.localRotation.eulerAngles.y;
             changeTeamAnimationStarted = true;
             changeTeamAnimationTime = 0;
             switch (direction)
@@ -978,7 +979,7 @@ public class SelectPlayer
             changeTeamAnimationTime += Time.deltaTime;
             float progress = Mathf.Clamp01(changeTeamAnimationTime / changeTeamAnimationMaxTime);
             float yRot = EasingFunction.EaseInOutQuart(changeTeamAnimationInitialRot, changeTeamAnimationTargetRot, progress);
-            playerModelsParent.localRotation = Quaternion.Euler(0, yRot, 0);
+            myTeamSelectPlatform.rotationParent.localRotation = Quaternion.Euler(0, yRot, 0);
 
             if (changeTeamAnimationTime >= changeTeamAnimationMaxTime)
             {
@@ -1004,13 +1005,15 @@ public class SelectPlayer
 
     void SelectTeam()
     {
-        if (teamSelectPlayerSt == TeamSelectPlayerState.SelectingTeam)
-        {
+        if (teamSelectPlayerSt != TeamSelectPlayerState.SelectingTeam)
+            return;
+
             Debug.Log("LOCK TEAM: " + myTeam);
-            teamSelectPlayerSt = TeamSelectPlayerState.SelectingCharacter;
-            //Visual Lock
-            Debug.Log("ANIMATOR = " + animators[(int)myTeam].gameObject);
-            animators[(int)myTeam].SetBool("IdleReady", true);
+            //Visual Lock: TO DO: Fade / player models animation for TRANSITION
+            //Debug.Log("ANIMATOR = " + animators[(int)myTeam].gameObject);
+            //animators[(int)myTeam].SetBool("IdleReady", true);
+
+
 
             //HUD VISUAL LOCK
             for (int i = 0; i < myTeamSelectPlayerCanvas.lockStateDeactivateImages.Length; i++)
@@ -1022,7 +1025,7 @@ public class SelectPlayer
             {
                 myTeamSelectPlayerCanvas.lockStateActivateImages[i].gameObject.SetActive(true);
             }
-        }
+            StartCharacterSelection();
     }
     #endregion
 
@@ -1030,8 +1033,10 @@ public class SelectPlayer
     void StartCharacterSelection()
     {
         teamSelectPlayerSt = TeamSelectPlayerState.SelectingCharacter;
+        myTeamSelectPlatform.StartCharacterSelection();
+        myTeamSelectPlatform.ChangeTeamColors(myTeam);
     }
-    void StopCharacterSelection()
+    void StopCharacterSelection() //GO BACK
     {
         teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
         //Visual Back
@@ -1055,7 +1060,7 @@ public class SelectPlayer
     {
         teamSelectPlayerSt = TeamSelectPlayerState.SelectingWeapon;
     }
-    void StopWeaponSelection()
+    void StopWeaponSelection()// GO BACK
     {
         teamSelectPlayerSt = TeamSelectPlayerState.SelectingCharacter;
     }
