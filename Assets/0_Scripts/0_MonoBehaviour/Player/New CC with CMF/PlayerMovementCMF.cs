@@ -2346,6 +2346,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             //    efecto = EffectType.knockdown;
             //    _maxTime = AttackEffect.knockdownTime;
             //}
+
             #region STUN PROTECTION
 
             if (sufferingEffect == EffectType.softStun && (lastAttacker != attacker || (lastAttacker == attacker && autocomboIndex == 0)))

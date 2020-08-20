@@ -663,13 +663,13 @@ public class SelectPlayer
     [Header("Referencias Animator")]
     public Animator[] animators;
 
-    private bool changeTeamAnimationStarted = false;
-    private float changeTeamAnimationTime = 0;
-    private float changeTeamAnimationMaxTime = 0.45f;
-    private float changeTeamAnimationRealTargetRot = 0;
-    private float changeTeamAnimationInitialRot = 0;
-    private float changeTeamAnimationTargetRot = 0;
-    private float changeTeamAnimationOriginalRot = 0;
+    //private bool changeTeamAnimationStarted = false;
+    //private float changeTeamAnimationTime = 0;
+    //private float changeTeamAnimationMaxTime = 0.45f;
+    //private float changeTeamAnimationRealTargetRot = 0;
+    //private float changeTeamAnimationInitialRot = 0;
+    //private float changeTeamAnimationTargetRot = 0;
+    //private float changeTeamAnimationOriginalRot = 0;
 
     private Vector3 selectTeamHUDParentOriginalScale;
     private Vector3 selectTeamHUDTeamTextOriginalScale;
@@ -783,8 +783,8 @@ public class SelectPlayer
             teamText.localScale = new Vector3(teamText.localScale.x * 2, teamText.localScale.y, 1);
         }
 
-        changeTeamAnimationInitialRot = changeTeamAnimationTargetRot = changeTeamAnimationRealTargetRot =
-            changeTeamAnimationOriginalRot = myTeamSelectPlatform.rotationParent.localRotation.eulerAngles.y;
+        //changeTeamAnimationInitialRot = changeTeamAnimationTargetRot = changeTeamAnimationRealTargetRot =
+        //    changeTeamAnimationOriginalRot = myTeamSelectPlatform.rotationParent.localRotation.eulerAngles.y;
 
     }
 
@@ -797,7 +797,7 @@ public class SelectPlayer
                 GoBack();
             }
             //Debug.Log("My controls exist: teamSelectPlayerSt = "+ teamSelectPlayerSt);
-            ProcessChangeTeamAnimation();
+            //ProcessChangeTeamAnimation();
             switch (teamSelectPlayerSt)
             {
                 case TeamSelectPlayerState.NotJoined:
@@ -810,12 +810,12 @@ public class SelectPlayer
                     //Debug.Log("Selecting Team: myControls.LeftJoystick.X = "+ myControls.LeftJoystick.X);
                     if (myJoyStickControls.LeftWasPressed)
                     {
-                        ChangeTeam(1);
+                        ChangeTeam(false);
                         //Animation Left
                     }
                     else if (myJoyStickControls.RightWasPressed)
                     {
-                        ChangeTeam(0);
+                        ChangeTeam(true);
                         //Animation Right
                     }
                     else if (myControls.A.WasReleased)
@@ -871,10 +871,10 @@ public class SelectPlayer
             teamText.localScale = selectTeamHUDTeamTextOriginalScale;
         }
 
-        if (changeTeamAnimationOriginalRot != 0)
-        {
-            myTeamSelectPlatform.rotationParent.localRotation = Quaternion.Euler(0, changeTeamAnimationOriginalRot, 0);
-        }
+        //if (changeTeamAnimationOriginalRot != 0)
+        //{
+        //    myTeamSelectPlatform.rotationParent.localRotation = Quaternion.Euler(0, changeTeamAnimationOriginalRot, 0);
+        //}
     }
 
     void IluminateArrows()
@@ -909,11 +909,11 @@ public class SelectPlayer
     }
 
     #region --- TEAM SELECTION ---
-    void ChangeTeam(int direction) // 0 es izda y 1 es derecha
+    void ChangeTeam(bool dirRight) // 1 es izda y 0 es derecha
     {
-        switch (direction)
+        switch (dirRight)
         {
-            case 0:
+            case true:
                 //playerModelsParent.localRotation *= Quaternion.Euler(0, 120, 0);
                 switch (myTeam)
                 {
@@ -928,7 +928,7 @@ public class SelectPlayer
                         break;
                 }
                 break;
-            case 1:
+            case false:
                 //playerModelsParent.localRotation *= Quaternion.Euler(0, -120, 0);
                 switch (myTeam)
                 {
@@ -945,56 +945,57 @@ public class SelectPlayer
                 break;
         }
         ChangeHUDTeam(myTeam);
-        StartChangeTeamAnimation(direction);
+        myTeamSelectPlatform.RotatePlatform(dirRight, 120);
+        //StartChangeTeamAnimation(direction);
     }
 
-    void StartChangeTeamAnimation(int direction)
-    {
-        StopChangeTeamAnimation();
-        if (!changeTeamAnimationStarted)
-        {
-            changeTeamAnimationInitialRot = myTeamSelectPlatform.rotationParent.localRotation.eulerAngles.y;
-            changeTeamAnimationStarted = true;
-            changeTeamAnimationTime = 0;
-            switch (direction)
-            {
-                case 0:
-                    changeTeamAnimationTargetRot = changeTeamAnimationRealTargetRot + 120;
-                    changeTeamAnimationRealTargetRot = changeTeamAnimationTargetRot >= 360 ? changeTeamAnimationTargetRot - 360 : changeTeamAnimationTargetRot;
-                    break;
-                case 1:
-                    changeTeamAnimationTargetRot = changeTeamAnimationRealTargetRot - 120;
-                    changeTeamAnimationRealTargetRot = changeTeamAnimationTargetRot < 0 ? changeTeamAnimationTargetRot + 360 : changeTeamAnimationTargetRot;
-                    break;
-            }
+    //void StartChangeTeamAnimation(int direction)
+    //{
+    //    StopChangeTeamAnimation();
+    //    if (!changeTeamAnimationStarted)
+    //    {
+    //        changeTeamAnimationInitialRot = myTeamSelectPlatform.rotationParent.localRotation.eulerAngles.y;
+    //        changeTeamAnimationStarted = true;
+    //        changeTeamAnimationTime = 0;
+    //        switch (direction)
+    //        {
+    //            case 0:
+    //                changeTeamAnimationTargetRot = changeTeamAnimationRealTargetRot + 120;
+    //                changeTeamAnimationRealTargetRot = changeTeamAnimationTargetRot >= 360 ? changeTeamAnimationTargetRot - 360 : changeTeamAnimationTargetRot;
+    //                break;
+    //            case 1:
+    //                changeTeamAnimationTargetRot = changeTeamAnimationRealTargetRot - 120;
+    //                changeTeamAnimationRealTargetRot = changeTeamAnimationTargetRot < 0 ? changeTeamAnimationTargetRot + 360 : changeTeamAnimationTargetRot;
+    //                break;
+    //        }
 
-            //Debug.Log("START CHANGE TEAM ANIMATION: changeTeamAnimationInitialRot = " + changeTeamAnimationInitialRot + "; changeTeamAnimationTargetRot = " + changeTeamAnimationTargetRot);
-        }
-    }
+    //        //Debug.Log("START CHANGE TEAM ANIMATION: changeTeamAnimationInitialRot = " + changeTeamAnimationInitialRot + "; changeTeamAnimationTargetRot = " + changeTeamAnimationTargetRot);
+    //    }
+    //}
 
-    void ProcessChangeTeamAnimation()
-    {
-        if (changeTeamAnimationStarted)
-        {
-            changeTeamAnimationTime += Time.deltaTime;
-            float progress = Mathf.Clamp01(changeTeamAnimationTime / changeTeamAnimationMaxTime);
-            float yRot = EasingFunction.EaseInOutQuart(changeTeamAnimationInitialRot, changeTeamAnimationTargetRot, progress);
-            myTeamSelectPlatform.rotationParent.localRotation = Quaternion.Euler(0, yRot, 0);
+    //void ProcessChangeTeamAnimation()
+    //{
+    //    if (changeTeamAnimationStarted)
+    //    {
+    //        changeTeamAnimationTime += Time.deltaTime;
+    //        float progress = Mathf.Clamp01(changeTeamAnimationTime / changeTeamAnimationMaxTime);
+    //        float yRot = EasingFunction.EaseInOutQuart(changeTeamAnimationInitialRot, changeTeamAnimationTargetRot, progress);
+    //        myTeamSelectPlatform.rotationParent.localRotation = Quaternion.Euler(0, yRot, 0);
 
-            if (changeTeamAnimationTime >= changeTeamAnimationMaxTime)
-            {
-                StopChangeTeamAnimation();
-            }
-        }
-    }
+    //        if (changeTeamAnimationTime >= changeTeamAnimationMaxTime)
+    //        {
+    //            StopChangeTeamAnimation();
+    //        }
+    //    }
+    //}
 
-    void StopChangeTeamAnimation()
-    {
-        if (changeTeamAnimationStarted)
-        {
-            changeTeamAnimationStarted = false;
-        }
-    }
+    //void StopChangeTeamAnimation()
+    //{
+    //    if (changeTeamAnimationStarted)
+    //    {
+    //        changeTeamAnimationStarted = false;
+    //    }
+    //}
 
     void ChangeHUDTeam(Team team)
     {
@@ -1012,7 +1013,6 @@ public class SelectPlayer
             //Visual Lock: TO DO: Fade / player models animation for TRANSITION
             //Debug.Log("ANIMATOR = " + animators[(int)myTeam].gameObject);
             //animators[(int)myTeam].SetBool("IdleReady", true);
-
 
 
             //HUD VISUAL LOCK
@@ -1034,7 +1034,7 @@ public class SelectPlayer
     {
         teamSelectPlayerSt = TeamSelectPlayerState.SelectingCharacter;
         myTeamSelectPlatform.StartCharacterSelection();
-        myTeamSelectPlatform.ChangeTeamColors(myTeam);
+        myTeamSelectPlatform.ChangeTeamColors(myTeam);      
     }
     void StopCharacterSelection() //GO BACK
     {
