@@ -9,7 +9,7 @@ public class TeamSelectPlatform : MonoBehaviour
     public GameObject CharacterSelectionModels;
     public GameObject WeaponSelectionModels;
 
-    PlayerModel[] charSelectPlayerModels;
+    TeamSelectPlayerModel[] charSelectPlayerModels;
 
     //Platform Rotation
     bool platformRotStarted = false;
@@ -17,12 +17,12 @@ public class TeamSelectPlatform : MonoBehaviour
     float platformRotTime = 0;
     float platformRotTargetRot = 0;
     float platformRotRealTargetRot = 0;
-    float platformRotMaxTime = 0;
+    public float platformRotMaxTime = 0.3f;
 
 
     private void Awake()
     {
-        charSelectPlayerModels = CharacterSelectionModels.GetComponentsInChildren<PlayerModel>();
+        charSelectPlayerModels = CharacterSelectionModels.GetComponentsInChildren<TeamSelectPlayerModel>();
         platformRotInitialRot = platformRotTargetRot = platformRotRealTargetRot = rotationParent.localRotation.eulerAngles.y;
     }
 
@@ -37,6 +37,7 @@ public class TeamSelectPlatform : MonoBehaviour
         CharacterSelectionModels.SetActive(false);
         WeaponSelectionModels.SetActive(false);
         rotationParent.localRotation = Quaternion.Euler(0, 30, 0);
+        platformRotRealTargetRot = 30;
     }
     public void StartCharacterSelection()
     {
@@ -44,6 +45,7 @@ public class TeamSelectPlatform : MonoBehaviour
         CharacterSelectionModels.SetActive(true);
         WeaponSelectionModels.SetActive(false);
         rotationParent.localRotation = Quaternion.Euler(0, 0, 0);
+        platformRotRealTargetRot = 0;
     }
     public void StartWeaponSelectionModels()
     {
@@ -51,6 +53,7 @@ public class TeamSelectPlatform : MonoBehaviour
         CharacterSelectionModels.SetActive(false);
         WeaponSelectionModels.SetActive(true);
         rotationParent.localRotation = Quaternion.Euler(0, 0, 0);
+        platformRotRealTargetRot = 0;
     }
 
     public void ChangeTeamColors(Team team)
@@ -63,7 +66,9 @@ public class TeamSelectPlatform : MonoBehaviour
 
     public void RotatePlatform(bool dirRight, float increment)
     {
-        //StopChangeTeamAnimation();
+        StopPlatformRotation();
+        Debug.Log("Starting Rotation to the " + (dirRight ? "right" : "left" )+ " with an incremet of " + increment);
+
         if (!platformRotStarted)
         {
             platformRotInitialRot = rotationParent.localRotation.eulerAngles.y;
@@ -89,11 +94,12 @@ public class TeamSelectPlatform : MonoBehaviour
     {
         if (platformRotStarted)
         {
+
             platformRotTime += Time.deltaTime;
             float progress = Mathf.Clamp01(platformRotTime / platformRotMaxTime);
             float yRot = EasingFunction.EaseInOutQuart(platformRotInitialRot, platformRotTargetRot, progress);
             rotationParent.localRotation = Quaternion.Euler(0, yRot, 0);
-
+            Debug.Log("Rotating Platform: Time = "+ platformRotTime);
             if (platformRotTime >= platformRotMaxTime)
             {
                 StopPlatformRotation();
@@ -105,6 +111,7 @@ public class TeamSelectPlatform : MonoBehaviour
     {
         if (platformRotStarted)
         {
+            Debug.Log("STOP Rotating Platform");
             platformRotStarted = false;
         }
     }

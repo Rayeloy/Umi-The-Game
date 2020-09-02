@@ -432,7 +432,7 @@ public class Alpha_Team_Select : MonoBehaviour
             //players.Add(player);
             //player.playerSelecionUI = pUI[players.Count - 1];
             //pUI[players.Count - 1].panel.SetActive(true);
-            player.JoinTeamSelect();
+            player.StartTeamSelection();
             playersJoined++;
 
             Debug.Log("PLAYER CREATED");
@@ -803,7 +803,7 @@ public class SelectPlayer
                 case TeamSelectPlayerState.NotJoined:
                     if (myControls.A.WasPressed)
                     {
-                        JoinTeamSelect();
+                        StartTeamSelection();
                     }
                     break;
                 case TeamSelectPlayerState.SelectingTeam:
@@ -838,16 +838,14 @@ public class SelectPlayer
         }
     }
 
-    public void JoinTeamSelect()
+    public void StartTeamSelection()
     {
-        if (teamSelectPlayerSt == TeamSelectPlayerState.NotJoined)
-        {
             Debug.Log("JOIN TEAM SELECT");
             notJoinedScreen.SetActive(false);
             teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
-            ChangeHUDTeam(myTeam);
             myTeamSelectPlatform.StartTeamSelect();
-        }
+            myTeam = Team.none;
+            ChangeHUDTeam(Team.none);
     }
 
     public void ExitTeamSelect()
@@ -1088,6 +1086,7 @@ public class SelectPlayer
                 break;
             case TeamSelectPlayerState.SelectingCharacter:
                 StopCharacterSelection();
+                StartTeamSelection();
                 break;
             case TeamSelectPlayerState.SelectingWeapon:
                 StopWeaponSelection();

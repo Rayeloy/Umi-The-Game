@@ -642,7 +642,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     void SwitchTeam(Team team)
     {
-        myPlayerModel.SwitchTeam(team);
+        //myPlayerModel.SwitchTeam(team);
         TrailRenderer dashTR = myPlayerVFX.GetEffectGO(PlayerVFXType.DashTrail).GetComponent<TrailRenderer>();
         dashTR.colorGradient = team == Team.A ? StinrayGradient : OktiromeGradient;
         //dashTR.endColor = team == Team.A ? StinrayColors [1]: OktiromeColors[1];

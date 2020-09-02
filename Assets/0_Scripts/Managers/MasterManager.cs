@@ -18,6 +18,11 @@ public class MasterManager : SingletonScriptableObject<MasterManager>
 
     public static HousingSettings HousingSettings { get { return Instance._housingSettings; } }
 
+    //public static GameObject FindGameObjectContains(string name, Transform parent = null)
+    //{
+    //    GameObject gameObjects
+    //}
+
     //[SerializeField]
     //private List<NetworkedPrefab> _networkedPrefabs = new List<NetworkedPrefab>();
 
