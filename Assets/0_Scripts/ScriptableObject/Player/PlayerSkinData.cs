@@ -4,10 +4,10 @@ using UnityEngine;
 
 public enum PlayerBodyType
 {
-    UmiBoy,
-    UmiBigBoy,
-    UmiGirl,
-    UmiBigGirl
+    UmiBoy=0,
+    UmiBigBoy=1,
+    UmiGirl=2,
+    UmiBigGirl=3
 }
 
 [CreateAssetMenu(fileName = "New player skin", menuName = "Player/Skin")]

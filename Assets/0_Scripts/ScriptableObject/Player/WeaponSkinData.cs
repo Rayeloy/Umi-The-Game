@@ -5,9 +5,14 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New weapon skin", menuName = "Weapon Skin")]
 public class WeaponSkinData : ScriptableObject
 {
+    public WeaponType weaponType;
     public string skinName;
     [Tooltip("Not in use right now.")]
     public float skinPrice;
+    public WeaponOffsets UmiBoyOffsets;
+    public WeaponOffsets UmiBigBoyOffsets;
+    public WeaponOffsets UmiGirlOffsets;
+    public WeaponOffsets UmiBigGirlOffsets;
     //public GameObject[] materialSubMeshes;
     public WeaponSkinRecolor[] skinRecolors;
 
@@ -40,6 +45,22 @@ public class WeaponSkinData : ScriptableObject
             skinRecolors[i].ErrorCheck();
         }
     }
+
+    public WeaponOffsets GetWeaponOffsets(PlayerBodyType bodyType)
+    {
+        switch (bodyType)
+        {
+            default:
+            case PlayerBodyType.UmiBoy:
+                return UmiBoyOffsets;
+            case PlayerBodyType.UmiBigBoy:
+                return UmiBigBoyOffsets;
+            case PlayerBodyType.UmiGirl:
+                return UmiGirlOffsets;
+            case PlayerBodyType.UmiBigGirl:
+                return UmiBigGirlOffsets;
+        }
+    }
 }
 
 [System.Serializable]
@@ -53,4 +74,11 @@ public struct WeaponSkinRecolor
     {
         //if (materials.Length <= 0) Debug.LogWarning("Weapon Skin Recolor -> Warning: the skin recolor " + skinRecolorName + "has no materials. Is this the base recolor? (no materials, gray)");
     }
+}
+
+[System.Serializable]
+public struct WeaponOffsets
+{
+    public Vector3 positionOffset;
+    public Vector3 rotationOffset;
 }

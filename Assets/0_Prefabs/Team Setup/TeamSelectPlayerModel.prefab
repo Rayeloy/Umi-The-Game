@@ -25,11 +25,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6438627798341156941}
-  m_LocalRotation: {x: 0, y: 0.76604444, z: 0, w: 0.64278764}
+  m_LocalRotation: {x: 0, y: 0.6755902, z: 0, w: 0.7372774}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 2906611072004657766}
+  - {fileID: 39634411369668289}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -46,6 +46,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mySkin: {fileID: 0}
+  myWeaponSkin: {fileID: 0}
+  allPlayerDefaultSkins:
+  - {fileID: 11400000, guid: 91de452f4955c634aa55ffc447760749, type: 2}
+  - {fileID: 11400000, guid: 2f96de311287d4e4cb827dee5868b162, type: 2}
+  - {fileID: 11400000, guid: 8a99e169275a229478867df99d798944, type: 2}
+  - {fileID: 11400000, guid: 2ea677f3d15926043ba8ce59a23b74aa, type: 2}
+  animatorControllers:
+  - {fileID: 9100000, guid: 34dcbacdb0d36ed49abba1910d586733, type: 2}
+  - {fileID: 22100000, guid: 0c0495084e0950240a39cd9bf3681f31, type: 2}
+  - {fileID: 22100000, guid: 16fdaec092e8acb4fb4d6573a70e6d50, type: 2}
+  - {fileID: 22100000, guid: 874e7057fd378fe43935de3e0193136c, type: 2}
 --- !u!114 &722209963647448519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59,12 +70,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DoRotate: 0
+  parentReference: {fileID: 0}
   dontRotateXAxis: 0
   dontRotateYAxis: 1
   dontRotateZAxis: 0
   rotateChildren: 0
-  localRotation: {x: 0, y: 100, z: 0}
---- !u!1001 &2120638374703970241
+  localRotation: {x: 0, y: 85, z: 0}
+--- !u!1001 &3869877728993262438
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -94,7 +106,7 @@ PrefabInstance:
     - target: {fileID: 3834918449721943463, guid: f0151733714dc9243960309fba1a217e,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3834918449721943463, guid: f0151733714dc9243960309fba1a217e,
         type: 3}
@@ -133,9 +145,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0151733714dc9243960309fba1a217e, type: 3}
---- !u!4 &2906611072004657766 stripped
+--- !u!4 &39634411369668289 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3834918449721943463, guid: f0151733714dc9243960309fba1a217e,
     type: 3}
-  m_PrefabInstance: {fileID: 2120638374703970241}
+  m_PrefabInstance: {fileID: 3869877728993262438}
   m_PrefabAsset: {fileID: 0}

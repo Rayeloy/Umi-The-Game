@@ -5,25 +5,29 @@ using UnityEngine;
 public class TeamSelectPlatform : MonoBehaviour
 {
     public Transform rotationParent;//ROTATE THIS
-    public GameObject TeamSelectionModels;
-    public GameObject CharacterSelectionModels;
-    public GameObject WeaponSelectionModels;
+    public GameObject teamSelectionModels;
+    public GameObject characterSelectionModels;
+    public GameObject weaponSelectionModels;
 
     TeamSelectPlayerModel[] charSelectPlayerModels;
+    TeamSelectPlayerModel[] weaponSelectPlayerModels;
+
 
     //Platform Rotation
     bool platformRotStarted = false;
-    float platformRotInitialRot;
+    //float platformRotInitialRot;
+    float platformRotCurrentRot;
     float platformRotTime = 0;
     float platformRotTargetRot = 0;
-    float platformRotRealTargetRot = 0;
+    //float platformRotRealTargetRot = 0;
     public float platformRotMaxTime = 0.3f;
 
 
     private void Awake()
     {
-        charSelectPlayerModels = CharacterSelectionModels.GetComponentsInChildren<TeamSelectPlayerModel>();
-        platformRotInitialRot = platformRotTargetRot = platformRotRealTargetRot = rotationParent.localRotation.eulerAngles.y;
+        charSelectPlayerModels = characterSelectionModels.GetComponentsInChildren<TeamSelectPlayerModel>();
+        weaponSelectPlayerModels = weaponSelectionModels.GetComponentsInChildren<TeamSelectPlayerModel>();
+        platformRotTargetRot = platformRotCurrentRot = rotationParent.localRotation.eulerAngles.y;
     }
 
     public void Update()
@@ -31,32 +35,49 @@ public class TeamSelectPlatform : MonoBehaviour
         ProcessPlatformRotation();
     }
 
-    public void StartTeamSelect()
+    public void StartTeamSelection()
     {
-        TeamSelectionModels.SetActive(true);
-        CharacterSelectionModels.SetActive(false);
-        WeaponSelectionModels.SetActive(false);
+        StopPlatformRotation();
+        teamSelectionModels.SetActive(true);
+        characterSelectionModels.SetActive(false);
+        weaponSelectionModels.SetActive(false);
         rotationParent.localRotation = Quaternion.Euler(0, 30, 0);
-        platformRotRealTargetRot = 30;
+        platformRotCurrentRot = platformRotTargetRot = 30;
     }
     public void StartCharacterSelection()
     {
-        TeamSelectionModels.SetActive(false);
-        CharacterSelectionModels.SetActive(true);
-        WeaponSelectionModels.SetActive(false);
+        StopPlatformRotation();
+        teamSelectionModels.SetActive(false);
+        characterSelectionModels.SetActive(true);
+        weaponSelectionModels.SetActive(false);
         rotationParent.localRotation = Quaternion.Euler(0, 0, 0);
-        platformRotRealTargetRot = 0;
+        platformRotCurrentRot = platformRotTargetRot = 0;
     }
-    public void StartWeaponSelectionModels()
+    public void StartWeaponSelection()
     {
-        TeamSelectionModels.SetActive(false);
-        CharacterSelectionModels.SetActive(false);
-        WeaponSelectionModels.SetActive(true);
+        StopPlatformRotation();
+        teamSelectionModels.SetActive(false);
+        characterSelectionModels.SetActive(false);
+        weaponSelectionModels.SetActive(true);
         rotationParent.localRotation = Quaternion.Euler(0, 0, 0);
-        platformRotRealTargetRot = 0;
+        platformRotCurrentRot = platformRotTargetRot = 0;
+    }
+    public void Lock()
+    {
+        for (int i = 0; i < charSelectPlayerModels.Length; i++)
+        {
+            charSelectPlayerModels[i].Lock();
+        }
+    }
+    public void Unlock()
+    {
+        for (int i = 0; i < charSelectPlayerModels.Length; i++)
+        {
+            charSelectPlayerModels[i].Unlock();
+        }
     }
 
-    public void ChangeTeamColors(Team team)
+    public void ChangeCharSelectModels(Team team)
     {
         for (int i = 0; i < charSelectPlayerModels.Length; i++)
         {
@@ -64,29 +85,55 @@ public class TeamSelectPlatform : MonoBehaviour
         }
     }
 
-    public void RotatePlatform(bool dirRight, float increment)
+    public PlayerSkinData GetPlayerSkin(PlayerBodyType bodyType)
+    {
+        for (int i = 0; i < charSelectPlayerModels.Length; i++)
+        {
+            if (charSelectPlayerModels[i].mySkin.bodyType == bodyType) return charSelectPlayerModels[i].mySkin;
+        }
+        return null;
+    }
+
+    public void ChangeWeaponSelectModels(Team team, PlayerBodyType bodyType)
+    {
+        for (int i = 0; i < weaponSelectPlayerModels.Length; i++)
+        {
+            weaponSelectPlayerModels[i].LoadWeaponSelect(team, bodyType);
+        }
+    }
+
+    public WeaponSkinData GetWeaponSkin(WeaponType weaponType)
+    {
+        for (int i = 0; i < weaponSelectPlayerModels.Length; i++)
+        {
+            if (weaponSelectPlayerModels[i].myWeaponSkin.weaponType == weaponType) return weaponSelectPlayerModels[i].myWeaponSkin;
+        }
+        return null;
+    }
+
+    public void StartPlatformRotation(bool dirRight, float increment)
     {
         StopPlatformRotation();
         Debug.Log("Starting Rotation to the " + (dirRight ? "right" : "left" )+ " with an incremet of " + increment);
 
         if (!platformRotStarted)
         {
-            platformRotInitialRot = rotationParent.localRotation.eulerAngles.y;
+            //platformRotInitialRot = rotationParent.localRotation.eulerAngles.y;
             platformRotStarted = true;
             platformRotTime = 0;
             switch (dirRight)
             {
                 case true:
-                    platformRotTargetRot = platformRotRealTargetRot + increment;
-                    platformRotRealTargetRot = platformRotTargetRot >= 360 ? platformRotTargetRot - 360 : platformRotTargetRot;
+                    platformRotTargetRot = platformRotTargetRot + increment;
+                    //platformRotRealTargetRot = platformRotTargetRot >= 360 ? platformRotTargetRot - 360 : platformRotTargetRot;
                     break;
                 case false:
-                    platformRotTargetRot = platformRotRealTargetRot - increment;
-                    platformRotRealTargetRot = platformRotTargetRot < 0 ? platformRotTargetRot + 360 : platformRotTargetRot;
+                    platformRotTargetRot = platformRotTargetRot - increment;
+                    //platformRotRealTargetRot = platformRotTargetRot < 0 ? platformRotTargetRot + 360 : platformRotTargetRot;
                     break;
             }
 
-            //Debug.Log("START CHANGE TEAM ANIMATION: changeTeamAnimationInitialRot = " + changeTeamAnimationInitialRot + "; changeTeamAnimationTargetRot = " + changeTeamAnimationTargetRot);
+            Debug.Log("Start Platform Rotation: platformRotCurrentRot = " + platformRotCurrentRot + "; platformRotTargetRot = "+ platformRotTargetRot);
         }
     }
 
@@ -97,9 +144,9 @@ public class TeamSelectPlatform : MonoBehaviour
 
             platformRotTime += Time.deltaTime;
             float progress = Mathf.Clamp01(platformRotTime / platformRotMaxTime);
-            float yRot = EasingFunction.EaseInOutQuart(platformRotInitialRot, platformRotTargetRot, progress);
-            rotationParent.localRotation = Quaternion.Euler(0, yRot, 0);
-            Debug.Log("Rotating Platform: Time = "+ platformRotTime);
+            platformRotCurrentRot = EasingFunction.EaseInOutQuart(platformRotCurrentRot, platformRotTargetRot, progress);
+            rotationParent.localRotation = Quaternion.Euler(0, platformRotCurrentRot, 0);
+            //Debug.Log("Rotating Platform: Time = "+ platformRotTime);
             if (platformRotTime >= platformRotMaxTime)
             {
                 StopPlatformRotation();

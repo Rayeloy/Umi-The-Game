@@ -87,8 +87,8 @@ public class Alpha_Team_Select : MonoBehaviour
     {
         if (GameInfo.instance != null)
         {
-            if(GameInfo.instance.inControlManager == null)
-            GameInfo.instance.inControlManager = GameObject.Find("InControl manager");
+            if (GameInfo.instance.inControlManager == null)
+                GameInfo.instance.inControlManager = GameObject.Find("InControl manager");
             GameInfo.instance.playerTeamList.Clear();
         }
         else
@@ -145,7 +145,7 @@ public class Alpha_Team_Select : MonoBehaviour
                 break;
             case TeamSelectMenuState.ChoosingTeam:
 
-                if(playersJoined < nPlayers)
+                if (playersJoined < nPlayers)
                 {
                     if (JoinButtonWasPressedOnListener(joystickListener))
                     {
@@ -264,6 +264,10 @@ public class Alpha_Team_Select : MonoBehaviour
         keyboardListener.Destroy();
     }
 
+    /// <summary>
+    /// For Ren Button in Scene
+    /// </summary>
+    /// <param name="mapIndex"></param>
     public void LockMapVariation(int mapIndex)
     {
         currentMapIndex = mapIndex;
@@ -313,6 +317,10 @@ public class Alpha_Team_Select : MonoBehaviour
         Debug.Log("BACK TO CHOOSE MAP VARIATION");
     }
 
+    /// <summary>
+    /// For Ren Button in Scene
+    /// </summary>
+    /// <param name="playerNum"></param>
     public void LockSelectNumberOfPlayers(int playerNum)
     {
         nPlayers = playerNum;
@@ -415,7 +423,7 @@ public class Alpha_Team_Select : MonoBehaviour
 
                 //GameInfo.instance.playerActionsList.Add(keyboardListener);
                 //GameInfo.instance.playerActionUno = keyboardListener;
-                player.myControls = PlayerActions.CreateWithKeyboardBindings();
+                player.InitializeControls(PlayerActions.CreateWithKeyboardBindings());
             }
             else
             {
@@ -425,7 +433,7 @@ public class Alpha_Team_Select : MonoBehaviour
                 actions.Device = inputDevice;
 
                 //GameInfo.instance.playerActionsList.Add(actions);
-                player.myControls = actions;
+                player.InitializeControls(actions);
                 //player.isAReleased = false;
             }
 
@@ -646,6 +654,10 @@ public enum TeamSelectPlayerState
 public class SelectPlayer
 {
     [HideInInspector] public Team myTeam = Team.none;
+    [HideInInspector] public PlayerBodyType myBodyType = PlayerBodyType.UmiBoy;
+    PlayerSkinData myPlayerSkin;
+    [HideInInspector] public WeaponType myWeaponType = WeaponType.QTip;
+    WeaponSkinData myWeaponSkin;
     [HideInInspector] public TeamSelectPlayerState teamSelectPlayerSt = TeamSelectPlayerState.NotJoined;
     public Camera myCamera;
     public Camera myUICamera;
@@ -767,7 +779,6 @@ public class SelectPlayer
                 }
                 break;
         }
-        myJoyStickControls = new EAITwoAxisControls(GameInfo.instance.myControls.LeftJoystick, deadzone);
 
         // AJUSTE DE ESCALA DE LA HUD PARA CAMARAS CON RECT DESPROPORCIONADO
         RectTransform teamText = myTeamSelectPlayerCanvas.teamNameText.GetComponent<RectTransform>();
@@ -786,6 +797,12 @@ public class SelectPlayer
         //changeTeamAnimationInitialRot = changeTeamAnimationTargetRot = changeTeamAnimationRealTargetRot =
         //    changeTeamAnimationOriginalRot = myTeamSelectPlatform.rotationParent.localRotation.eulerAngles.y;
 
+    }
+
+    public void InitializeControls(PlayerActions controls)
+    {
+        myControls = controls;
+        myJoyStickControls = new EAITwoAxisControls(myControls.LeftJoystick, deadzone, 0.4f, 0.3f);
     }
 
     public void KonoUpdate()
@@ -811,41 +828,57 @@ public class SelectPlayer
                     if (myJoyStickControls.LeftWasPressed)
                     {
                         ChangeTeam(false);
-                        //Animation Left
                     }
                     else if (myJoyStickControls.RightWasPressed)
                     {
                         ChangeTeam(true);
-                        //Animation Right
                     }
                     else if (myControls.A.WasReleased)
                     {
                         SelectTeam();
                     }
 
-                    IluminateArrows();
                     break;
                 case TeamSelectPlayerState.SelectingCharacter:
+                    if (myJoyStickControls.LeftWasPressed)
+                    {
+                        ChangeCharacter(false);
+                    }
+                    else if (myJoyStickControls.RightWasPressed)
+                    {
+                        ChangeCharacter(true);
+                    }
+                    else if (myControls.A.WasReleased)
+                    {
+                        SelectCharacter();
+                    }
                     break;
                 case TeamSelectPlayerState.SelectingWeapon:
+                    if (myJoyStickControls.LeftWasPressed)
+                    {
+                        ChangeWeapon(false);
+                    }
+                    else if (myJoyStickControls.RightWasPressed)
+                    {
+                        ChangeWeapon(true);
+                    }
+                    else if (myControls.A.WasReleased)
+                    {
+                        SelectWeapon();
+                    }
                     break;
                 case TeamSelectPlayerState.Locked:
                     break;
 
             }
 
+            if (teamSelectPlayerSt != TeamSelectPlayerState.Locked)
+            {
+                IluminateArrows();
+            }
+
             myJoyStickControls.ResetJoyStick();
         }
-    }
-
-    public void StartTeamSelection()
-    {
-            Debug.Log("JOIN TEAM SELECT");
-            notJoinedScreen.SetActive(false);
-            teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
-            myTeamSelectPlatform.StartTeamSelect();
-            myTeam = Team.none;
-            ChangeHUDTeam(Team.none);
     }
 
     public void ExitTeamSelect()
@@ -877,36 +910,46 @@ public class SelectPlayer
 
     void IluminateArrows()
     {
-        if (teamSelectPlayerSt == TeamSelectPlayerState.SelectingTeam)
+        if (myJoyStickControls.leftIsPressed)
         {
-            if (myJoyStickControls.leftIsPressed)
-            {
-                Color auxColor = myTeamSelectPlayerCanvas.leftArrow.color;
-                auxColor.a = 1;
-                myTeamSelectPlayerCanvas.leftArrow.color = auxColor;
-            }
-            else
-            {
-                Color auxColor = myTeamSelectPlayerCanvas.leftArrow.color;
-                auxColor.a = myTeamSelectPlayerCanvas.alphaDeactivated;
-                myTeamSelectPlayerCanvas.leftArrow.color = auxColor;
-            }
-            if (myJoyStickControls.rightIsPressed)
-            {
-                Color auxColor = myTeamSelectPlayerCanvas.rightArrow.color;
-                auxColor.a = 1;
-                myTeamSelectPlayerCanvas.rightArrow.color = auxColor;
-            }
-            else
-            {
-                Color auxColor = myTeamSelectPlayerCanvas.rightArrow.color;
-                auxColor.a = myTeamSelectPlayerCanvas.alphaDeactivated;
-                myTeamSelectPlayerCanvas.rightArrow.color = auxColor;
-            }
+            Color auxColor = myTeamSelectPlayerCanvas.leftArrow.color;
+            auxColor.a = 1;
+            myTeamSelectPlayerCanvas.leftArrow.color = auxColor;
+        }
+        else
+        {
+            Color auxColor = myTeamSelectPlayerCanvas.leftArrow.color;
+            auxColor.a = myTeamSelectPlayerCanvas.alphaDeactivated;
+            myTeamSelectPlayerCanvas.leftArrow.color = auxColor;
+        }
+        if (myJoyStickControls.rightIsPressed)
+        {
+            Color auxColor = myTeamSelectPlayerCanvas.rightArrow.color;
+            auxColor.a = 1;
+            myTeamSelectPlayerCanvas.rightArrow.color = auxColor;
+        }
+        else
+        {
+            Color auxColor = myTeamSelectPlayerCanvas.rightArrow.color;
+            auxColor.a = myTeamSelectPlayerCanvas.alphaDeactivated;
+            myTeamSelectPlayerCanvas.rightArrow.color = auxColor;
         }
     }
 
     #region --- TEAM SELECTION ---
+    public void StartTeamSelection()
+    {
+        Debug.Log("JOIN TEAM SELECT");
+        myTeam = Team.none;
+
+        notJoinedScreen.SetActive(false);
+        teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
+        myTeamSelectPlatform.StartTeamSelection();
+
+        myTeamSelectPlayerCanvas.StartTeamSelection();
+        ChangeHUDTeam(Team.none);
+    }
+
     void ChangeTeam(bool dirRight) // 1 es izda y 0 es derecha
     {
         switch (dirRight)
@@ -943,7 +986,7 @@ public class SelectPlayer
                 break;
         }
         ChangeHUDTeam(myTeam);
-        myTeamSelectPlatform.RotatePlatform(dirRight, 120);
+        myTeamSelectPlatform.StartPlatformRotation(dirRight, 120);
         //StartChangeTeamAnimation(direction);
     }
 
@@ -1007,60 +1050,99 @@ public class SelectPlayer
         if (teamSelectPlayerSt != TeamSelectPlayerState.SelectingTeam)
             return;
 
-            Debug.Log("LOCK TEAM: " + myTeam);
-            //Visual Lock: TO DO: Fade / player models animation for TRANSITION
-            //Debug.Log("ANIMATOR = " + animators[(int)myTeam].gameObject);
-            //animators[(int)myTeam].SetBool("IdleReady", true);
+        Debug.Log("LOCK TEAM: " + myTeam);
+        //Visual Lock: TO DO: Fade / player models animation for TRANSITION
+        //Debug.Log("ANIMATOR = " + animators[(int)myTeam].gameObject);
+        //animators[(int)myTeam].SetBool("IdleReady", true);
 
 
-            //HUD VISUAL LOCK
-            for (int i = 0; i < myTeamSelectPlayerCanvas.lockStateDeactivateImages.Length; i++)
-            {
-                myTeamSelectPlayerCanvas.lockStateDeactivateImages[i].gameObject.SetActive(false);
-            }
+        //HUD VISUAL LOCK
 
-            for (int i = 0; i < myTeamSelectPlayerCanvas.lockStateActivateImages.Length; i++)
-            {
-                myTeamSelectPlayerCanvas.lockStateActivateImages[i].gameObject.SetActive(true);
-            }
-            StartCharacterSelection();
+        StartCharacterSelection();
     }
     #endregion
 
     #region --- CHARACTER SELECTION ---
-    void StartCharacterSelection()
+    void StartCharacterSelection(bool anim_UI=true)
     {
+        myBodyType = PlayerBodyType.UmiBoy;
+
+        if(anim_UI)
+        myTeamSelectPlayerCanvas.StartCharacterSelection();
+
         teamSelectPlayerSt = TeamSelectPlayerState.SelectingCharacter;
         myTeamSelectPlatform.StartCharacterSelection();
-        myTeamSelectPlatform.ChangeTeamColors(myTeam);      
+        myTeamSelectPlatform.ChangeCharSelectModels(myTeam);
     }
+
+    void ChangeCharacter(bool dirRight)
+    {
+        if (dirRight)
+        {
+            myBodyType++;
+            if ((int)myBodyType > 3) myBodyType = (PlayerBodyType)0;
+        }
+        else
+        {
+            myBodyType--;
+            if ((int)myBodyType < 0) myBodyType = (PlayerBodyType)3;
+        }
+
+        myTeamSelectPlatform.StartPlatformRotation(dirRight, 90);
+    }
+
     void StopCharacterSelection() //GO BACK
     {
         teamSelectPlayerSt = TeamSelectPlayerState.SelectingTeam;
         //Visual Back
-        animators[(int)myTeam].SetBool("IdleReady", false);
+        //animators[(int)myTeam].SetBool("IdleReady", false);
 
         //HUD VISUAL Back
-        for (int i = 0; i < myTeamSelectPlayerCanvas.lockStateDeactivateImages.Length; i++)
-        {
-            myTeamSelectPlayerCanvas.lockStateDeactivateImages[i].gameObject.SetActive(true);
-        }
+        myTeamSelectPlayerCanvas.GoBackToTeamSelection();
+    }
 
-        for (int i = 0; i < myTeamSelectPlayerCanvas.lockStateActivateImages.Length; i++)
-        {
-            myTeamSelectPlayerCanvas.lockStateActivateImages[i].gameObject.SetActive(false);
-        }
+    void SelectCharacter()
+    {
+        myPlayerSkin = myTeamSelectPlatform.GetPlayerSkin(myBodyType);
+        StartWeaponSelection();
     }
     #endregion
 
     #region --- WEAPON SELECTION ---
     void StartWeaponSelection()
     {
+        //myTeamSelectPlayerCanvas.StartCharacterSelection();
+
         teamSelectPlayerSt = TeamSelectPlayerState.SelectingWeapon;
+        myTeamSelectPlatform.StartWeaponSelection();
+        myTeamSelectPlatform.ChangeWeaponSelectModels(myTeam, myBodyType);
     }
+
+    void ChangeWeapon(bool dirRight)
+    {
+        if (dirRight)
+        {
+            myWeaponType++;
+            if ((int)myWeaponType > 3) myWeaponType = (WeaponType)1;
+        }
+        else
+        {
+            myWeaponType--;
+            if ((int)myWeaponType < 1) myWeaponType = (WeaponType)3;
+        }
+
+        myTeamSelectPlatform.StartPlatformRotation(dirRight, 120);
+    }
+
     void StopWeaponSelection()// GO BACK
     {
         teamSelectPlayerSt = TeamSelectPlayerState.SelectingCharacter;
+    }
+
+    void SelectWeapon()
+    {
+        myWeaponSkin = myTeamSelectPlatform.GetWeaponSkin(myWeaponType);
+        Lock();
     }
     #endregion
 
@@ -1068,11 +1150,12 @@ public class SelectPlayer
     void Lock()
     {
         teamSelectPlayerSt = TeamSelectPlayerState.Locked;
+        myTeamSelectPlatform.Lock();
     }
     void Unlock()
     {
         teamSelectPlayerSt = TeamSelectPlayerState.SelectingWeapon;
-
+        myTeamSelectPlatform.Unlock();
     }
     #endregion
 
@@ -1090,10 +1173,11 @@ public class SelectPlayer
                 break;
             case TeamSelectPlayerState.SelectingWeapon:
                 StopWeaponSelection();
+                StartCharacterSelection(false);
                 break;
             case TeamSelectPlayerState.Locked:
-                Debug.Log("UNLOCK Weapon");
-                Lock();
+                //Debug.Log("UNLOCK Weapon");
+                Unlock();
                 break;
         }
     }
