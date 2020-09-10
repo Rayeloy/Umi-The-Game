@@ -346,7 +346,7 @@ public class PlayerActions : PlayerActionSet
     }        
 }
 
-public class EAITwoAxisControls
+public class EAITwoAxisControls//Eloy Advanced Inputs Two Axis Controls
 {
     PlayerTwoAxisAction joyStick;
     float deadzone;

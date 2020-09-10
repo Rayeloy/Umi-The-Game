@@ -156,7 +156,7 @@ public class GameControllerCMF : MonoBehaviour
         //GameInfo.instance.PrintTeamList();
 
         myRenCont = myGameInterface.GetComponentInChildren<RenController>();
-        if(myRenCont == null)
+        if (myRenCont == null)
         {
             Debug.LogError("GameControllerCMF-> No RenController could be found!");
         }
@@ -256,14 +256,9 @@ public class GameControllerCMF : MonoBehaviour
         if (debugModeOn) Debug.Log("GameControllerCMF -> StartPlayers");
         for (int i = 0; i < playerNum; i++)
         {
-            StartPlayer(i);
+            if (debugModeOn) Debug.Log("GameControllerCMF -> StartPlayer " + i);
+            allPlayers[i].KonoStart();
         }
-    }
-
-    void StartPlayer(int n)
-    {
-        if(debugModeOn) Debug.Log("GameControllerCMF -> StartPlayer " + n);
-        allPlayers[n].KonoStart();
     }
 
     //Funcion que se llama al comenzar la partida, que inicicia las variables necesarias, y que posiciona a los jugadores y ¿bandera?
@@ -274,7 +269,7 @@ public class GameControllerCMF : MonoBehaviour
         myRenCont.disabled = true;
         for (int i = 0; i < playerNum; i++)
         {
-            Debug.Log("Respawning player " + (i+1) + "/" + (playerNum));
+            Debug.Log("Respawning player " + (i + 1) + "/" + (playerNum));
             RespawnPlayer(allPlayers[i]);
         }
     }
@@ -294,8 +289,8 @@ public class GameControllerCMF : MonoBehaviour
 
         if (!gamePaused && playing)// PLAYING NORMALLY
         {
-                UpdatePlayers();
-                UpdateModeExclusiveClasses();
+            UpdatePlayers();
+            UpdateModeExclusiveClasses();
         }
         else
         {
@@ -426,6 +421,9 @@ public class GameControllerCMF : MonoBehaviour
                 //GameInfo.instance.PrintTeamList();
                 //Debug.Log("GameController: The player " + i + " is given the team " + GameInfo.instance.playerTeamList[i]);
                 allPlayers[i].team = GameInfo.instance.playerTeamList[i];
+                allPlayers[i].myPlayerBody.myPlayerSkin = GameInfo.instance.playerSkinList[i];
+                allPlayers[i].myPlayerWeap.myWeaponSkinData = GameInfo.instance.weaponSkinList[i];
+                allPlayers[i].myPlayerWeap.myWeaponSkinRecolor = GameInfo.instance.weaponSkinRecolorList[i];
             }
         }
         //SETUP CAMERAS
@@ -499,8 +497,8 @@ public class GameControllerCMF : MonoBehaviour
                     break;
             }
             //}
-            if(gameMode != GameMode.Housing)
-            SetSpawnPositions();
+            if (gameMode != GameMode.Housing)
+                SetSpawnPositions();
         }
 
     }
@@ -736,7 +734,7 @@ public class GameControllerCMF : MonoBehaviour
         //BLUE TEAM PLAYERS PER SPAWN
         if (teamASpawns.Length > 0 && playerNumTeamA > 0)
         {
-            if(debugModeOn) Debug.Log("Blue Team Spawns Players:");
+            if (debugModeOn) Debug.Log("Blue Team Spawns Players:");
             //pps= Players Per Spawn not rounded
             float pps = (float)playerNumTeamA / (float)teamASpawns.Length;
             //we clamp the number so that is minimum 1 and then round it
@@ -954,7 +952,7 @@ public class GameControllerCMF : MonoBehaviour
         playerActions = p;
         gamePaused = true;
         GameInfo.instance.SetRenController(myRenCont);
-            //}
+        //}
     }
 
     public void UnPauseGame()

@@ -6,6 +6,7 @@ using UnityEngine;
 public class DontRotateWithParent : MonoBehaviour
 {
     public bool DoRotate = false;
+    public Transform parentReference;
     public bool dontRotateXAxis = false;
     public bool dontRotateYAxis = false;
     public bool dontRotateZAxis = true;
@@ -51,8 +52,11 @@ public class DontRotateWithParent : MonoBehaviour
         {
             //Vector3 localRot = transform.localRotation.eulerAngles;
             //Vector3 finalRot = transform.parent.rotation.eulerAngles + localRotation;
-            transform.rotation = Quaternion.Euler(dontRotateXAxis ? localRotation.x : transform.rotation.x,
-                dontRotateYAxis ? localRotation.y: transform.rotation.y, dontRotateZAxis ? localRotation.z : transform.rotation.z);
+            Vector3 parentRot = Vector3.zero;
+            if (parentReference != null) parentRot = parentReference.rotation.eulerAngles;
+
+            transform.rotation = Quaternion.Euler(dontRotateXAxis ? parentRot.x + localRotation.x : transform.rotation.x,
+                dontRotateYAxis ? parentRot.y + localRotation.y: transform.rotation.y, dontRotateZAxis ? parentRot.z + localRotation.z : transform.rotation.z);
             //transform.localRotation = Quaternion.Euler(transform.localRotation.x + localRotation.x, transform.localRotation.y + localRotation.y, transform.localRotation.z + localRotation.z);
         }
     }

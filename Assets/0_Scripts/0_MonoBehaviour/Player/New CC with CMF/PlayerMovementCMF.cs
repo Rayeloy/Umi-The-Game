@@ -642,7 +642,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     void SwitchTeam(Team team)
     {
-        myPlayerModel.SwitchTeam(team);
+        //myPlayerModel.SwitchTeam(team);
         TrailRenderer dashTR = myPlayerVFX.GetEffectGO(PlayerVFXType.DashTrail).GetComponent<TrailRenderer>();
         dashTR.colorGradient = team == Team.A ? StinrayGradient : OktiromeGradient;
         //dashTR.endColor = team == Team.A ? StinrayColors [1]: OktiromeColors[1];
@@ -2346,6 +2346,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             //    efecto = EffectType.knockdown;
             //    _maxTime = AttackEffect.knockdownTime;
             //}
+
             #region STUN PROTECTION
 
             if (sufferingEffect == EffectType.softStun && (lastAttacker != attacker || (lastAttacker == attacker && autocomboIndex == 0)))
@@ -2717,7 +2718,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             vertMovSt = VerticalMovementState.None;
             myPlayerAnimation.exitWater = true;
             //vertMovSt = ;
-            myPlayerWeap.AttatchWeapon();
+            myPlayerWeap.AttatchWeaponToHand();
 
             myPlayerVFX.DeactivateMoveWaves();
             myPlayerVFX.DeactivateEffect(PlayerVFXType.SwimmingEffect);

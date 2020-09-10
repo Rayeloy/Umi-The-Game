@@ -185,9 +185,9 @@ public class PlayerWeapons : MonoBehaviour
     public void AttatchWeapon()
     {
         currentWeapObject.SetParent(myPlayerModel.rightHand);
-        currentWeapObject.localPosition = currentWeaponData.handPosition;
-        currentWeapObject.localRotation = Quaternion.Euler(currentWeaponData.handRotation.x, currentWeaponData.handRotation.y, currentWeaponData.handRotation.z);
-        currentWeapObject.localScale = currentWeaponData.handScale;
+        //currentWeapObject.localPosition = currentWeaponData.handPosition;
+        //currentWeapObject.localRotation = Quaternion.Euler(currentWeaponData.handRotation.x, currentWeaponData.handRotation.y, currentWeaponData.handRotation.z);
+        //currentWeapObject.localScale = currentWeaponData.handScale;
     }
 
     public void AttatchWeapon(WeaponData weaponData)
@@ -220,9 +220,9 @@ public class PlayerWeapons : MonoBehaviour
         //if (!PhotonNetwork.IsConnected)
         //{
             currentWeapObject.SetParent(myPlayerModel.senaka);
-            currentWeapObject.localPosition = currentWeaponData.backPosition;
-            currentWeapObject.localRotation = Quaternion.Euler(currentWeaponData.backRotation.x, currentWeaponData.backRotation.y, currentWeaponData.backRotation.z);
-            currentWeapObject.localScale = currentWeaponData.backScale;
+            //currentWeapObject.localPosition = currentWeaponData.backPosition;
+            //currentWeapObject.localRotation = Quaternion.Euler(currentWeaponData.backRotation.x, currentWeaponData.backRotation.y, currentWeaponData.backRotation.z);
+            //currentWeapObject.localScale = currentWeaponData.backScale;
         //}
     }
 

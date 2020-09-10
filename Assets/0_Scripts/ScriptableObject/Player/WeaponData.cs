@@ -43,21 +43,21 @@ public class WeaponData : ScriptableObject
 
 
 
-    [Header("Weapon in the right hand")]
-    [Tooltip("Local position for attaching to the hand.")]
-    public Vector3 handPosition;
-    [Tooltip("Local rotation for attaching to the hand.")]
-    public Vector3 handRotation;
-    [Tooltip("Local scale for attaching to the hand.")]
-    public Vector3 handScale;
+    //[Header("Weapon in the right hand")]
+    //[Tooltip("Local position for attaching to the hand.")]
+    //public Vector3 handPosition;
+    //[Tooltip("Local rotation for attaching to the hand.")]
+    //public Vector3 handRotation;
+    //[Tooltip("Local scale for attaching to the hand.")]
+    //public Vector3 handScale;
 
-    [Header("Weapon on the back")]
-    [Tooltip("Local position for attaching to the hand.")]
-    public Vector3 backPosition;
-    [Tooltip("Local rotation for attaching to the hand.")]
-    public Vector3 backRotation;
-    [Tooltip("Local scale for attaching to the hand.")]
-    public Vector3 backScale;
+    //[Header("Weapon on the back")]
+    //[Tooltip("Local position for attaching to the hand.")]
+    //public Vector3 backPosition;
+    //[Tooltip("Local rotation for attaching to the hand.")]
+    //public Vector3 backRotation;
+    //[Tooltip("Local scale for attaching to the hand.")]
+    //public Vector3 backScale;
 
     public bool GetSkin(out WeaponSkinData skin, out WeaponSkinRecolor skinRecolor, string skinName = "", string recolorName = "")
     {

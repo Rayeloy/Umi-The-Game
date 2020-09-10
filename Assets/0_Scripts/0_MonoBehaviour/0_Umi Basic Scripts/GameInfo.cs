@@ -23,6 +23,9 @@ public class GameInfo : MonoBehaviour
     RenController lastRenCont = null;
     public List<PlayerActions> playerActionsList;
     public List<Team> playerTeamList;
+    public List<PlayerSkinData> playerSkinList;
+    public List<WeaponSkinData> weaponSkinList;
+    public List<WeaponSkinRecolor> weaponSkinRecolorList; 
     public int nPlayers;
     [HideInInspector]
     public bool gameIsPaused = false;
@@ -51,6 +54,9 @@ public class GameInfo : MonoBehaviour
         currentGameMode = GameMode.None;
         playerActionsList = new List<PlayerActions>();
         playerTeamList = new List<Team>();
+        playerSkinList = new List<PlayerSkinData>();
+        weaponSkinList = new List<WeaponSkinData>();
+        weaponSkinRecolorList = new List<WeaponSkinRecolor>();
 
         uIAnimations = new List<UIAnimation>();
         myControls = PlayerActions.CreateDefaultBindings();
@@ -166,11 +172,11 @@ public class GameInfo : MonoBehaviour
 
     #region UIAnimations
 
-    public void StartAnimation(UIAnimation uIAnimation, Camera canvasCamera)
+    public void StartAnimation(UIAnimation uIAnimation, Camera canvasCamera, bool playBack = false)
     {
         for (int i = 0; i < uIAnimations.Count; i++)
         {
-            if (uIAnimations[i].rect == uIAnimation.rect)
+            if (uIAnimations[i].rect == uIAnimation.rect && uIAnimations[i] != uIAnimation)
             {
                 Debug.LogError("UIAnimation Error: you are trying to animate the same RectTransform at the same time with " +
                     "more than 1 animation. Are you sure this is correct?");
@@ -184,11 +190,12 @@ public class GameInfo : MonoBehaviour
                 uIAnimation.currentXAmplitude = uIAnimation.xAmplitude * prop;
             }
             uIAnimations.Add(uIAnimation);
-            uIAnimation.StartAnimation();
+            Debug.Log("Start Animation " + uIAnimation+"; Rect = "+uIAnimation.rect.name);
+            uIAnimation.StartAnimation(playBack);
         }
         else
         {
-            uIAnimation.RestartAnimation();
+            uIAnimation.RestartAnimation(playBack);
         }
     }
 
@@ -213,6 +220,16 @@ public class GameInfo : MonoBehaviour
                 uIAnimations.RemoveAt(i);
             }
         }
+    }
+
+    public void StopAllUIAnimations()
+    {
+        while (uIAnimations.Count>0)
+        {
+            uIAnimations[0].StopAnimation();
+            uIAnimations.RemoveAt(0);
+        }
+
     }
     #endregion
 
@@ -252,7 +269,9 @@ public class UIAnimation
     [HideInInspector] public bool playing = false;
     public RectTransform rect;
     public float duration = 0.5f;
+    [Tooltip("If endless, duration is ignored.")]
     public bool endless = false;
+    [Tooltip("If true, the animation will be cycled back when finished, and repeat until duration ends.")]
     public bool cycleAnimDir = true;
     public float frequency = 0.06f;
     [Range(0, 1)]
@@ -279,9 +298,14 @@ public class UIAnimation
     private Vector2 originalScale;
 
     [Header("--- MOVEMENT ---")]
+    [Tooltip("Automaticly saves the initial pos as the current local position in the canvas, does not work on play back.")]
+    public bool automaticInitialPos;
     public Vector2 initialPos;
     public Vector2 finalPos;
     private Vector2 originalPos;
+
+    private Vector2 realInitialPos;
+    private Vector2 realFinalPos;
 
 
     public UIAnimation(UIAnimType _type, ref RectTransform _rect, float _xAmplitude = 7f, float _frequency = 0.06f,
@@ -298,7 +322,7 @@ public class UIAnimation
         StartAnimation(); // Es necesario???
     }
 
-    public void StartAnimation()
+    public void StartAnimation(bool playBack = false)
     {
         if (!playing)
         {
@@ -326,28 +350,68 @@ public class UIAnimation
                     break;
                 case UIAnimType.movement:
                     //totalAmplitude = new Vector2(Mathf.Abs(initialPos.x - finalPos.x), Mathf.Abs(initialPos.y - finalPos.y));
-                    originalPos = rect.localPosition;
-                    //Debug.LogWarning("MOVEANIM: originalPos= " + originalPos );
+
+                    if (!playBack)
+                    {
+                        if (automaticInitialPos)
+                        {
+                            initialPos = rect.localPosition;
+                        }
+                        realInitialPos = initialPos;
+                        realFinalPos = finalPos;
+                    }
+                    else
+                    {
+                        realInitialPos = finalPos;
+                        realFinalPos = initialPos;
+                    }
+                    rect.localPosition = realInitialPos;
+                    Debug.LogWarning("MOVEANIM: originalPos= " + originalPos );
                     break;
             }
         }
     }
 
-    public void RestartAnimation()
+    public void RestartAnimation(bool playBack = false)
     {
-        animDir = 1;
-        currentCycleTime = cycleStartPoint * frequency;
-        currentDuration = 0;
-        switch (type)
+
+        if (playing)
         {
-            case UIAnimType.shake:
-                break;
-            case UIAnimType.color_alpha:
-                break;
-            case UIAnimType.scale:
-                break;
-            case UIAnimType.movement:
-                break;
+            currentDuration = 0;
+            currentCycleTime = cycleStartPoint * frequency;
+            animDir = 1;
+            switch (type)
+            {
+                case UIAnimType.shake:
+                    totalSpace = currentXAmplitude * 2;
+                    originalLocalPos = rect.localPosition;
+                    //Debug.LogWarning(" currentxAmplitude= " + currentxAmplitude + "; totalSpace = " + totalSpace);
+                    break;
+                case UIAnimType.color_alpha:
+                    image = rect.GetComponent<Image>();
+                    break;
+                case UIAnimType.scale:
+                    //totalScaleAmplitude = Mathf.Abs(initialScale - finalScale);
+                    originalScale = new Vector2(rect.localScale.x, rect.localScale.y);
+                    //Debug.LogWarning("SCALEANIM: originalScale= " + originalScale);
+
+                    break;
+                case UIAnimType.movement:
+                    //totalAmplitude = new Vector2(Mathf.Abs(initialPos.x - finalPos.x), Mathf.Abs(initialPos.y - finalPos.y));
+                    if (!playBack)
+                    {
+                        realInitialPos = initialPos;
+                        realFinalPos = finalPos;
+                    }
+                    else
+                    {
+                        realInitialPos = finalPos;
+                        realFinalPos = initialPos;
+                    }
+                    rect.localPosition = realInitialPos;
+                    Debug.LogWarning("MOVEANIM: originalPos= " + originalPos);
+                    break;
+            }
         }
     }
 
@@ -386,11 +450,11 @@ public class UIAnimation
                     break;
                 case UIAnimType.movement:
                     progress = animDir == 1 ? progress : 1 - progress;
-                    float xVal = EasingFunction.SelectEasingFunction(easeFunction, initialPos.x, finalPos.x, progress);
-                    float yVal = EasingFunction.SelectEasingFunction(easeFunction, initialPos.y, finalPos.y, progress);
+                    float xVal = EasingFunction.SelectEasingFunction(easeFunction, realInitialPos.x, realFinalPos.x, progress);
+                    float yVal = EasingFunction.SelectEasingFunction(easeFunction, realInitialPos.y, realFinalPos.y, progress);
 
-                    rect.localPosition = new Vector3(originalPos.x + xVal, originalPos.y + yVal, rect.localPosition.z);
-                    //Debug.Log("MOVEANIM: Progress = " + progress + "; xVal = " + xVal+ "; yVal = " + yVal);
+                    rect.localPosition = new Vector3(xVal, yVal, rect.localPosition.z);
+                    Debug.Log("MOVEANIM: Progress = " + progress + "; xVal = " + xVal+ "; yVal = " + yVal);
                     break;
             }
 
@@ -439,9 +503,10 @@ public class UIAnimation
                     rect.localScale = new Vector3(originalScale.x * finalScale, originalScale.y * finalScale, 1);
                     break;
                 case UIAnimType.movement:
-                    rect.localPosition = finalPos;
+                    rect.localPosition = realFinalPos;
                     break;
             }
+            Debug.Log("STOP UI ANIMATION");
         }
     }
 }
