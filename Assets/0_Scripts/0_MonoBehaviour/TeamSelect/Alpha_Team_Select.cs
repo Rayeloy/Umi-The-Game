@@ -90,6 +90,9 @@ public class Alpha_Team_Select : MonoBehaviour
             if (GameInfo.instance.inControlManager == null)
                 GameInfo.instance.inControlManager = GameObject.Find("InControl manager");
             GameInfo.instance.playerTeamList.Clear();
+            GameInfo.instance.playerSkinList.Clear();
+            GameInfo.instance.weaponSkinList.Clear();
+            GameInfo.instance.weaponSkinRecolorList.Clear();
         }
         else
         {
@@ -177,11 +180,16 @@ public class Alpha_Team_Select : MonoBehaviour
                 }
                 if (allReady)
                 {
+                    GameInfo.instance.StopAllUIAnimations();
+
                     for (int i = 0; i < playersJoined; i++)
                     {
                         //GameInfo.playerActionsList[i] = players[i].Actions;
                         GameInfo.instance.playerActionsList.Add(selectPlayers[i].myControls);
                         GameInfo.instance.playerTeamList.Add(selectPlayers[i].myTeam);
+                        GameInfo.instance.playerSkinList.Add(selectPlayers[i].myPlayerSkin);
+                        GameInfo.instance.weaponSkinList.Add(selectPlayers[i].myWeaponSkin);
+                        GameInfo.instance.weaponSkinRecolorList.Add(selectPlayers[i].myWeaponSkinRecolor);
                         //Debug.Log("ALL READY: adding player of team " + selectPlayers[i].myTeam);
                         //GameInfo.instance.PrintTeamList();
                         //Debug.Log(ps.Actions);
@@ -655,9 +663,10 @@ public class SelectPlayer
 {
     [HideInInspector] public Team myTeam = Team.none;
     [HideInInspector] public PlayerBodyType myBodyType = PlayerBodyType.UmiBoy;
-    PlayerSkinData myPlayerSkin;
+    [HideInInspector] public PlayerSkinData myPlayerSkin;
     [HideInInspector] public WeaponType myWeaponType = WeaponType.QTip;
-    WeaponSkinData myWeaponSkin;
+    [HideInInspector] public WeaponSkinData myWeaponSkin;
+    [HideInInspector] public WeaponSkinRecolor myWeaponSkinRecolor;
     [HideInInspector] public TeamSelectPlayerState teamSelectPlayerSt = TeamSelectPlayerState.NotJoined;
     public Camera myCamera;
     public Camera myUICamera;
@@ -812,6 +821,7 @@ public class SelectPlayer
             if (myControls.B.WasReleased || (myControls.Device == null && myControls.Start.WasReleased))
             {
                 GoBack();
+                if (myControls == null) return;
             }
             //Debug.Log("My controls exist: teamSelectPlayerSt = "+ teamSelectPlayerSt);
             //ProcessChangeTeamAnimation();
@@ -1142,6 +1152,7 @@ public class SelectPlayer
     void SelectWeapon()
     {
         myWeaponSkin = myTeamSelectPlatform.GetWeaponSkin(myWeaponType);
+        myWeaponSkinRecolor = myTeamSelectPlatform.GetWeaponSkinRecolor(myTeam, myWeaponType);
         Lock();
     }
     #endregion

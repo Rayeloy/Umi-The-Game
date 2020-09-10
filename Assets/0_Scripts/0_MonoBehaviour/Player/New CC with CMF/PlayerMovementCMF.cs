@@ -2718,7 +2718,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             vertMovSt = VerticalMovementState.None;
             myPlayerAnimation.exitWater = true;
             //vertMovSt = ;
-            myPlayerWeap.AttatchWeapon();
+            myPlayerWeap.AttatchWeaponToHand();
 
             myPlayerVFX.DeactivateMoveWaves();
             myPlayerVFX.DeactivateEffect(PlayerVFXType.SwimmingEffect);

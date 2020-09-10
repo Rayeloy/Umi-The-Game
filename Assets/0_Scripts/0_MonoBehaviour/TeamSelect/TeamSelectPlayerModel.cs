@@ -22,19 +22,7 @@ public class TeamSelectPlayerModel : MonoBehaviour
         }
 
         GameObject model = null;
-        switch (team)
-        {
-            default:
-            case Team.none:
-                model = Instantiate(mySkin.skinRecolorPrefabs[0], transform);
-                break;
-            case Team.A:
-                model = Instantiate(mySkin.skinRecolorPrefabs[1], transform);              
-                break;
-            case Team.B:
-                model = Instantiate(mySkin.skinRecolorPrefabs[2], transform);
-                break;
-        }
+        model = Instantiate(mySkin.skinRecolorPrefabs[(int)team], transform);
 
         myPlayerModel = model.GetComponent<PlayerModel>();
         myAnimator = model.AddComponent<Animator>();
@@ -57,8 +45,8 @@ public class TeamSelectPlayerModel : MonoBehaviour
             case WeaponType.Hammer:
                 GameObject weapon = Instantiate(myWeaponSkin.skinRecolors[(int)team].skinRecolorPrefab, myPlayerModel.rightHand);
                 WeaponOffsets myWeaponOffsets = myWeaponSkin.GetWeaponOffsets(bodyType);
-                weapon.transform.localPosition = myWeaponOffsets.positionOffset;
-                weapon.transform.localRotation = Quaternion.Euler(myWeaponOffsets.rotationOffset);
+                weapon.transform.localPosition = myWeaponOffsets.rHandPositionOffset;
+                weapon.transform.localRotation = Quaternion.Euler(myWeaponOffsets.rHandRotationOffset);
                 break;
             case WeaponType.Boxing_gloves:
                 break;

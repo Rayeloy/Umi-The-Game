@@ -111,6 +111,16 @@ public class TeamSelectPlatform : MonoBehaviour
         return null;
     }
 
+    public WeaponSkinRecolor GetWeaponSkinRecolor(Team team, WeaponType weaponType)
+    {
+        WeaponSkinRecolor result = new WeaponSkinRecolor();
+        for (int i = 0; i < weaponSelectPlayerModels.Length; i++)
+        {
+            if (weaponSelectPlayerModels[i].myWeaponSkin.weaponType == weaponType) result = weaponSelectPlayerModels[i].myWeaponSkin.skinRecolors[(int)team];
+        }
+        return result;
+    }
+
     public void StartPlatformRotation(bool dirRight, float increment)
     {
         StopPlatformRotation();

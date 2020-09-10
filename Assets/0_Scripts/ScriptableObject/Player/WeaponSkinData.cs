@@ -79,6 +79,8 @@ public struct WeaponSkinRecolor
 [System.Serializable]
 public struct WeaponOffsets
 {
-    public Vector3 positionOffset;
-    public Vector3 rotationOffset;
+    public Vector3 rHandPositionOffset;
+    public Vector3 rHandRotationOffset;
+    public Vector3 backPositionOffset;
+    public Vector3 backRotationOffset;
 }

@@ -905,7 +905,7 @@ public class PlayerCombatCMF : MonoBehaviour
             if(debugModeOn) Debug.Log("Stop aiming");
             aiming = false;
             myPlayerMovement.myCamera.SwitchCamera(CameraMode.Free);
-            myPlayerWeap.AttatchWeapon();
+            myPlayerWeap.AttatchWeaponToHand();
             myPlayerHUD.StopAim();
         }
     }

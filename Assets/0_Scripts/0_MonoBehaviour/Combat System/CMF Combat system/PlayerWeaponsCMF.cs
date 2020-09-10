@@ -16,9 +16,9 @@ public class PlayerWeaponsCMF : MonoBehaviour
     public PlayerMovementCMF myPlayerMovement;
     public PlayerCombatCMF myPlayerCombatNew;
     PlayerHUDCMF myPlayerHUD;
-    public PlayerModel myPlayerModel;
-    public WeaponData startingWeaponTeamA;
-    public WeaponData startingWeaponTeamB;
+    [HideInInspector] public WeaponSkinData myWeaponSkinData;
+    [HideInInspector] public WeaponSkinRecolor myWeaponSkinRecolor;
+    WeaponOffsets myWeaponSkinOffsets;
 
     #endregion
 
@@ -73,9 +73,6 @@ public class PlayerWeaponsCMF : MonoBehaviour
         currentWeaponData = null;
         currentWeapon = null;
         currentWeapObject = null;
-        //myPlayerMovement = GetComponent<PlayerMovement>();
-        //myPlayerAnim = myPlayerMovement.myPlayerAnimation_01;
-        //myPlayerCombatNew = myPlayerMovement.myPlayerCombatNew;
         myPlayerHUD = myPlayerMovement.myPlayerHUD;
         //myPlayerModel = myPlayerMovement.myPlayerModel;
         weaponsNearby = new List<Weapon>();
@@ -85,7 +82,10 @@ public class PlayerWeaponsCMF : MonoBehaviour
     #region Start
     public void KonoStart()
     {
-        SetTeamWeapon(myPlayerMovement.team);
+        currentWeaponData = MasterManager.LocalDatabase.GetWeapon(myWeaponSkinData.weaponType);
+        if (myPlayerMovement.gC.gameMode == GameMode.CaptureTheFlag) myWeaponSkinRecolor = myWeaponSkinData.skinRecolors[(int)myPlayerMovement.team];
+        PickupWeapon(currentWeaponData);
+        //SetTeamWeapon(myPlayerMovement.team);
     }
     #endregion
 
@@ -186,14 +186,6 @@ public class PlayerWeaponsCMF : MonoBehaviour
         }
     }
 
-    public void AttatchWeapon()
-    {
-        currentWeapObject.SetParent(myPlayerModel.rightHand);
-        currentWeapObject.localPosition = currentWeaponData.handPosition;
-        currentWeapObject.localRotation = Quaternion.Euler(currentWeaponData.handRotation.x, currentWeaponData.handRotation.y, currentWeaponData.handRotation.z);
-        currentWeapObject.localScale = currentWeaponData.handScale;
-    }
-
     public void AttatchWeapon(WeaponData weaponData)
     {
         currentWeaponData = weaponData;
@@ -206,43 +198,57 @@ public class PlayerWeaponsCMF : MonoBehaviour
         else
         {
             currentWeapon.weaponData = currentWeaponData;
-            AttatchWeapon();
-            switch (myPlayerMovement.team)
-            {
-                case Team.A:
-                    ChangeWeaponSkin("Skin2", "Green");
-                    break;
-                case Team.B:
-                    ChangeWeaponSkin("Skin2", "Pink");
-                    break;
-            }
+            AttatchWeaponToHand();
+            ChangeWeaponSkin(myWeaponSkinData.skinName, myWeaponSkinRecolor.skinRecolorName);
+        }
+    }
+
+    public void AttatchWeaponToHand()
+    {
+        currentWeapObject.SetParent(myPlayerMovement.myPlayerModel.rightHand);
+        switch (currentWeaponData.weaponType)
+        {
+            case WeaponType.QTip:
+            case WeaponType.Hammer:
+                //GameObject weapon = Instantiate(myWeaponSkin.skinRecolors[(int)team].skinRecolorPrefab, myPlayerModel.rightHand);
+                //WeaponOffsets myWeaponOffsets = myWeaponSkin.GetWeaponOffsets(bodyType);
+                currentWeapObject.localPosition = myWeaponSkinOffsets.rHandPositionOffset;
+                currentWeapObject.localRotation = Quaternion.Euler(myWeaponSkinOffsets.rHandRotationOffset);
+                break;
+            case WeaponType.Boxing_gloves:
+                break;
         }
     }
 
     public void AttachWeaponToBack()
     {
-        //if (!PhotonNetwork.IsConnected)
-        //{
-        currentWeapObject.SetParent(myPlayerModel.senaka);
-        currentWeapObject.localPosition = currentWeaponData.backPosition;
-        currentWeapObject.localRotation = Quaternion.Euler(currentWeaponData.backRotation.x, currentWeaponData.backRotation.y, currentWeaponData.backRotation.z);
-        currentWeapObject.localScale = currentWeaponData.backScale;
-        //}
-    }
-
-    public void SetTeamWeapon(Team team)
-    {
-        if(debugModeOn) Debug.Log("SetTeamWeapon Start");
-        switch (team)
+        currentWeapObject.SetParent(myPlayerMovement.myPlayerModel.senaka);
+        switch (currentWeaponData.weaponType)
         {
-            case Team.A:
-                PickupWeapon(startingWeaponTeamA);
+            case WeaponType.QTip:
+            case WeaponType.Hammer:
+
+                currentWeapObject.localPosition = myWeaponSkinOffsets.backPositionOffset;
+                currentWeapObject.localRotation = Quaternion.Euler(myWeaponSkinOffsets.backRotationOffset);
                 break;
-            case Team.B:
-                PickupWeapon(startingWeaponTeamB);
+            case WeaponType.Boxing_gloves:
                 break;
         }
     }
+
+    //public void SetTeamWeapon(Team team)
+    //{
+    //    if(debugModeOn) Debug.Log("SetTeamWeapon Start");
+    //    switch (team)
+    //    {
+    //        case Team.A:
+    //            PickupWeapon(startingWeaponTeamA);
+    //            break;
+    //        case Team.B:
+    //            PickupWeapon(startingWeaponTeamB);
+    //            break;
+    //    }
+    //}
 
     public void AddWeaponNearby(Weapon weapPickup)
     {
