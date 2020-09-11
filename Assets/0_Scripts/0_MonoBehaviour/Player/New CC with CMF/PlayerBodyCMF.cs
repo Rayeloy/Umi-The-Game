@@ -39,6 +39,16 @@ public class PlayerBodyCMF : MonoBehaviour
     {
         myPlayerWeapons = myPlayerMov.myPlayerWeap;
 
+        LoadPlayerModelAndAnimator();
+    }
+
+    public void KonoFixedUpdate()
+    {
+        ProcessInWater();
+    }
+
+    void LoadPlayerModelAndAnimator()
+    {
         Debug.Log("Player Body: Load Player Skin");
         GameObject myBody = Instantiate(myPlayerSkin.skinRecolorPrefabs[(int)myPlayerMov.team], transform);
         myBody.transform.localPosition = new Vector3(0, -0.954f, 0);
@@ -46,12 +56,8 @@ public class PlayerBodyCMF : MonoBehaviour
         myAnimator = myBody.GetComponent<Animator>();
         myAnimator.runtimeAnimatorController = myPlayerSkin.animatorController;
         myAnimator.avatar = myPlayerSkin.avatar;
+        myPlayerMov.myPlayerAnimation.animator = myAnimator;
         myPlayerMov.myPlayerModel = myBody.GetComponent<PlayerModel>();
-    }
-
-    public void KonoFixedUpdate()
-    {
-        ProcessInWater();
     }
 
     #region  TRIGGER COLLISIONS ---------------------------------------------
