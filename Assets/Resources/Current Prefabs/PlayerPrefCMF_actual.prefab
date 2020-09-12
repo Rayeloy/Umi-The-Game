@@ -43973,7 +43973,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 631c913384e7a2d4785b1c6bfe6373f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 4222018764240873069}
+  animator: {fileID: 0}
   animHit: 0
   enterWater: 0
   exitWater: 0
@@ -63134,7 +63134,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1015076590092242967}
   - component: {fileID: 4968334877559186131}
-  - component: {fileID: 4222018764240873069}
   - component: {fileID: 6605384209687612580}
   - component: {fileID: 7852406728139055613}
   m_Layer: 10
@@ -63173,25 +63172,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!95 &4222018764240873069
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7753593567714089022}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: cf922255f00771345858be6e5aec22b4, type: 3}
-  m_Controller: {fileID: 9100000, guid: 7c1962560c6d3614c9736226e0261a75, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &6605384209687612580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77709,15 +77689,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 91d4e8bedeef49044a51276e1e4071bc, type: 3}
+--- !u!4 &6801537209720632077 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 771452924486824585, guid: 91d4e8bedeef49044a51276e1e4071bc,
+    type: 3}
+  m_PrefabInstance: {fileID: 6113401570903638404}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1423969886644729180 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5122245651186922712, guid: 91d4e8bedeef49044a51276e1e4071bc,
     type: 3}
   m_PrefabInstance: {fileID: 6113401570903638404}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &6801537209720632077 stripped
+--- !u!4 &8819481212851097536 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 771452924486824585, guid: 91d4e8bedeef49044a51276e1e4071bc,
+  m_CorrespondingSourceObject: {fileID: 3364819190115356228, guid: 91d4e8bedeef49044a51276e1e4071bc,
     type: 3}
   m_PrefabInstance: {fileID: 6113401570903638404}
   m_PrefabAsset: {fileID: 0}
@@ -77733,9 +77719,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a4ad5e66adb44246982df3dc31406e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &8819481212851097536 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3364819190115356228, guid: 91d4e8bedeef49044a51276e1e4071bc,
-    type: 3}
-  m_PrefabInstance: {fileID: 6113401570903638404}
-  m_PrefabAsset: {fileID: 0}
