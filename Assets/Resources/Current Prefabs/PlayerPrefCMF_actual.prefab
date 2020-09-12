@@ -43952,11 +43952,11 @@ MonoBehaviour:
   myPlayerAnim: {fileID: 3492127030470539752}
   myPlayerMovement: {fileID: 873758771431004316}
   myPlayerCombatNew: {fileID: 8719508589324532801}
-  myPlayerModel: {fileID: 4362105476637428943}
-  startingWeaponTeamA: {fileID: 11400000, guid: 34c19bb7b66fdae4399b358c4b2337ba,
-    type: 2}
-  startingWeaponTeamB: {fileID: 11400000, guid: 34c19bb7b66fdae4399b358c4b2337ba,
-    type: 2}
+  myWeaponSkinData: {fileID: 0}
+  myWeaponSkinRecolor:
+    skinRecolorName: 
+    skinRecolorPrice: 0
+    skinRecolorPrefab: {fileID: 0}
   currentWeaponData: {fileID: 0}
   currentWeapon: {fileID: 0}
   currentWeaponSkin: {fileID: 0}
@@ -63139,7 +63139,7 @@ GameObject:
   - component: {fileID: 7852406728139055613}
   m_Layer: 10
   m_Name: Body
-  m_TagString: Player
+  m_TagString: PlayerBody
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
