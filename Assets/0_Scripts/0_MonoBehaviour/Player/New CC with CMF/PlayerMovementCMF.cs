@@ -36,6 +36,7 @@ public enum VerticalMovementState
     ChargeJumping,
     BounceJumping,
     FloatingInWater,
+    EnteringWater,
     Sliding // on a water Slide
 }
 
@@ -1270,6 +1271,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     }
                     currentVel.y += currentGravity * Time.deltaTime;
                     break;
+                case VerticalMovementState.EnteringWater:
                 case VerticalMovementState.FloatingInWater:
                     currentVel.y += currentGravity * Time.deltaTime;
                     currentVel += myPlayerBody.buoyancy * Time.deltaTime;
@@ -2865,6 +2867,21 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         boostCurrentFuel = boostCapacity;
         //myPlayerWeap.DropWeapon();
         //controller.collisionMask = LayerMask.GetMask("Stage", "WaterFloor", "SpawnWall");
+    }
+
+    public bool HardSteerCheck() {
+        if (!(!hardSteerOn && myPlayerCombat.isRotationRestricted)) {
+            Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
+            hardSteerAngleDiff = Vector3.Angle(horizontalVel, currentInputDir);//hard Steer si > 90
+            hardSteerOn = hardSteerAngleDiff > instantRotationMinAngle ? true : false;
+            if (hardSteerOn && !hardSteerStarted) {
+                //if (!disableAllDebugs && hardSteerOn) Debug.LogError("HARD STEER ON: STARTED");
+                hardSteerDir = currentInputDir;
+                //RotateCharacterInstantly(hardSteerDir);
+                return true;
+            }
+        }
+        return false;
     }
 
     //void EquipWeaponAtStart()

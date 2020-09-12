@@ -28,7 +28,7 @@ public class HitboxHookBigCMF : MonoBehaviour
                     case "Flag":
                         myPlayerHook.HookObject(col.transform);
                         break;
-                    case "Player":
+                    case "PlayerBody":
                         if (myPlayerHook.debugModeOn) Debug.Log("HOOK PLAYER: checking team");
                         PlayerMovementCMF otherPlayer = col.GetComponent<PlayerBodyCMF>().myPlayerMov;
                         if (myPlayerMov.team != otherPlayer.team)// IF ENEMY

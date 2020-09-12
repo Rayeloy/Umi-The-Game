@@ -47,6 +47,7 @@ public class HitboxCMF : MonoBehaviour
 
     private void OnTriggerStay(Collider col)
     {
+
         if (col.gameObject != myPlayerMov.gameObject)
         {
             if (myPlayerCombat.attackStg == AttackPhaseType.active)//(tag != "HookBigHB" && tag != "HookSmallHB") && 
@@ -59,7 +60,8 @@ public class HitboxCMF : MonoBehaviour
                 switch (col.tag)
                 {
                     #region --- PLAYER ---
-                    case "Player":
+                    case "PlayerBody":
+
                         PlayerMovementCMF otherPlayer = col.GetComponent<PlayerBodyCMF>().myPlayerMov;
                         if (myPlayerMov.team != otherPlayer.team && !myPlayerCombat.parryStarted)
                         {
@@ -201,6 +203,8 @@ public class HitboxCMF : MonoBehaviour
                                 if (myPlayerCombat.hitboxDebugsOn) Debug.Log("Soy " + myPlayerMov.name + " y añado al jugador " + otherPlayer.name + " a la lista de jugadores ya pegados");
 
                                 otherPlayer.StartReceiveHit(myPlayerMov, resultKnockback, stunLikeEffect, maxStunTime, myPlayerCombat.autocomboIndex);
+
+                                if(!targetsHit.Contains(otherPlayer.name))targetsHit.Add(otherPlayer.name);
                             }
                         }
                         break;
@@ -209,126 +213,143 @@ public class HitboxCMF : MonoBehaviour
                     #region --- DUMMY ---
                     case "Dummy":
 
-                        //Dummy dummy = col.GetComponent<Dummy>();
-                        //encontrado = false;
-                        //for (int i = 0; i < dummiesHit.Count && !encontrado; i++)
-                        //{
-                        //    if (dummiesHit[i] == dummy.name)
-                        //    {
-                        //        encontrado = true;
-                        //    }
-                        //}
-                        //if (!encontrado)
-                        //{
-                        //    //QUE TIPO DE EFFECT
-                        //    for (int i = 0; i < myAttackHitbox.effects.Length; i++)
-                        //    {
-                        //        if (!myPlayerMov.disableAllDebugs) Debug.Log("Hitbox " + gameObject.name + ", MyAttackHitbox = " + myAttackHitbox.name + ": Effect number " + i + ", type " + myAttackHitbox.effects[i].effectType +
-                        //            "; stunLikeEffect = " + stunLikeEffect);
-                        //        if (stunLikeEffect != EffectType.parry)
-                        //        {
-                        //            //targetsHit.Add(otherPlayer.playerNumber);
+                        /*DummyMovementCMF dummy = col.GetComponent<DummyBodyCMF>().myPlayerMov;
+                        if (myPlayerMov.team != dummy.team && !myPlayerCombat.parryStarted) {
+                            //CONTAINS !!!JULIO!!!
+                            encontrado = false;
+                            for (int i = 0; i < targetsHit.Count && !encontrado; i++) {
+                                if (targetsHit[i] == dummy.name) {
+                                    encontrado = true;
+                                }
+                            }
+                            if (encontrado) {
+                                if (myPlayerCombat.hitboxDebugsOn) Debug.Log("I'm " + myPlayerMov.name + " and " + dummy.name + " is already added to our list of enemies, so we don't attack him.");
+                                return;
+                            }
 
-                        //            #region EFFECT TYPE SWITCH
-                        //            switch (myAttackHitbox.effects[i].effectType)
-                        //            {
-                        //                case EffectType.knockback:
-                        //                    //calculate knockback vector
-                        //                    if (!myPlayerMov.disableAllDebugs) Debug.Log("KNOCKBACK TYPE= " + myAttackHitbox.effects[i].knockbackType);
-                        //                    switch (myAttackHitbox.effects[i].knockbackType)
-                        //                    {
-                        //                        case KnockbackType.outwards:
-                        //                            Vector3 myPos = myPlayerMov.transform.position;
-                        //                            Vector3 colPos = col.transform.position;
-                        //                            resultKnockback = new Vector3(colPos.x - myPos.x, 0, colPos.z - myPos.z).normalized;
-                        //                            resultKnockback = Quaternion.Euler(0, myAttackHitbox.effects[i].knockbackYAngle, 0) * resultKnockback;
-                        //                            resultKnockback = CalculateYAngle(col.transform.position, resultKnockback.normalized, myAttackHitbox.effects[i].knockbackYAngle);
-                        //                            resultKnockback = resultKnockback.normalized * myAttackHitbox.effects[i].knockbackMagnitude;
-                        //                            break;
-                        //                        case KnockbackType.inwards:
-                        //                            myPos = myPlayerMov.transform.position;
-                        //                            colPos = col.transform.position;
-                        //                            resultKnockback = new Vector3(myPos.x - colPos.x, 0, myPos.z - colPos.z).normalized;
-                        //                            resultKnockback = Quaternion.Euler(0, myAttackHitbox.effects[i].knockbackYAngle, 0) * resultKnockback;
-                        //                            resultKnockback = CalculateYAngle(col.transform.position, resultKnockback, myAttackHitbox.effects[i].knockbackYAngle);
-                        //                            resultKnockback = resultKnockback.normalized * myAttackHitbox.effects[i].knockbackMagnitude;
-                        //                            break;
-                        //                        case KnockbackType.customDir:
-                        //                            //calculate real direction based on character's facing direction
-                        //                            float facingAngle = -myPlayerMov.facingAngle;
-                        //                            Vector3 customDir = myAttackHitbox.effects[i].knockbackDir;
+                            if (dummy.myPlayerCombat.attackStg == AttackPhaseType.active && dummy.myPlayerCombat.currentAttack.HasEffect(EffectType.parry) &&
+                                !targetsHitWait1Frame.Contains(dummy.name) ) {
+                                targetsHitWait1Frame.Add(dummy.name);
+                            } else {
+                                //What type of Effect?
+                                for (int i = 0; i < myAttackHitbox.effects.Length; i++) {
+                                    if (stunLikeEffect != EffectType.parry)//Are we already giving effect parry? continue if no
+                                    {
+                                        //targetsHit.Add(otherPlayer.playerNumber);
 
-                        //                            float theta = facingAngle * Mathf.Deg2Rad;
-                        //                            float cs = Mathf.Cos(theta);
-                        //                            float sn = Mathf.Sin(theta);
-                        //                            float px = customDir.x * cs - customDir.z * sn;
-                        //                            float py = customDir.x * sn + customDir.z * cs;
-                        //                            resultKnockback = new Vector3(px, customDir.y, py).normalized;
-                        //                            resultKnockback = resultKnockback * myAttackHitbox.effects[i].knockbackMagnitude;
-                        //                            //print("Facing Angle(localRot.y)= " + facingAngle + "; customDir = " + customDir);
-                        //                            break;
-                        //                        case KnockbackType.autoCenter:
-                        //                            float a = Mathf.Abs(myPlayerMov.breakAcc);
-                        //                            //float iT = myPlayerMov.MissingImpulseTime();
-                        //                            //float impulseDist = (a * Mathf.Pow(iT, 2)) / 2;
-                        //                            float impulseDist = myPlayerMov.currentImpulse.CalculateMissingDistance(myPlayerMov.transform.position);
-                        //                            if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("impulseDist = " + impulseDist);
+                                        #region EFFECT TYPE SWITCH
+                                        switch (myAttackHitbox.effects[i].effectType) {
+                                            case EffectType.knockback:
+                                                //calculate knockback vector
+                                                if (!myPlayerMov.disableAllDebugs) Debug.Log("KNOCKBACK TYPE= " + myAttackHitbox.effects[i].knockbackType);
+                                                switch (myAttackHitbox.effects[i].knockbackType) {
+                                                    case KnockbackType.outwards:
+                                                        Vector3 myPos = myPlayerMov.transform.position;
+                                                        Vector3 colPos = col.transform.position;
+                                                        resultKnockback = new Vector3(colPos.x - myPos.x, 0, colPos.z - myPos.z).normalized;
+                                                        resultKnockback = Quaternion.Euler(0, myAttackHitbox.effects[i].knockbackYAngle, 0) * resultKnockback;
+                                                        resultKnockback = CalculateYAngle(col.transform.position, resultKnockback.normalized, myAttackHitbox.effects[i].knockbackYAngle);
+                                                        resultKnockback = resultKnockback.normalized * myAttackHitbox.effects[i].knockbackMagnitude;
+                                                        break;
+                                                    case KnockbackType.inwards:
+                                                        myPos = myPlayerMov.transform.position;
+                                                        colPos = col.transform.position;
+                                                        resultKnockback = new Vector3(myPos.x - colPos.x, 0, myPos.z - colPos.z).normalized;
+                                                        resultKnockback = Quaternion.Euler(0, myAttackHitbox.effects[i].knockbackYAngle, 0) * resultKnockback;
+                                                        resultKnockback = CalculateYAngle(col.transform.position, resultKnockback, myAttackHitbox.effects[i].knockbackYAngle);
+                                                        resultKnockback = resultKnockback.normalized * myAttackHitbox.effects[i].knockbackMagnitude;
+                                                        break;
+                                                    case KnockbackType.customDir:
+                                                        //calculate real direction based on character's facing direction
+                                                        float facingAngle = -myPlayerMov.facingAngle;
+                                                        Vector3 customDir = myAttackHitbox.effects[i].knockbackDir;
 
-                        //                            Vector3 hitDir = myPlayerMov.currentImpulse.impulseInitialSpeed != 0 ? myPlayerMov.currentImpulse.impulseDir : myPlayerMov.rotateObj.forward;
-                        //                            float meNoMaeDist = myAttackHitbox.effects[i].knockbackMagnitude + impulseDist;
-                        //                            Vector3 meNoMaePos = myPlayerMov.rotateObj.position + (hitDir * meNoMaeDist);//me no mae (目の前) means in front of your eyes
-                        //                            resultKnockback = (meNoMaePos - dummy.transform.position);
-                        //                            resultKnockback.y = 0;
-                        //                            Debug.DrawLine(dummy.transform.position, (meNoMaePos), Color.red, 4);
-                        //                            if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("hitDir = " + hitDir + "; meNoMaeDist = " + meNoMaeDist + "; meNoMaePos = " + meNoMaePos);
+                                                        float theta = facingAngle * Mathf.Deg2Rad;
+                                                        float cs = Mathf.Cos(theta);
+                                                        float sn = Mathf.Sin(theta);
+                                                        float px = customDir.x * cs - customDir.z * sn;
+                                                        float py = customDir.x * sn + customDir.z * cs;
+                                                        resultKnockback = new Vector3(px, customDir.y, py).normalized;
+                                                        resultKnockback = resultKnockback * myAttackHitbox.effects[i].knockbackMagnitude;
+                                                        //print("Facing Angle(localRot.y)= " + facingAngle + "; customDir = " + customDir);
+                                                        break;
+                                                    case KnockbackType.autoCenter:
+                                                        float a = Mathf.Abs(myPlayerMov.breakAcc);
+                                                        //float iT = myPlayerMov.MissingImpulseTime();
+                                                        //float impulseDist = (a * Mathf.Pow(iT, 2)) / 2;
+                                                        float impulseDist = myPlayerMov.currentImpulse.CalculateMissingDistance(myPlayerMov.transform.position);
+                                                        if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("impulseDist = " + impulseDist);
 
-                        //                            float d = resultKnockback.magnitude;
-                        //                            //vi = Mathf.Sqrt(2*a*d);
-                        //                            float vi = Mathf.Sqrt((2 * a * d));
-                        //                            if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("distance = " + d.ToString("F4") + "; Initial velocity = " + vi.ToString("F4") +
-                        //                                "; myPlayerMov.breakAcc = " + a);
-                        //                            resultKnockback = resultKnockback.normalized * vi;
-                        //                            break;
-                        //                        case KnockbackType.redirect:
-                        //                            float inputRedirectAngle = SignedRelativeAngle(myPlayerMov.rotateObj.forward, myPlayerMov.currentInputDir, Vector3.up);
-                        //                            float finalRedirectAngle = Mathf.Clamp(inputRedirectAngle, -myAttackHitbox.effects[i].redirectMaxAngle, myAttackHitbox.effects[i].redirectMaxAngle);
-                        //                            resultKnockback = Quaternion.Euler(0, finalRedirectAngle, 0) * myPlayerMov.rotateObj.forward;
-                        //                            //CALCULATE Y ANGLE
-                        //                            resultKnockback = CalculateYAngle(col.transform.position, resultKnockback.normalized, myAttackHitbox.effects[i].knockbackYAngle);
-                        //                            //resultKnockback *= myAttackHitbox.effects[i].knockbackMagnitude;
-                        //                            resultKnockback = resultKnockback.normalized * myAttackHitbox.effects[i].knockbackMagnitude;
-                        //                            if (!myPlayerMov.disableAllDebugs)
-                        //                            {
-                        //                                //Debug.LogError("myPlayerMov.currentInputDir = " + myPlayerMov.currentInputDir+ "; resultKnockback = " + resultKnockback);
-                        //                                Debug.DrawRay(myPlayerMov.transform.position, resultKnockback.normalized * 1, Color.red);
-                        //                            }
-                        //                            break;
-                        //                        case KnockbackType.outwardsFromHitbox:
-                        //                            myPos = transform.position;
-                        //                            colPos = col.transform.position;
-                        //                            resultKnockback = new Vector3(colPos.x - myPos.x, 0, colPos.z - myPos.z).normalized;
-                        //                            resultKnockback = Quaternion.Euler(0, myAttackHitbox.effects[i].knockbackYAngle, 0) * resultKnockback;
-                        //                            resultKnockback = CalculateYAngle(col.transform.position, resultKnockback.normalized, myAttackHitbox.effects[i].knockbackYAngle);
-                        //                            resultKnockback = resultKnockback.normalized * myAttackHitbox.effects[i].knockbackMagnitude;
-                        //                            break;
-                        //                    }
-                        //                    if (!myPlayerMov.disableAllDebugs) print("KNOCKBACK RESULT= " + resultKnockback);
-                        //                    break;
-                        //                case EffectType.softStun:
-                        //                    stunLikeEffect = EffectType.softStun;
-                        //                    maxStunTime = myAttackHitbox.effects[i].stunTime;
-                        //                    break;
-                        //            }
-                        //            #endregion
-                        //        }
-                        //    }
+                                                        Vector3 hitDir = myPlayerMov.currentImpulse.impulseInitialSpeed != 0 ? myPlayerMov.currentImpulse.impulseDir : myPlayerMov.rotateObj.forward;
+                                                        float meNoMaeDist = myAttackHitbox.effects[i].knockbackMagnitude + impulseDist;
+                                                        Vector3 meNoMaePos = myPlayerMov.rotateObj.position + (hitDir * meNoMaeDist);//me no mae (目の前) means in front of your eyes
+                                                        resultKnockback = (meNoMaePos - dummy.transform.position);
+                                                        resultKnockback.y = 0;
+                                                        Debug.DrawLine(dummy.transform.position, (meNoMaePos), Color.red, 4);
+                                                        if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("hitDir = " + hitDir + "; meNoMaeDist = " + meNoMaeDist + "; meNoMaePos = " + meNoMaePos);
 
-                        //    if (!myPlayerMov.disableAllDebugs) Debug.Log("Soy " + myPlayerMov.name + " y añado al dummy " + dummy.name + " a la lista de dummies ya pegados");
-                        //    dummiesHit.Add(dummy.name);
-                        //    dummy.StartRecieveHit(myPlayerMov, resultKnockback, stunLikeEffect, maxStunTime);
-                        //    //print("I'm " + myPlayerMov.gameObject.name + " and I Hit against " + col.gameObject);
-                        //}
+                                                        float d = resultKnockback.magnitude;
+                                                        //vi = Mathf.Sqrt(2*a*d);
+                                                        float vi = Mathf.Sqrt((2 * a * d));
+                                                        if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("distance = " + d.ToString("F4") + "; Initial velocity = " + vi.ToString("F4") +
+                                                            "; myPlayerMov.breakAcc = " + a);
+                                                        resultKnockback = resultKnockback.normalized * vi;
+                                                        break;
+                                                    case KnockbackType.redirect:
+                                                        float inputRedirectAngle = SignedRelativeAngle(myPlayerMov.rotateObj.forward, myPlayerMov.currentInputDir, Vector3.up);
+                                                        float finalRedirectAngle = Mathf.Clamp(inputRedirectAngle, -myAttackHitbox.effects[i].redirectMaxAngle, myAttackHitbox.effects[i].redirectMaxAngle);
+                                                        resultKnockback = Quaternion.Euler(0, finalRedirectAngle, 0) * myPlayerMov.rotateObj.forward;
+                                                        //CALCULATE Y ANGLE
+                                                        resultKnockback = CalculateYAngle(col.transform.position, resultKnockback.normalized, myAttackHitbox.effects[i].knockbackYAngle);
+                                                        //resultKnockback *= myAttackHitbox.effects[i].knockbackMagnitude;
+                                                        resultKnockback = resultKnockback.normalized * myAttackHitbox.effects[i].knockbackMagnitude;
+                                                        if (!myPlayerMov.disableAllDebugs) {
+                                                            //Debug.LogError("myPlayerMov.currentInputDir = " + myPlayerMov.currentInputDir+ "; resultKnockback = " + resultKnockback);
+                                                            Debug.DrawRay(myPlayerMov.transform.position, resultKnockback.normalized * 1, Color.red);
+                                                        }
+                                                        break;
+                                                    case KnockbackType.outwardsFromHitbox:
+                                                        myPos = transform.position;
+                                                        colPos = col.transform.position;
+                                                        resultKnockback = new Vector3(colPos.x - myPos.x, 0, colPos.z - myPos.z).normalized;
+                                                        resultKnockback = Quaternion.Euler(0, myAttackHitbox.effects[i].knockbackYAngle, 0) * resultKnockback;
+                                                        resultKnockback = CalculateYAngle(col.transform.position, resultKnockback.normalized, myAttackHitbox.effects[i].knockbackYAngle);
+                                                        resultKnockback = resultKnockback.normalized * myAttackHitbox.effects[i].knockbackMagnitude;
+                                                        break;
+                                                }
+                                                if (!myPlayerMov.disableAllDebugs) print("KNOCKBACK RESULT= " + resultKnockback);
+                                                break;
+                                            case EffectType.softStun:
+                                                //if (stunLikeEffect != EffectType.stun)
+                                                //{
+                                                stunLikeEffect = EffectType.softStun;
+                                                maxStunTime = myAttackHitbox.effects[i].stunTime;
+                                                //}
+                                                break;
+                                                //case EffectType.stun:
+                                                //    if (stunLikeEffect != EffectType.knockdown)
+                                                //    {
+                                                //        stunLikeEffect = EffectType.stun;
+                                                //        maxStunTime = myAttackHitbox.effects[i].stunTime;
+                                                //    }
+                                                //    break;
+                                        }
+                                        #endregion
+                                    }
+                                }
+                                if (targetsHitWait1Frame.Contains(dummy.name)) {
+                                    targetsHitWait1Frame.Remove(dummy.name);
+                                }
+                                if (myPlayerCombat.hitboxDebugsOn) Debug.Log("Soy " + myPlayerMov.name + " y añado al jugador " + dummy.name + " a la lista de jugadores ya pegados");
+
+                                dummy.StartReceiveHit(myPlayerMov, resultKnockback, stunLikeEffect, maxStunTime, myPlayerCombat.autocomboIndex);
+
+                                //!!!JULIO!!!
+                                if (!targetsHit.Contains(dummy.name)) targetsHit.Add(dummy.name);
+                            }
+                        }*/
                         break;
+                        
                     #endregion
 
                     #region --- HITBOX ---
@@ -407,7 +428,7 @@ public class HitboxCMF : MonoBehaviour
                 //print("I'm " + myPlayerMov.gameObject.name + " and I collided with " + col.gameObject);
                 switch (col.tag)
                 {
-                    case "Player":
+                    case "PlayerBody":
                         PlayerMovementCMF otherPlayer = col.GetComponent<PlayerBodyCMF>().myPlayerMov;
                         if (myPlayerMov.team != otherPlayer.team)
                         {
@@ -423,16 +444,16 @@ public class HitboxCMF : MonoBehaviour
                         }
                         break;
                     case "Dummy":
-                        Dummy dummy = col.GetComponent<Dummy>();
-                        bool encontrado1 = false;
-                        for (int i = 0; i < dummiesHit.Count && !encontrado1; i++)
-                        {
-                            if (dummiesHit[i] == dummy.name)
-                            {
-                                encontrado1 = true;
-                                dummiesHit.RemoveAt(i);
+                        /*DummyMovementCMF otherDummy = col.GetComponent<DummyBodyCMF>().myPlayerMov;
+                        if (myPlayerMov.team != otherDummy.team) {
+                            bool encontrado = false;
+                            for (int i = 0; i < targetsHit.Count && !encontrado; i++) {
+                                if (targetsHit[i] == otherDummy.name) {
+                                    encontrado = true;
+                                    targetsHit.RemoveAt(i);
+                                }
                             }
-                        }
+                        }*/
                         break;
                     case "Hitbox":
                         otherPlayer = col.GetComponent<HitboxCMF>().myPlayerMov;

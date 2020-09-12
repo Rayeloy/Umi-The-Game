@@ -185,7 +185,8 @@ public class PlayerBodyCMF : MonoBehaviour
             VerticalMovementState vertState = myPlayerMov.vertMovSt;
             if (vertState != VerticalMovementState.FloatingInWater && myPlayerMov.currentVel.y<=0 && inWater)
             {
-                myPlayerMov.EnterWater();
+                //myPlayerMov.EnterWater();
+                myPlayerMov.vertMovSt = VerticalMovementState.EnteringWater;
             }
             else if (myPlayerMov.vertMovSt == VerticalMovementState.FloatingInWater && !inWater)//TO CHANGE
             {
@@ -198,6 +199,11 @@ public class PlayerBodyCMF : MonoBehaviour
                 buoyancy.y = Mathf.Clamp(buoyancy.y, float.MinValue, maxBuoyancyAcceleration);
                 // apply drag relative to water
                 verticalDrag = Vector3.up * Vector3.Dot(Vector3.up, -velocityRelativeToWater) * dragInWaterUp;
+
+                if (myPlayerMov.currentVel.y >= 0  && myPlayerMov.vertMovSt == VerticalMovementState.EnteringWater) {
+                    myPlayerMov.EnterWater();
+                }
+
             }
             else
             {

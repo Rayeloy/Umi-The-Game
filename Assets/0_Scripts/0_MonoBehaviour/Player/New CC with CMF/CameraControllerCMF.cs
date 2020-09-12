@@ -182,7 +182,10 @@ public class CameraControllerCMF : MonoBehaviour
                     rotX += finalInputZ * rotSpeedSho * Time.deltaTime;
                     rotX = Mathf.Clamp(rotX, clampAngleMinSho, clampAngleMaxSho);
 
-                    myPlayerMov.RotateCharacter(rotSpeedSho * finalInputX);
+                    if (!myPlayerMov.HardSteerCheck()) {
+                        myPlayerMov.RotateCharacter(rotSpeedSho * finalInputX);
+                    }
+
 
                     localRotation = followObjRot;
                     localRotation = Quaternion.Euler(rotX, myPlayerMov.rotateObj.localRotation.eulerAngles.y, 0);
