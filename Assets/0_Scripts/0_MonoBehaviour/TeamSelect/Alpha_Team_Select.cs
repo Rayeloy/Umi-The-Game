@@ -793,14 +793,12 @@ public class SelectPlayer
         RectTransform teamText = myTeamSelectPlayerCanvas.teamNameText.GetComponent<RectTransform>();
         selectTeamHUDParentOriginalScale = myTeamSelectPlayerCanvas.teamSelectHUDParent.localScale;
         selectTeamHUDTeamTextOriginalScale = teamText.localScale;
-        float scale = myUICamera.rect.width - myUICamera.rect.height;
-        if (scale != 0)
-        {
-            float scaleValue = scale;
-            //float invScaleValue = 1 + (1 - scale);//2- SCALE
-            myTeamSelectPlayerCanvas.teamSelectHUDParent.localScale = new Vector3(myTeamSelectPlayerCanvas.teamSelectHUDParent.GetComponent<RectTransform>().localScale.x * scaleValue,
-                myTeamSelectPlayerCanvas.teamSelectHUDParent.GetComponent<RectTransform>().localScale.y, 1);
-            teamText.localScale = new Vector3(teamText.localScale.x * 2, teamText.localScale.y, 1);
+
+        if (myUICamera.rect.width != 1 || myUICamera.rect.height != 1) {
+            float scale = Mathf.Min(myUICamera.rect.width, myUICamera.rect.height);
+            myTeamSelectPlayerCanvas.teamSelectHUDParent.localScale = new Vector3(myTeamSelectPlayerCanvas.teamSelectHUDParent.GetComponent<RectTransform>().localScale.x * 0.5f,
+                 myTeamSelectPlayerCanvas.teamSelectHUDParent.GetComponent<RectTransform>().localScale.y * 0.5f, 1);
+            //teamText.localScale = new Vector3(teamText.localScale.x * 2, teamText.localScale.y * 2, 1);
         }
 
         //changeTeamAnimationInitialRot = changeTeamAnimationTargetRot = changeTeamAnimationRealTargetRot =
