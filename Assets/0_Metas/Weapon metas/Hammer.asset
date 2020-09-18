@@ -14,11 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: Hammer
   weaponType: 2
-  weaponPrefab: {fileID: 0}
+  weaponPrefab: {fileID: 8423693443464097795, guid: 62a722bd631634c48b7f86f366b04869,
+    type: 3}
   weaponSkins:
-  - {fileID: 0}
-  allWeaponSkills: []
+  - {fileID: 11400000, guid: ea7bfb96cec8c934fa7536934812f7b8, type: 2}
+  allWeaponSkills:
+  - {fileID: 11400000, guid: da9846d53e7e66f489555a4a98166183, type: 2}
+  - {fileID: 11400000, guid: da9846d53e7e66f489555a4a98166183, type: 2}
   playerMaxSpeed: 9
-  playerWeight: 1
+  playerWeight: 1.1
   autocombo: {fileID: 11400000, guid: 18531e47ccde9464190c71b85549e23c, type: 2}
   parry: {fileID: 11400000, guid: fb7b4a97c2d42de46a55ccf006959777, type: 2}

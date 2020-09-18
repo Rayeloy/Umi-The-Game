@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4add889157797c749b03c31c8fd7baff, type: 3}
   m_Name: Hammer_Autocombo
   m_EditorClassIdentifier: 
-  autocomboName: 
-  attacks: []
-  maxTimeBetweenAttacks: 0.2
+  autocomboName: Hammer_Autocombo
+  attacks:
+  - {fileID: 11400000, guid: 0eb3e242ffdfc64488f0cb2c8d5487a8, type: 2}
+  - {fileID: 11400000, guid: 933fa31383154e04084b5dcf335c0af7, type: 2}
+  maxTimeBetweenAttacks: 0.3

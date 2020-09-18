@@ -233,28 +233,50 @@ public class PlayerCombatCMF : MonoBehaviour
                 currentAttackHasRedirect = false;
                 break;
             case AttackPhaseType.charging:
-                if (currentAttack.chargingPhase.rotationSpeedPercentage < 1) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.chargingPhase.rotationSpeedPercentage);
-                if (currentAttack.chargingPhase.movementSpeedPercentage < 1) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.chargingPhase.movementSpeedPercentage);
+                 myPlayerMovement.SetPlayerRotationSpeed(currentAttack.chargingPhase.rotationSpeedPercentage);                
+                 myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.chargingPhase.movementSpeedPercentage);  
                 break;
             case AttackPhaseType.startup:
-                if (currentAttack.startupPhase.rotationSpeedPercentage < 1) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.startupPhase.rotationSpeedPercentage);
-                if (currentAttack.startupPhase.movementSpeedPercentage < 1) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.startupPhase.movementSpeedPercentage);
-                if (currentAttackHasRedirect) CalculateImpulse(currentAttack);
+                myPlayerMovement.SetPlayerRotationSpeed(currentAttack.startupPhase.rotationSpeedPercentage);           
+                myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.startupPhase.movementSpeedPercentage);
+                //if (currentAttackHasRedirect) CalculateImpulse(currentAttack);
                 break;
             case AttackPhaseType.active:
-                if (currentAttack.activePhase.rotationSpeedPercentage < 1) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.activePhase.rotationSpeedPercentage);
-                if (currentAttack.activePhase.movementSpeedPercentage < 1) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.activePhase.movementSpeedPercentage);
+                myPlayerMovement.SetPlayerRotationSpeed(currentAttack.activePhase.rotationSpeedPercentage);
+                myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.activePhase.movementSpeedPercentage);
+
+                //Animation?
+                for (int i = 0; i < currentHitboxes.Count; i++)
+                {
+                    switch (currentHitboxes[i].GetComponentInChildren<HitboxCMF>().myAttackHitbox.parentType)
+                    {
+                        case HitboxParentType.player_animated:
+                            currentHitboxes[i].GetComponent<Animator>().enabled = true;
+                            break;
+                    }
+                }
 
                 //WeaponTrails
                 myPlayerMovement.myPlayerVFX.ActivateWeaponTrails();
 
                 //Do impulse
-                if (!currentAttackHasRedirect) CalculateImpulse(currentAttack);
+                /*if (!currentAttackHasRedirect) */CalculateImpulse(currentAttack);
                 myPlayerMovement.StartImpulse(currentImpulse);
                 break;
             case AttackPhaseType.recovery:
-                if (currentAttack.recoveryPhase.rotationSpeedPercentage < 1) myPlayerMovement.SetPlayerRotationSpeed(currentAttack.recoveryPhase.rotationSpeedPercentage);
-                if (currentAttack.recoveryPhase.movementSpeedPercentage < 1) myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.recoveryPhase.movementSpeedPercentage);
+                 myPlayerMovement.SetPlayerRotationSpeed(currentAttack.recoveryPhase.rotationSpeedPercentage);              
+                 myPlayerMovement.SetPlayerAttackMovementSpeed(currentAttack.recoveryPhase.movementSpeedPercentage);              
+
+                //Animation?
+                for (int i = 0; i < currentHitboxes.Count; i++)
+                {
+                    switch (currentHitboxes[i].GetComponentInChildren<HitboxCMF>().myAttackHitbox.parentType)
+                    {
+                        case HitboxParentType.player_animated:
+                            currentHitboxes[i].GetComponent<Animator>().enabled = false;
+                            break;
+                    }
+                }
 
                 //WeaponTrails
                 myPlayerMovement.myPlayerVFX.DeactivateWeaponTrails();
@@ -279,7 +301,9 @@ public class PlayerCombatCMF : MonoBehaviour
                 }
                 for (int i = 0; i < currentHitboxes.Count; i++)
                 {
-                    currentHitboxes[i].GetComponent<MeshRenderer>().material = hitboxMats[0];
+                    MeshRenderer meshRend = currentHitboxes[i].GetComponent<MeshRenderer>() != null ? currentHitboxes[i].GetComponent<MeshRenderer>() :
+                        currentHitboxes[i].GetComponentInChildren<MeshRenderer>();
+                    meshRend.material = hitboxMats[0];
                 }
                 break;
             case AttackPhaseType.startup:
@@ -293,19 +317,25 @@ public class PlayerCombatCMF : MonoBehaviour
                 }
                 for (int i = 0; i < currentHitboxes.Count; i++)
                 {
-                    currentHitboxes[i].GetComponent<MeshRenderer>().material = hitboxMats[1];
+                    MeshRenderer meshRend = currentHitboxes[i].GetComponent<MeshRenderer>() != null ? currentHitboxes[i].GetComponent<MeshRenderer>() :
+    currentHitboxes[i].GetComponentInChildren<MeshRenderer>();
+                    meshRend.material = hitboxMats[1];
                 }
                 break;
             case AttackPhaseType.active:
                 for (int i = 0; i < currentHitboxes.Count; i++)
                 {
-                    currentHitboxes[i].GetComponent<MeshRenderer>().material = hitboxMats[2];
+                    MeshRenderer meshRend = currentHitboxes[i].GetComponent<MeshRenderer>() != null ? currentHitboxes[i].GetComponent<MeshRenderer>() :
+    currentHitboxes[i].GetComponentInChildren<MeshRenderer>();
+                    meshRend.material = hitboxMats[2];
                 }
                 break;
             case AttackPhaseType.recovery:
                 for (int i = 0; i < currentHitboxes.Count; i++)
                 {
-                    currentHitboxes[i].GetComponent<MeshRenderer>().material = hitboxMats[3];
+                    MeshRenderer meshRend = currentHitboxes[i].GetComponent<MeshRenderer>() != null ? currentHitboxes[i].GetComponent<MeshRenderer>() :
+    currentHitboxes[i].GetComponentInChildren<MeshRenderer>();
+                    meshRend.material = hitboxMats[3];
                 }
                 break;
         }
@@ -317,33 +347,26 @@ public class PlayerCombatCMF : MonoBehaviour
         GameObject auxHitbox = null;
         switch (attackHitbox.parentType)
         {
+            case HitboxParentType.player_animated:
+            case HitboxParentType.weaponHandle:
+            case HitboxParentType.weaponEdge:
             case HitboxParentType.player:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab, hitboxesParent);
                 Hitbox badHitboxScript = auxHitbox.GetComponent<Hitbox>();
                 if (badHitboxScript != null)
                     Destroy(badHitboxScript);
-                auxHitbox.AddComponent<HitboxCMF>();
+
+                auxHitbox.GetComponentInChildren<Collider>().gameObject.AddComponent<HitboxCMF>();
+
+                if (attackHitbox.parentType == HitboxParentType.player_animated) auxHitbox.GetComponent<Animator>().enabled = false;
                 break;
-            case HitboxParentType.weaponEdge:
-                auxHitbox = Instantiate(attackHitbox.hitboxPrefab, weaponEdge);
-                badHitboxScript = auxHitbox.GetComponent<Hitbox>();
-                if (badHitboxScript != null)
-                    Destroy(badHitboxScript);
-                auxHitbox.AddComponent<HitboxCMF>();
-                break;
-            case HitboxParentType.weaponHandle:
-                auxHitbox = Instantiate(attackHitbox.hitboxPrefab, weaponHandle);
-                badHitboxScript = auxHitbox.GetComponent<Hitbox>();
-                if (badHitboxScript != null)
-                    Destroy(badHitboxScript);
-                auxHitbox.AddComponent<HitboxCMF>();
-                break;
+
             case HitboxParentType.player_localParent:
                 auxHitbox = Instantiate(attackHitbox.hitboxPrefab, hitboxesParent);
                 badHitboxScript = auxHitbox.GetComponentInChildren<Hitbox>();
                 auxHitbox = badHitboxScript.gameObject;
-                auxHitbox.AddComponent<HitboxCMF>();
-                auxHitbox.GetComponent<HitboxCMF>().referencePos1 = badHitboxScript.referencePos1;
+                auxHitbox.GetComponentInChildren<Collider>().gameObject.AddComponent<HitboxCMF>();
+                auxHitbox.GetComponentInChildren<HitboxCMF>().referencePos1 = badHitboxScript.referencePos1;
                 if (badHitboxScript != null)
                     Destroy(badHitboxScript);
                 break;
@@ -360,8 +383,8 @@ public class PlayerCombatCMF : MonoBehaviour
                             badHitboxScript = auxHitbox.GetComponent<Hitbox>();
                             if (badHitboxScript != null)
                                 Destroy(badHitboxScript);
-                            auxHitbox.AddComponent<HitboxCMF>();
-                            follTrans = currentHitboxes[0].GetComponent<HitboxCMF>().referencePos1;
+                            auxHitbox.GetComponentInChildren<Collider>().gameObject.AddComponent<HitboxCMF>();
+                            follTrans = currentHitboxes[0].GetComponentInChildren<HitboxCMF>().referencePos1;
                             break;
                     }
                 }
@@ -375,7 +398,7 @@ public class PlayerCombatCMF : MonoBehaviour
         //{
         if (debugModeOn) Debug.Log(myPlayerMovement.gameObject.name + " ->CurrentHitboxes ADD -> " + auxHitbox.name);
         currentHitboxes.Add(auxHitbox);
-        HitboxCMF hb = auxHitbox.GetComponent<HitboxCMF>();
+        HitboxCMF hb = auxHitbox.GetComponentInChildren<HitboxCMF>();
         hb.myAttackHitbox = attackHitbox;
         hitboxes.Add(hb);
         //}
@@ -419,14 +442,14 @@ public class PlayerCombatCMF : MonoBehaviour
             }
             float impulseTime = currentAttack.activePhase.duration;
             //float acceleration = myPlayerMovement.breakAcc;
-            float realFinalSpeed = myPlayerMovement.currentMaxMoveSpeed;
             //v=(2*d)/t; InitialSpeed =0;
-            float finalSpeed = (2 * currentAttack.impulseDistance) / impulseTime;
+            float InitialSpeed = (2 * currentAttack.impulseDistance) / impulseTime;
             // a = v/t;
-            float acceleration = -(finalSpeed / impulseTime);
-            realFinalSpeed += finalSpeed;
+            float acceleration = -(InitialSpeed / impulseTime);
+            //float realInitialSpeed = myPlayerMovement.currentMaxMoveSpeed;
+            //realInitialSpeed += InitialSpeed;
             //currentImpulse = impulseDir.normalized * realFinalSpeed;
-            currentImpulse = new ImpulseInfo(impulseDir.normalized, currentAttack.impulseDistance, realFinalSpeed, impulseTime, acceleration, Vector3.zero);
+            currentImpulse = new ImpulseInfo(impulseDir.normalized, currentAttack.impulseDistance, InitialSpeed, impulseTime, acceleration, Vector3.zero);
         }
         else
         {

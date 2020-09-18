@@ -163,6 +163,7 @@ public class Hitbox : MonoBehaviour
                                                         resultKnockback = resultKnockback.normalized * vi;
                                                         break;
                                                     case KnockbackType.redirect:
+
                                                         float inputRedirectAngle = SignedRelativeAngle(myPlayerMov.rotateObj.forward, myPlayerMov.currentInputDir, Vector3.up);
                                                         float finalRedirectAngle = Mathf.Clamp(inputRedirectAngle, -myAttackHitbox.effects[i].redirectMaxAngle, myAttackHitbox.effects[i].redirectMaxAngle);
                                                         resultKnockback = Quaternion.Euler(0, finalRedirectAngle, 0) * myPlayerMov.rotateObj.forward;

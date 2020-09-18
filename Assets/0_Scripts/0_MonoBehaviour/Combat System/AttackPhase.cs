@@ -33,10 +33,10 @@ public class AttackPhase
     public float duration;
     [Tooltip("0 means 0% rotation, 1 -> 100% rotation")]
     [Range(0, 1)]
-    public float rotationSpeedPercentage;
+    public float rotationSpeedPercentage = 1;
     [Tooltip("0 means 0% movement, 1 -> 100% movement")]
-    [Range(0, 1)]
-    public float movementSpeedPercentage;
+    [Range(0, 2)]
+    public float movementSpeedPercentage = 1;
     [Tooltip("Player is invulnerable to attacks during this phase.")]
     public bool invulnerability;
 

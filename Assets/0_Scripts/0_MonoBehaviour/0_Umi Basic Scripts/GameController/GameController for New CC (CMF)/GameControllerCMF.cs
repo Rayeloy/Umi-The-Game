@@ -595,6 +595,7 @@ public class GameControllerCMF : MonoBehaviour
         //{
         newPlayer = Instantiate(playerPrefab, playersParent).GetComponent<PlayerMovementCMF>();
         newPlayer.mySpawnInfo = new PlayerSpawnInfo();
+        newPlayer.playerNumber = playerNumber;
 
         newPlayerCanvas = Instantiate(playerCanvasPrefab, playersCanvasParent);
         newPlayerCamera = Instantiate(playerCameraPrefab, playersCamerasParent).GetComponent<CameraControllerCMF>();

@@ -190,7 +190,7 @@ MonoBehaviour:
   drawRays: 1
   minDistance: 0.5
   maxDistance: 7
-  smooth: 2
+  smooth: 10
   dollyDirAdjusted: {x: 0, y: 0, z: 0}
   collisionMask:
     serializedVersion: 2
@@ -287,11 +287,11 @@ MonoBehaviour:
   clampAngleMaxFixed: 70
   clampAngleMinFixed: -20
   rotSpeed: 120
-  originalCamPosSho: {x: 0.5, y: 0, z: -1.5}
+  originalCamPosSho: {x: 1, y: 0.25, z: -1.5}
   clampAngleMaxSho: 80
   clampAngleMinSho: -50
   rotSpeedSho: 80
-  originalCamPosFree: {x: 0, y: 0, z: -5}
+  originalCamPosFree: {x: 0, y: 0, z: -7}
   cameraMoveSpeed: 250
   clampAngleMax: 80
   clampAngleMin: -50
@@ -306,7 +306,8 @@ MonoBehaviour:
   speedH: 2
   speedV: 2
   targetMyCamPos: {x: 0, y: 0, z: 0}
-  smoothCamMoveTime: 0.2
+  smoothCamMoveTime: 0.02
+  smoothTransitionCamMoveTime: 0.2
   smoothPositioningTime: 0.2
   smoothRotationTime: 0.2
   cameraResetVerticalAngle: 10

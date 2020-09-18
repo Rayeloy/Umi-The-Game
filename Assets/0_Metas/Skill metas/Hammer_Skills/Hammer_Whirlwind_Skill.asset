@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e9c46879a7daa849ade1687801ebcc5, type: 3}
+  m_Name: Hammer_Whirlwind_Skill
+  m_EditorClassIdentifier: 
+  skillName: Hammer_Whirlwind_Skill
+  weaponSkillType: 0
+  weaponType: 2
+  pressAgainToStopSkill: 0
+  attack: {fileID: 11400000, guid: aad112a9e81bb2947a191b7b00444c42, type: 2}
+  cd: 15
+  weaponSkillHUDImage: {fileID: 21300000, guid: 61e980a5d01e6884389d8df789c0317a,
+    type: 3}
+  levelNeededToUnlock: 0
+  maxAttackRange: 6
+  extendingSpeed: 10
+  retractingSpeed: 10

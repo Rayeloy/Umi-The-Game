@@ -185,7 +185,7 @@ public class PlayerAnimationCMF : MonoBehaviour
             animator.SetBool(safeBelowHash, safeBelow);
             falling = false;
             animator.SetBool(fallingHash, falling);
-            Debug.LogWarning("START JUMP FALSE");
+            //Debug.LogWarning("START JUMP FALSE");
             startJump = false;
             animator.SetBool(startJumpHash, startJump);
         }

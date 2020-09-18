@@ -60,7 +60,9 @@ public class CameraControllerCMF : MonoBehaviour
     public Vector3 targetMyCamPos;
     Vector3 currentMyCamPos;
     float smoothMyCamX, smoothMyCamY, smoothMyCamZ;
-    public float smoothCamMoveTime = 0.2f;
+    public float smoothCamMoveTime = 0.02f;
+    public float smoothTransitionCamMoveTime = 0.2f;
+    float currentSmoothCamMoveTime = 0.02f;
 
     [Header("Smoothing")]
     public float smoothPositioningTime = 0.2f;
@@ -200,6 +202,7 @@ public class CameraControllerCMF : MonoBehaviour
                         if (timeSwitching >= smoothPositioningTime + 0.2f)
                         {
                             switching = false;
+                            currentSmoothCamMoveTime = smoothCamMoveTime;
                         }
                         print("SWITCHING CAMERA: targetCamPos= " + targetCamPos + "; currentCamPos = " + currentCamPos);
                     }
@@ -256,6 +259,7 @@ public class CameraControllerCMF : MonoBehaviour
                             if (timeSwitching >= smoothPositioningTime + 0.5f)
                             {
                                 switching = false;
+                                currentSmoothCamMoveTime = smoothCamMoveTime;
                             }
                         }
                         else
@@ -326,9 +330,9 @@ public class CameraControllerCMF : MonoBehaviour
 
     void SmoothCameraMove()//para la camara de dentro
     {
-        currentMyCamPos.x = Mathf.SmoothDamp(currentMyCamPos.x, targetMyCamPos.x, ref smoothMyCamX, smoothCamMoveTime);
-        currentMyCamPos.y = Mathf.SmoothDamp(currentMyCamPos.y, targetMyCamPos.y, ref smoothMyCamY, smoothCamMoveTime);
-        currentMyCamPos.z = Mathf.SmoothDamp(currentMyCamPos.z, targetMyCamPos.z, ref smoothMyCamZ, smoothCamMoveTime);
+        currentMyCamPos.x = Mathf.SmoothDamp(currentMyCamPos.x, targetMyCamPos.x, ref smoothMyCamX, currentSmoothCamMoveTime);
+        currentMyCamPos.y = Mathf.SmoothDamp(currentMyCamPos.y, targetMyCamPos.y, ref smoothMyCamY, currentSmoothCamMoveTime);
+        currentMyCamPos.z = Mathf.SmoothDamp(currentMyCamPos.z, targetMyCamPos.z, ref smoothMyCamZ, currentSmoothCamMoveTime);
         myCamera.localPosition = currentMyCamPos;
     }
     #endregion
@@ -336,6 +340,7 @@ public class CameraControllerCMF : MonoBehaviour
     public void SwitchCamera(CameraMode CameraMode)
     {
         camMode = CameraMode;
+        currentSmoothCamMoveTime = smoothTransitionCamMoveTime;
         switch (camMode)
         {
             case CameraMode.Fixed:

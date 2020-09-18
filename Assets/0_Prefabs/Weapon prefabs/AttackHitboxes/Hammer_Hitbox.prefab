@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 4367214338674709056}
   - component: {fileID: 3500221792200781340}
   - component: {fileID: 3500221792200781341}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Hammer_Hitbox
-  m_TagString: Untagged
+  m_TagString: Hitbox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -69,6 +69,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -96,9 +97,12 @@ MonoBehaviour:
   myPlayerMov: {fileID: 0}
   myPlayerCombatNew: {fileID: 0}
   myAttackHitbox:
+    name: 
     parentType: 0
     hitboxPrefab: {fileID: 0}
     effects: []
+  active: 0
+  referencePos1: {fileID: 0}
 --- !u!114 &3500221792200781340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -450,9 +454,9 @@ MeshCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3500221792200781342}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}

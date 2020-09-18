@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5ce7d05d43dd0aa4fb7f72139bf0f199, type: 3}
-  m_Name: QTip_attack1
+  m_Name: QTip_attack2
   m_EditorClassIdentifier: 
-  attackName: Q_Tip_attack1
-  attackID: 0
+  attackName: Q_Tip_attack2
+  attackID: 1
   attackPriority: 0
-  hasChargingPhase: 1
+  hasChargingPhase: 0
   chargingPhase:
     isFoldedInEditor: 0
     attackPhaseType: 1
@@ -29,8 +29,8 @@ MonoBehaviour:
     isFoldedInEditor: 0
     attackPhaseType: 2
     phaseCompletionType: 1
-    duration: 0.3
-    rotationSpeedPercentage: 0.5
+    duration: 0.2
+    rotationSpeedPercentage: 0
     movementSpeedPercentage: 1
     invulnerability: 0
     attackHitboxes: []
@@ -38,8 +38,8 @@ MonoBehaviour:
     isFoldedInEditor: 0
     attackPhaseType: 3
     phaseCompletionType: 1
-    duration: 0.1
-    rotationSpeedPercentage: 0.5
+    duration: 0.15
+    rotationSpeedPercentage: 0
     movementSpeedPercentage: 1
     invulnerability: 0
     attackHitboxes:
@@ -50,11 +50,11 @@ MonoBehaviour:
       effects:
       - name: knockback
         effectType: 1
-        knockbackType: 3
-        knockbackMagnitude: 4.5
+        knockbackType: 5
+        knockbackMagnitude: 27
         knockbackDir: {x: 0, y: 0, z: 0}
-        redirectMaxAngle: 0
-        knockbackYAngle: 0
+        redirectMaxAngle: 45
+        knockbackYAngle: 10
         stunTime: 0
         parryStunTime: 0
         parryRecoveryTime: 0
@@ -65,16 +65,16 @@ MonoBehaviour:
         knockbackDir: {x: 0, y: 0, z: 0}
         redirectMaxAngle: 0
         knockbackYAngle: 0
-        stunTime: 0.75
+        stunTime: 1.1
         parryStunTime: 0
         parryRecoveryTime: 0
   recoveryPhase:
     isFoldedInEditor: 0
     attackPhaseType: 4
     phaseCompletionType: 1
-    duration: 0.1
-    rotationSpeedPercentage: 0.5
-    movementSpeedPercentage: 0.5
+    duration: 0.3
+    rotationSpeedPercentage: 0.25
+    movementSpeedPercentage: 0.2
     invulnerability: 0
     attackHitboxes: []
-  impulseDistance: 1
+  impulseDistance: 1.7

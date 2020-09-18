@@ -406,7 +406,7 @@ public class PlayerHookCMF : MonoBehaviour
                 {
                     enemyHooked = false;
                     enemy.StopHooked(0);
-                    enemy.StartReceiveHit(myPlayerMov, Vector3.zero, EffectType.softStun, 0.2f);
+                    enemy.StartReceiveHit(Vector3.zero, EffectType.softStun, 0.2f);
                     enemy = null;
                 }
                 else if (objectHooked)

@@ -751,6 +751,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     public void CalculateMoveDir()
     {
+
         if (!noInput)
         {
             float horiz = actions.LeftJoystick.X;//Input.GetAxisRaw(contName + "H");
@@ -760,12 +761,12 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             Vector3 temp = new Vector3(horiz, 0, vert);
             lastJoystickSens = joystickSens;
             joystickSens = temp.magnitude;
-            //print("temp.magnitude = " + temp.magnitude);
+            //print("temp.magnitude = " + temp.magnitude+"; deadzone = "+deadzone);
             if (temp.magnitude >= deadzone)
             {
                 joystickSens = joystickSens >= 0.88f ? 1 : joystickSens;//Eloy: esto evita un "bug" por el que al apretar el joystick 
                                                                         //contra las esquinas no da un valor total de 1, sino de 0.9 o así
-                moveSt = MoveState.Moving;
+                if(moveSt!= MoveState.Impulse)moveSt = MoveState.Moving;
                 currentInputDir = temp;
                 currentInputDir.Normalize();
                 switch (myCamera.camMode)
@@ -786,7 +787,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         currentInputDir = RotateVector(joystickAngle, camDir);
                         //HARD STEER CHECK
                         //if(!disableAllDebugs)Debug.LogError(" hardSteerOn = "+ hardSteerOn + "; isRotationRestricted = " + myPlayerCombat.isRotationRestricted);
-                        if (!(!hardSteerOn && myPlayerCombat.isRotationRestricted))
+                        if (moveSt != MoveState.Impulse && !(!hardSteerOn && myPlayerCombat.isRotationRestricted))
                         {
                             Vector3 horizontalVel = new Vector3(currentVel.x, 0, currentVel.z);
                             hardSteerAngleDiff = Vector3.Angle(horizontalVel, currentInputDir);//hard Steer si > 90
@@ -804,7 +805,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             else
             {
                 joystickSens = 1;//no estoy seguro de que esté bien
-                moveSt = MoveState.NotMoving;
+                if (moveSt != MoveState.Impulse) moveSt = MoveState.NotMoving;
             }
         }
     }
@@ -852,16 +853,17 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 moveSt = MoveState.MovingBreaking;
             }
 
-            finalMaxMoveSpeed = comeFromSlide? maxSlidingSpeed : moveSt == MoveState.MovingBreaking? float.MaxValue :
+            finalMaxMoveSpeed = comeFromSlide ? maxSlidingSpeed : moveSt == MoveState.MovingBreaking ? float.MaxValue :
                 //Moving while reducing joystick angle? If not normal parameters.
                 lastJoystickSens > joystickSens && moveSt == MoveState.Moving ? (lastJoystickSens / 1) * currentMaxMoveSpeed : (joystickSens / 1) * currentMaxMoveSpeed;
+            Debug.Log("Player "+playerNumber+": finalMaxMoveSpeed = " + finalMaxMoveSpeed);
 
             ProcessImpulse(currentMaxMoveSpeed);
             #endregion
 
             #region ------------------------------- Acceleration -------------------------------
             float finalAcc = 0;
-            float finalBreakAcc = comeFromSlide? comeFromSlideBreakAcc : collCheck.below ? breakAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpBreakAcc : fixedJumping ? fixedJumpBreakAcc : airBreakAcc;
+            float finalBreakAcc = comeFromSlide ? comeFromSlideBreakAcc : collCheck.below ? breakAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpBreakAcc : fixedJumping ? fixedJumpBreakAcc : airBreakAcc;
             float finalHardSteerAcc = collCheck.below ? hardSteerAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpHardSteerAcc : fixedJumping ? fixedJumpHardSteerAcc : airHardSteerAcc;
             float finalInitialAcc = collCheck.below ? initialAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpInitialAcc : fixedJumping ? fixedJumpInitialAcc : airInitialAcc;
             finalMovingAcc = (collCheck.below ? movingAcc : vertMovSt == VerticalMovementState.WallJumped ? wallJumpMovingAcc : fixedJumping ? fixedJumpMovingAcc : airMovingAcc) * rotationRestrictedPercentage; //Turning accleration
@@ -897,7 +899,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                         //}
                         break;
                     case MoveState.MovingBreaking:
-                        finalAcc = comeFromSlide? comeFromSlideBreakAcc: hardBreakAcc;//breakAcc * 3;
+                        finalAcc = comeFromSlide ? comeFromSlideBreakAcc : hardBreakAcc;//breakAcc * 3;
                         break;
                     case MoveState.NotMoving:
                         finalAcc = (currentSpeed == 0) ? 0 : finalBreakAcc;
@@ -949,6 +951,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 float maxSpeedClamp = knockbackDone || impulseDone ? maxKnockbackSpeed : finalMaxMoveSpeed;
                 float minSpeedClamp = (lastJoystickSens > joystickSens && moveSt == MoveState.Moving) ? (joystickSens / 1) * currentMaxMoveSpeed : 0;
                 currentSpeed = Mathf.Clamp(currentSpeed, minSpeedClamp, maxSpeedClamp);
+                Debug.Log("Player " + playerNumber + ": finalMaxMoveSpeed = " + finalMaxMoveSpeed+ "; maxSpeedClamp = "+ maxSpeedClamp + "; currentSpeed = " + currentSpeed);
+
                 if (hardSteerStarted && !hardSteerOn)
                 {
                     hardSteerStarted = false;
@@ -959,16 +963,17 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                     startBeingHitAnimation = false;
                 }
 
-                if (!disableAllDebugs && horMovementDebugsOn && currentSpeed != 0) Debug.Log("moveSt = "+moveSt+"; currentSpeed = " + currentSpeed.ToString("F4") +"; finalAcc = " +
-                    finalAcc.ToString("F4")+ "; maxSpeedClamp = " + maxSpeedClamp.ToString("F4"));
+                if (!disableAllDebugs && horMovementDebugsOn && currentSpeed != 0) Debug.Log("moveSt = " + moveSt + "; currentSpeed = " + currentSpeed.ToString("F4") + "; finalAcc = " +
+                    finalAcc.ToString("F4") + "; maxSpeedClamp = " + maxSpeedClamp.ToString("F4"));
             }
-        } 
+        }
+        else if (moveSt == MoveState.Impulse) CalculateMoveDir();
         #endregion
         #endregion
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
         Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
-        if (!disableAllDebugs && horMovementDebugsOn && currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
+        if (/*!disableAllDebugs && horMovementDebugsOn &&*/ currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
             "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + collCheck.below + "; horVel.magnitude = " + horVel.magnitude+ "; finalMovingAcc = " + finalMovingAcc.ToString("F4"));
         if ((vertMovSt != VerticalMovementState.WallJumping || (vertMovSt == VerticalMovementState.WallJumping && moveSt == MoveState.Knockback)) && vertMovSt != VerticalMovementState.Sliding)
         {
@@ -1047,12 +1052,10 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 case MoveState.Impulse:
                     if (!disableAllDebugs && horMovementDebugsOn) Debug.LogWarning("DOING IMPULSE");
                     impulseDone = true;
-                    Vector3 finalImpulse = new Vector3(currentImpulse.impulseVel.x, 0, currentImpulse.impulseVel.z);
-                    float maxMag = finalImpulse.magnitude;
-                    finalImpulse = horizontalVel + finalImpulse;
-                    float finalMag = Mathf.Clamp(finalImpulse.magnitude, 0, maxMag);
-                    finalImpulse = finalImpulse.normalized * finalMag;
+                    Vector3 finalImpulse = currentFacingDir.normalized * currentImpulse.impulseInitialSpeed;
+                    Debug.Log("finalImpulse 1 = " + finalImpulse);
                     finalImpulse = new Vector3(finalImpulse.x, currentVel.y, finalImpulse.z);
+                    Debug.Log("finalImpulse 2 = " + finalImpulse);
                     SetVelocity(finalImpulse);
                     moveSt = MoveState.NotMoving;
                     break;
@@ -1092,14 +1095,16 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         if (_impulse.impulseDistance != 0)
         {
             currentImpulse = _impulse;
-            currentImpulse.initialPlayerPos = transform.position;
+            currentImpulse.initialPlayerPos = transform.position;     
 
             if (!collCheck.below)
             {
-                currentImpulse.impulseVel *= airImpulsePercentage;
-                //IMPORTANT TO DO: 
-                //RECALCULATE ALL IMPULSE PARAMETERS
+                currentImpulse.impulseInitialSpeed *= airImpulsePercentage;
             }
+
+            //RECALCULATE ALL IMPULSE PARAMETERS
+            currentImpulse.RecalculateImpulseParameters(currentImpulse.impulseInitialSpeed + currentSpeed, breakAcc);
+
             impulseStarted = true;
             impulseDone = false;
             impulseTime = 0;
@@ -1108,8 +1113,8 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             //Character rotation
             float angle = Mathf.Acos(((0 * currentImpulse.impulseDir.x) + (1 * currentImpulse.impulseDir.z)) / (1 * currentImpulse.impulseDir.magnitude)) * Mathf.Rad2Deg;
             angle = currentImpulse.impulseDir.x < 0 ? 360 - angle : angle;
-            RotateCharacterInstantly(angle);
-            if (!disableAllDebugs && horMovementDebugsOn) Debug.LogWarning("Impulse = " + currentImpulse.impulseVel + "; impulseMaxTime = " + currentImpulse.impulseMaxTime +
+            //RotateCharacterInstantly(angle);
+            /*if (!disableAllDebugs && horMovementDebugsOn)*/ Debug.LogWarning("Impulse = " + currentImpulse.impulseVel + "; impulseMaxTime = " + currentImpulse.impulseMaxTime +
                 "; impulse.impulseInitialVel = " + currentImpulse.impulseInitialSpeed + "; currentImpulse.impulseDistance = " + currentImpulse.impulseDistance);
         }
     }
@@ -1120,7 +1125,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         {
             impulseTime += Time.deltaTime;
             //if (!disableAllDebugs && currentSpeed <= maxMoveSpeed) Debug.LogError("CurrentSpeed = "+ currentSpeed + "; maxMoveSpeed = " + maxMoveSpeed);
-            if (impulseTime >= currentImpulse.impulseMaxTime || currentSpeed <= currentMaxMoveSpeed)
+            if (impulseDone && (impulseTime >= currentImpulse.impulseMaxTime || currentSpeed <= currentMaxMoveSpeed))
             {
                 StopImpulse();
             }
@@ -1135,7 +1140,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     {
         if (impulseStarted)
         {
-            if (!disableAllDebugs && horMovementDebugsOn) Debug.LogWarning("STOP IMPULSE: impulseTime = " + impulseTime + "; currentImpulse.impulseMaxTime = " + currentImpulse.impulseMaxTime +
+            /*if (!disableAllDebugs && horMovementDebugsOn) */Debug.LogWarning("STOP IMPULSE: impulseTime = " + impulseTime + "; currentImpulse.impulseMaxTime = " + currentImpulse.impulseMaxTime +
                   ";currentSpeed  = " + currentSpeed + "; currentMaxMoveSpeed = " + currentMaxMoveSpeed);
             //moveSt = MoveState.NotMoving;
             impulseStarted = false;
@@ -2259,7 +2264,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             case CameraMode.Free:
                 Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
                 Vector3 lookingDir = wallJumping ? currentInputDir : hardSteerOn ? hardSteerDir : horVel; lookingDir.Normalize();
-                if (lookingDir != Vector3.zero)
+                if (lookingDir != Vector3.zero && !sufferingStunLikeEffect)
                 {
                     float angle = Mathf.Acos(((0 * lookingDir.x) + (1 * lookingDir.z)) / (1 * lookingDir.magnitude)) * Mathf.Rad2Deg;
                     angle = lookingDir.x < 0 ? 360 - angle : angle;
@@ -2276,7 +2281,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
 
     void SmoothRotateCharacter()
     {
-        if (myCamera.camMode == CameraMode.Free )//TO DO: Bloquear en knockback?
+        if (myCamera.camMode == CameraMode.Free)//TO DO: Bloquear en knockback?
         {
             float currentAngle = rotateObj.rotation.eulerAngles.y;
             //if(currentAngle != targetRotAngle)
@@ -2288,6 +2293,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             currentAngle = Mathf.Lerp(currentAngle, newAngle, 0.4f);
             //Debug.Log("currentAngle = " + rotateObj.rotation.eulerAngles.y + "; targetRotAngle = " + targetRotAngle + "; newAngle = " + newAngle +
             //    "; result1 = " + result1 + "; result2 = " + result2 + "; normal = " + normal);
+            //Debug.Log("currentAngle = " + currentAngle);
             rotateObj.localRotation = Quaternion.Euler(0, currentAngle, 0);
             //}
         }
@@ -2327,7 +2333,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
     PlayerMovementCMF lastAttacker = null;
     int lastAutocomboIndex = -1;
     bool stunProtectionOn = false;
-    public bool StartReceiveHit(PlayerMovementCMF attacker, Vector3 _knockback, EffectType effect, float _maxTime = 0, byte autocomboIndex = 255)
+    public bool StartReceiveHit(PlayerMovementCMF attacker, Vector3 _knockback, EffectType effect, bool ignoreMass = false, float _maxTime = 0, byte autocomboIndex = 255)
     {
         if (!myPlayerCombat.invulnerable)
         {
@@ -2396,7 +2402,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             if (_knockback != Vector3.zero)
             {
                 knockbackDone = false;
-                _knockback = _knockback / bodyMass;
+                if (!ignoreMass) _knockback = _knockback / bodyMass;
                 knockback = _knockback;
             }
 
@@ -2413,7 +2419,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         else return false;
     }
 
-    public bool StartReceiveHit(Vector3 _knockback, EffectType effect, float _maxTime = 0)
+    public bool StartReceiveHit(Vector3 _knockback, EffectType effect, float _maxTime = 0, bool ignoreMass = false)
     {
         if (!myPlayerCombat.invulnerable)
         {
@@ -2447,7 +2453,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             if (_knockback != Vector3.zero)
             {
                 knockbackDone = false;
-                _knockback = _knockback / bodyMass;
+                if(!ignoreMass) _knockback = _knockback / bodyMass;
                 knockback = _knockback;
             }
 
@@ -2484,7 +2490,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         if (!disableAllDebugs) Debug.Log("resultKnockback 2 = " + resultKnockback);
         resultKnockback = resultKnockback * knockbackMag;
         if (!disableAllDebugs) Debug.Log("resultKnockback 3 = " + resultKnockback + "; maxStunTime = " + maxStunTime);
-        StartReceiveHit(enemy, resultKnockback, EffectType.softStun, maxStunTime);
+        StartReceiveHit(enemy, resultKnockback, EffectType.softStun, true, maxStunTime);
     }
 
     void ReceiveKnockback()

@@ -397,14 +397,14 @@ public class PlayerCombatNew : MonoBehaviour
             }
             float impulseTime = currentAttack.activePhase.duration;
             //float acceleration = myPlayerMovement.breakAcc;
-            float realFinalSpeed = myPlayerMovement.currentMaxMoveSpeed;
             //v=(2*d)/t; InitialSpeed =0;
-            float finalSpeed = (2 * currentAttack.impulseDistance) / impulseTime;
+            float InitialSpeed = (2 * currentAttack.impulseDistance) / impulseTime;
             // a = v/t;
-            float acceleration = -(finalSpeed / impulseTime);
-            realFinalSpeed += finalSpeed;
+            float acceleration = -(InitialSpeed / impulseTime);
+            //float realInitialSpeed = myPlayerMovement.currentMaxMoveSpeed;
+            //realInitialSpeed += InitialSpeed;
             //currentImpulse = impulseDir.normalized * realFinalSpeed;
-            currentImpulse = new ImpulseInfo(impulseDir.normalized, currentAttack.impulseDistance, realFinalSpeed, impulseTime, acceleration, Vector3.zero);
+            currentImpulse = new ImpulseInfo(impulseDir.normalized, currentAttack.impulseDistance, InitialSpeed, impulseTime, acceleration, Vector3.zero);
         }
         else
         {
@@ -906,6 +906,14 @@ public class ImpulseInfo
         impulseAcc = _impulseAcc;
         impulseVel = impulseDir * impulseInitialSpeed;
         initialPlayerPos = _initialPlayerPos;
+    }
+
+    public void RecalculateImpulseParameters(float newInitialSpeed, float breakAcc)
+    {
+        impulseInitialSpeed = newInitialSpeed;
+        impulseDistance = (impulseInitialSpeed * impulseMaxTime) * ((breakAcc * Mathf.Pow(impulseMaxTime, 2)) / 2);
+        impulseDistance = -impulseDistance;
+        impulseVel = impulseVel.normalized * impulseInitialSpeed;
     }
 
     public float CalculateMissingDistance(Vector3 currentPos)

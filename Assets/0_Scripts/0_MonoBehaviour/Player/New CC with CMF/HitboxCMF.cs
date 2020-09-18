@@ -47,12 +47,12 @@ public class HitboxCMF : MonoBehaviour
 
     private void OnTriggerStay(Collider col)
     {
-
+        //if (myPlayerCombat.hitboxDebugsOn) Debug.Log("Hitbox 1: I'm " + myPlayerMov.gameObject.name + " and I collided with " + col.gameObject);
         if (col.gameObject != myPlayerMov.gameObject)
         {
             if (myPlayerCombat.attackStg == AttackPhaseType.active)//(tag != "HookBigHB" && tag != "HookSmallHB") && 
             {
-                if (myPlayerCombat.hitboxDebugsOn) Debug.Log("I'm " + myPlayerMov.gameObject.name + " and I collided with " + col.gameObject);
+                if (myPlayerCombat.hitboxDebugsOn) Debug.Log("Hitbox 1.5: I'm " + myPlayerMov.gameObject.name + " and I collided with " + col.gameObject);
                 Vector3 resultKnockback = Vector3.zero;
                 EffectType stunLikeEffect = EffectType.none;
                 float maxStunTime = 0;
@@ -86,6 +86,7 @@ public class HitboxCMF : MonoBehaviour
                             }
                             else
                             {
+                                bool ignoreMass = false;
                                 //What type of Effect?
                                 for (int i = 0; i < myAttackHitbox.effects.Length; i++)
                                 {
@@ -132,19 +133,20 @@ public class HitboxCMF : MonoBehaviour
                                                         //print("Facing Angle(localRot.y)= " + facingAngle + "; customDir = " + customDir);
                                                         break;
                                                     case KnockbackType.autoCenter:
+                                                        ignoreMass = true;
                                                         float a = Mathf.Abs(myPlayerMov.breakAcc);
                                                         //float iT = myPlayerMov.MissingImpulseTime();
                                                         //float impulseDist = (a * Mathf.Pow(iT, 2)) / 2;
                                                         float impulseDist = myPlayerMov.currentImpulse.CalculateMissingDistance(myPlayerMov.transform.position);
-                                                        if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("impulseDist = " + impulseDist);
+                                                        /*if (!myPlayerMov.disableAllDebugs)*/ Debug.LogWarning("impulseDist = " + impulseDist);
 
-                                                        Vector3 hitDir = myPlayerMov.currentImpulse.impulseInitialSpeed != 0 ? myPlayerMov.currentImpulse.impulseDir : myPlayerMov.rotateObj.forward;
+                                                        Vector3 hitDir = /*myPlayerMov.currentImpulse.impulseInitialSpeed != 0 ? myPlayerMov.currentImpulse.impulseDir : */myPlayerMov.rotateObj.forward;
                                                         float meNoMaeDist = myAttackHitbox.effects[i].knockbackMagnitude + impulseDist;
                                                         Vector3 meNoMaePos = myPlayerMov.rotateObj.position + (hitDir * meNoMaeDist);//me no mae (目の前) means in front of your eyes
                                                         resultKnockback = (meNoMaePos - otherPlayer.transform.position);
                                                         resultKnockback.y = 0;
                                                         Debug.DrawLine(otherPlayer.transform.position, (meNoMaePos), Color.red, 4);
-                                                        if (!myPlayerMov.disableAllDebugs) Debug.LogWarning("hitDir = " + hitDir + "; meNoMaeDist = " + meNoMaeDist + "; meNoMaePos = " + meNoMaePos);
+                                                        /*if (!myPlayerMov.disableAllDebugs)*/ Debug.LogWarning("hitDir = " + hitDir + "; meNoMaeDist = " + meNoMaeDist + "; meNoMaePos = " + meNoMaePos);
 
                                                         float d = resultKnockback.magnitude;
                                                         //vi = Mathf.Sqrt(2*a*d);
@@ -157,6 +159,8 @@ public class HitboxCMF : MonoBehaviour
                                                         float inputRedirectAngle = SignedRelativeAngle(myPlayerMov.rotateObj.forward, myPlayerMov.currentInputDir, Vector3.up);
                                                         float finalRedirectAngle = Mathf.Clamp(inputRedirectAngle, -myAttackHitbox.effects[i].redirectMaxAngle, myAttackHitbox.effects[i].redirectMaxAngle);
                                                         resultKnockback = Quaternion.Euler(0, finalRedirectAngle, 0) * myPlayerMov.rotateObj.forward;
+                                                        Debug.Log("inputRedirectAngle = "+ inputRedirectAngle + "; myPlayerMov.currentInputDir = "+ myPlayerMov.currentInputDir+"; foward = "+ myPlayerMov.rotateObj.forward+
+                                                            "; finalRedirectAngle = " + finalRedirectAngle + "; resultKnockback = " + resultKnockback);
                                                         //CALCULATE Y ANGLE
                                                         resultKnockback = CalculateYAngle(col.transform.position, resultKnockback.normalized, myAttackHitbox.effects[i].knockbackYAngle);
                                                         //resultKnockback *= myAttackHitbox.effects[i].knockbackMagnitude;
@@ -202,7 +206,7 @@ public class HitboxCMF : MonoBehaviour
                                 }
                                 if (myPlayerCombat.hitboxDebugsOn) Debug.Log("Soy " + myPlayerMov.name + " y añado al jugador " + otherPlayer.name + " a la lista de jugadores ya pegados");
 
-                                otherPlayer.StartReceiveHit(myPlayerMov, resultKnockback, stunLikeEffect, maxStunTime, myPlayerCombat.autocomboIndex);
+                                otherPlayer.StartReceiveHit(myPlayerMov, resultKnockback, stunLikeEffect, ignoreMass, maxStunTime, myPlayerCombat.autocomboIndex);
 
                                 if(!targetsHit.Contains(otherPlayer.name))targetsHit.Add(otherPlayer.name);
                             }
