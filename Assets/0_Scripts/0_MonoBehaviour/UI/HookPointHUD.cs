@@ -11,6 +11,9 @@ public class HookPointHUD : MonoBehaviour
     Transform myHookPointTrans;
     //RectTransform myCanvasRect;
     RectTransform myRect;
+    public RectTransform empty;
+    public RectTransform mask;
+    public GameObject green;
     Canvas myCanvas;
     //Vector2 scale;
     float pixelW;
@@ -18,8 +21,7 @@ public class HookPointHUD : MonoBehaviour
 
 
 
-    public void KonoAwake(HookPoint hookPoint, Camera _myCamera, Canvas _myCanvas)
-    {
+    public void KonoAwake(HookPoint hookPoint, Camera _myCamera, Canvas _myCanvas) {
         //myCanvasRect = transform.GetComponentInParent<Canvas>().GetComponent<RectTransform>();
         myHookPoint = hookPoint;
         myHookPointTrans = myHookPoint.transform;
@@ -31,10 +33,8 @@ public class HookPointHUD : MonoBehaviour
 
 
 
-    public void KonoUpdate()
-    {
-        if (myCanvas.renderMode == RenderMode.ScreenSpaceCamera)
-        {
+    public void KonoUpdate() {
+        if (myCanvas.renderMode == RenderMode.ScreenSpaceCamera) {
             pixelW = myCamera.pixelWidth;
             pixelH = myCamera.pixelHeight;
             Vector3 screenPos = myCamera.WorldToScreenPoint(myHookPointTrans.position);
@@ -42,13 +42,20 @@ public class HookPointHUD : MonoBehaviour
             //transform.position = screenPos;
             //float outOfScreenX = ((UICamera.rect.x+UICamera.rect.width)-1) * UICamera.pixelWidth;
             //outOfScreenX = Mathf.Clamp(outOfScreenX, 0, float.MaxValue);
+
             float offsetX = -((pixelW / 2) + (myCamera.rect.x * 2 * pixelW));
             float offsetY = -((pixelH / 2) + (myCamera.rect.y * 2 * pixelH));
+
             //Debug.Log("UICamera.rect.x = " + myCamera.rect.x.ToString("F4") + "; UICamera.pixelWidth = " + myCamera.pixelWidth.ToString("F4"));
+
             myRect.localPosition = new Vector3(screenPos.x + offsetX, screenPos.y + offsetY, 0);
-        }
-        else if(myCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
-        {
+
+            //myRect.localPosition = myCamera.WorldToScreenPoint(myHookPoint.smallTrigger.transform.position);
+
+
+
+            //myRect.localScale
+        } else if (myCanvas.renderMode == RenderMode.ScreenSpaceOverlay) {
             Vector3 screenPos = myCamera.WorldToScreenPoint(myHookPointTrans.position);
             transform.position = screenPos;
         }
@@ -65,5 +72,15 @@ public class HookPointHUD : MonoBehaviour
         //Vector3 screenPos = myCamera.WorldToViewportPoint(myHookPointTrans.position);
         //myRect.anchorMin = screenPos;
         //myRect.anchorMax = screenPos;
+    }
+
+
+    public void ChangeScale(float newScale) {
+        mask.sizeDelta = empty.sizeDelta * newScale;//new Vector3(newScale*empty.localScale.x, newScale * empty.localScale.x);
+        /*if (newScale > 0.95f) {
+            green.SetActive(true);
+        } else {
+            green.SetActive(false);
+        }*/
     }
 }

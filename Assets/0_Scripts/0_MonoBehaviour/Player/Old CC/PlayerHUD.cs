@@ -1442,7 +1442,7 @@ public class HookPointHUDInfo
         hookPointHUD = null;
         showing = false;
         chosenOne = false;
-        hookPointHUD.GetComponent<Image>().color = gray;
+        //hookPointHUD.GetComponent<Image>().color = gray;
     }
 
     public HookPointHUDInfo(HookPointHUD _hookPointHUD)
@@ -1450,7 +1450,7 @@ public class HookPointHUDInfo
         hookPointHUD = _hookPointHUD;
         showing = true;
         chosenOne = false;
-        hookPointHUD.GetComponent<Image>().color = gray;
+        //hookPointHUD.GetComponent<Image>().color = gray;
     }
 
     public void SwitchChosenOne()
@@ -1458,13 +1458,14 @@ public class HookPointHUDInfo
         if (chosenOne)
         {
             chosenOne = false;
-            hookPointHUD.GetComponent<Image>().color = gray;
+            //hookPointHUD.GetComponent<Image>().color = gray;
         }
         else
         {
             chosenOne = true;
-            hookPointHUD.GetComponent<Image>().color = green;
+            //hookPointHUD.GetComponent<Image>().color = green;
         }
+        hookPointHUD.green.SetActive(chosenOne);
     }
 }
 //public enum HUDSkillState

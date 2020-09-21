@@ -112,6 +112,15 @@ public class PlayerHUDCMF : MonoBehaviour
     public Vector2 cameraCenterPix;
     List<HookPointHUDInfo> hookPointHUDInfoList;
 
+
+    //New Hook Arrow
+    public RectTransform hookArrowArrow;
+    [HideInInspector]
+    public HookPoint hookArrowFollowTarget = null;
+    public Vector2 hookArrowElipse = new Vector2(0.45f, 0.22f);
+    public Vector2 hookArrowElipseFlat = new Vector2(0.445f, 0.21f);
+
+
     //CameraVFX
     [Header("Camera VFX")]
     public CameraVFX[] cameraVFX;
@@ -221,6 +230,7 @@ public class PlayerHUDCMF : MonoBehaviour
             ArrowToFlagUpdate();
             UpdateFlagHomeArrow();
         }
+        ArrowToHookUpdate();
         UpdateAllHookPointHUDs();
         UpdateDashHUDFuel();
         ProcessSkillsCD();
@@ -995,6 +1005,73 @@ arrowToFlagGlowTeamColors[0] : arrowToFlagGlowTeamColors[1];
                 }
             }
         }
+    }
+
+    //NEW HOOK UI
+    public void SetHookHUDScale(HookPoint hookPoint, float scale) {
+        for (int i = 0; i < hookPointHUDInfoList.Count; i++) {
+            if (hookPointHUDInfoList[i].hookPointHUD.myHookPoint == hookPoint) {
+                hookPointHUDInfoList[i].hookPointHUD.ChangeScale(scale);
+            }
+        }
+    
+    }
+
+
+    public void ActivateArrowToHookOffScreen() {
+
+        hookArrowArrow.gameObject.SetActive(true);
+
+    }
+
+    public void DeactivateArrowToHookOffScreen() {
+
+        hookArrowArrow.gameObject.SetActive(false);
+        hookArrowFollowTarget = null;
+
+    }
+
+    void ArrowToHookUpdate() {
+
+        if (hookArrowFollowTarget!=null) {
+
+            Vector3 hookViewportPos = myCamera.WorldToViewportPoint(hookArrowFollowTarget.transform.position + Vector3.up * 3);
+            if (hookViewportPos.z > myCamera.nearClipPlane && (hookViewportPos.x >= 0.05f && hookViewportPos.x <= 0.95f && hookViewportPos.y >= 0.20f && hookViewportPos.y <= 0.75f)) {
+                DeactivateArrowToHookOffScreen();
+            } else {
+                ActivateArrowToHookOffScreen();
+                ProcessArrowToHook();
+            }
+        }
+    }
+
+    void ProcessArrowToHook() {
+
+        Vector3 hookViewportPos, hookArrowPos;
+        hookArrowPos = hookViewportPos = myCamera.WorldToViewportPoint(hookArrowFollowTarget.transform.position);
+
+        hookArrowPos.x -= 0.5f;  // Translate to use center of viewport
+        hookArrowPos.y -= 0.5f;
+        hookArrowPos.z = 0;      // I think I can do this rather than do a 
+                                    //   a full projection onto the plane
+
+        float fAngle = Mathf.Atan2(hookArrowPos.x, hookArrowPos.y);
+
+        float scale = myUICamera.rect.width - myUICamera.rect.height;
+        float yProportion = scale > 0 ? hookArrowElipseFlat.y : hookArrowElipse.y;//0.21f / 0.22f
+        float xProportion = scale > 0 ? hookArrowElipseFlat.x : hookArrowElipse.x;//0.445f / 0.45f
+        hookArrowPos.x = xProportion * Mathf.Sin(fAngle) + 0.5f;  // Place on ellipse touching 
+        hookArrowPos.y = yProportion * Mathf.Cos(fAngle) + 0.5f;  //   side of viewport
+        if (hookViewportPos.z < myCamera.nearClipPlane) {
+            hookArrowPos.x = 1 - hookArrowPos.x;
+            hookArrowPos.y = 1 - hookArrowPos.y;
+        }
+        //Debug.LogWarning(" flagArrowPos = " + flagArrowPos.ToString("F4"));
+        hookArrowPos.z = myCamera.nearClipPlane + myCanvas.planeDistance;  // Looking from neg to pos Z;
+        float finalAngle = 180 + (-fAngle * Mathf.Rad2Deg) + (hookViewportPos.z < myCamera.nearClipPlane ? 0 : 180);
+        hookArrowArrow.localEulerAngles = new Vector3(0.0f, 0.0f, finalAngle);
+        hookArrowArrow.position = myCamera.ViewportToWorldPoint(hookArrowPos);
+        
     }
 
     #endregion

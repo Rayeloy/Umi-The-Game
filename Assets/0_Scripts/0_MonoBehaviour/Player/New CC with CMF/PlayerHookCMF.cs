@@ -694,7 +694,9 @@ public class PlayerHookCMF : MonoBehaviour
     {
         List<HookPoint> hookPoints = myPlayerMov.myPlayerObjectDetection.hookPoints;
         HookPoint closestHookPoint = null;//HookPoint that is in range of grapple, in front of the camera (in view) and has the lowest angle with the camera Z+
+        HookPoint closestHookPointOffCamera = null;
         float lowestDistToCamCenter = float.MaxValue;
+        float lowestDistToOffCamHook = float.MaxValue;
 
         Vector2 minDist = new Vector2(hookPointMinDistToCameraCenter * myCamera.rect.width, hookPointMinDistToCameraCenter * myCamera.rect.height);
         if (myPlayerMov.gC.HasPlayerFlatCamera(myPlayerMov))
@@ -732,6 +734,42 @@ public class PlayerHookCMF : MonoBehaviour
                             closestHookPoint = hookPoints[i];
                         }
                     }
+                } else {
+
+                    if (dist < lowestDistToOffCamHook && closestHookPointOffCamera != hookPoints[i]) {
+                        closestHookPointOffCamera = hookPoints[i];
+                        lowestDistToOffCamHook = dist;
+                    }
+                }
+            } else if(dist<= minDistanceToGrapple*1.5f){
+
+                Collider col = hookPoints[i].smallTrigger.GetComponent<Collider>();
+                cameraPlanes = GeometryUtility.CalculateFrustumPlanes(myCamera);
+                if (GeometryUtility.TestPlanesAABB(cameraPlanes, col.bounds)) {
+                    Vector2 hookScreenPos = myCamera.WorldToScreenPoint(hookPoints[i].transform.position);
+                    Vector3 distToCameraCenter = (hookScreenPos - myPlayerHUD.cameraCenterPix);
+                    float screenScale = (float)myPlayerMov.myUICamera.pixelHeight / (float)myPlayerMov.myUICamera.pixelWidth;
+                    if (Mathf.Abs(distToCameraCenter.x) <= minDist.x && Mathf.Abs(distToCameraCenter.y) <= (minDist.y * screenScale)) {
+                        success = true;
+                        if (!hookPointsInView.Contains(hookPoints[i])) {
+                            hookPointsInView.Add(hookPoints[i]);
+                            myPlayerHUD.ShowHookPointHUD(hookPoints[i]);
+                        }
+
+                    }
+                } else {
+
+                    if (dist < lowestDistToOffCamHook && closestHookPointOffCamera != hookPoints[i]) {
+                        closestHookPointOffCamera = hookPoints[i];
+                        lowestDistToOffCamHook = dist;
+                    }
+                }
+
+
+                myPlayerHUD.SetHookHUDScale(hookPoints[i], 1-Mathf.InverseLerp(minDistanceToGrapple, minDistanceToGrapple * 1.5f, dist));
+                if (currentHookPointInSight == hookPoints[i]) {
+                    myPlayerHUD.SetChosenHookPointHUD(null);
+                    closestHookPoint = null;
                 }
             }
             if (!success && hookPointsInView.Contains(hookPoints[i]))
@@ -756,6 +794,14 @@ public class PlayerHookCMF : MonoBehaviour
             canAutoGrapple = false;
             //myPlayerHUD.HideGrappleMessage();
             currentHookPointInSight = null;
+        }
+        if (hookPointsInView.Count == 0) {
+            if (closestHookPointOffCamera != null) {
+                myPlayerHUD.hookArrowFollowTarget = closestHookPointOffCamera;
+
+            }
+        } else {
+            myPlayerHUD.DeactivateArrowToHookOffScreen();
         }
     }
 #endregion
