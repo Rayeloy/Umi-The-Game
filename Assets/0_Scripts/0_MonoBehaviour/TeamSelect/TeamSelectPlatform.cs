@@ -124,7 +124,7 @@ public class TeamSelectPlatform : MonoBehaviour
     public void StartPlatformRotation(bool dirRight, float increment)
     {
         StopPlatformRotation();
-        Debug.Log("Starting Rotation to the " + (dirRight ? "right" : "left" )+ " with an incremet of " + increment);
+        //Debug.Log("Starting Rotation to the " + (dirRight ? "right" : "left" )+ " with an incremet of " + increment);
 
         if (!platformRotStarted)
         {
@@ -143,7 +143,7 @@ public class TeamSelectPlatform : MonoBehaviour
                     break;
             }
 
-            Debug.Log("Start Platform Rotation: platformRotCurrentRot = " + platformRotCurrentRot + "; platformRotTargetRot = "+ platformRotTargetRot);
+            //Debug.Log("Start Platform Rotation: platformRotCurrentRot = " + platformRotCurrentRot + "; platformRotTargetRot = "+ platformRotTargetRot);
         }
     }
 
@@ -168,7 +168,7 @@ public class TeamSelectPlatform : MonoBehaviour
     {
         if (platformRotStarted)
         {
-            Debug.Log("STOP Rotating Platform");
+            //Debug.Log("STOP Rotating Platform");
             platformRotStarted = false;
         }
     }

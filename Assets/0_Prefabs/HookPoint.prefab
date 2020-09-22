@@ -156,6 +156,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -191,6 +192,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3073400957517536789}
   - component: {fileID: 1338576654463484810}
+  - component: {fileID: 6391553352128633258}
   m_Layer: 9
   m_Name: HookPoint
   m_TagString: HookPoint
@@ -239,7 +241,69 @@ MonoBehaviour:
   - {fileID: 15889350613145381}
   - {fileID: 2553116141722120271}
   smallTrigger: {fileID: 2797508556038761242}
-  bigTrigger: {fileID: 0}
+  myHighlighter: {fileID: 6391553352128633258}
+--- !u!114 &6391553352128633258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3618142421013330085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67d4de287b46eb34e83a61e4f9115070, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mode: 0
+  forceRender: 0
+  color: {r: 1, g: 1, b: 1, a: 1}
+  _overlay: 1
+  _occluder: 0
+  _tween: 0
+  _tweenGradient:
+    serializedVersion: 2
+    key0: {r: 0, g: 1, b: 1, a: 0}
+    key1: {r: 0, g: 1, b: 1, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  _tweenDuration: 1
+  _tweenReverse: 0
+  _tweenLoop: 2
+  _tweenEasing: 0
+  _tweenDelay: 0
+  _tweenRepeatCount: -1
+  _tweenUseUnscaledTime: 0
+  _constant: 0
+  _constantColor: {r: 0.959038, g: 1, b: 0, a: 1}
+  _constantFadeInTime: 0
+  _constantFadeOutTime: 0
+  _constantEasing: 0
+  _constantUseUnscaledTime: 0
+  _filterMode: 0
+  _filterList: []
 --- !u!1 &5305632951178928514
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,6 +399,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -434,11 +499,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3073400957517536789}
     m_Modifications:
-    - target: {fileID: -927199367670048503, guid: 2184b14c4334ce04c874c5f831957da7,
-        type: 3}
-      propertyPath: m_Name
-      value: HookBuggerFBX
-      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 2184b14c4334ce04c874c5f831957da7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -509,12 +569,17 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 6
       objectReference: {fileID: 0}
-    - target: {fileID: 2111831059043373818, guid: 2184b14c4334ce04c874c5f831957da7,
+    - target: {fileID: -927199367670048503, guid: 2184b14c4334ce04c874c5f831957da7,
+        type: 3}
+      propertyPath: m_Name
+      value: HookBuggerFBX
+      objectReference: {fileID: 0}
+    - target: {fileID: -828863432376472143, guid: 2184b14c4334ce04c874c5f831957da7,
         type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
       objectReference: {fileID: 2100000, guid: 89ab5595fb5a3a945acfa6a4413eb777, type: 2}
-    - target: {fileID: 2111831059043373818, guid: 2184b14c4334ce04c874c5f831957da7,
+    - target: {fileID: -828863432376472143, guid: 2184b14c4334ce04c874c5f831957da7,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -524,12 +589,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 16515582809f46f4daf384e5e09d1eb0, type: 2}
-    - target: {fileID: -828863432376472143, guid: 2184b14c4334ce04c874c5f831957da7,
+    - target: {fileID: 2111831059043373818, guid: 2184b14c4334ce04c874c5f831957da7,
         type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
       objectReference: {fileID: 2100000, guid: 89ab5595fb5a3a945acfa6a4413eb777, type: 2}
-    - target: {fileID: -828863432376472143, guid: 2184b14c4334ce04c874c5f831957da7,
+    - target: {fileID: 2111831059043373818, guid: 2184b14c4334ce04c874c5f831957da7,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

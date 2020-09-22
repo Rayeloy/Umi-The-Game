@@ -110,6 +110,15 @@ public class PlayerHUDCMF : MonoBehaviour
     public GameObject pressButtonToGrappleMessage;
     [HideInInspector]
     public Vector2 cameraCenterPix;
+    public Vector2 cameraCenterPixUp;
+    public Vector2 cameraCenterPixForHookPoint
+    {
+        get
+        {
+            return myPlayerCombat.aiming ? cameraCenterPixUp : cameraCenterPix;
+        }
+    }
+
     List<HookPointHUDInfo> hookPointHUDInfoList;
 
 
@@ -274,8 +283,12 @@ public class PlayerHUDCMF : MonoBehaviour
     public void SetUpCameraCenter()
     {
         cameraCenterPix = new Vector2(myCamera.pixelWidth / 2, myCamera.pixelHeight / 2);
-        cameraCenterPix += new Vector2(myCamera.pixelWidth / myCamera.rect.width * myCamera.rect.x, myCamera.pixelHeight / myCamera.rect.height * myCamera.rect.y);
-        //Debug.Log("I'm player " + myPlayerMov.name +" and my center in the camera is  = " + cameraCenterPix.ToString("F4"));
+        cameraCenterPixUp = new Vector2(cameraCenterPix.x, cameraCenterPix.y + myCamera.pixelHeight * 0.15f);
+        Debug.Log("I'm player " + myPlayerMov.playerNumber + " and my center in the camera is  = " + cameraCenterPixForHookPoint.ToString("F4"));
+        Vector2 cameraOffset = new Vector2(myCamera.pixelWidth / myCamera.rect.width * myCamera.rect.x, myCamera.pixelHeight / myCamera.rect.height * myCamera.rect.y);
+        cameraCenterPix += cameraOffset;
+        cameraCenterPixUp += cameraOffset;
+        Debug.Log("I'm player " + myPlayerMov.playerNumber + " and my center in the camera is  = " + cameraCenterPix.ToString("F4") + "; cameraCenterPixForHookPoint = " + cameraCenterPixForHookPoint.ToString("F4"));
         cameraCenterPrefab.SetActive(false);
         //cameraCenterPrefab.GetComponent<RectTransform>().anchoredPosition = cameraCenterPix;
         //Debug.Log("cameraCenterPrefab.rectTransform.localPosition = " + cameraCenterPrefab.GetComponent<RectTransform>().localPosition);

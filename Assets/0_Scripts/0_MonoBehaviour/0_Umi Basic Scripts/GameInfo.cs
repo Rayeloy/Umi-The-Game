@@ -454,7 +454,7 @@ public class UIAnimation
                     float yVal = EasingFunction.SelectEasingFunction(easeFunction, realInitialPos.y, realFinalPos.y, progress);
 
                     rect.localPosition = new Vector3(xVal, yVal, rect.localPosition.z);
-                    Debug.Log("MOVEANIM: Progress = " + progress + "; xVal = " + xVal+ "; yVal = " + yVal);
+                    //Debug.Log("MOVEANIM: Progress = " + progress + "; xVal = " + xVal+ "; yVal = " + yVal);
                     break;
             }
 

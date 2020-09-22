@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using HighlightingSystem;
 
 public class HookPoint : MonoBehaviour
 {
     public Transform[] hookPoints;
     public GameObject smallTrigger;
-    public GameObject bigTrigger;
+    public Highlighter myHighlighter;
 
 
     public Transform GetHookPoint(Vector3 collisionPoint)

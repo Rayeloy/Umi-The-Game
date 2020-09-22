@@ -32,15 +32,15 @@ MonoBehaviour:
     duration: 0.8
     rotationSpeedPercentage: 0.5
     movementSpeedPercentage: 0.5
-    invulnerability: 0
+    invulnerability: 1
     attackHitboxes: []
   activePhase:
     isFoldedInEditor: 0
     attackPhaseType: 3
     phaseCompletionType: 1
-    duration: 3
-    rotationSpeedPercentage: 0.15
-    movementSpeedPercentage: 1.5
+    duration: 1
+    rotationSpeedPercentage: 0.217
+    movementSpeedPercentage: 2
     invulnerability: 0
     attackHitboxes:
     - name: QTip_SpinShield_Attack_hb
@@ -58,15 +58,15 @@ MonoBehaviour:
         stunTime: 0
         parryStunTime: 1
         parryRecoveryTime: 1
-      - name: knockback
+      - name: parry
         effectType: 2
         knockbackType: 1
-        knockbackMagnitude: 25
+        knockbackMagnitude: 30
         knockbackDir: {x: 0, y: 0, z: 0}
         redirectMaxAngle: 0
         knockbackYAngle: 10
         stunTime: 1
-        parryStunTime: 0
+        parryStunTime: 1
         parryRecoveryTime: 1
   recoveryPhase:
     isFoldedInEditor: 0

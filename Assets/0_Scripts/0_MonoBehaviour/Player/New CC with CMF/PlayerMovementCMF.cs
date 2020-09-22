@@ -856,7 +856,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
             finalMaxMoveSpeed = comeFromSlide ? maxSlidingSpeed : moveSt == MoveState.MovingBreaking ? float.MaxValue :
                 //Moving while reducing joystick angle? If not normal parameters.
                 lastJoystickSens > joystickSens && moveSt == MoveState.Moving ? (lastJoystickSens / 1) * currentMaxMoveSpeed : (joystickSens / 1) * currentMaxMoveSpeed;
-            Debug.Log("Player "+playerNumber+": finalMaxMoveSpeed = " + finalMaxMoveSpeed);
+            //Debug.Log("Player "+playerNumber+": finalMaxMoveSpeed = " + finalMaxMoveSpeed);
 
             ProcessImpulse(currentMaxMoveSpeed);
             #endregion
@@ -951,7 +951,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
                 float maxSpeedClamp = knockbackDone || impulseDone ? maxKnockbackSpeed : finalMaxMoveSpeed;
                 float minSpeedClamp = (lastJoystickSens > joystickSens && moveSt == MoveState.Moving) ? (joystickSens / 1) * currentMaxMoveSpeed : 0;
                 currentSpeed = Mathf.Clamp(currentSpeed, minSpeedClamp, maxSpeedClamp);
-                Debug.Log("Player " + playerNumber + ": finalMaxMoveSpeed = " + finalMaxMoveSpeed+ "; maxSpeedClamp = "+ maxSpeedClamp + "; currentSpeed = " + currentSpeed);
+                //Debug.Log("Player " + playerNumber + ": finalMaxMoveSpeed = " + finalMaxMoveSpeed+ "; maxSpeedClamp = "+ maxSpeedClamp + "; currentSpeed = " + currentSpeed);
 
                 if (hardSteerStarted && !hardSteerOn)
                 {

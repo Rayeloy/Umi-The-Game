@@ -1465,7 +1465,9 @@ public class HookPointHUDInfo
             chosenOne = true;
             //hookPointHUD.GetComponent<Image>().color = green;
         }
-        hookPointHUD.green.SetActive(chosenOne);
+        hookPointHUD.empty.gameObject.SetActive(!chosenOne);
+        hookPointHUD.mask.gameObject.SetActive(!chosenOne);
+        //hookPointHUD.green.SetActive(chosenOne);
     }
 }
 //public enum HUDSkillState
