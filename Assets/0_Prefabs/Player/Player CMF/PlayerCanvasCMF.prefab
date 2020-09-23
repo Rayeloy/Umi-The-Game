@@ -255,7 +255,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 9.95
+  m_fontSize: 17.3
   m_fontSizeBase: 35.7
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -354,7 +354,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.47300002, y: 0.2745532}
   m_AnchorMax: {x: 0.6758877, y: 0.768}
-  m_AnchoredPosition: {x: -30.184738, y: -0.0000019073486}
+  m_AnchoredPosition: {x: -58.240356, y: -3.7031136}
   m_SizeDelta: {x: 0, y: 49}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8258912662097885003
@@ -798,7 +798,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 9.95
+  m_fontSize: 17.3
   m_fontSizeBase: 35.7
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1248,13 +1248,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 8311d154d378de14684ad4e1c6117a8a, type: 3}
-  m_Type: 3
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 4
+  m_FillMethod: 1
   m_FillAmount: 1
   m_FillClockwise: 0
-  m_FillOrigin: 2
+  m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
 --- !u!114 &3716199716259137528
@@ -1640,7 +1640,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 28.35
+  m_fontSize: 49.25
   m_fontSizeBase: 35.7
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1796,7 +1796,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 22.45
+  m_fontSize: 39
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2207,6 +2207,7 @@ MonoBehaviour:
   cameraCenterPrefab: {fileID: 6930889200706818391}
   pressButtonToGrappleMessage: {fileID: 4109789825122119089}
   cameraCenterPix: {x: 0, y: 0}
+  cameraCenterPixUp: {x: 0, y: 0}
   hookArrowArrow: {fileID: 6344291825642440762}
   hookArrowFollowTarget: {fileID: 0}
   hookArrowElipse: {x: 0.45, y: 0.22}
@@ -2554,7 +2555,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 26.1
+  m_fontSize: 45.4
   m_fontSizeBase: 35.7
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -3176,7 +3177,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.319663, y: 0.22500001}
   m_AnchorMax: {x: 0.36681646, y: 0.768}
-  m_AnchoredPosition: {x: -30.184738, y: 0.000005722046}
+  m_AnchoredPosition: {x: 37.35727, y: 0}
   m_SizeDelta: {x: 0, y: 47}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1633071735473570766
@@ -3520,7 +3521,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.39170414, y: 0.2745532}
   m_AnchorMax: {x: 0.44452056, y: 0.7254468}
-  m_AnchoredPosition: {x: -30.18473, y: -0.000005722046}
+  m_AnchoredPosition: {x: 9.095932, y: -0.52311325}
   m_SizeDelta: {x: 44, y: 37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2703899131658997125
@@ -4182,36 +4183,36 @@ MonoBehaviour:
   - {fileID: 4923668173252538136}
   layoutElements:
   - rect: {fileID: 1465514114836269969}
-    horDistToNextElement: -3.8865566
+    horDistToNextElement: -3.8865204
   - rect: {fileID: 6710003629636376967}
-    horDistToNextElement: -64.81513
+    horDistToNextElement: -64.81508
   - rect: {fileID: 4923668173252538136}
     horDistToNextElement: 0
   transformInfos:
   - transform: {fileID: 8775341499719078485}
-    position: {x: 325.50003, y: 129.625, z: 0}
+    position: {x: 565.00006, y: 225.25, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 1, y: 1, z: 1}
-    width: 651.9369
-    height: 86.01
+    width: 1131.6262
+    height: 149.46
   - transform: {fileID: 1465514114836269969}
-    position: {x: 193.1175, y: 129.32397, z: 0}
+    position: {x: 424.9633, y: 224.7269, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 0.6042296, y: 0.6042296, z: 0.6042296}
     width: 96
-    height: 93.70343
+    height: 128.15678
   - transform: {fileID: 6710003629636376967}
-    position: {x: 241.92972, y: 129.625, z: 0}
+    position: {x: 481.42978, y: 224.7269, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 0.6042296, y: 0.6042296, z: 0.6042296}
-    width: 78.43297
-    height: 75.78136
+    width: 103.76846
+    height: 104.390564
   - transform: {fileID: 4923668173252538136}
-    position: {x: 343.848, y: 131.455, z: 0}
+    position: {x: 591.0023, y: 224.7269, z: 0}
     rotation: {x: -0, y: -0, z: -0, w: 1}
     scale: {x: 0.6042296, y: 0.6042296, z: 0.6042296}
-    width: 473.45456
-    height: 91.44136
+    width: 473.45453
+    height: 122.750565
   executeAutoCenter: 0
   updateFreq: 2
 --- !u!1 &6284845259844254222

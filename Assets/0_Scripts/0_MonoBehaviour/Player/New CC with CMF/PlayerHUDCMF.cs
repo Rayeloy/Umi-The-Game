@@ -115,7 +115,7 @@ public class PlayerHUDCMF : MonoBehaviour
     {
         get
         {
-            return myPlayerCombat.aiming ? cameraCenterPixUp : cameraCenterPix;
+            return myPlayerCombat.aiming ? cameraCenterPix : cameraCenterPixUp;
         }
     }
 

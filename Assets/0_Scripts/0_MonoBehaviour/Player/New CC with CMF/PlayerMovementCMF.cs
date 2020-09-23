@@ -973,7 +973,7 @@ public class PlayerMovementCMF : Bolt.EntityBehaviour<IPlayerState>
         #endregion
         #region//------------------------------------------------ PROCESO EL TIPO DE MOVIMIENTO DECIDIDO ---------------------------------
         Vector3 horVel = new Vector3(currentVel.x, 0, currentVel.z);
-        if (/*!disableAllDebugs && horMovementDebugsOn &&*/ currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
+        if (currentSpeed != 0) print("CurrentVel before processing= " + currentVel.ToString("F6") + "; currentSpeed =" + currentSpeed.ToString("F4") +
             "; MoveState = " + moveSt + "; currentMaxMoveSpeed = " + finalMaxMoveSpeed + "; below = " + collCheck.below + "; horVel.magnitude = " + horVel.magnitude+ "; finalMovingAcc = " + finalMovingAcc.ToString("F4"));
         if ((vertMovSt != VerticalMovementState.WallJumping || (vertMovSt == VerticalMovementState.WallJumping && moveSt == MoveState.Knockback)) && vertMovSt != VerticalMovementState.Sliding)
         {
