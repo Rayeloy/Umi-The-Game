@@ -167,7 +167,9 @@ public class PlayerAnimationCMF : MonoBehaviour
         //animator.SetFloat("HorizontalSpeed", myPlayerMovement.currentSpeed);//new Vector2 (playerMovement.currentVel.x, playerMovement.currentVel.z).magnitude);
         //animator.SetFloat("VerticalSpeed", myPlayerMovement.currentVel.y);              
 
-        animator.SetBool("Air", !myPlayerMovement.collCheck.below);
+        
+
+       animator.SetBool("Air", !myPlayerMovement.collCheck.below);
 
         animator.SetBool("Water", myPlayerMovement.vertMovSt == VerticalMovementState.FloatingInWater);
 
@@ -352,6 +354,49 @@ public class PlayerAnimationCMF : MonoBehaviour
             animator.SetBool(dashHash, dash);
         }
 
+        if (stickWJ || !stickWJ)
+        {
+            animator.SetBool(stickWJHash, stickWJ);
+        }
+        if (doWJ || !doWJ)
+        {
+            animator.SetBool(doWJHash, doWJ);
+        }
+        if (dropWJ || !dropWJ)
+        {
+            animator.SetBool(dropWJHash, dropWJ);
+        }
+
+        if (weaponType >= 0)
+        {
+            switch((int)weaponType)
+            {
+                case 1:
+                    //animator.SetBool(weaponTypeHash, (int)weaponType);
+                    break;
+
+                case 0:
+
+                    break;
+            }
+        }
+
+        if (currentBasicAttack >= 0)
+        {
+            switch((int)currentBasicAttack)
+            {
+                case 1:
+                    //animator.SetBool(weaponTypeHash, (int)weaponType);
+                    break;
+
+                case 0:
+
+                    animator.SetFloat("BasicAttack", currentBasicAttack);
+                    break;
+
+            }
+
+        }
 
         if (!frontHit && myPlayerMovement.startBeingHitAnimation) /*(moveSt == MoveState.Knockback)*/
         {
