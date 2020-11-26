@@ -6738,6 +6738,7 @@ GameObject:
   m_Component:
   - component: {fileID: 170076735}
   - component: {fileID: 170076734}
+  - component: {fileID: 170076736}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -6819,6 +6820,24 @@ Transform:
   m_Father: {fileID: 1017631872}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 51.554, y: -282.7, z: -244.82599}
+--- !u!114 &170076736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 170076733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fb8b6f668b2bc2469c6b70cb56ddda6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  depthThreshold: 0.995
+  lightingRadius: 1
+  lightingSampleWeight: 1
+  lightingDecay: 0.994
+  lightingIntensity: 1
+  lightingColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &172040775
 GameObject:
   m_ObjectHideFlags: 0
@@ -18873,6 +18892,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6007949492459201893, guid: 8b9ec6333648efe49b070e5f4618ae30,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.00012207031
       objectReference: {fileID: 0}
     - target: {fileID: 6007949492672803182, guid: 8b9ec6333648efe49b070e5f4618ae30,
         type: 3}
@@ -60009,7 +60033,7 @@ PrefabInstance:
     - target: {fileID: 8660515647761631879, guid: c8f9946139f477e409349343ca1b0224,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.08999944
+      value: 0.089999616
       objectReference: {fileID: 0}
     - target: {fileID: 8660515647761631879, guid: c8f9946139f477e409349343ca1b0224,
         type: 3}

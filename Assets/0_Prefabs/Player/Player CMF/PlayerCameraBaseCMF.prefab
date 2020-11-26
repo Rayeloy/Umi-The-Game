@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 4050719938440761376}
   - component: {fileID: 2161944845201668395}
   - component: {fileID: 6419204459532110234}
+  - component: {fileID: 5276268852509000430}
+  - component: {fileID: 1935549930517529074}
   m_Layer: 8
   m_Name: Main Camera
   m_TagString: Untagged
@@ -313,6 +315,38 @@ MonoBehaviour:
     _blurSpread: 0
     _blurIntensity: 1
     _blurDirections: 2
+--- !u!114 &5276268852509000430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1096734978991451412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5dffc8c878aec343a2a4049978a9f14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volumetricLightingMaterial: {fileID: 2100000, guid: b1c15c9a6b6374c48810aa9179df48c9,
+    type: 2}
+  renderTextureSize: 512
+  sampleNum: 100
+  sampleDensity: 0.5
+  blurNum: 3
+  supportHDR: 1
+  debugMode: 0
+--- !u!114 &1935549930517529074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1096734978991451412}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b113dabd56ffc8478bbcc9dffc8d1b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1097116061200254726
 GameObject:
   m_ObjectHideFlags: 0
