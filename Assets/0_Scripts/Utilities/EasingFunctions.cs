@@ -3,6 +3,8 @@
 /*
  * Created by C.J. Kimberlin (http://cjkimberlin.com)
  * 
+ * Edited by C. Eloy Jose Sanz (https://www.linkedin.com/in/celoy-jose-sanz-505586156/)
+ * 
  * The MIT License (MIT)
  * 
  * Copyright (c) 2015

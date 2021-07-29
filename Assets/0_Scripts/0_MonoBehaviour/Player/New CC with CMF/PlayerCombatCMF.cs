@@ -13,10 +13,13 @@ public class PlayerCombatCMF : MonoBehaviour
     PlayerWeaponsCMF myPlayerWeap;
     PlayerHookCMF myHook;
     [HideInInspector] public PlayerHUDCMF myPlayerHUD;
+    [HideInInspector] public PlayerIKController myPlayerIKController;
+
     public Material[] hitboxMats;//0 -> charging; 1-> startup; 2 -> active; 3 -> recovery
     public Transform hitboxesParent;
     [HideInInspector] public Transform weaponEdge;
     [HideInInspector] public Transform weaponHandle;
+    [HideInInspector] public Transform leftHandPos;
 
     [Header(" --- SKILLS ---")]
     [HideInInspector] public WeaponSkillCMF[] equipedWeaponSkills = new WeaponSkillCMF[2];
@@ -121,15 +124,15 @@ public class PlayerCombatCMF : MonoBehaviour
     }
     #endregion
 
-    #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
 
-    #region Awake
     public void KonoAwake()
     {
         myPlayerMovement = GetComponent<PlayerMovementCMF>();
         myPlayerWeap = myPlayerMovement.myPlayerWeap;
         myHook = myPlayerMovement.myPlayerHook;
         myPlayerHUD = myPlayerMovement.myPlayerHUD;
+        myPlayerIKController = GetComponentInChildren<PlayerIKController>();
+
 
         currentHitboxes = new List<GameObject>();
         attackStg = AttackPhaseType.ready;
@@ -138,7 +141,6 @@ public class PlayerCombatCMF : MonoBehaviour
         equipedWeaponSkills = new WeaponSkillCMF[2];
 
     }
-    #endregion
 
     #region Start
     public void KonoStart()
@@ -207,9 +209,7 @@ public class PlayerCombatCMF : MonoBehaviour
     }
     #endregion
 
-    #endregion
 
-    #region ----[ PRIVATE FUNCTIONS ]----
 
     #region --- Change Attack / HitboxCMF ---
 
@@ -487,6 +487,7 @@ public class PlayerCombatCMF : MonoBehaviour
             lastAutocomboAttackFinished = false;
 
             myPlayerMovement.myPlayerAnimation.currentBasicAttack = autocomboIndex;
+            Debug.Log("Start attack " + autocomboIndex + " animation");
             StartAttack(autocombo.attacks[autocomboIndex]);
         }
         return exito;
@@ -653,6 +654,7 @@ public class PlayerCombatCMF : MonoBehaviour
             myPlayerMovement.myPlayerVFX.DeactivateWeaponTrails();
 
             //myAttacks[attackIndex].StartCD();
+            myPlayerMovement.myPlayerAnimation.currentBasicAttack = 255;
         }
     }
     #endregion
@@ -834,15 +836,15 @@ public class PlayerCombatCMF : MonoBehaviour
 
     #endregion
 
-    #endregion
-
-    #region ----[ PUBLIC FUNCTIONS ]----
-
     public void InitializeCombatSystem(WeaponData weaponData)
     {
         if (debugModeOn) Debug.Log("InitializeCombatSystem Start");
         weaponEdge = myPlayerWeap.currentWeapon.weaponEdge;
         weaponHandle = myPlayerWeap.currentWeapon.weaponHandle;
+        leftHandPos = myPlayerWeap.currentWeapon.leftHandPos;
+
+        Debug.Log("PlayerIKController setup-> leftHandObj = " + leftHandPos);
+        myPlayerIKController.leftHandObj = leftHandPos;
 
         currentWeapon = weaponData;
         autocombo = currentWeapon.autocombo;
@@ -932,7 +934,6 @@ public class PlayerCombatCMF : MonoBehaviour
             myPlayerHUD.StopAim();
         }
     }
-    #endregion
 }
 #region ----[ STRUCTS & CLASSES ]----
 #endregion

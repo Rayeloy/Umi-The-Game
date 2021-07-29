@@ -8,6 +8,7 @@ public class Weapon : MonoBehaviour
     //public MeshRenderer[] materialSubMeshes;
     public Transform weaponEdge;
     public Transform weaponHandle;
+    public Transform leftHandPos;
 
     [HideInInspector]
     public WeaponData weaponData;

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerCombatNew : MonoBehaviour
 {
-    #region ----[ VARIABLES FOR DESIGNERS ]----
     //Referencias
     [HideInInspector] public PlayerMovement myPlayerMovement;
     PlayerWeapons myPlayerWeap;
@@ -18,9 +17,7 @@ public class PlayerCombatNew : MonoBehaviour
     [Header(" --- SKILLS ---")]
     [HideInInspector] public WeaponSkill[] equipedWeaponSkills = new WeaponSkill[2];
 
-    #endregion
 
-    #region ----[ PROPERTIES ]----
     [HideInInspector] public WeaponData currentWeapon;
     bool hasWeapon
     {
@@ -115,7 +112,6 @@ public class PlayerCombatNew : MonoBehaviour
             return result;
         }
     }
-    #endregion
 
     #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
 
@@ -205,7 +201,6 @@ public class PlayerCombatNew : MonoBehaviour
 
     #endregion
 
-    #region ----[ PRIVATE FUNCTIONS ]----
 
     #region --- Change Attack / Hitbox ---
 
@@ -769,10 +764,6 @@ public class PlayerCombatNew : MonoBehaviour
 
     #endregion
 
-    #endregion
-
-    #region ----[ PUBLIC FUNCTIONS ]----
-
     public void InitializeCombatSystem(WeaponData weaponData)
     {
         weaponEdge = myPlayerWeap.currentWeapon.weaponEdge;
@@ -859,19 +850,6 @@ public class PlayerCombatNew : MonoBehaviour
             myPlayerHUD.StopAim();
         }
     }
-    #endregion
-
-    #region ----[ PUN CALLBACKS ]----
-    #endregion
-
-    #region ----[ RPC ]----
-    #endregion
-
-    #region ----[ NETWORK FUNCTIONS ]----
-    #endregion
-
-    #region ----[ IPUNOBSERVABLE ]----
-    #endregion
 }
 #region ----[ STRUCTS & CLASSES ]----
 public class ImpulseInfo

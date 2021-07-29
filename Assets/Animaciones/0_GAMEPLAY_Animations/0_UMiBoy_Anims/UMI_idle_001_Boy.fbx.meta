@@ -26,7 +26,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 1
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -105,7 +105,2993 @@ ModelImporter:
   humanDescription:
     serializedVersion: 3
     human: []
-    skeleton: []
+    skeleton:
+    - name: UMI_idle_001_Boy(Clone)
+      parentName: 
+      position: {x: -0.00008659362, y: 0.008950576, z: -0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:CTRL_GRP
+      parentName: UMI_idle_001_Boy(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:global_CTRL
+      parentName: umiBoy_Rig_v4:CTRL_GRP
+      position: {x: -0.09946617, y: 0, z: -0.70854706}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_CTRLs_GRP
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: -0.28987432, y: 1.0893686, z: 1.0686065}
+      rotation: {x: 0.8861728, y: 0.03241275, z: 0.3533349, w: 0.2979962}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandIndex1_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_CTRLs_GRP
+      position: {x: 0.056670044, y: 0.08260912, z: -0.00048068928}
+      rotation: {x: 0.13742328, y: -0.017853435, z: -0.12758993, w: 0.9820982}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandIndex1_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandIndex1_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.00000003157605, y: 0.000000051760836, z: -0.00000003339947,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandIndex1_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandIndex1_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: 1.4210854e-16}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandIndex1_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandIndex1_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: 1.4210854e-16, z: -2.842171e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandIndex2_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHandIndex1_CTRL
+      position: {x: -0.00012087493, y: 0.040821947, z: 9.2957303e-10}
+      rotation: {x: 0.03073412, y: -0, z: -0, w: 0.9995276}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandIndex2_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandIndex2_CTRL_POS_GRP
+      position: {x: -0, y: -1.4210854e-16, z: 1.4210854e-16}
+      rotation: {x: 0.0000000070978827, y: 0.00000003127179, z: -0.000000026997249,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandIndex2_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandIndex2_CTRL_AnimData_CONST_GRP
+      position: {x: 8.881784e-18, y: -1.4210854e-16, z: 0}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandIndex2_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandIndex2_CTRL_In_Rig_CONST_GRP
+      position: {x: 2.6645352e-17, y: 1.4210854e-16, z: -2.842171e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandIndex3_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHandIndex2_CTRL
+      position: {x: 0.0000642079, y: 0.04179999, z: 8.811935e-10}
+      rotation: {x: 0.024945147, y: -0, z: -0, w: 0.9996888}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandIndex3_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandIndex3_CTRL_POS_GRP
+      position: {x: 1.7763568e-17, y: -1.4210854e-16, z: 0}
+      rotation: {x: 0.000000059414237, y: -0.000000008726149, z: -0.0000000103787965,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandIndex3_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandIndex3_CTRL_AnimData_CONST_GRP
+      position: {x: 1.7763568e-17, y: -1.4210854e-16, z: 0}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandIndex3_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandIndex3_CTRL_In_Rig_CONST_GRP
+      position: {x: -1.7763568e-17, y: 1.4210854e-16, z: -2.842171e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandThumb1_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_CTRLs_GRP
+      position: {x: 0.02914788, y: 0.014979503, z: 0.031072374}
+      rotation: {x: 0.38356018, y: -0.116934106, z: -0.26714298, w: 0.8762663}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandThumb1_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandThumb1_CTRL_POS_GRP
+      position: {x: -7.105427e-17, y: 0, z: -1.0658141e-16}
+      rotation: {x: -0.00000004302646, y: 0.000000036620367, z: -0.00000004950812,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandThumb1_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandThumb1_CTRL_AnimData_CONST_GRP
+      position: {x: 3.5527136e-17, y: 1.4210854e-16, z: 3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandThumb1_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandThumb1_CTRL_In_Rig_CONST_GRP
+      position: {x: -3.907985e-16, y: -1.4210854e-16, z: -3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandThumb2_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHandThumb1_CTRL
+      position: {x: 0.0126669705, y: 0.03383507, z: 4.0242084e-11}
+      rotation: {x: -0.01706317, y: 0, z: -0, w: 0.99985445}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandThumb2_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandThumb2_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: 7.105427e-17}
+      rotation: {x: 0.000000026868818, y: 0.000000032695528, z: -0.000000028352519,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandThumb2_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandThumb2_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: 7.105427e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandThumb2_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandThumb2_CTRL_In_Rig_CONST_GRP
+      position: {x: 7.105427e-17, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandThumb3_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHandThumb2_CTRL
+      position: {x: -0.0031577044, y: 0.043897532, z: 0.0000000011102642}
+      rotation: {x: -0.16374375, y: 0, z: -0, w: 0.98650295}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandThumb3_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandThumb3_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: 1.4210854e-16}
+      rotation: {x: 0.000000017204155, y: -0.000000009268769, z: -0.000000014985838,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandThumb3_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandThumb3_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: 1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandThumb3_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandThumb3_CTRL_In_Rig_CONST_GRP
+      position: {x: -7.105427e-17, y: -2.842171e-16, z: 1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandMiddle1_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_CTRLs_GRP
+      position: {x: 0.016820608, y: 0.10126785, z: -0.009586041}
+      rotation: {x: 0.17630894, y: -0.014253964, z: -0.07931293, w: 0.9810308}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandMiddle1_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandMiddle1_CTRL_POS_GRP
+      position: {x: 1.7763568e-17, y: 0, z: 0}
+      rotation: {x: -0.000000017905604, y: 0.000000012126951, z: -0.00000009453834,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandMiddle1_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandMiddle1_CTRL_AnimData_CONST_GRP
+      position: {x: 2.6645352e-17, y: 1.4210854e-16, z: 0}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandMiddle1_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandMiddle1_CTRL_In_Rig_CONST_GRP
+      position: {x: -8.881784e-18, y: -2.842171e-16, z: -1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandMiddle2_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHandMiddle1_CTRL
+      position: {x: 0.000060728922, y: 0.037629884, z: -9.281349e-10}
+      rotation: {x: 0.041643966, y: -0, z: -0, w: 0.9991325}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandMiddle2_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandMiddle2_CTRL_POS_GRP
+      position: {x: 8.881784e-18, y: 0, z: 0}
+      rotation: {x: 0.015080921, y: -0.00012999265, z: -0.00068240287, w: 0.99988604}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandMiddle2_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandMiddle2_CTRL_AnimData_CONST_GRP
+      position: {x: -8.881784e-18, y: 0, z: 0}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandMiddle2_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandMiddle2_CTRL_In_Rig_CONST_GRP
+      position: {x: -8.881784e-18, y: 1.4210854e-16, z: 1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandMiddle3_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHandMiddle2_CTRL
+      position: {x: 0.000282685, y: 0.041455593, z: 1.9165327e-11}
+      rotation: {x: -0.10637029, y: 0, z: -0, w: 0.9943266}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandMiddle3_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandMiddle3_CTRL_POS_GRP
+      position: {x: -1.7763568e-17, y: -2.842171e-16, z: 1.4210854e-16}
+      rotation: {x: 0.000000010201396, y: 0.0000000035287622, z: -0.000000023365212,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandMiddle3_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandMiddle3_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: -1.4210854e-16, z: 0}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandMiddle3_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandMiddle3_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: 0, z: 2.842171e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandRing1_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_CTRLs_GRP
+      position: {x: -0.017667864, y: 0.10823683, z: -0.005434427}
+      rotation: {x: 0.15526678, y: -0.010417641, z: -0.06612904, w: 0.9856017}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandRing1_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandRing1_CTRL_POS_GRP
+      position: {x: -3.5527136e-17, y: -1.4210854e-16, z: -1.4210854e-16}
+      rotation: {x: -0.0000000037123171, y: 0.00000007453286, z: -0.000000034149775,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandRing1_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandRing1_CTRL_AnimData_CONST_GRP
+      position: {x: -3.5527136e-17, y: -1.4210854e-16, z: -1.4210854e-16}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandRing1_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandRing1_CTRL_In_Rig_CONST_GRP
+      position: {x: 3.5527136e-17, y: 1.4210854e-16, z: 1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandRing2_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHandRing1_CTRL
+      position: {x: -0.00020928364, y: 0.03820712, z: -0.000000002121951}
+      rotation: {x: 0.116772994, y: -0, z: -0, w: 0.99315864}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandRing2_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandRing2_CTRL_POS_GRP
+      position: {x: -5.3290704e-17, y: 0, z: 0}
+      rotation: {x: -0.000000017073216, y: -0.000000017033383, z: -0.000000008817569,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandRing2_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandRing2_CTRL_AnimData_CONST_GRP
+      position: {x: -5.3290704e-17, y: 0, z: 0}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandRing2_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandRing2_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: 2.842171e-16, z: -4.2632563e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandRing3_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHandRing2_CTRL
+      position: {x: 0.00019577632, y: 0.035805836, z: -1.653234e-10}
+      rotation: {x: -0.05357524, y: 0, z: -0, w: 0.9985638}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandRing3_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandRing3_CTRL_POS_GRP
+      position: {x: -3.5527136e-17, y: 0, z: -1.4210854e-16}
+      rotation: {x: 0.000000040811905, y: 0.00000000545754, z: -0.00000004135239,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandRing3_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandRing3_CTRL_AnimData_CONST_GRP
+      position: {x: -3.5527136e-17, y: 0, z: -1.4210854e-16}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandRing3_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandRing3_CTRL_In_Rig_CONST_GRP
+      position: {x: -3.5527136e-17, y: 1.4210854e-16, z: -2.842171e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandPinky1_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_CTRLs_GRP
+      position: {x: -0.055822797, y: 0.1068471, z: -0.004652428}
+      rotation: {x: 0.24418671, y: -0.016153643, z: -0.064001486, w: 0.96747905}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandPinky1_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandPinky1_CTRL_POS_GRP
+      position: {x: 3.5527136e-17, y: -2.842171e-16, z: -1.4210854e-16}
+      rotation: {x: 0.000000015362906, y: 0.00000004094279, z: -0.00000007330344,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandPinky1_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandPinky1_CTRL_AnimData_CONST_GRP
+      position: {x: 3.5527136e-17, y: -2.842171e-16, z: -1.4210854e-16}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandPinky1_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandPinky1_CTRL_In_Rig_CONST_GRP
+      position: {x: -3.5527136e-17, y: 1.4210854e-16, z: 2.842171e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandPinky2_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHandPinky1_CTRL
+      position: {x: -0.00007826557, y: 0.03574183, z: 5.4226488e-11}
+      rotation: {x: 0.054121833, y: -0, z: -0, w: 0.9985344}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandPinky2_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandPinky2_CTRL_POS_GRP
+      position: {x: 1.7763568e-17, y: -1.4210854e-16, z: 0}
+      rotation: {x: 0.0000000044500945, y: 0.0000000530639, z: -0.000000002312947,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandPinky2_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandPinky2_CTRL_AnimData_CONST_GRP
+      position: {x: 1.7763568e-17, y: -1.4210854e-16, z: -7.105427e-17}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandPinky2_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandPinky2_CTRL_In_Rig_CONST_GRP
+      position: {x: 1.7763568e-17, y: -1.4210854e-16, z: -7.105427e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandPinky3_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHandPinky2_CTRL
+      position: {x: 0.00008587993, y: 0.029117435, z: -4.837389e-11}
+      rotation: {x: -0.046971727, y: 0, z: -0, w: 0.99889624}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandPinky3_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandPinky3_CTRL_POS_GRP
+      position: {x: -1.7763568e-17, y: -1.4210854e-16, z: 0}
+      rotation: {x: 0.000000029282406, y: -0.0000000045226196, z: -0.00000002606877,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandPinky3_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHandPinky3_CTRL_AnimData_CONST_GRP
+      position: {x: -1.7763568e-17, y: -1.4210854e-16, z: 0}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHandPinky3_CTRL
+      parentName: umiBoy_Rig_v4:LeftHandPinky3_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: -5.684342e-16, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_CTRLs_GRP
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: 0.34422955, y: 1.1221297, z: 0.9473239}
+      rotation: {x: 0.81721985, y: 0.059581857, z: -0.51018524, w: 0.26136705}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandIndex1_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHand_CTRLs_GRP
+      position: {x: -0.055461258, y: 0.083250865, z: -0.0005058222}
+      rotation: {x: 0.10851174, y: 0.01435822, z: 0.13038796, w: 0.98540246}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandIndex1_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandIndex1_CTRL_POS_GRP
+      position: {x: -2.220446e-18, y: 0, z: 1.4210854e-16}
+      rotation: {x: -0.00000006052942, y: -0.0000000049456697, z: 0.000000013723415,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandIndex1_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandIndex1_CTRL_AnimData_CONST_GRP
+      position: {x: -2.220446e-18, y: 0, z: 1.4210854e-16}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandIndex1_CTRL
+      parentName: umiBoy_Rig_v4:RightHandIndex1_CTRL_In_Rig_CONST_GRP
+      position: {x: 5.1070257e-17, y: 7.105427e-16, z: 4.2632563e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandIndex2_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHandIndex1_CTRL
+      position: {x: 0.0006145752, y: 0.04310004, z: 0.000000001134605}
+      rotation: {x: 0.060011476, y: -0, z: -0, w: 0.99819773}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandIndex2_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandIndex2_CTRL_POS_GRP
+      position: {x: 5.1070257e-17, y: 0, z: 0}
+      rotation: {x: 0.000000042765492, y: 0.000000052606463, z: 0.0000000110760165,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandIndex2_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandIndex2_CTRL_AnimData_CONST_GRP
+      position: {x: 2.2204459e-17, y: 2.842171e-16, z: 0}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandIndex2_CTRL
+      parentName: umiBoy_Rig_v4:RightHandIndex2_CTRL_In_Rig_CONST_GRP
+      position: {x: 8.659739e-17, y: 1.4210854e-16, z: -5.684342e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandIndex3_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHandIndex2_CTRL
+      position: {x: -0.0002120501, y: 0.041330352, z: 0.0000000027090041}
+      rotation: {x: 0.03625236, y: -0, z: -0, w: 0.9993427}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandIndex3_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandIndex3_CTRL_POS_GRP
+      position: {x: -1.9984014e-17, y: -1.4210854e-16, z: -1.4210854e-16}
+      rotation: {x: 3.821919e-10, y: -0.000000022010552, z: -0.000000017664558, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandIndex3_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandIndex3_CTRL_AnimData_CONST_GRP
+      position: {x: -1.9984014e-17, y: -1.4210854e-16, z: -1.4210854e-16}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandIndex3_CTRL
+      parentName: umiBoy_Rig_v4:RightHandIndex3_CTRL_In_Rig_CONST_GRP
+      position: {x: -4.440892e-18, y: 4.2632563e-16, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandThumb1_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHand_CTRLs_GRP
+      position: {x: -0.019935854, y: 0.018484332, z: 0.03232367}
+      rotation: {x: 0.47305372, y: 0.03587495, z: 0.06656833, w: 0.87778234}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandThumb1_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandThumb1_CTRL_POS_GRP
+      position: {x: 1.7763568e-17, y: 2.842171e-16, z: 4.4408918e-17}
+      rotation: {x: -0.0000000036498047, y: 0.00000007596724, z: -0.0000000086035365,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandThumb1_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandThumb1_CTRL_AnimData_CONST_GRP
+      position: {x: 1.7763568e-17, y: 0, z: 2.6645352e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandThumb1_CTRL
+      parentName: umiBoy_Rig_v4:RightHandThumb1_CTRL_In_Rig_CONST_GRP
+      position: {x: 1.7763568e-17, y: 0, z: 3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandThumb2_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHandThumb1_CTRL
+      position: {x: -0.0135362325, y: 0.030959312, z: 1.3260006e-11}
+      rotation: {x: -0.04769115, y: 0, z: -0, w: 0.99886215}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandThumb2_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandThumb2_CTRL_POS_GRP
+      position: {x: 1.7763568e-17, y: 0, z: 1.0658141e-16}
+      rotation: {x: -0.00000000905986, y: -0.000000053602243, z: 0.000000050356668,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandThumb2_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandThumb2_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: 7.105427e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandThumb2_CTRL
+      parentName: umiBoy_Rig_v4:RightHandThumb2_CTRL_In_Rig_CONST_GRP
+      position: {x: -1.7763568e-17, y: 2.842171e-16, z: 3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandThumb3_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHandThumb2_CTRL
+      position: {x: 0.008314434, y: 0.041987427, z: 0.0000000011844276}
+      rotation: {x: -0.26480898, y: 0, z: -0, w: 0.96430093}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandThumb3_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandThumb3_CTRL_POS_GRP
+      position: {x: 1.7763568e-17, y: 1.4210854e-16, z: 0}
+      rotation: {x: 0.0000000131160665, y: 0.00000001528846, z: -0.000000024714579,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandThumb3_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandThumb3_CTRL_AnimData_CONST_GRP
+      position: {x: 1.7763568e-17, y: -2.842171e-16, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandThumb3_CTRL
+      parentName: umiBoy_Rig_v4:RightHandThumb3_CTRL_In_Rig_CONST_GRP
+      position: {x: 1.7763568e-17, y: 2.842171e-16, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandMiddle1_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHand_CTRLs_GRP
+      position: {x: -0.017679356, y: 0.098589025, z: -0.010962947}
+      rotation: {x: 0.18678455, y: 0.016793689, z: 0.087959364, w: 0.9783112}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandMiddle1_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandMiddle1_CTRL_POS_GRP
+      position: {x: 1.7763568e-17, y: 0, z: 0}
+      rotation: {x: -0.0000000032926837, y: 0.000000036762657, z: 0.000000010232057,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandMiddle1_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandMiddle1_CTRL_AnimData_CONST_GRP
+      position: {x: -1.7763568e-17, y: 0, z: 1.4210854e-16}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandMiddle1_CTRL
+      parentName: umiBoy_Rig_v4:RightHandMiddle1_CTRL_In_Rig_CONST_GRP
+      position: {x: 1.7763568e-17, y: 4.2632563e-16, z: 1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandMiddle2_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHandMiddle1_CTRL
+      position: {x: 0.00021239245, y: 0.0434845, z: 0.0000000021693454}
+      rotation: {x: 0.030233907, y: -0, z: -0, w: 0.99954283}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandMiddle2_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandMiddle2_CTRL_POS_GRP
+      position: {x: 3.5527136e-17, y: 0, z: -1.4210854e-16}
+      rotation: {x: 0.000000008003559, y: -0.000000020856668, z: 0.00000007571315,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandMiddle2_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandMiddle2_CTRL_AnimData_CONST_GRP
+      position: {x: 1.7763568e-17, y: 1.4210854e-16, z: 0}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandMiddle2_CTRL
+      parentName: umiBoy_Rig_v4:RightHandMiddle2_CTRL_In_Rig_CONST_GRP
+      position: {x: -1.7763568e-17, y: 2.842171e-16, z: 1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandMiddle3_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHandMiddle2_CTRL
+      position: {x: -0.00012415387, y: 0.039622236, z: 9.340111e-10}
+      rotation: {x: -0.0012796583, y: 0, z: -0, w: 0.9999992}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandMiddle3_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandMiddle3_CTRL_POS_GRP
+      position: {x: 3.5527136e-17, y: 0, z: 2.842171e-16}
+      rotation: {x: 0.0000000058588108, y: 0.00000005153589, z: -0.000000071131005,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandMiddle3_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandMiddle3_CTRL_AnimData_CONST_GRP
+      position: {x: 3.5527136e-17, y: 0, z: 2.842171e-16}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandMiddle3_CTRL
+      parentName: umiBoy_Rig_v4:RightHandMiddle3_CTRL_In_Rig_CONST_GRP
+      position: {x: -5.3290704e-17, y: 1.4210854e-16, z: 4.2632563e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandRing1_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHand_CTRLs_GRP
+      position: {x: 0.016776023, y: 0.10945758, z: -0.0047954717}
+      rotation: {x: 0.21097673, y: 0.010528844, z: 0.04871846, w: 0.9762195}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandRing1_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandRing1_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: -1.4210854e-16}
+      rotation: {x: -0.000000033141188, y: 0.000000014979145, z: -0.000000021562261,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandRing1_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandRing1_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 1.4210854e-16, z: -1.4210854e-16}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandRing1_CTRL
+      parentName: umiBoy_Rig_v4:RightHandRing1_CTRL_In_Rig_CONST_GRP
+      position: {x: -7.105427e-17, y: -1.4210854e-16, z: -2.842171e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandRing2_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHandRing1_CTRL
+      position: {x: 0.00028309444, y: 0.0379093, z: -1.2908899e-10}
+      rotation: {x: 0.0776585, y: -0, z: -0, w: 0.99698}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandRing2_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandRing2_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.000000010963858, y: -0.000000010015988, z: 0.00000007970133,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandRing2_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandRing2_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandRing2_CTRL
+      parentName: umiBoy_Rig_v4:RightHandRing2_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: -2.842171e-16, z: 1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandRing3_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHandRing2_CTRL
+      position: {x: -0.00028018793, y: 0.035687122, z: -5.6427038e-12}
+      rotation: {x: -0.04181318, y: 0, z: -0, w: 0.9991255}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandRing3_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandRing3_CTRL_POS_GRP
+      position: {x: 3.5527136e-17, y: -1.4210854e-16, z: -1.4210854e-16}
+      rotation: {x: -0.000000009384921, y: 0.00000004899738, z: -0.000000013333453,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandRing3_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandRing3_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandRing3_CTRL
+      parentName: umiBoy_Rig_v4:RightHandRing3_CTRL_In_Rig_CONST_GRP
+      position: {x: 7.105427e-17, y: -1.4210854e-16, z: 1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandPinky1_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHand_CTRLs_GRP
+      position: {x: 0.05636459, y: 0.091826946, z: -0.007479845}
+      rotation: {x: 0.26334837, y: 0.015794514, z: 0.05774713, w: 0.9628414}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandPinky1_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandPinky1_CTRL_POS_GRP
+      position: {x: 3.5527136e-17, y: -2.842171e-16, z: 0}
+      rotation: {x: -0.000000019120606, y: 0.000000005812645, z: 0.000000019735225,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandPinky1_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandPinky1_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: -1.4210854e-16, z: 1.4210854e-16}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandPinky1_CTRL
+      parentName: umiBoy_Rig_v4:RightHandPinky1_CTRL_In_Rig_CONST_GRP
+      position: {x: -7.105427e-17, y: 4.2632563e-16, z: 2.842171e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandPinky2_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHandPinky1_CTRL
+      position: {x: -0.000015032499, y: 0.03889013, z: -1.14202835e-10}
+      rotation: {x: 0.034956537, y: -0, z: -0, w: 0.9993889}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandPinky2_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandPinky2_CTRL_POS_GRP
+      position: {x: 3.5527136e-17, y: 1.4210854e-16, z: -1.4210854e-16}
+      rotation: {x: 0.000000037100808, y: 0.000000020480508, z: -0.000000011028599,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandPinky2_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandPinky2_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: -7.105427e-17}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandPinky2_CTRL
+      parentName: umiBoy_Rig_v4:RightHandPinky2_CTRL_In_Rig_CONST_GRP
+      position: {x: 3.5527136e-17, y: 2.842171e-16, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandPinky3_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHandPinky2_CTRL
+      position: {x: -0.0003115832, y: 0.035325933, z: -2.153591e-11}
+      rotation: {x: -0.10893247, y: 0, z: -0, w: 0.9940492}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandPinky3_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandPinky3_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.00000003948133, y: -0.000000004306039, z: -0.000000033983685,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandPinky3_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHandPinky3_CTRL_AnimData_CONST_GRP
+      position: {x: -7.105427e-17, y: 0, z: 0}
+      rotation: {x: 0.17134185, y: -0, z: -0, w: 0.9852117}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHandPinky3_CTRL
+      parentName: umiBoy_Rig_v4:RightHandPinky3_CTRL_In_Rig_CONST_GRP
+      position: {x: -1.0658141e-16, y: 5.684342e-16, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_Options
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: -0.13675572, y: 0.101387955, z: 1.1506963}
+      rotation: {x: 0.22027114, y: 0.4189045, z: 0.87430274, w: -0.10767698}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_Options
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: 0.23760436, y: 0.12544829, z: 0.39580026}
+      rotation: {x: 0.23497671, y: 0.28557023, z: 0.92547446, w: -0.08205232}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_Options
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: -0.28987432, y: 1.0893686, z: 1.0686065}
+      rotation: {x: 0.8861728, y: 0.03241275, z: 0.3533349, w: 0.2979962}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_Options
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: 0.34422955, y: 1.1221297, z: 0.9473239}
+      rotation: {x: 0.81721985, y: 0.059581857, z: -0.51018524, w: 0.26136705}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Root_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: 0.016997455, y: 1.0567702, z: 0.8200613}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Root_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:Root_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.10516891, y: 0.19245668, z: 0.022238027, w: 0.97540015}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Root_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:Root_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Root_CTRL
+      parentName: umiBoy_Rig_v4:Root_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Spine_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:Root_CTRL
+      position: {x: -0, y: 0.10644913, z: -0.022336893}
+      rotation: {x: -0.103233546, y: 0, z: -0, w: 0.99465716}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Spine_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:Spine_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.018751374, y: -0.011713751, z: -0.00064482813, w: 0.9997554}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Spine_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:Spine_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Spine_CTRL
+      parentName: umiBoy_Rig_v4:Spine_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Spine1_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:Spine_CTRL
+      position: {x: 5.2041703e-20, y: 0.12689519, z: 3.8565057e-10}
+      rotation: {x: 0.000000094793094, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Spine1_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:Spine1_CTRL_POS_GRP
+      position: {x: 1.7347234e-20, y: 0, z: 0}
+      rotation: {x: 0.037493702, y: -0.023421802, z: -0.0012891599, w: 0.99902153}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Spine1_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:Spine1_CTRL_AnimData_CONST_GRP
+      position: {x: 1.7347234e-20, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Spine1_CTRL
+      parentName: umiBoy_Rig_v4:Spine1_CTRL_In_Rig_CONST_GRP
+      position: {x: -3.469447e-20, y: -2.842171e-16, z: 3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Spine2_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:Spine1_CTRL
+      position: {x: -1.7347234e-20, y: 0.14502329, z: -2.6465688e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Spine2_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:Spine2_CTRL_POS_GRP
+      position: {x: 1.7347234e-20, y: 0, z: 0}
+      rotation: {x: 0.037493736, y: -0.023421714, z: -0.0012891629, w: 0.99902153}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Spine2_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:Spine2_CTRL_AnimData_CONST_GRP
+      position: {x: 1.7347234e-20, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Spine2_CTRL
+      parentName: umiBoy_Rig_v4:Spine2_CTRL_In_Rig_CONST_GRP
+      position: {x: -3.469447e-20, y: 0, z: 7.105427e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Neck_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:Spine2_CTRL
+      position: {x: -6.938894e-20, y: 0.16315107, z: -0.000000013862387}
+      rotation: {x: 0.10323346, y: -0, z: -0, w: 0.99465716}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Neck_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:Neck_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.1197197, y: -0.057116266, z: 0.0024469942, w: 0.9911604}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Neck_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:Neck_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Neck_CTRL
+      parentName: umiBoy_Rig_v4:Neck_CTRL_In_Rig_CONST_GRP
+      position: {x: 5.2041703e-20, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Head_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:Neck_CTRL
+      position: {x: -1.7347234e-20, y: 0.12592421, z: 0.03819312}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Head_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:Head_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.20698869, y: -0.05460415, z: -0.006644211, w: 0.9767958}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Head_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:Head_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 2.6779794e-17, y: 1.0625181e-17, z: -1.5612513e-17, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Head_CTRL
+      parentName: umiBoy_Rig_v4:Head_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: 5.684342e-16, z: 1.7763568e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Head_CTRL_Inherit_Rotation_GRP
+      parentName: umiBoy_Rig_v4:Head_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftShoulder_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:Spine2_CTRL
+      position: {x: -0.055332612, y: 0.13501047, z: -0.0062625543}
+      rotation: {x: 0.56694233, y: -0.39172608, z: 0.6342897, w: 0.35043353}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftShoulder_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftShoulder_CTRL_POS_GRP
+      position: {x: -0, y: -1.4210854e-16, z: 2.842171e-16}
+      rotation: {x: -0.21931067, y: -0.21488768, z: 0.05546273, w: 0.95007896}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftShoulder_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftShoulder_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: -1.4210854e-16, z: 2.842171e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftShoulder_CTRL
+      parentName: umiBoy_Rig_v4:LeftShoulder_CTRL_In_Rig_CONST_GRP
+      position: {x: 2.1316282e-16, y: -2.842171e-16, z: -2.842171e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftArm_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftShoulder_CTRL
+      position: {x: 3.8017624e-11, y: 0.12583344, z: -1.8949378e-10}
+      rotation: {x: 0.23025416, y: -0.299223, z: 0.074647315, w: 0.9229715}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftArm_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftArm_FK_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: -1.4210854e-16}
+      rotation: {x: -0.043478884, y: -0.16860448, z: -0.4481649, w: 0.8768297}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftArm_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftArm_FK_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: -1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftArm_FK_CTRL
+      parentName: umiBoy_Rig_v4:LeftArm_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: -4.2632563e-16, z: 2.842171e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftArm_FK_CTRL
+      position: {x: 0.0000000045233803, y: 0.28961122, z: 0.0000000042843533}
+      rotation: {x: -0.06391412, y: 0.0064402726, z: -0.10004971, w: 0.99290663}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftForeArm_FK_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: -1.4210854e-16}
+      rotation: {x: -0.24006665, y: 0.13225982, z: -0.23168516, w: 0.93337953}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftForeArm_FK_CTRL_AnimData_CONST_GRP
+      position: {x: 7.105427e-17, y: -1.4210854e-16, z: 1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_FK_CTRL
+      parentName: umiBoy_Rig_v4:LeftForeArm_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: 1.4210854e-16, y: 7.105427e-16, z: 5.684342e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftForeArm_FK_CTRL
+      position: {x: -0.0000000023776034, y: 0.2758088, z: -0.0000000064110304}
+      rotation: {x: 0.05418571, y: 0.21332107, z: 0.11033794, w: 0.9692181}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_FK_CTRL_POS_GRP
+      position: {x: 3.5527136e-17, y: 0, z: 0}
+      rotation: {x: -0.07685973, y: -0.0013231502, z: 0.010417781, w: 0.9969866}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_FK_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: -1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_FK_CTRL
+      parentName: umiBoy_Rig_v4:LeftHand_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: -1.0658141e-16, y: 0, z: 5.684342e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightShoulder_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:Spine2_CTRL
+      position: {x: 0.055332612, y: 0.13486671, z: -0.0055774865}
+      rotation: {x: -0.57123977, y: -0.38879803, z: 0.6313276, w: -0.35206056}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightShoulder_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightShoulder_CTRL_POS_GRP
+      position: {x: -3.5527136e-17, y: 0, z: 0}
+      rotation: {x: -0.2158783, y: 0.2072012, z: 0.053443383, w: 0.95268464}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightShoulder_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightShoulder_CTRL_AnimData_CONST_GRP
+      position: {x: -3.5527136e-17, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightShoulder_CTRL
+      parentName: umiBoy_Rig_v4:RightShoulder_CTRL_In_Rig_CONST_GRP
+      position: {x: 3.5527136e-17, y: -1.4210854e-16, z: 5.684342e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightArm_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightShoulder_CTRL
+      position: {x: -3.691195e-11, y: 0.12583344, z: -1.8971491e-10}
+      rotation: {x: 0.23232776, y: 0.31101835, z: -0.07869515, w: 0.91820395}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightArm_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightArm_FK_CTRL_POS_GRP
+      position: {x: -1.4210854e-16, y: -1.4210854e-16, z: 0}
+      rotation: {x: 0.07432493, y: -0.049803987, z: 0.4009024, w: 0.91174155}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightArm_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightArm_FK_CTRL_AnimData_CONST_GRP
+      position: {x: -1.4210854e-16, y: -1.4210854e-16, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightArm_FK_CTRL
+      parentName: umiBoy_Rig_v4:RightArm_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: 1.4210854e-16, y: 2.842171e-16, z: 1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightArm_FK_CTRL
+      position: {x: 2.9598182e-10, y: 0.28996432, z: 5.2705784e-10}
+      rotation: {x: -0.065641195, y: -0.006209134, z: 0.09396674, w: 0.99338967}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightForeArm_FK_CTRL_POS_GRP
+      position: {x: -7.105427e-17, y: 0, z: -2.842171e-16}
+      rotation: {x: -0.06441774, y: -0.05667283, z: 0.37734807, w: 0.92208844}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightForeArm_FK_CTRL_AnimData_CONST_GRP
+      position: {x: 7.105427e-17, y: -1.4210854e-16, z: -1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_FK_CTRL
+      parentName: umiBoy_Rig_v4:RightForeArm_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: -7.105427e-17, y: 5.684342e-16, z: -8.5265126e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightForeArm_FK_CTRL
+      position: {x: -0.0000000013247166, y: 0.2756483, z: 0.0000000048682045}
+      rotation: {x: 0.044895407, y: -0.19277215, z: -0.08250248, w: 0.97673774}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHand_FK_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.08756446, y: 0.10314306, z: -0.10607425, w: 0.9851103}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHand_FK_CTRL_AnimData_CONST_GRP
+      position: {x: -3.5527136e-17, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_FK_CTRL
+      parentName: umiBoy_Rig_v4:RightHand_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: -3.5527136e-17, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftUpLeg_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:Root_CTRL
+      position: {x: -0.10289238, y: -0.05915794, z: -0.0073929974}
+      rotation: {x: 0.0030783308, y: -0.05642117, z: 0.99691963, w: 0.054391786}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftUpLeg_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftUpLeg_FK_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: 1.7763568e-17}
+      rotation: {x: 0.5152973, y: 0.028613629, z: -0.10709702, w: 0.8498119}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftUpLeg_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftUpLeg_FK_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: 1.7763568e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftUpLeg_FK_CTRL
+      parentName: umiBoy_Rig_v4:LeftUpLeg_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: -3.5527136e-17, y: 0, z: -3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftUpLeg_FK_CTRL
+      position: {x: -0.0000000030922378, y: 0.56206524, z: 0.0000000032985843}
+      rotation: {x: -0.007561748, y: 0.000051341038, z: -0.006789222, w: 0.9999484}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftLeg_FK_CTRL_POS_GRP
+      position: {x: 3.5527136e-17, y: 0, z: -3.5527136e-17}
+      rotation: {x: -0.47732228, y: -0.06049803, z: 0.08709272, w: 0.87230635}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftLeg_FK_CTRL_AnimData_CONST_GRP
+      position: {x: 3.5527136e-17, y: 0, z: -3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_FK_CTRL
+      parentName: umiBoy_Rig_v4:LeftLeg_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: 1.0658141e-16, y: -1.4210854e-16, z: -3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftLeg_FK_CTRL
+      position: {x: -0.0000000031665601, y: 0.52266717, z: 6.596974e-10}
+      rotation: {x: 0.49360946, y: -0.077808514, z: 0.04439823, w: 0.86505747}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_FK_CTRL_POS_GRP
+      position: {x: -3.5527136e-17, y: 3.5527136e-17, z: -8.881784e-18}
+      rotation: {x: 0.056762062, y: 0.06411196, z: -0.03670238, w: 0.9956509}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_FK_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: -3.5527136e-17, z: 4.440892e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_FK_CTRL
+      parentName: umiBoy_Rig_v4:LeftFoot_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: 3.5527136e-17, y: 0, z: -2.6645352e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftToeBase_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_FK_CTRL
+      position: {x: 0.000000275583, y: 0.1732813, z: 0.0000013847427}
+      rotation: {x: 0.32247528, y: 0.053715233, z: -0.018332412, w: 0.94487476}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftToeBase_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftToeBase_FK_CTRL_POS_GRP
+      position: {x: -3.5527136e-17, y: 4.440892e-18, z: -2.220446e-18}
+      rotation: {x: 0.0022059511, y: -0.002889595, z: 0.011241113, w: 0.9999302}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftToeBase_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftToeBase_FK_CTRL_AnimData_CONST_GRP
+      position: {x: -3.5527136e-17, y: 4.440892e-18, z: -2.220446e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftToeBase_FK_CTRL
+      parentName: umiBoy_Rig_v4:LeftToeBase_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: 1.4210854e-16, y: 0, z: -2.220446e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightUpLeg_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:Root_CTRL
+      position: {x: 0.10289238, y: -0.05915794, z: -0.006565275}
+      rotation: {x: -0.003529204, y: -0.06481742, z: 0.996415, w: -0.05425319}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightUpLeg_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightUpLeg_FK_CTRL_POS_GRP
+      position: {x: -3.5527136e-17, y: 1.4210854e-16, z: 1.7763568e-17}
+      rotation: {x: 0.23316504, y: -0.10808365, z: 0.08208105, w: 0.9629199}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightUpLeg_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightUpLeg_FK_CTRL_AnimData_CONST_GRP
+      position: {x: -3.5527136e-17, y: 1.4210854e-16, z: 1.7763568e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightUpLeg_FK_CTRL
+      parentName: umiBoy_Rig_v4:RightUpLeg_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: -7.105427e-17, y: -5.684342e-16, z: -3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightUpLeg_FK_CTRL
+      position: {x: -7.2288925e-10, y: 0.56320894, z: -0.0000000015412084}
+      rotation: {x: -0.0008165176, y: -0.0000056070903, z: 0.006866914, w: 0.9999761}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightLeg_FK_CTRL_POS_GRP
+      position: {x: -0, y: 1.4210854e-16, z: -1.7763568e-17}
+      rotation: {x: -0.4527393, y: 0.061053988, z: -0.071572036, w: 0.88666624}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightLeg_FK_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 7.105427e-17, z: 1.7763568e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_FK_CTRL
+      parentName: umiBoy_Rig_v4:RightLeg_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: -1.4210854e-16, z: 5.3290704e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightLeg_FK_CTRL
+      position: {x: -1.2584546e-10, y: 0.5228915, z: 8.006406e-11}
+      rotation: {x: 0.50188404, y: 0.073928535, z: -0.043109033, w: 0.86069083}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_FK_CTRL_POS_GRP
+      position: {x: -3.5527136e-17, y: 0, z: 8.881784e-18}
+      rotation: {x: 0.16155036, y: -0.08028827, z: -0.0009454187, w: 0.9835926}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_FK_CTRL_AnimData_CONST_GRP
+      position: {x: -3.5527136e-17, y: 0, z: 8.881784e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_FK_CTRL
+      parentName: umiBoy_Rig_v4:RightFoot_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: 7.105427e-17, z: 3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightToeBase_FK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_FK_CTRL
+      position: {x: -0.00000040040075, y: 0.176814, z: 0.00000074023626}
+      rotation: {x: 0.31513047, y: -0.052045662, z: 0.01731064, w: 0.9474621}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightToeBase_FK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightToeBase_FK_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: -2.220446e-18}
+      rotation: {x: 0.1222795, y: 0.024736483, z: -0.00903617, w: 0.99214625}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightToeBase_FK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightToeBase_FK_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: -2.220446e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightToeBase_FK_CTRL
+      parentName: umiBoy_Rig_v4:RightToeBase_FK_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: -4.440892e-18, z: 2.220446e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_parent_POS_GRP
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: -0.18712667, y: 1.5586381, z: 0.90163845}
+      rotation: {x: 0.7379057, y: -0.63796717, z: 0.21846299, w: -0.027696062}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_parent_Global_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_parent_POS_GRP
+      position: {x: -5.684342e-16, y: -1.3322676e-16, z: -2.842171e-16}
+      rotation: {x: -5.551115e-17, y: -8.326673e-17, z: 1.110223e-16, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_parent_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_parent_Global_POS_GRP
+      position: {x: -0, y: -7.105427e-16, z: 2.842171e-16}
+      rotation: {x: -0.043478884, y: -0.16860448, z: -0.4481649, w: 0.8768297}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_parent_AnimData_CONST_GRP
+      position: {x: 0.0000000045233803, y: 0.28961122, z: 0.0000000042843524}
+      rotation: {x: -0.06391412, y: 0.0064402726, z: -0.10004971, w: 0.99290663}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: -1.4210854e-16}
+      rotation: {x: -0.24006665, y: 0.13225982, z: -0.23168516, w: 0.93337953}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_AnimData_CONST_GRP
+      position: {x: 1.8207657e-16, y: -5.684342e-16, z: 1.4210854e-16}
+      rotation: {x: 7.979728e-17, y: 5.551115e-17, z: -6.938894e-18, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_IK_CTRL
+      parentName: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_In_Rig_CONST_GRP
+      position: {x: -0.28103262, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_GuideCurve_Cluster1Handle
+      parentName: umiBoy_Rig_v4:LeftForeArm_IK_CTRL
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.7722302, y: -0.2633856, z: 0.537339, w: -0.21343704}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_IK_CTRL_grandparent_POS_GRP
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: -0.18712667, y: 1.5586381, z: 0.90163845}
+      rotation: {x: 0.7379057, y: -0.63796717, z: 0.21846299, w: -0.027696062}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_IK_CTRL_grandparent_Global_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_IK_CTRL_grandparent_POS_GRP
+      position: {x: -1.1368684e-15, y: -1.4210854e-16, z: -4.973799e-16}
+      rotation: {x: -5.551115e-17, y: -8.326673e-17, z: 1.110223e-16, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_IK_CTRL_grandparent_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_IK_CTRL_grandparent_Global_POS_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.043478884, y: -0.16860448, z: -0.4481649, w: 0.8768297}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_IK_CTRL_grandparent_inRig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_IK_CTRL_grandparent_AnimData_CONST_GRP
+      position: {x: 2.842171e-16, y: -4.2632563e-16, z: 5.684342e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_IK_CTRL_parent_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_IK_CTRL_grandparent_inRig_CONST_GRP
+      position: {x: 0.000000004523381, y: 0.28961122, z: 0.0000000042843538}
+      rotation: {x: -0.06391412, y: 0.0064402726, z: -0.10004971, w: 0.99290663}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_IK_CTRL_parent_Global_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_IK_CTRL_parent_POS_GRP
+      position: {x: 1.4210854e-16, y: 0, z: 1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_IK_CTRL_parent_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_IK_CTRL_parent_Global_POS_GRP
+      position: {x: 2.1316282e-16, y: 0, z: 1.4210854e-16}
+      rotation: {x: -0.24006665, y: 0.13225982, z: -0.23168516, w: 0.93337953}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_IK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_IK_CTRL_parent_AnimData_CONST_GRP
+      position: {x: -0.0000000023776034, y: 0.2758088, z: -0.0000000064110304}
+      rotation: {x: 0.05418571, y: 0.21332107, z: 0.11033794, w: 0.9692181}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_IK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_IK_CTRL_POS_GRP
+      position: {x: 3.5527136e-17, y: 0, z: 0}
+      rotation: {x: -0.07685973, y: -0.0013231502, z: 0.010417781, w: 0.9969866}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_IK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftHand_IK_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: -1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_IK_CTRL
+      parentName: umiBoy_Rig_v4:LeftHand_IK_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftHand_IK_Handle
+      parentName: umiBoy_Rig_v4:LeftHand_IK_CTRL
+      position: {x: 3.5527136e-17, y: -1.4210854e-16, z: -2.842171e-16}
+      rotation: {x: 0.6163376, y: -0.26583767, z: 0.72335356, w: -0.16192}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_IK_CTRL_parent_POS_GRP
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: 0.16771078, y: 1.5712972, z: 0.83239484}
+      rotation: {x: 0.6778739, y: 0.6349929, z: -0.35305017, w: -0.11236826}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_IK_CTRL_parent_Global_POS_GRP
+      parentName: umiBoy_Rig_v4:RightForeArm_IK_CTRL_parent_POS_GRP
+      position: {x: -2.842171e-16, y: -3.1974422e-16, z: -2.842171e-16}
+      rotation: {x: 5.9282e-41, y: 8.326673e-17, z: -1.6653345e-16, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_IK_CTRL_parent_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightForeArm_IK_CTRL_parent_Global_POS_GRP
+      position: {x: 1.4210854e-16, y: -4.2632563e-16, z: 5.684342e-16}
+      rotation: {x: 0.07432493, y: -0.049803987, z: 0.4009024, w: 0.91174155}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_IK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightForeArm_IK_CTRL_parent_AnimData_CONST_GRP
+      position: {x: 2.959814e-10, y: 0.28996432, z: 5.2705745e-10}
+      rotation: {x: -0.065641195, y: -0.006209134, z: 0.09396674, w: 0.99338967}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_IK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightForeArm_IK_CTRL_POS_GRP
+      position: {x: -7.105427e-17, y: 0, z: -2.842171e-16}
+      rotation: {x: -0.06441774, y: -0.05667283, z: 0.37734807, w: 0.92208844}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_IK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightForeArm_IK_CTRL_AnimData_CONST_GRP
+      position: {x: 7.105427e-17, y: -5.684342e-16, z: -2.842171e-16}
+      rotation: {x: 3.4694473e-17, y: 6.938894e-18, z: -1.1232335e-16, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_IK_CTRL
+      parentName: umiBoy_Rig_v4:RightForeArm_IK_CTRL_In_Rig_CONST_GRP
+      position: {x: 0.28103262, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_IK_CTRL_GuideCurve_Cluster1Handle
+      parentName: umiBoy_Rig_v4:RightForeArm_IK_CTRL
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.7798884, y: 0.2709335, z: -0.52637535, w: -0.20321949}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_IK_CTRL_grandparent_POS_GRP
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: 0.16771078, y: 1.5712972, z: 0.83239484}
+      rotation: {x: 0.6778739, y: 0.6349929, z: -0.35305017, w: -0.11236826}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_IK_CTRL_grandparent_Global_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHand_IK_CTRL_grandparent_POS_GRP
+      position: {x: -8.5265126e-16, y: 1.7763567e-16, z: 4.2632563e-16}
+      rotation: {x: 5.9282e-41, y: 8.326673e-17, z: -1.6653345e-16, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_IK_CTRL_grandparent_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHand_IK_CTRL_grandparent_Global_POS_GRP
+      position: {x: -2.842171e-16, y: -1.4210854e-16, z: 1.4210854e-16}
+      rotation: {x: 0.07432493, y: -0.049803987, z: 0.4009024, w: 0.91174155}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_IK_CTRL_grandparent_inRig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHand_IK_CTRL_grandparent_AnimData_CONST_GRP
+      position: {x: -1.4210854e-16, y: -5.684342e-16, z: 2.842171e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_IK_CTRL_parent_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHand_IK_CTRL_grandparent_inRig_CONST_GRP
+      position: {x: 2.9598127e-10, y: 0.28996432, z: 5.2705784e-10}
+      rotation: {x: -0.065641195, y: -0.006209134, z: 0.09396674, w: 0.99338967}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_IK_CTRL_parent_Global_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHand_IK_CTRL_parent_POS_GRP
+      position: {x: -0, y: -1.4210854e-16, z: -1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_IK_CTRL_parent_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHand_IK_CTRL_parent_Global_POS_GRP
+      position: {x: 7.105427e-17, y: 0, z: -7.105427e-16}
+      rotation: {x: -0.06441774, y: -0.05667283, z: 0.37734807, w: 0.92208844}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_IK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightHand_IK_CTRL_parent_AnimData_CONST_GRP
+      position: {x: -0.0000000013247166, y: 0.2756483, z: 0.000000004868203}
+      rotation: {x: 0.044895407, y: -0.19277215, z: -0.08250248, w: 0.97673774}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_IK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHand_IK_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.08756446, y: 0.10314306, z: -0.10607425, w: 0.9851103}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_IK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightHand_IK_CTRL_AnimData_CONST_GRP
+      position: {x: -3.5527136e-17, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_IK_CTRL
+      parentName: umiBoy_Rig_v4:RightHand_IK_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightHand_IK_Handle
+      parentName: umiBoy_Rig_v4:RightHand_IK_CTRL
+      position: {x: 6.0396133e-16, y: 7.105427e-16, z: 1.4210854e-16}
+      rotation: {x: -0.64704686, y: -0.2661668, z: 0.6934012, w: 0.17227991}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_IK_CTRL_parent_POS_GRP
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: -0.08080961, y: 0.9918041, z: 0.8388852}
+      rotation: {x: 0.20184149, y: -0.1493418, z: 0.96707886, w: 0.041419156}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_IK_CTRL_parent_Global_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftLeg_IK_CTRL_parent_POS_GRP
+      position: {x: 7.105427e-17, y: -1.4210854e-16, z: -7.105427e-17}
+      rotation: {x: 0, y: 0, z: 3.469447e-18, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_IK_CTRL_parent_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftLeg_IK_CTRL_parent_Global_POS_GRP
+      position: {x: -0, y: 1.4210854e-16, z: 1.7763568e-17}
+      rotation: {x: 0.5152973, y: 0.028613629, z: -0.10709702, w: 0.8498119}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_IK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftLeg_IK_CTRL_parent_AnimData_CONST_GRP
+      position: {x: -0.0000000030922378, y: 0.56206524, z: 0.0000000032985843}
+      rotation: {x: -0.007561748, y: 0.000051341038, z: -0.006789222, w: 0.9999484}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_IK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftLeg_IK_CTRL_POS_GRP
+      position: {x: 3.5527136e-17, y: 0, z: -3.5527136e-17}
+      rotation: {x: -0.47732228, y: -0.06049803, z: 0.08709272, w: 0.87230635}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_IK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftLeg_IK_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: -3.5527136e-17}
+      rotation: {x: 4.943962e-17, y: -4.8572257e-17, z: -4.1633363e-17, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_IK_CTRL
+      parentName: umiBoy_Rig_v4:LeftLeg_IK_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_IK_CTRL_GuideCurve_Cluster1Handle
+      parentName: umiBoy_Rig_v4:LeftLeg_IK_CTRL
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.0029989497, y: -0.06393301, z: 0.9960722, w: -0.06118661}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_IK_CTRL_Follow_Foot_GRP
+      parentName: umiBoy_Rig_v4:LeftLeg_IK_CTRL_AnimData_CONST_GRP
+      position: {x: 0.044632267, y: 0.004762326, z: -0.05443807}
+      rotation: {x: 0.049333688, y: 0.06421486, z: 0.04606494, w: 0.9956509}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_IK_CTRL_Follow_Knee_GRP
+      parentName: umiBoy_Rig_v4:LeftLeg_IK_CTRL_Follow_Foot_GRP
+      position: {x: -0, y: 0, z: 0.29370698}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_CTRL_grandparent_POS_GRP
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: -0.08080961, y: 0.9918041, z: 0.8388852}
+      rotation: {x: 0.20184149, y: -0.1493418, z: 0.96707886, w: 0.041419156}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_CTRL_grandparent_Global_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_IK_CTRL_grandparent_POS_GRP
+      position: {x: -7.105427e-17, y: 1.4210854e-16, z: 1.0658141e-16}
+      rotation: {x: 0, y: 0, z: 3.469447e-18, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_CTRL_grandparent_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_IK_CTRL_grandparent_Global_POS_GRP
+      position: {x: -0, y: 0, z: 1.7763568e-17}
+      rotation: {x: 0.5152973, y: 0.028613629, z: -0.10709702, w: 0.8498119}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_CTRL_grandparent_inRig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_IK_CTRL_grandparent_AnimData_CONST_GRP
+      position: {x: -0, y: 0, z: -3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_CTRL_parent_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_IK_CTRL_grandparent_inRig_CONST_GRP
+      position: {x: -0.0000000030922378, y: 0.56206524, z: 0.0000000032985845}
+      rotation: {x: -0.007561748, y: 0.000051341038, z: -0.006789222, w: 0.9999484}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_CTRL_parent_Global_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_IK_CTRL_parent_POS_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_CTRL_parent_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_IK_CTRL_parent_Global_POS_GRP
+      position: {x: -3.5527136e-17, y: -2.842171e-16, z: -2.4868996e-16}
+      rotation: {x: -0.47732228, y: -0.06049803, z: 0.08709272, w: 0.87230635}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_IK_CTRL_parent_AnimData_CONST_GRP
+      position: {x: -0.0000000031665597, y: 0.52266717, z: 6.596972e-10}
+      rotation: {x: 0.49360946, y: -0.077808514, z: 0.04439823, w: 0.86505747}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_IK_CTRL_POS_GRP
+      position: {x: -0, y: 0, z: 4.440892e-18}
+      rotation: {x: 0.056762062, y: 0.06411196, z: -0.03670238, w: 0.9956509}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_IK_CTRL_AnimData_CONST_GRP
+      position: {x: -0, y: 3.5527136e-17, z: -4.440892e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_CTRL_Reorient_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_IK_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: 2.842171e-16, z: -3.4194868e-16}
+      rotation: {x: 0.056175437, y: 0.43063942, z: 0.90037334, w: -0.02686814}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_CTRL
+      parentName: umiBoy_Rig_v4:LeftFoot_IK_CTRL_Reorient_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Left_Toe_IK_AnimData_GRP
+      parentName: umiBoy_Rig_v4:LeftFoot_IK_CTRL
+      position: {x: 0.00047534992, y: -0.11022295, z: 0.20529313}
+      rotation: {x: 0.0054846425, y: 0.6997215, z: 0.7143944, w: 0.00064595765}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Left_Toe_End_IK_CTRL
+      parentName: umiBoy_Rig_v4:Left_Toe_IK_AnimData_GRP
+      position: {x: 3.5527136e-17, y: 0, z: -2.220446e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Left_ToeBase_IK_AnimData_GRP
+      parentName: umiBoy_Rig_v4:Left_Toe_End_IK_CTRL
+      position: {x: -4.6324633e-10, y: -0.07041109, z: 1.907165e-11}
+      rotation: {x: 0.0022059511, y: -0.002889595, z: 0.011241113, w: 0.9999302}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Left_ToeBase_IK_CTRL
+      parentName: umiBoy_Rig_v4:Left_ToeBase_IK_AnimData_GRP
+      position: {x: -7.105427e-17, y: 4.440892e-18, z: 2.220446e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Left_Ankle_IK_AnimData_GRP
+      parentName: umiBoy_Rig_v4:Left_Toe_End_IK_CTRL
+      position: {x: -4.6324633e-10, y: -0.07041109, z: 1.907165e-11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Left_Ankle_IK_CTRL
+      parentName: umiBoy_Rig_v4:Left_Ankle_IK_AnimData_GRP
+      position: {x: -7.105427e-17, y: 4.440892e-18, z: 2.220446e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_Handle
+      parentName: umiBoy_Rig_v4:Left_Ankle_IK_CTRL
+      position: {x: -0.00000011687203, y: -0.13712655, z: 0.10593735}
+      rotation: {x: 0.04624042, y: 0.6986183, z: 0.71291745, w: 0.039282545}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Left_ToeBase_IkHandle
+      parentName: umiBoy_Rig_v4:Left_Ankle_IK_CTRL
+      position: {x: -0.0000004144647, y: 0.00000006853582, z: 0.0000016642373}
+      rotation: {x: -0.32247528, y: -0.053715233, z: 0.018332412, w: 0.94487476}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_IK_CTRL_parent_POS_GRP
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: 0.10984189, y: 1.0088991, z: 0.7633351}
+      rotation: {x: 0.18406, y: -0.17853504, z: 0.96455926, w: -0.062231027}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_IK_CTRL_parent_Global_POS_GRP
+      parentName: umiBoy_Rig_v4:RightLeg_IK_CTRL_parent_POS_GRP
+      position: {x: -3.5527136e-17, y: 0, z: 3.5527136e-17}
+      rotation: {x: 0, y: 0, z: 8.326673e-17, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_IK_CTRL_parent_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightLeg_IK_CTRL_parent_Global_POS_GRP
+      position: {x: -0, y: -1.4210854e-16, z: -1.7763568e-17}
+      rotation: {x: 0.23316504, y: -0.10808365, z: 0.08208105, w: 0.9629199}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_IK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightLeg_IK_CTRL_parent_AnimData_CONST_GRP
+      position: {x: -7.228894e-10, y: 0.56320894, z: -0.0000000015412084}
+      rotation: {x: -0.0008165176, y: -0.0000056070903, z: 0.006866914, w: 0.9999761}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_IK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightLeg_IK_CTRL_POS_GRP
+      position: {x: -0, y: 1.4210854e-16, z: -1.7763568e-17}
+      rotation: {x: -0.4527393, y: 0.061053988, z: -0.071572036, w: 0.88666624}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_IK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightLeg_IK_CTRL_AnimData_CONST_GRP
+      position: {x: -3.5527136e-17, y: -7.105427e-17, z: 0}
+      rotation: {x: 1.6913554e-16, y: -9.7144515e-17, z: 2.4286129e-17, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_IK_CTRL
+      parentName: umiBoy_Rig_v4:RightLeg_IK_CTRL_In_Rig_CONST_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_IK_CTRL_GuideCurve_Cluster1Handle
+      parentName: umiBoy_Rig_v4:RightLeg_IK_CTRL
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.003804842, y: -0.06559842, z: 0.9959662, w: 0.061104063}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_IK_CTRL_Follow_Foot_GRP
+      parentName: umiBoy_Rig_v4:RightLeg_IK_CTRL_AnimData_CONST_GRP
+      position: {x: -0.09367262, y: 0.032467782, z: -0.155324}
+      rotation: {x: 0.1471887, y: -0.03871981, z: -0.096860096, w: 0.9835926}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_IK_CTRL_Follow_Knee_GRP
+      parentName: umiBoy_Rig_v4:RightLeg_IK_CTRL_Follow_Foot_GRP
+      position: {x: -0, y: 0, z: 0.36370775}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_IK_CTRL_grandparent_POS_GRP
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: 0.10984189, y: 1.0088991, z: 0.7633351}
+      rotation: {x: 0.18406, y: -0.17853504, z: 0.96455926, w: -0.062231027}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_IK_CTRL_grandparent_Global_POS_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_IK_CTRL_grandparent_POS_GRP
+      position: {x: 3.5527136e-17, y: 4.2632563e-16, z: 7.105427e-17}
+      rotation: {x: 0, y: 0, z: 8.326673e-17, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_IK_CTRL_grandparent_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_IK_CTRL_grandparent_Global_POS_GRP
+      position: {x: -0, y: 1.4210854e-16, z: 1.7763568e-17}
+      rotation: {x: 0.23316504, y: -0.10808365, z: 0.08208105, w: 0.9629199}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_IK_CTRL_grandparent_inRig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_IK_CTRL_grandparent_AnimData_CONST_GRP
+      position: {x: -3.5527136e-17, y: -7.105427e-16, z: -1.7763568e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_IK_CTRL_parent_POS_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_IK_CTRL_grandparent_inRig_CONST_GRP
+      position: {x: -7.228895e-10, y: 0.56320894, z: -0.0000000015412086}
+      rotation: {x: -0.0008165176, y: -0.0000056070903, z: 0.006866914, w: 0.9999761}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_IK_CTRL_parent_Global_POS_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_IK_CTRL_parent_POS_GRP
+      position: {x: -0, y: 7.105427e-17, z: 3.5527136e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_IK_CTRL_parent_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_IK_CTRL_parent_Global_POS_GRP
+      position: {x: 1.4210854e-16, y: 7.105427e-17, z: 3.907985e-16}
+      rotation: {x: -0.4527393, y: 0.061053988, z: -0.071572036, w: 0.88666624}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_IK_CTRL_POS_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_IK_CTRL_parent_AnimData_CONST_GRP
+      position: {x: -1.2584532e-10, y: 0.5228915, z: 8.006415e-11}
+      rotation: {x: 0.50188404, y: 0.073928535, z: -0.043109033, w: 0.86069083}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_IK_CTRL_AnimData_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_IK_CTRL_POS_GRP
+      position: {x: -3.5527136e-17, y: 0, z: 4.440892e-18}
+      rotation: {x: 0.16155036, y: -0.08028827, z: -0.0009454187, w: 0.9835926}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_IK_CTRL_In_Rig_CONST_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_IK_CTRL_AnimData_CONST_GRP
+      position: {x: -3.5527136e-17, y: 0, z: 4.440892e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_IK_CTRL_Reorient_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_IK_CTRL_In_Rig_CONST_GRP
+      position: {x: -1.0658141e-16, y: -1.0658141e-16, z: 2.176037e-16}
+      rotation: {x: -0.055423602, y: 0.43789256, z: 0.89690924, w: 0.027059125}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_IK_CTRL
+      parentName: umiBoy_Rig_v4:RightFoot_IK_CTRL_Reorient_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Right_Toe_IK_AnimData_GRP
+      parentName: umiBoy_Rig_v4:RightFoot_IK_CTRL
+      position: {x: -0.0005876088, y: -0.11020204, z: 0.2111658}
+      rotation: {x: -0.0067784986, y: 0.6998978, z: 0.7142102, w: -0.00090749236}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Right_Toe_End_IK_CTRL
+      parentName: umiBoy_Rig_v4:Right_Toe_IK_AnimData_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Right_ToeBase_IK_AnimData_GRP
+      parentName: umiBoy_Rig_v4:Right_Toe_End_IK_CTRL
+      position: {x: 2.517088e-10, y: -0.071764804, z: 2.7763573e-11}
+      rotation: {x: 0.1222795, y: 0.024736483, z: -0.00903617, w: 0.99214625}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Right_ToeBase_IK_CTRL
+      parentName: umiBoy_Rig_v4:Right_ToeBase_IK_AnimData_GRP
+      position: {x: 3.5527136e-17, y: -2.220446e-18, z: -2.220446e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Right_Ankle_IK_AnimData_GRP
+      parentName: umiBoy_Rig_v4:Right_Toe_End_IK_CTRL
+      position: {x: 2.517088e-10, y: -0.071764804, z: 2.7763573e-11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Right_Ankle_IK_CTRL
+      parentName: umiBoy_Rig_v4:Right_Ankle_IK_AnimData_GRP
+      position: {x: 3.5527136e-17, y: -2.220446e-18, z: -2.220446e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightFoot_IK_Handle
+      parentName: umiBoy_Rig_v4:Right_Ankle_IK_CTRL
+      position: {x: 0.0000003175991, y: -0.14159065, z: 0.105902195}
+      rotation: {x: -0.04610942, y: 0.6988852, z: 0.7127525, w: -0.037646722}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Right_ToeBase_IkHandle
+      parentName: umiBoy_Rig_v4:Right_Ankle_IK_CTRL
+      position: {x: 0.00000051702847, y: 0.00000026809505, z: 0.0000012499472}
+      rotation: {x: -0.31513065, y: 0.052045647, z: -0.017310644, w: 0.947462}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_Dummy_Joint_GRP
+      parentName: umiBoy_Rig_v4:global_CTRL
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_Dummy_Hips
+      parentName: umiBoy_Rig_v4:IK_Dummy_Joint_GRP
+      position: {x: 0.016910862, y: 1.0657208, z: 0.7893126}
+      rotation: {x: 0.10516891, y: 0.19245668, z: 0.022238027, w: 0.97540015}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_Dummy_Spine
+      parentName: umiBoy_Rig_v4:IK_Dummy_Hips
+      position: {x: -0, y: 0.10644913, z: -0.022336893}
+      rotation: {x: -0.08455711, y: -0.011717734, z: 0.00056786917, w: 0.9963496}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_Dummy_Spine1
+      parentName: umiBoy_Rig_v4:IK_Dummy_Spine
+      position: {x: -0, y: 0.12689519, z: 3.8565062e-10}
+      rotation: {x: 0.037493702, y: -0.023421802, z: -0.0012891599, w: 0.99902153}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_Dummy_Spine2
+      parentName: umiBoy_Rig_v4:IK_Dummy_Spine1
+      position: {x: 1.7347234e-20, y: 0.14502329, z: -2.646568e-10}
+      rotation: {x: 0.037493736, y: -0.023421714, z: -0.0012891629, w: 0.99902153}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_Dummy_LeftShoulder
+      parentName: umiBoy_Rig_v4:IK_Dummy_Spine2
+      position: {x: -0.055332612, y: 0.13501047, z: -0.0062625543}
+      rotation: {x: -0.576361, y: 0.61802524, z: -0.41432258, w: -0.33791944}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_Dummy_RightShoulder
+      parentName: umiBoy_Rig_v4:IK_Dummy_Spine2
+      position: {x: 0.055332612, y: 0.13486671, z: -0.0055774865}
+      rotation: {x: 0.6197997, y: 0.54911023, z: -0.38034627, w: 0.41190177}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Joint_GRP
+      parentName: UMI_idle_001_Boy(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_Joint_GRP
+      parentName: umiBoy_Rig_v4:Joint_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_Hips
+      parentName: umiBoy_Rig_v4:AnimData_Joint_GRP
+      position: {x: 0.016997455, y: 1.0567702, z: 0.8200613}
+      rotation: {x: 0.10516917, y: 0.19245668, z: 0.022237977, w: 0.9754001}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_Spine
+      parentName: umiBoy_Rig_v4:AnimData_Hips
+      position: {x: -0.000000016498925, y: 0.10884628, z: -0.022978708}
+      rotation: {x: -0.08455711, y: -0.011717734, z: 0.00056786917, w: 0.9963496}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_Spine1
+      parentName: umiBoy_Rig_v4:AnimData_Spine
+      position: {x: -5.8530775e-10, y: 0.12978601, z: -0.000000006275674}
+      rotation: {x: 0.037493702, y: -0.023421802, z: -0.0012891599, w: 0.99902153}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_Spine2
+      parentName: umiBoy_Rig_v4:AnimData_Spine1
+      position: {x: 0.0000000014929947, y: 0.14832734, z: 0.000000029397976}
+      rotation: {x: 0.037493736, y: -0.023421714, z: -0.0012891629, w: 0.99902153}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_Neck
+      parentName: umiBoy_Rig_v4:AnimData_Spine2
+      position: {x: 0.000000013362739, y: 0.16686794, z: -0.000000032843946}
+      rotation: {x: 0.22140095, y: -0.057063717, z: -0.00346239, w: 0.97350574}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_Head
+      parentName: umiBoy_Rig_v4:AnimData_Neck
+      position: {x: -0.000000010338218, y: 0.12914738, z: 0.03866972}
+      rotation: {x: -0.20698869, y: -0.054604147, z: -0.0066442103, w: 0.9767958}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_HeadTop_End
+      parentName: umiBoy_Rig_v4:AnimData_Head
+      position: {x: -0, y: 0.40586928, z: 0.123101115}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftShoulder
+      parentName: umiBoy_Rig_v4:AnimData_Spine2
+      position: {x: -0.056053087, y: 0.14108543, z: -0.0055934256}
+      rotation: {x: -0.57636106, y: 0.6180252, z: -0.41432267, w: -0.33791935}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftArm
+      parentName: umiBoy_Rig_v4:AnimData_LeftShoulder
+      position: {x: -0.000000027515293, y: 0.12442037, z: 0.00000004155331}
+      rotation: {x: 0.30845103, y: -0.31803852, z: -0.40002224, w: 0.802304}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftForeArm
+      parentName: umiBoy_Rig_v4:AnimData_LeftArm
+      position: {x: 0.000007793563, y: 0.27763015, z: 0.0000077404275}
+      rotation: {x: -0.28627947, y: 0.14654352, z: -0.33033326, w: 0.8873832}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHand
+      parentName: umiBoy_Rig_v4:AnimData_LeftForeArm
+      position: {x: -0.00000005851116, y: 0.24939609, z: 0.00000002995592}
+      rotation: {x: -0.018103078, y: 0.20235078, z: 0.13642666, w: 0.9695949}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandThumb1
+      parentName: umiBoy_Rig_v4:AnimData_LeftHand
+      position: {x: 0.03256309, y: 0.034518205, z: 0.026572755}
+      rotation: {x: 0.38356015, y: -0.11693404, z: -0.26714304, w: 0.8762663}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandThumb2
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandThumb1
+      position: {x: 0.009079128, y: 0.04255197, z: 0.000000038206416}
+      rotation: {x: -0.017063145, y: 0.000000032206984, z: -0.000000028906284, w: 0.99985445}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandThumb3
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandThumb2
+      position: {x: -0.00028381834, y: 0.046859138, z: -0.000000024423997}
+      rotation: {x: -0.16374375, y: -0.000000011597506, z: -0.00000001326587, w: 0.98650295}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandThumb4
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandThumb3
+      position: {x: -0.0095092645, y: 0.030848201, z: -3.520067e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandIndex1
+      parentName: umiBoy_Rig_v4:AnimData_LeftHand
+      position: {x: 0.05833931, y: 0.1235308, z: -0.0005445048}
+      rotation: {x: 0.13742326, y: -0.017853376, z: -0.12758994, w: 0.9820982}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandIndex2
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandIndex1
+      position: {x: -0.00026981367, y: 0.04145185, z: -0.00000003501054}
+      rotation: {x: 0.030734126, y: 0.000000032086753, z: -0.000000026023384, w: 0.9995276}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandIndex3
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandIndex2
+      position: {x: 0.00042871473, y: 0.040998243, z: -0.00000008080571}
+      rotation: {x: 0.024945207, y: -0.000000008464532, z: -0.000000010593243, w: 0.9996888}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandIndex4
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandIndex3
+      position: {x: 0.00005666727, y: 0.03178998, z: 1.9090393e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandMiddle1
+      parentName: umiBoy_Rig_v4:AnimData_LeftHand
+      position: {x: 0.015149534, y: 0.1390809, z: -0.010638196}
+      rotation: {x: 0.17630892, y: -0.014253935, z: -0.07931302, w: 0.9810308}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandMiddle2
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandMiddle1
+      position: {x: 0.00046666287, y: 0.039416756, z: 0.00000006304701}
+      rotation: {x: 0.05670706, y: -0.000101461934, z: -0.0006872243, w: 0.9983907}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandMiddle3
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandMiddle2
+      position: {x: 0.0003530274, y: 0.04095064, z: 0.000000018774351}
+      rotation: {x: -0.106370285, y: 0.0000000010233777, z: -0.000000023608004, w: 0.9943266}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandMiddle4
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandMiddle3
+      position: {x: -0.0003434138, y: 0.030599862, z: 5.781416e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandRing1
+      parentName: umiBoy_Rig_v4:AnimData_LeftHand
+      position: {x: -0.018330561, y: 0.14025602, z: -0.005140224}
+      rotation: {x: 0.15526678, y: -0.010417563, z: -0.066129066, w: 0.9856017}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandRing2
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandRing1
+      position: {x: -0.0002973863, y: 0.03671087, z: 0.000000055791187}
+      rotation: {x: 0.11677298, y: -0.000000015887196, z: -0.000000010746283, w: 0.99315864}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandRing3
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandRing2
+      position: {x: 0.00041404844, y: 0.036758073, z: -0.00000002721067}
+      rotation: {x: -0.0535752, y: 0.0000000032342373, z: -0.000000041585388, w: 0.9985638}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandRing4
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandRing3
+      position: {x: 0.000013507184, y: 0.02607725, z: -3.07257e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandPinky1
+      parentName: umiBoy_Rig_v4:AnimData_LeftHand
+      position: {x: -0.055158302, y: 0.13323262, z: -0.0059828064}
+      rotation: {x: 0.24418673, y: -0.016153587, z: -0.064001545, w: 0.96747905}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandPinky2
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandPinky1
+      position: {x: 0.00012507924, y: 0.03571805, z: -0.00000015044276}
+      rotation: {x: 0.054121837, y: 0.00000005311131, z: 5.623583e-10, w: 0.9985344}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandPinky3
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandPinky2
+      position: {x: 0.0004018741, y: 0.03387669, z: 0.00000013692616}
+      rotation: {x: -0.0469717, y: -0.0000000057421228, z: -0.00000002582756, w: 0.99889624}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftHandPinky4
+      parentName: umiBoy_Rig_v4:AnimData_LeftHandPinky3
+      position: {x: -0.000007614407, y: 0.020173816, z: 6.0587126e-11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightShoulder
+      parentName: umiBoy_Rig_v4:AnimData_Spine2
+      position: {x: 0.05605311, y: 0.14102444, z: -0.005305512}
+      rotation: {x: 0.6197997, y: 0.54911023, z: -0.38034627, w: 0.41190177}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightArm
+      parentName: umiBoy_Rig_v4:AnimData_RightShoulder
+      position: {x: 0.000000009659435, y: 0.12442039, z: -0.00000010347003}
+      rotation: {x: 0.40083697, y: 0.13884838, z: 0.2616732, w: 0.86693597}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightForeArm
+      parentName: umiBoy_Rig_v4:AnimData_RightArm
+      position: {x: 0.000000086859636, y: 0.27766666, z: -0.00000032958272}
+      rotation: {x: -0.12153654, y: -0.043307107, z: 0.46481937, w: 0.8759545}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHand
+      parentName: umiBoy_Rig_v4:AnimData_RightForeArm
+      position: {x: 0.00000002006692, y: 0.2494058, z: -0.00000004843209}
+      rotation: {x: -0.012342867, y: -0.07717157, z: -0.1971301, w: 0.9772574}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandThumb1
+      parentName: umiBoy_Rig_v4:AnimData_RightHand
+      position: {x: -0.032361396, y: 0.035497382, z: 0.02594927}
+      rotation: {x: 0.4730537, y: 0.035875022, z: 0.06656837, w: 0.87778234}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandThumb2
+      parentName: umiBoy_Rig_v4:AnimData_RightHandThumb1
+      position: {x: -0.0102918055, y: 0.042446464, z: -0.00000007279285}
+      rotation: {x: -0.04769116, y: -0.000000051139683, z: 0.000000052855725, w: 0.99886215}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandThumb3
+      parentName: umiBoy_Rig_v4:AnimData_RightHandThumb2
+      position: {x: -0.002134254, y: 0.047015358, z: 0.00000007379221}
+      rotation: {x: -0.26480898, y: 0.000000008198034, z: -0.000000027880814, w: 0.96430093}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandThumb4
+      parentName: umiBoy_Rig_v4:AnimData_RightHandThumb3
+      position: {x: 0.005221797, y: 0.033820383, z: -0.0000000015136639}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandIndex1
+      parentName: umiBoy_Rig_v4:AnimData_RightHand
+      position: {x: -0.056228995, y: 0.12350365, z: -0.0014767061}
+      rotation: {x: 0.10851168, y: 0.014358205, z: 0.13038798, w: 0.98540246}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandIndex2
+      parentName: umiBoy_Rig_v4:AnimData_RightHandIndex1
+      position: {x: 0.00032714917, y: 0.041413, z: -0.000000003450789}
+      rotation: {x: 0.060011517, y: 0.000000051846964, z: 0.000000014213047, w: 0.99819773}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandIndex3
+      parentName: umiBoy_Rig_v4:AnimData_RightHandIndex2
+      position: {x: -0.00038663964, y: 0.040821698, z: -0.000000042607983}
+      rotation: {x: 0.03625236, y: -0.000000021355701, z: -0.000000018450882, w: 0.9993427}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandIndex4
+      parentName: umiBoy_Rig_v4:AnimData_RightHandIndex3
+      position: {x: -0.0004025252, y: 0.028702034, z: 4.5365395e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandMiddle1
+      parentName: umiBoy_Rig_v4:AnimData_RightHand
+      position: {x: -0.016623575, y: 0.1368396, z: -0.006442379}
+      rotation: {x: 0.18678454, y: 0.01679372, z: 0.08795939, w: 0.9783111}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandMiddle2
+      parentName: umiBoy_Rig_v4:AnimData_RightHandMiddle1
+      position: {x: 0.000457421, y: 0.041592255, z: 0.00000009700836}
+      rotation: {x: 0.030233916, y: -0.000000023136238, z: 0.000000075047964, w: 0.99954283}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandMiddle3
+      parentName: umiBoy_Rig_v4:AnimData_RightHandMiddle2
+      position: {x: -0.00063155434, y: 0.039915487, z: -0.00000008820673}
+      rotation: {x: -0.0012796525, y: 0.00000005144483, z: -0.0000000711969, w: 0.9999992}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandMiddle4
+      parentName: umiBoy_Rig_v4:AnimData_RightHandMiddle3
+      position: {x: -0.00008823876, y: 0.031674504, z: -8.9533075e-11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandRing1
+      parentName: umiBoy_Rig_v4:AnimData_RightHand
+      position: {x: 0.017520335, y: 0.14144744, z: -0.0072739073}
+      rotation: {x: 0.21097672, y: 0.010528861, z: 0.048718445, w: 0.9762195}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandRing2
+      parentName: umiBoy_Rig_v4:AnimData_RightHandRing1
+      position: {x: 0.00018694985, y: 0.03826177, z: -0.00000006795023}
+      rotation: {x: 0.077658504, y: -0.000000016175223, z: 0.0000000786828, w: 0.99698}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandRing3
+      parentName: umiBoy_Rig_v4:AnimData_RightHandRing2
+      position: {x: -0.00053548417, y: 0.037081666, z: -0.000000063642496}
+      rotation: {x: -0.04181319, y: 0.000000048397016, z: -0.000000015370532, w: 0.9991255}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandRing4
+      parentName: umiBoy_Rig_v4:AnimData_RightHandRing3
+      position: {x: -0.0000029065695, y: 0.025905421, z: 5.411394e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandPinky1
+      parentName: umiBoy_Rig_v4:AnimData_RightHand
+      position: {x: 0.05533223, y: 0.12399698, z: -0.006010384}
+      rotation: {x: 0.26334834, y: 0.015794514, z: 0.05774715, w: 0.9628414}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandPinky2
+      parentName: umiBoy_Rig_v4:AnimData_RightHandPinky1
+      position: {x: 0.0003003653, y: 0.04061978, z: 0.000000015432866}
+      rotation: {x: 0.034956574, y: 0.000000020853514, z: -0.000000010305932, w: 0.9993889}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandPinky3
+      parentName: umiBoy_Rig_v4:AnimData_RightHandPinky2
+      position: {x: -0.00023880397, y: 0.035036493, z: -0.00000001464508}
+      rotation: {x: -0.10893251, y: -0.000000007982343, z: -0.00000003331239, w: 0.9940492}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightHandPinky4
+      parentName: umiBoy_Rig_v4:AnimData_RightHandPinky3
+      position: {x: 0.00032661564, y: 0.02455582, z: 1.9542597e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftUpLeg
+      parentName: umiBoy_Rig_v4:AnimData_Hips
+      position: {x: -0.098999314, y: -0.060721915, z: -0.0076175146}
+      rotation: {x: 0.008160994, y: 0.4676486, z: 0.87053066, w: 0.15301807}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftLeg
+      parentName: umiBoy_Rig_v4:AnimData_LeftUpLeg
+      position: {x: 0.000014328498, y: 0.5292973, z: -0.0000069512635}
+      rotation: {x: -0.48430008, y: -0.0565509, z: 0.08164793, w: 0.8692463}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftFoot
+      parentName: umiBoy_Rig_v4:AnimData_LeftLeg
+      position: {x: 0.000000037412224, y: 0.5325626, z: 0.00000029491403}
+      rotation: {x: 0.54057443, y: -0.0013728047, z: 0.048518304, w: 0.8398949}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftToeBase
+      parentName: umiBoy_Rig_v4:AnimData_LeftFoot
+      position: {x: 0.000000005147606, y: 0.17876329, z: -0.000000013714074}
+      rotation: {x: 0.325088, y: 0.047315758, z: -0.008760007, w: 0.9444587}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_LeftToe_End
+      parentName: umiBoy_Rig_v4:AnimData_LeftToeBase
+      position: {x: 4.6324633e-10, y: 0.07041109, z: -1.9071548e-11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightUpLeg
+      parentName: umiBoy_Rig_v4:AnimData_Hips
+      position: {x: 0.098999366, y: -0.060721878, z: -0.009287694}
+      rotation: {x: 0.0863276, y: 0.17606874, z: 0.9705093, w: -0.14021115}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightLeg
+      parentName: umiBoy_Rig_v4:AnimData_RightUpLeg
+      position: {x: -0.00000029355476, y: 0.5290343, z: -0.00000038745526}
+      rotation: {x: -0.45387134, y: 0.057880197, z: -0.06553406, w: 0.8867672}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightFoot
+      parentName: umiBoy_Rig_v4:AnimData_RightLeg
+      position: {x: -0.000000025723208, y: 0.53250766, z: 0.00000019823773}
+      rotation: {x: 0.62916327, y: -0.0028776065, z: -0.09545401, w: 0.77138436}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightToeBase
+      parentName: umiBoy_Rig_v4:AnimData_RightFoot
+      position: {x: -0.000000013219032, y: 0.1787267, z: 0.0000000014924324}
+      rotation: {x: 0.42855278, y: -0.023235722, z: 0.022772595, w: 0.9029308}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:AnimData_RightToe_End
+      parentName: umiBoy_Rig_v4:AnimData_RightToeBase
+      position: {x: -2.5170885e-10, y: 0.071764804, z: -2.7763557e-11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_Joint_GRP
+      parentName: umiBoy_Rig_v4:Joint_GRP
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_Hips
+      parentName: umiBoy_Rig_v4:Bind_Joint_GRP
+      position: {x: 0.000086601074, y: 1.2639694, z: 0.11151424}
+      rotation: {x: 0.000000005820766, y: -0, z: -0, w: 1}
+      scale: {x: 0.9999999, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_LeftUpLeg
+      parentName: umiBoy_Rig_v4:Bind_Hips
+      position: {x: -0.10289238, y: -0.05915794, z: -0.0073929974}
+      rotation: {x: 0.008160994, y: 0.4676486, z: 0.87053066, w: 0.15301807}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_LeftLeg
+      parentName: umiBoy_Rig_v4:FK_LeftUpLeg
+      position: {x: -0.0000000030922378, y: 0.56206524, z: 0.0000000032985843}
+      rotation: {x: -0.48430008, y: -0.0565509, z: 0.08164793, w: 0.8692463}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_LeftFoot
+      parentName: umiBoy_Rig_v4:FK_LeftLeg
+      position: {x: -0.0000000031665601, y: 0.52266717, z: 6.596973e-10}
+      rotation: {x: 0.54057443, y: -0.0013728008, z: 0.048518308, w: 0.8398949}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_LeftToeBase
+      parentName: umiBoy_Rig_v4:FK_LeftFoot
+      position: {x: -1.8826149e-10, y: 0.17328203, z: -0.000000003581503}
+      rotation: {x: 0.325088, y: 0.047315758, z: -0.008760007, w: 0.9444587}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_LeftToe_End
+      parentName: umiBoy_Rig_v4:FK_LeftToeBase
+      position: {x: 4.6324633e-10, y: 0.07041109, z: -1.9071548e-11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_RightUpLeg
+      parentName: umiBoy_Rig_v4:Bind_Hips
+      position: {x: 0.10289238, y: -0.05915794, z: -0.006565275}
+      rotation: {x: 0.0863276, y: 0.17606874, z: 0.9705093, w: -0.14021115}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_RightLeg
+      parentName: umiBoy_Rig_v4:FK_RightUpLeg
+      position: {x: -7.228894e-10, y: 0.56320894, z: -0.0000000015412083}
+      rotation: {x: -0.45387134, y: 0.057880197, z: -0.06553406, w: 0.8867672}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_RightFoot
+      parentName: umiBoy_Rig_v4:FK_RightLeg
+      position: {x: -1.2584532e-10, y: 0.5228915, z: 8.006413e-11}
+      rotation: {x: 0.62916327, y: -0.0028776033, z: -0.095454015, w: 0.77138436}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_RightToeBase
+      parentName: umiBoy_Rig_v4:FK_RightFoot
+      position: {x: -0.0000000016998948, y: 0.17681459, z: 0.0000000031495528}
+      rotation: {x: 0.42855278, y: -0.023235716, z: 0.022772584, w: 0.9029308}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_RightToe_End
+      parentName: umiBoy_Rig_v4:FK_RightToeBase
+      position: {x: -2.5170885e-10, y: 0.071764804, z: -2.7763557e-11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_LeftUpLeg
+      parentName: umiBoy_Rig_v4:Bind_Hips
+      position: {x: -0.10289238, y: -0.05915794, z: -0.0073929974}
+      rotation: {x: -0.03616313, y: 0.47484365, z: 0.8698299, w: 0.12888631}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_LeftLeg
+      parentName: umiBoy_Rig_v4:IK_LeftUpLeg
+      position: {x: -0.0000000030922378, y: 0.56206524, z: 0.0000000032985843}
+      rotation: {x: -0.49112743, y: 0.0043246513, z: -0.0026080022, w: 0.8710731}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_LeftFoot
+      parentName: umiBoy_Rig_v4:IK_LeftLeg
+      position: {x: -0.0000000031665601, y: 0.52266717, z: 6.596973e-10}
+      rotation: {x: 0.5307924, y: -0.1026125, z: 0.11347554, w: 0.83357865}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_LeftToeBase
+      parentName: umiBoy_Rig_v4:IK_LeftFoot
+      position: {x: -1.8826149e-10, y: 0.17328203, z: -0.000000003581503}
+      rotation: {x: 0.32508036, y: 0.047315706, z: -0.008760329, w: 0.94446135}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_LeftToe_End
+      parentName: umiBoy_Rig_v4:IK_LeftToeBase
+      position: {x: 4.6324633e-10, y: 0.07041109, z: -1.9071548e-11}
+      rotation: {x: -0.002205951, y: 0.002889595, z: -0.011241113, w: 0.9999302}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_IK_CTRL_GuideCurve_Cluster2Handle
+      parentName: umiBoy_Rig_v4:IK_LeftLeg
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.3528376, y: -0.081507325, z: 0.93147624, w: -0.034846094}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_RightUpLeg
+      parentName: umiBoy_Rig_v4:Bind_Hips
+      position: {x: 0.10289238, y: -0.05915794, z: -0.006565275}
+      rotation: {x: 0.123865135, y: 0.18125768, z: 0.9663548, w: -0.13402066}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_RightLeg
+      parentName: umiBoy_Rig_v4:IK_RightUpLeg
+      position: {x: -7.228894e-10, y: 0.56320894, z: -0.0000000015412083}
+      rotation: {x: -0.4585761, y: -0.0062557724, z: 0.0014028447, w: 0.888632}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_RightFoot
+      parentName: umiBoy_Rig_v4:IK_RightLeg
+      position: {x: -1.2584532e-10, y: 0.5228915, z: 8.006413e-11}
+      rotation: {x: 0.6146953, y: 0.08292684, z: -0.16383183, w: 0.7670932}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_RightToeBase
+      parentName: umiBoy_Rig_v4:IK_RightFoot
+      position: {x: -0.0000000016998948, y: 0.17681459, z: 0.0000000031495528}
+      rotation: {x: 0.42854807, y: -0.023235623, z: 0.022772638, w: 0.90293306}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_RightToe_End
+      parentName: umiBoy_Rig_v4:IK_RightToeBase
+      position: {x: -2.5170885e-10, y: 0.071764804, z: -2.7763557e-11}
+      rotation: {x: -0.122279495, y: -0.024736485, z: 0.00903617, w: 0.99214625}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_IK_CTRL_GuideCurve_Cluster2Handle
+      parentName: umiBoy_Rig_v4:IK_RightLeg
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.29789972, y: -0.080839224, z: 0.95037097, w: 0.038933676}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_LeftUpLeg
+      parentName: umiBoy_Rig_v4:Bind_Hips
+      position: {x: -0.10289238, y: -0.05915794, z: -0.0073929974}
+      rotation: {x: 0.0030783496, y: -0.056421354, z: 0.99691963, w: 0.054391902}
+      scale: {x: 1.0000055, y: 1.0000054, z: 1}
+    - name: umiBoy_Rig_v4:Bind_LeftLeg
+      parentName: umiBoy_Rig_v4:Bind_LeftUpLeg
+      position: {x: -0.0000000030922378, y: 0.56206524, z: 0.0000000032985843}
+      rotation: {x: -0.007561677, y: 0.000051349867, z: -0.0067892545, w: 0.99994844}
+      scale: {x: 1.0000017, y: 1.0000018, z: 0.9999996}
+    - name: umiBoy_Rig_v4:LeftLeg_IK_BakingLOC
+      parentName: umiBoy_Rig_v4:Bind_LeftLeg
+      position: {x: -0, y: 0, z: 0.28103262}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_LeftFoot
+      parentName: umiBoy_Rig_v4:Bind_LeftLeg
+      position: {x: -0.0000000031665601, y: 0.52266717, z: 6.596973e-10}
+      rotation: {x: 0.4936096, y: -0.07780839, z: 0.04439831, w: 0.86505735}
+      scale: {x: 1.0000005, y: 1.0000002, z: 1.0000001}
+    - name: umiBoy_Rig_v4:LeftFoot_IK_BakingLOC
+      parentName: umiBoy_Rig_v4:Bind_LeftFoot
+      position: {x: -0.00000027577127, y: 0.00000071671275, z: -0.0000013883242}
+      rotation: {x: 0.056175437, y: 0.43063942, z: 0.90037334, w: -0.02686814}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_LeftToeBase
+      parentName: umiBoy_Rig_v4:Bind_LeftFoot
+      position: {x: -1.8826146e-10, y: 0.17328203, z: -0.000000003581503}
+      rotation: {x: 0.32247534, y: 0.053715147, z: -0.01833212, w: 0.9448748}
+      scale: {x: 0.99999964, y: 1.0000004, z: 1}
+    - name: umiBoy_Rig_v4:Bind_LeftToe_End
+      parentName: umiBoy_Rig_v4:Bind_LeftToeBase
+      position: {x: 4.6324625e-10, y: 0.07041109, z: -1.9071555e-11}
+      rotation: {x: -0.002205951, y: 0.002889595, z: -0.011241113, w: 0.9999302}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_RightUpLeg
+      parentName: umiBoy_Rig_v4:Bind_Hips
+      position: {x: 0.10289238, y: -0.05915794, z: -0.006565275}
+      rotation: {x: -0.0035292355, y: -0.06481742, z: 0.996415, w: -0.054253273}
+      scale: {x: 1.0000074, y: 1.0000077, z: 1}
+    - name: umiBoy_Rig_v4:Bind_RightLeg
+      parentName: umiBoy_Rig_v4:Bind_RightUpLeg
+      position: {x: -7.228894e-10, y: 0.56320894, z: -0.0000000015412083}
+      rotation: {x: -0.0008164664, y: -0.0000056717545, z: 0.006866961, w: 0.99997616}
+      scale: {x: 1.0000017, y: 1.0000007, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_IK_BakingLOC
+      parentName: umiBoy_Rig_v4:Bind_RightLeg
+      position: {x: -0, y: 0, z: 0.28160447}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_RightFoot
+      parentName: umiBoy_Rig_v4:Bind_RightLeg
+      position: {x: -1.2584532e-10, y: 0.5228915, z: 8.0064115e-11}
+      rotation: {x: 0.5018839, y: 0.07392828, z: -0.04310928, w: 0.86069083}
+      scale: {x: 1.0000006, y: 1.0000007, z: 1.0000001}
+    - name: umiBoy_Rig_v4:RightFoot_IK_BakingLOC
+      parentName: umiBoy_Rig_v4:Bind_RightFoot
+      position: {x: 0.00000039870082, y: 0.0000005969294, z: -0.00000073708674}
+      rotation: {x: -0.055423602, y: 0.43789256, z: 0.89690924, w: 0.027059125}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_RightToeBase
+      parentName: umiBoy_Rig_v4:Bind_RightFoot
+      position: {x: -0.0000000016998948, y: 0.17681459, z: 0.0000000031495528}
+      rotation: {x: 0.31513056, y: -0.05204546, z: 0.017310625, w: 0.947462}
+      scale: {x: 1.0000014, y: 1.0000004, z: 1.0000006}
+    - name: umiBoy_Rig_v4:Bind_RightToe_End
+      parentName: umiBoy_Rig_v4:Bind_RightToeBase
+      position: {x: -2.5170885e-10, y: 0.071764804, z: -2.7763581e-11}
+      rotation: {x: -0.122279495, y: -0.024736485, z: 0.00903617, w: 0.99214625}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_Spine
+      parentName: umiBoy_Rig_v4:Bind_Hips
+      position: {x: -0, y: 0.10644913, z: -0.022336893}
+      rotation: {x: -0.10323354, y: -0.000000023158666, z: -0.0000000024035927, w: 0.99465716}
+      scale: {x: 1.0000001, y: 0.9999999, z: 1.0000001}
+    - name: umiBoy_Rig_v4:Bind_Spine1
+      parentName: umiBoy_Rig_v4:Bind_Spine
+      position: {x: -0, y: 0.12689519, z: 3.8565065e-10}
+      rotation: {x: -0.000000037252903, y: 0.0000000341802, z: 0.000000007172254,
+        w: 1}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+    - name: umiBoy_Rig_v4:Bind_Spine2
+      parentName: umiBoy_Rig_v4:Bind_Spine1
+      position: {x: -0, y: 0.14502329, z: -2.646568e-10}
+      rotation: {x: 0.000000044703484, y: -0.00000004676898, z: -0.0000000038663046,
+        w: 1}
+      scale: {x: 0.9999999, y: 1.0000001, z: 0.99999976}
+    - name: umiBoy_Rig_v4:Bind_RightShoulder
+      parentName: umiBoy_Rig_v4:Bind_Spine2
+      position: {x: 0.055332612, y: 0.13486671, z: -0.0055774865}
+      rotation: {x: -0.55050194, y: -0.42414212, z: 0.59502524, w: -0.4037278}
+      scale: {x: 1.0000007, y: 1.0000013, z: 1.0000007}
+    - name: umiBoy_Rig_v4:FK_RightArm
+      parentName: umiBoy_Rig_v4:Bind_RightShoulder
+      position: {x: -3.6911488e-11, y: 0.12583344, z: -1.8971405e-10}
+      rotation: {x: 0.40083697, y: 0.13884838, z: 0.2616732, w: 0.86693597}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_RightForeArm
+      parentName: umiBoy_Rig_v4:FK_RightArm
+      position: {x: 2.9598127e-10, y: 0.28996432, z: 5.270573e-10}
+      rotation: {x: -0.121536545, y: -0.043307114, z: 0.46481937, w: 0.8759545}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_RightHand
+      parentName: umiBoy_Rig_v4:FK_RightForeArm
+      position: {x: -0.0000000013247163, y: 0.2756483, z: 0.000000004868203}
+      rotation: {x: -0.012342875, y: -0.077171564, z: -0.1971301, w: 0.9772574}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_RightArm
+      parentName: umiBoy_Rig_v4:Bind_RightShoulder
+      position: {x: -3.6911488e-11, y: 0.12583344, z: -1.8971405e-10}
+      rotation: {x: 0.3965234, y: 0.06317265, z: 0.22801875, w: 0.88700956}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_RightForeArm
+      parentName: umiBoy_Rig_v4:IK_RightArm
+      position: {x: 2.9598127e-10, y: 0.28996432, z: 5.270573e-10}
+      rotation: {x: -0.05618305, y: 0.06747112, z: 0.47714958, w: 0.8744252}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_RightHand
+      parentName: umiBoy_Rig_v4:IK_RightForeArm
+      position: {x: -0.0000000013247163, y: 0.2756483, z: 0.000000004868203}
+      rotation: {x: -0.031475507, y: -0.12625195, z: -0.20081753, w: 0.97094905}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_IK_CTRL_GuideCurve_Cluster2Handle
+      parentName: umiBoy_Rig_v4:IK_RightForeArm
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.6433295, y: -0.2233183, z: 0.68447596, w: 0.26028597}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_RightArm
+      parentName: umiBoy_Rig_v4:Bind_RightShoulder
+      position: {x: -3.6911488e-11, y: 0.12583344, z: -1.8971405e-10}
+      rotation: {x: 0.13803397, y: -0.3332785, z: 0.022211282, w: -0.93240476}
+      scale: {x: 1, y: 1.0000007, z: 1.0000014}
+    - name: umiBoy_Rig_v4:Bind_RightForeArm
+      parentName: umiBoy_Rig_v4:Bind_RightArm
+      position: {x: 2.9598127e-10, y: 0.28996432, z: 5.270573e-10}
+      rotation: {x: -0.038417194, y: -0.007828952, z: 0.030981012, w: 0.99875075}
+      scale: {x: 1.0000004, y: 0.9999996, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_IK_BakingLOC
+      parentName: umiBoy_Rig_v4:Bind_RightForeArm
+      position: {x: 0.14498216, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_RightHand
+      parentName: umiBoy_Rig_v4:Bind_RightForeArm
+      position: {x: -0.0000000013247166, y: 0.2756483, z: 0.000000004868203}
+      rotation: {x: -0.04489444, y: 0.1927723, z: 0.08250252, w: -0.97673774}
+      scale: {x: 1.0000002, y: 1.0000012, z: 1.0000007}
+    - name: umiBoy_Rig_v4:Bind_RightHandThumb1
+      parentName: umiBoy_Rig_v4:Bind_RightHand
+      position: {x: -0.019935854, y: 0.018484332, z: 0.03232367}
+      rotation: {x: 0.1954943, y: -0.22710858, z: 0.25270897, w: 0.9199684}
+      scale: {x: 1.0000004, y: 1.0000015, z: 1.0000011}
+    - name: umiBoy_Rig_v4:Bind_RightHandThumb2
+      parentName: umiBoy_Rig_v4:Bind_RightHandThumb1
+      position: {x: -0.0135362325, y: 0.030959312, z: 1.32595445e-11}
+      rotation: {x: -0.004937232, y: 0.0049034213, z: 0.27274215, w: 0.96206206}
+      scale: {x: 1.0000005, y: 1.0000018, z: 1.0000014}
+    - name: umiBoy_Rig_v4:Bind_RightHandThumb3
+      parentName: umiBoy_Rig_v4:Bind_RightHandThumb2
+      position: {x: 0.008314434, y: 0.041987427, z: 0.0000000011844263}
+      rotation: {x: -0.037855208, y: -0.04163383, z: -0.018767146, w: 0.99823916}
+      scale: {x: 0.99999976, y: 1.0000004, z: 1.0000001}
+    - name: umiBoy_Rig_v4:Bind_RightHandThumb4
+      parentName: umiBoy_Rig_v4:Bind_RightHandThumb3
+      position: {x: 0.005221797, y: 0.033820383, z: -0.0000000015136641}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_RightHandPinky1
+      parentName: umiBoy_Rig_v4:Bind_RightHand
+      position: {x: 0.05636459, y: 0.091826946, z: -0.007479845}
+      rotation: {x: 0.01688462, y: -0.0053082253, z: 0.08250753, w: 0.9964333}
+      scale: {x: 1.0000001, y: 1.0000007, z: 1.000001}
+    - name: umiBoy_Rig_v4:Bind_RightHandPinky2
+      parentName: umiBoy_Rig_v4:Bind_RightHandPinky1
+      position: {x: -0.000015032499, y: 0.03889013, z: -1.14202835e-10}
+      rotation: {x: 0.034957077, y: 0.0000000027939675, z: -0.000000023748722, w: 0.9993889}
+      scale: {x: 0.9999998, y: 1.0000006, z: 1.0000006}
+    - name: umiBoy_Rig_v4:Bind_RightHandPinky3
+      parentName: umiBoy_Rig_v4:Bind_RightHandPinky2
+      position: {x: -0.0003115832, y: 0.035325933, z: -2.1536621e-11}
+      rotation: {x: -0.03793215, y: -0.00016051448, z: 0.007224153, w: 0.9992542}
+      scale: {x: 1.0000001, y: 1.0000007, z: 1.0000013}
+    - name: umiBoy_Rig_v4:Bind_RightHandPinky4
+      parentName: umiBoy_Rig_v4:Bind_RightHandPinky3
+      position: {x: 0.00032661564, y: 0.02455582, z: 1.9542583e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_RightHandIndex1
+      parentName: umiBoy_Rig_v4:Bind_RightHand
+      position: {x: -0.055461258, y: 0.083250865, z: -0.0005058222}
+      rotation: {x: -0.10851264, y: -0.014357893, z: -0.13038795, w: -0.98540235}
+      scale: {x: 0.9999998, y: 1.0000008, z: 1.0000008}
+    - name: umiBoy_Rig_v4:Bind_RightHandIndex2
+      parentName: umiBoy_Rig_v4:Bind_RightHandIndex1
+      position: {x: 0.0006145752, y: 0.04310004, z: 0.0000000011346053}
+      rotation: {x: 0.06001152, y: 0.000000035390254, z: -0.00000041630113, w: 0.9981977}
+      scale: {x: 1.0000005, y: 1.0000014, z: 1.0000012}
+    - name: umiBoy_Rig_v4:Bind_RightHandIndex3
+      parentName: umiBoy_Rig_v4:Bind_RightHandIndex2
+      position: {x: -0.0002120501, y: 0.041330352, z: 0.0000000027090035}
+      rotation: {x: 0.036252085, y: -0.000000029202546, z: 0.000000022826358, w: 0.99934274}
+      scale: {x: 1, y: 0.99999964, z: 0.9999998}
+    - name: umiBoy_Rig_v4:Bind_RightHandIndex4
+      parentName: umiBoy_Rig_v4:Bind_RightHandIndex3
+      position: {x: -0.0004025252, y: 0.028702034, z: 4.536538e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_RightHandMiddle1
+      parentName: umiBoy_Rig_v4:Bind_RightHand
+      position: {x: -0.017679356, y: 0.098589025, z: -0.010962947}
+      rotation: {x: 0.020263618, y: 0.002464533, z: 0.090534724, w: 0.9956841}
+      scale: {x: 1.0000002, y: 1.000001, z: 1.0000007}
+    - name: umiBoy_Rig_v4:Bind_RightHandMiddle2
+      parentName: umiBoy_Rig_v4:Bind_RightHandMiddle1
+      position: {x: 0.00021239245, y: 0.0434845, z: 0.0000000021693458}
+      rotation: {x: 0.030233707, y: -0.000000050291412, z: 0.0000000027939675, w: 0.9995429}
+      scale: {x: 0.9999998, y: 1.0000002, z: 0.99999976}
+    - name: umiBoy_Rig_v4:Bind_RightHandMiddle3
+      parentName: umiBoy_Rig_v4:Bind_RightHandMiddle2
+      position: {x: -0.00012415387, y: 0.039622236, z: 9.340115e-10}
+      rotation: {x: -0.00127957, y: -0.00000005288136, z: 0.00000003823504, w: 0.99999917}
+      scale: {x: 1, y: 1.0000008, z: 1.0000012}
+    - name: umiBoy_Rig_v4:Bind_RightHandMiddle4
+      parentName: umiBoy_Rig_v4:Bind_RightHandMiddle3
+      position: {x: -0.00008823876, y: 0.031674504, z: -8.9533075e-11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_RightHandRing1
+      parentName: umiBoy_Rig_v4:Bind_RightHand
+      position: {x: 0.016776023, y: 0.10945758, z: -0.0047954717}
+      rotation: {x: 0.01845742, y: -0.0043878555, z: 0.08113733, w: 0.9965224}
+      scale: {x: 1, y: 1.000001, z: 1.0000004}
+    - name: umiBoy_Rig_v4:Bind_RightHandRing2
+      parentName: umiBoy_Rig_v4:Bind_RightHandRing1
+      position: {x: 0.00028309444, y: 0.0379093, z: -1.290897e-10}
+      rotation: {x: 0.03952467, y: -0.0000072843395, z: -0.003766807, w: 0.99921155}
+      scale: {x: 1.0000002, y: 1.0000008, z: 1.0000008}
+    - name: umiBoy_Rig_v4:Bind_RightHandRing3
+      parentName: umiBoy_Rig_v4:Bind_RightHandRing2
+      position: {x: -0.00028018793, y: 0.035687122, z: -5.6422774e-12}
+      rotation: {x: -0.041813497, y: -0.00000007047763, z: -0.000000024460919, w: 0.9991254}
+      scale: {x: 1.0000006, y: 1.000001, z: 1.0000017}
+    - name: umiBoy_Rig_v4:Bind_RightHandRing4
+      parentName: umiBoy_Rig_v4:Bind_RightHandRing3
+      position: {x: -0.0000029065695, y: 0.025905421, z: 5.4113924e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_LeftShoulder
+      parentName: umiBoy_Rig_v4:Bind_Spine2
+      position: {x: -0.055332612, y: 0.13501047, z: -0.0062625543}
+      rotation: {x: 0.5465452, y: -0.42711198, z: 0.59770584, w: 0.40200928}
+      scale: {x: 1.0000012, y: 1.0000021, z: 1.0000011}
+    - name: umiBoy_Rig_v4:FK_LeftArm
+      parentName: umiBoy_Rig_v4:Bind_LeftShoulder
+      position: {x: 3.801748e-11, y: 0.12583344, z: -1.8949264e-10}
+      rotation: {x: 0.30845103, y: -0.31803852, z: -0.40002224, w: 0.802304}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_LeftForeArm
+      parentName: umiBoy_Rig_v4:FK_LeftArm
+      position: {x: 0.000000004523381, y: 0.28961122, z: 0.0000000042843538}
+      rotation: {x: -0.28627947, y: 0.14654352, z: -0.33033326, w: 0.8873832}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:FK_LeftHand
+      parentName: umiBoy_Rig_v4:FK_LeftForeArm
+      position: {x: -0.0000000023776032, y: 0.2758088, z: -0.00000000641103}
+      rotation: {x: -0.018103078, y: 0.20235078, z: 0.13642666, w: 0.9695949}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_LeftArm
+      parentName: umiBoy_Rig_v4:Bind_LeftShoulder
+      position: {x: 3.801748e-11, y: 0.12583344, z: -1.8949264e-10}
+      rotation: {x: 0.32878423, y: -0.093068846, z: -0.3051361, w: 0.8888932}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_LeftForeArm
+      parentName: umiBoy_Rig_v4:IK_LeftArm
+      position: {x: 0.000000004523381, y: 0.28961122, z: 0.0000000042843538}
+      rotation: {x: -0.052949365, y: -0.06867088, z: -0.4339045, w: 0.8967762}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:IK_LeftHand
+      parentName: umiBoy_Rig_v4:IK_LeftForeArm
+      position: {x: -0.0000000023776032, y: 0.2758088, z: -0.00000000641103}
+      rotation: {x: -0.09987035, y: 0.20137273, z: 0.14943342, w: 0.9628835}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_GuideCurve_Cluster2Handle
+      parentName: umiBoy_Rig_v4:IK_LeftForeArm
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.64702547, y: -0.21896388, z: 0.6807937, w: -0.26444823}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_LeftArm
+      parentName: umiBoy_Rig_v4:Bind_LeftShoulder
+      position: {x: 3.801748e-11, y: 0.12583344, z: -1.8949264e-10}
+      rotation: {x: -0.13825051, y: -0.31976655, z: 0.019089429, w: 0.93716156}
+      scale: {x: 1.0000002, y: 1.0000014, z: 1.0000014}
+    - name: umiBoy_Rig_v4:Bind_LeftForeArm
+      parentName: umiBoy_Rig_v4:Bind_LeftArm
+      position: {x: 0.000000004523381, y: 0.28961122, z: 0.0000000042843538}
+      rotation: {x: -0.037204023, y: 0.008195608, z: -0.031559136, w: 0.9987756}
+      scale: {x: 1, y: 0.99999994, z: 1.0000001}
+    - name: umiBoy_Rig_v4:LeftForeArm_IK_BakingLOC
+      parentName: umiBoy_Rig_v4:Bind_LeftForeArm
+      position: {x: -0.14480561, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_LeftHand
+      parentName: umiBoy_Rig_v4:Bind_LeftForeArm
+      position: {x: -0.0000000023776032, y: 0.2758088, z: -0.00000000641103}
+      rotation: {x: 0.054185495, y: 0.21332109, z: 0.110337816, w: 0.969218}
+      scale: {x: 1.0000004, y: 0.99999994, z: 1.0000002}
+    - name: umiBoy_Rig_v4:Bind_LeftHandThumb1
+      parentName: umiBoy_Rig_v4:Bind_LeftHand
+      position: {x: 0.02914788, y: 0.014979503, z: 0.031072374}
+      rotation: {x: 0.1276954, y: 0.094735295, z: -0.29108107, w: 0.9433933}
+      scale: {x: 1.0000008, y: 1.0000013, z: 1.0000008}
+    - name: umiBoy_Rig_v4:Bind_LeftHandThumb2
+      parentName: umiBoy_Rig_v4:Bind_LeftHandThumb1
+      position: {x: 0.0126669705, y: 0.03383507, z: 4.0242084e-11}
+      rotation: {x: -0.0029092878, y: -0.0020980313, z: -0.18140458, w: 0.983402}
+      scale: {x: 1.0000001, y: 1.0000007, z: 1.0000008}
+    - name: umiBoy_Rig_v4:Bind_LeftHandThumb3
+      parentName: umiBoy_Rig_v4:Bind_LeftHandThumb2
+      position: {x: -0.0031577044, y: 0.043897532, z: 0.0000000011102643}
+      rotation: {x: -0.03282532, y: 0.02514555, z: -0.09416695, w: 0.9946974}
+      scale: {x: 0.99999946, y: 0.99999934, z: 0.99999934}
+    - name: umiBoy_Rig_v4:Bind_LeftHandThumb4
+      parentName: umiBoy_Rig_v4:Bind_LeftHandThumb3
+      position: {x: -0.0095092645, y: 0.030848201, z: -3.5200656e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_LeftHandRing1
+      parentName: umiBoy_Rig_v4:Bind_LeftHand
+      position: {x: -0.017667864, y: 0.10823683, z: -0.005434427}
+      rotation: {x: 0.030167274, y: -0.0009408592, z: -0.078171134, w: 0.99648297}
+      scale: {x: 1.0000005, y: 1.0000019, z: 1.0000008}
+    - name: umiBoy_Rig_v4:Bind_LeftHandRing2
+      parentName: umiBoy_Rig_v4:Bind_LeftHandRing1
+      position: {x: -0.00020928364, y: 0.03820712, z: -0.000000002121952}
+      rotation: {x: 0.03770502, y: 0.00000005570473, z: 0.0037137147, w: 0.99928206}
+      scale: {x: 1.0000006, y: 1.0000008, z: 1.000001}
+    - name: umiBoy_Rig_v4:Bind_LeftHandRing3
+      parentName: umiBoy_Rig_v4:Bind_LeftHandRing2
+      position: {x: 0.00019577632, y: 0.035805836, z: -1.6532353e-10}
+      rotation: {x: -0.040898293, y: -0.000038290735, z: -0.00058597175, w: 0.9991632}
+      scale: {x: 0.9999998, y: 0.99999994, z: 1.0000005}
+    - name: umiBoy_Rig_v4:Bind_LeftHandRing4
+      parentName: umiBoy_Rig_v4:Bind_LeftHandRing3
+      position: {x: 0.000013507184, y: 0.02607725, z: -3.07257e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_LeftHandPinky1
+      parentName: umiBoy_Rig_v4:Bind_LeftHand
+      position: {x: -0.055822797, y: 0.1068471, z: -0.004652428}
+      rotation: {x: 0.02564935, y: 0.0011598467, z: -0.07921306, w: 0.9965271}
+      scale: {x: 1.0000006, y: 1.0000012, z: 1.0000008}
+    - name: umiBoy_Rig_v4:Bind_LeftHandPinky2
+      parentName: umiBoy_Rig_v4:Bind_LeftHandPinky1
+      position: {x: -0.00007826557, y: 0.03574183, z: 5.422606e-11}
+      rotation: {x: 0.04087017, y: 0.0000054308885, z: 0.0006299813, w: 0.9991643}
+      scale: {x: 0.99999976, y: 0.99999964, z: 0.9999997}
+    - name: umiBoy_Rig_v4:Bind_LeftHandPinky3
+      parentName: umiBoy_Rig_v4:Bind_LeftHandPinky2
+      position: {x: 0.00008587993, y: 0.029117435, z: -4.8374246e-11}
+      rotation: {x: -0.04124683, y: -0.0000072601442, z: -0.00020286991, w: 0.99914896}
+      scale: {x: 1.0000002, y: 1.000001, z: 1.000001}
+    - name: umiBoy_Rig_v4:Bind_LeftHandPinky4
+      parentName: umiBoy_Rig_v4:Bind_LeftHandPinky3
+      position: {x: -0.000007614407, y: 0.020173816, z: 6.0587264e-11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_LeftHandIndex1
+      parentName: umiBoy_Rig_v4:Bind_LeftHand
+      position: {x: 0.056670044, y: 0.08260912, z: -0.00048068928}
+      rotation: {x: 0.13742438, y: -0.017853558, z: -0.12758967, w: 0.9820981}
+      scale: {x: 1.0000006, y: 1.0000006, z: 1.0000007}
+    - name: umiBoy_Rig_v4:Bind_LeftHandIndex2
+      parentName: umiBoy_Rig_v4:Bind_LeftHandIndex1
+      position: {x: -0.00012087493, y: 0.040821947, z: 9.295732e-10}
+      rotation: {x: 0.030733641, y: 0.000000042840835, z: -0.000000104540945, w: 0.99952763}
+      scale: {x: 0.9999998, y: 1.0000005, z: 0.99999994}
+    - name: umiBoy_Rig_v4:Bind_LeftHandIndex3
+      parentName: umiBoy_Rig_v4:Bind_LeftHandIndex2
+      position: {x: 0.0000642079, y: 0.04179999, z: 8.811932e-10}
+      rotation: {x: 0.02494416, y: 0.000000031964245, z: -0.00000019724696, w: 0.9996889}
+      scale: {x: 1.0000001, y: 1.0000004, z: 1.0000007}
+    - name: umiBoy_Rig_v4:Bind_LeftHandIndex4
+      parentName: umiBoy_Rig_v4:Bind_LeftHandIndex3
+      position: {x: 0.00005666727, y: 0.03178998, z: 1.9090379e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_LeftHandMiddle1
+      parentName: umiBoy_Rig_v4:Bind_LeftHand
+      position: {x: 0.016820608, y: 0.10126785, z: -0.009586041}
+      rotation: {x: 0.029285554, y: -0.0020236967, z: -0.08110487, w: 0.99627316}
+      scale: {x: 1.0000004, y: 1.000001, z: 1.0000004}
+    - name: umiBoy_Rig_v4:Bind_LeftHandMiddle2
+      parentName: umiBoy_Rig_v4:Bind_LeftHandMiddle1
+      position: {x: 0.000060728922, y: 0.037629884, z: -9.281349e-10}
+      rotation: {x: 0.04164337, y: -0.00000014901158, z: 0.00000008312052, w: 0.9991325}
+      scale: {x: 0.9999998, y: 1.0000011, z: 1.0000007}
+    - name: umiBoy_Rig_v4:Bind_LeftHandMiddle3
+      parentName: umiBoy_Rig_v4:Bind_LeftHandMiddle2
+      position: {x: 0.000282685, y: 0.041455593, z: 1.916547e-11}
+      rotation: {x: -0.03812505, y: 0.00015157131, z: -0.0057987752, w: 0.9992562}
+      scale: {x: 1.0000004, y: 1.0000014, z: 1.0000012}
+    - name: umiBoy_Rig_v4:Bind_LeftHandMiddle4
+      parentName: umiBoy_Rig_v4:Bind_LeftHandMiddle3
+      position: {x: -0.0003434138, y: 0.030599862, z: 5.7814176e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Bind_Neck
+      parentName: umiBoy_Rig_v4:Bind_Spine2
+      position: {x: -0, y: 0.16315107, z: -0.000000013862387}
+      rotation: {x: 0.103233546, y: 0.00000004082812, z: 0.0000000013114514, w: 0.99465716}
+      scale: {x: 0.99999994, y: 1.0000007, z: 0.99999994}
+    - name: umiBoy_Rig_v4:Bind_Head
+      parentName: umiBoy_Rig_v4:Bind_Neck
+      position: {x: -0, y: 0.12592421, z: 0.03819312}
+      rotation: {x: -0.00000003492459, y: -0.0000000029103822, z: -0.00000000509317,
+        w: 1}
+      scale: {x: 1.0000001, y: 1, z: 1.0000008}
+    - name: umiBoy_Rig_v4:Bind_HeadTop_End
+      parentName: umiBoy_Rig_v4:Bind_Head
+      position: {x: -0, y: 0.40586928, z: 0.123101115}
+      rotation: {x: 1.3877788e-17, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_GRP
+      parentName: UMI_idle_001_Boy(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_eyebrowns_c_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_eyes_c_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_hair_c_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_mainBody_c_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_nose_c_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_ordNeck_c_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_swimmingSuitButton_c_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_swimmingSuit_c_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_swimmingSuit_l_cord_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_swimmingSuit_r_cord_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_teeth_bot_c_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_teeth_top_c_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_tongue_c_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Mesh_umiBoy_underSwimmingSuit_c_geo
+      parentName: umiBoy_Rig_v4:Mesh_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:Misc_GRP
+      parentName: UMI_idle_001_Boy(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftForeArm_IK_CTRL_GuideCurve
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: -0.3355022, y: 1.4624206, z: -0.12863265}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightForeArm_IK_CTRL_GuideCurve
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.33552173, y: 1.4624306, z: -0.12840997}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:LeftLeg_IK_CTRL_GuideCurve
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: -0.16400114, y: 0.63196504, z: -0.033219952}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:RightLeg_IK_CTRL_GuideCurve
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.16404577, y: 0.63078225, z: -0.032128207}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_Root_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_Hips_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_Spine_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_Spine1_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_Spine2_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_Spine3_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_Neck_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_Neck1_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_Head_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_HeadTop_End_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftShoulder_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftArm_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftForeArm_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHand_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandThumb1_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandThumb2_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandThumb3_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandThumb4_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandIndex1_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandIndex2_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandIndex3_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandIndex4_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandMiddle1_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandMiddle2_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandMiddle3_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandMiddle4_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandRing1_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandRing2_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandRing3_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandRing4_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandPinky1_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandPinky2_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandPinky3_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftHandPinky4_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightShoulder_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightArm_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightForeArm_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHand_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandThumb1_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandThumb2_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandThumb3_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandThumb4_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandIndex1_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandIndex2_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandIndex3_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandIndex4_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandMiddle1_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandMiddle2_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandMiddle3_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandMiddle4_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandRing1_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandRing2_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandRing3_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandRing4_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandPinky1_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandPinky2_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandPinky3_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightHandPinky4_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftUpLeg_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftLeg_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftFoot_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftToeBase_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftToe_End_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightUpLeg_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightLeg_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightFoot_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightToeBase_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightToe_End_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_LeftEye_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: umiBoy_Rig_v4:MIXAMO_CHARACTER_RightEye_infoNode
+      parentName: umiBoy_Rig_v4:Misc_GRP
+      position: {x: 0.00008659362, y: -0.008950576, z: 0.03074871}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5

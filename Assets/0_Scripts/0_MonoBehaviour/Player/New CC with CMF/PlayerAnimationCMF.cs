@@ -381,21 +381,10 @@ public class PlayerAnimationCMF : MonoBehaviour
             }
         }
 
+        //Debug.Log("PlayerAAnimationCMF-> currentBasicAttack = " + currentBasicAttack);
         if (currentBasicAttack >= 0)
         {
-            switch((int)currentBasicAttack)
-            {
-                case 1:
-                    //animator.SetBool(weaponTypeHash, (int)weaponType);
-                    break;
-
-                case 0:
-
-                    animator.SetFloat("BasicAttack", currentBasicAttack);
-                    break;
-
-            }
-
+            animator.SetInteger("BasicAttack", currentBasicAttack);
         }
 
         if (!frontHit && myPlayerMovement.startBeingHitAnimation) /*(moveSt == MoveState.Knockback)*/

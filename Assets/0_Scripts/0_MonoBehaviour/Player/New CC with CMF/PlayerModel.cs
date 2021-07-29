@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor.SceneManagement;
+#endif
 using UnityEngine;
 using System.Text.RegularExpressions;
 
@@ -71,6 +73,7 @@ public class PlayerModel : MonoBehaviour
 
     private void Update()
     {
+#if UNITY_EDITOR
         if (autoSearchReferences)
         {
             autoSearchReferences = false;
@@ -107,6 +110,7 @@ public class PlayerModel : MonoBehaviour
             if (foundLeftHand.Count != 1) Debug.LogError("Error: the number of Left Hand Objects are " + foundLeftHand.Count);
             else leftHand = foundLeftHand[0].transform;
         }
+#endif
     }
     #endregion
 
