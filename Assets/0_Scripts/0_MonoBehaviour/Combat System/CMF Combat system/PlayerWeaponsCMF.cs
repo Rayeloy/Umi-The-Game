@@ -223,9 +223,14 @@ public class PlayerWeaponsCMF : MonoBehaviour
     public void AttachWeaponToBack()
     {
         currentWeapObject.SetParent(myPlayerMovement.myPlayerModel.senaka);
+        print("my weapon skin is " + myWeaponSkinOffsets);
+
         switch (currentWeaponData.weaponType)
         {
             case WeaponType.QTip:
+                currentWeapObject.localPosition = myWeaponSkinOffsets.backPositionOffset;
+                currentWeapObject.localRotation = Quaternion.Euler(myWeaponSkinOffsets.backRotationOffset);
+                break;
             case WeaponType.Hammer:
 
                 currentWeapObject.localPosition = myWeaponSkinOffsets.backPositionOffset;
@@ -290,22 +295,11 @@ public class PlayerWeaponsCMF : MonoBehaviour
     public void ChangeWeaponSkin(string skinName = "", string recolorName = "")
     {
         currentWeapon.SetSkin(out currentWeaponSkin, skinName, recolorName);
+        print("My player skin is: " + myPlayerMovement);
+        print("My player skin is: " + myPlayerMovement.myPlayerBody);
+        print("My player skin is: " + myPlayerMovement.myPlayerBody.GetCurrentPlayerSkinData().name);
+        myWeaponSkinOffsets = currentWeapon.GetCurrentWeaponSkinData().GetWeaponOffsets(myPlayerMovement.myPlayerBody.GetCurrentPlayerSkinData().bodyType);
     }
 
     #endregion
-
-    #region ----[ PUN CALLBACKS ]----
-    #endregion
-
-    #region ----[ RPC ]----
-    #endregion
-
-    #region ----[ NETWORK FUNCTIONS ]----
-    #endregion
-
-    #region ----[ IPUNOBSERVABLE ]----
-    #endregion
 }
-
-#region ----[ STRUCTS ]----
-#endregion

@@ -227,4 +227,9 @@ public class PlayerBodyCMF : MonoBehaviour
         }
     }
     #endregion
+
+    public PlayerSkinData GetCurrentPlayerSkinData()
+    {
+        return myPlayerSkin;
+    }
 }

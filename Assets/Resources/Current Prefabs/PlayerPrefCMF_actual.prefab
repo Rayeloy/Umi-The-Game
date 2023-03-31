@@ -43597,8 +43597,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d98ace8715c2a184ca85247b18eb0853, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugModeOn: 0
-  movementDebugsOn: 1
+  debugModeOn: 1
+  movementDebugsOn: 0
   instantGroundAdjustment: 1
   instantPlatformMovement: 1
   stepHeightRatio: 0.25
@@ -43630,7 +43630,7 @@ MonoBehaviour:
     arrayRayCount: 5
     ArrayRows: 1
     offsetArrayRows: 0
-    isInDebugMode: 0
+    isInDebugMode: 1
 --- !u!114 &4826634726855863062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43879,6 +43879,7 @@ MonoBehaviour:
   hitboxDebugsOn: 0
   myPlayerMovement: {fileID: 0}
   myPlayerHUD: {fileID: 0}
+  myPlayerIKController: {fileID: 0}
   hitboxMats:
   - {fileID: 2100000, guid: 2700333b147dd394c8452531278051f7, type: 2}
   - {fileID: 2100000, guid: 8ef3e573ffcdc814aa37206d968bffe3, type: 2}
@@ -43887,6 +43888,7 @@ MonoBehaviour:
   hitboxesParent: {fileID: 7735381457242634366}
   weaponEdge: {fileID: 0}
   weaponHandle: {fileID: 0}
+  leftHandPos: {fileID: 0}
   currentWeapon: {fileID: 0}
   invulnerable: 0
   attackStg: 0
@@ -43993,7 +43995,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5233746851346624046}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 91d754fb19bf93b42bc56895520c1e72, type: 3}
   m_Name: 

@@ -935,5 +935,3 @@ public class PlayerCombatCMF : MonoBehaviour
         }
     }
 }
-#region ----[ STRUCTS & CLASSES ]----
-#endregion

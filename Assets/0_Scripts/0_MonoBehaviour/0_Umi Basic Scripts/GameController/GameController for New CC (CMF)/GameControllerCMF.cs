@@ -419,9 +419,9 @@ public class GameControllerCMF : MonoBehaviour
                 }
 
                 //GameInfo.instance.PrintTeamList();
-                //Debug.Log("GameController: The player " + i + " is given the team " + GameInfo.instance.playerTeamList[i]);
                 allPlayers[i].team = GameInfo.instance.playerTeamList[i];
                 allPlayers[i].myPlayerBody.myPlayerSkin = GameInfo.instance.playerSkinList[i];
+                Debug.Log("GameController: The player " + i + " is given the skin " + GameInfo.instance.playerSkinList[i].name);
                 allPlayers[i].myPlayerWeap.myWeaponSkinData = GameInfo.instance.weaponSkinList[i];
                 allPlayers[i].myPlayerWeap.myWeaponSkinRecolor = GameInfo.instance.weaponSkinRecolorList[i];
             }

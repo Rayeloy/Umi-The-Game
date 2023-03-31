@@ -59,11 +59,11 @@ public class WeaponData : ScriptableObject
     //[Tooltip("Local scale for attaching to the hand.")]
     //public Vector3 backScale;
 
-    public bool GetSkin(out WeaponSkinData skin, out WeaponSkinRecolor skinRecolor, string skinName = "", string recolorName = "")
+    public bool GetSkin(out WeaponSkinData foundSkin, out WeaponSkinRecolor skinRecolor, string skinName = "", string recolorName = "")
     {
         WeaponSkinData weapSkinData = null;
         skinRecolor = new WeaponSkinRecolor();
-        skin = null;
+        foundSkin = null;
         bool nameFound = false;
         if (skinName != "")
         {
@@ -109,6 +109,7 @@ public class WeaponData : ScriptableObject
         }
         else nameFound = false;
 
+        if (nameFound) foundSkin = weapSkinData;
         return nameFound;
     }
 
