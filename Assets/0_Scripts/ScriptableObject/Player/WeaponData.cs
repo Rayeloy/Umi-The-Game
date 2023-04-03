@@ -59,6 +59,14 @@ public class WeaponData : ScriptableObject
     //[Tooltip("Local scale for attaching to the hand.")]
     //public Vector3 backScale;
 
+    /// <summary>
+    /// Returns true if the skin was found, and false if not. Needs a skin name and a skin recolor name to be provided.
+    /// </summary>
+    /// <param name="foundSkin"> Contains the found skin </param>
+    /// <param name="skinRecolor"></param>
+    /// <param name="skinName"></param>
+    /// <param name="recolorName"></param>
+    /// <returns></returns>
     public bool GetSkin(out WeaponSkinData foundSkin, out WeaponSkinRecolor skinRecolor, string skinName = "", string recolorName = "")
     {
         WeaponSkinData weapSkinData = null;

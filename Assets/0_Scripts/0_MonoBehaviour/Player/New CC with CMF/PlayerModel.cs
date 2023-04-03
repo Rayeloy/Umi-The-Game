@@ -21,54 +21,6 @@ public class PlayerModel : MonoBehaviour
     public Transform rightHand;
     public Transform leftHand;
 
-    //public SkinnedMeshRenderer body;
-    //public SkinnedMeshRenderer hair;
-    //public SkinnedMeshRenderer eyes;
-    //public SkinnedMeshRenderer eyebrows;
-    //public SkinnedMeshRenderer nose;
-    //public SkinnedMeshRenderer[] clothing;
-
-    //[Header("Old")]
-    //public SkinnedMeshRenderer wetsuit;
-    //public SkinnedMeshRenderer accesories;
-    //public SkinnedMeshRenderer boots;
-
-    ////PLAYER MODEL MATERIALS
-    //[Header("--- PLAYER MODEL MATERIALS ---")]
-    //[Header(" - BODY -")]
-    //public Material[] bodyMatsA;
-    //public Material[] bodyMatsB;
-    //public Material[] bodyMatsNone;
-    //public Material[] hairMats;//0 -> Team A (Green/Blue); 1 -> Team B (Pink/Red); 2 -> None
-    //public Material[] eyesMats;
-    //public Material[] eyebrowsMats;
-    //public Material[] noseMats;
-    //[Header(" - CLOTHES -")]
-    //public Material[] clothingMatsA;
-    //public Material[] clothingMatsB;
-    //public Material[] clothingMatsNone;
-
-
-    //[Header("Old")]
-    //public Material[] wetsuitMats;
-    //public Material[] accesoriesMats;
-    //public Material[] bootsMats;
-    #endregion
-
-    #region ----[ PROPERTIES ]----
-    #endregion
-
-    #region ----[ VARIABLES ]----
-    #endregion
-
-    #region ----[ MONOBEHAVIOUR FUNCTIONS ]----
-
-    #region Awake
-    #endregion
-
-    #region Start
-    #endregion
-
     #region Update
 
     private void Update()

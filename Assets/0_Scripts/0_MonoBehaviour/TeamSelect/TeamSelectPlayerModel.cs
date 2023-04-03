@@ -38,18 +38,20 @@ public class TeamSelectPlayerModel : MonoBehaviour
         myAnimator.SetInteger("Weapon", (int)myWeaponSkin.weaponType);
 
         //LOAD WEAPON
-
+        GameObject weapon = Instantiate(myWeaponSkin.skinRecolors[(int)team].skinRecolorPrefab, myPlayerModel.rightHand);
+        WeaponOffsets myWeaponOffsets = myWeaponSkin.GetWeaponOffsets(bodyType);
+        weapon.transform.localPosition = myWeaponOffsets.rHandPositionOffset;
+        weapon.transform.localRotation = Quaternion.Euler(myWeaponOffsets.rHandRotationOffset);
         switch (myWeaponSkin.weaponType)
         {
             case WeaponType.QTip:
             case WeaponType.Hammer:
-                GameObject weapon = Instantiate(myWeaponSkin.skinRecolors[(int)team].skinRecolorPrefab, myPlayerModel.rightHand);
-                WeaponOffsets myWeaponOffsets = myWeaponSkin.GetWeaponOffsets(bodyType);
-                weapon.transform.localPosition = myWeaponOffsets.rHandPositionOffset;
-                weapon.transform.localRotation = Quaternion.Euler(myWeaponOffsets.rHandRotationOffset);
                 break;
             case WeaponType.Boxing_gloves:
-                break;
+                WeaponPart secondGlove = weapon.GetComponent<WeaponSkin>().secondaryParts[0];
+                secondGlove.gO.transform.SetParent(myPlayerModel.leftHand);
+                secondGlove.gO.transform.localPosition = secondGlove.weaponOffsets.lHandPositionOffset;
+                secondGlove.gO.transform.localRotation = Quaternion.Euler(secondGlove.weaponOffsets.lHandRotationOffset); break;
         }
     }
 

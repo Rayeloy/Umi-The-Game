@@ -87,7 +87,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 2588103901593400281}
+  - {fileID: 8592923787683333315}
   m_Father: {fileID: 4942839340992289032}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 4942839340992289032}
   - component: {fileID: 9136243143466378633}
   m_Layer: 0
-  m_Name: QTip_Prefab
+  m_Name: BoxingGloves_Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -172,79 +172,80 @@ MonoBehaviour:
   weaponEdge: {fileID: 7096172526217020650}
   weaponHandle: {fileID: 3036356654203485377}
   leftHandPos: {fileID: 1163367951343923392}
+  secondaryParts: []
   weaponData: {fileID: 0}
---- !u!1001 &7043254884947704996
+--- !u!1001 &3824773661186837438
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 7081306599660207673}
     m_Modifications:
-    - target: {fileID: 4779552620590223229, guid: 3cf573c885b237646a492d8588f3c18b,
+    - target: {fileID: 4779552620590223229, guid: 188b4b8bcd6d6c84fbc563d1774ec35c,
         type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4779552620590223229, guid: 3cf573c885b237646a492d8588f3c18b,
+    - target: {fileID: 4779552620590223229, guid: 188b4b8bcd6d6c84fbc563d1774ec35c,
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4779552620590223229, guid: 3cf573c885b237646a492d8588f3c18b,
+    - target: {fileID: 4779552620590223229, guid: 188b4b8bcd6d6c84fbc563d1774ec35c,
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4779552620590223229, guid: 3cf573c885b237646a492d8588f3c18b,
+    - target: {fileID: 4779552620590223229, guid: 188b4b8bcd6d6c84fbc563d1774ec35c,
         type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4779552620590223229, guid: 3cf573c885b237646a492d8588f3c18b,
+    - target: {fileID: 4779552620590223229, guid: 188b4b8bcd6d6c84fbc563d1774ec35c,
         type: 3}
       propertyPath: m_LocalRotation.y
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 4779552620590223229, guid: 3cf573c885b237646a492d8588f3c18b,
+    - target: {fileID: 4779552620590223229, guid: 188b4b8bcd6d6c84fbc563d1774ec35c,
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 4779552620590223229, guid: 3cf573c885b237646a492d8588f3c18b,
+    - target: {fileID: 4779552620590223229, guid: 188b4b8bcd6d6c84fbc563d1774ec35c,
         type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4779552620590223229, guid: 3cf573c885b237646a492d8588f3c18b,
+    - target: {fileID: 4779552620590223229, guid: 188b4b8bcd6d6c84fbc563d1774ec35c,
         type: 3}
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4779552620590223229, guid: 3cf573c885b237646a492d8588f3c18b,
+    - target: {fileID: 4779552620590223229, guid: 188b4b8bcd6d6c84fbc563d1774ec35c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4779552620590223229, guid: 3cf573c885b237646a492d8588f3c18b,
+    - target: {fileID: 4779552620590223229, guid: 188b4b8bcd6d6c84fbc563d1774ec35c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4779552620590223229, guid: 3cf573c885b237646a492d8588f3c18b,
+    - target: {fileID: 4779552620590223229, guid: 188b4b8bcd6d6c84fbc563d1774ec35c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8362964682608721262, guid: 3cf573c885b237646a492d8588f3c18b,
+    - target: {fileID: 8362964682608721262, guid: 188b4b8bcd6d6c84fbc563d1774ec35c,
         type: 3}
       propertyPath: m_Name
-      value: Q-Tip_Skin1_Base
+      value: Gloves_Skin_Base
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 3cf573c885b237646a492d8588f3c18b, type: 3}
---- !u!4 &2588103901593400281 stripped
+  m_SourcePrefab: {fileID: 100100000, guid: 188b4b8bcd6d6c84fbc563d1774ec35c, type: 3}
+--- !u!4 &8592923787683333315 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 4779552620590223229, guid: 3cf573c885b237646a492d8588f3c18b,
+  m_CorrespondingSourceObject: {fileID: 4779552620590223229, guid: 188b4b8bcd6d6c84fbc563d1774ec35c,
     type: 3}
-  m_PrefabInstance: {fileID: 7043254884947704996}
+  m_PrefabInstance: {fileID: 3824773661186837438}
   m_PrefabAsset: {fileID: 0}

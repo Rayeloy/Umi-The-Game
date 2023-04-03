@@ -9,6 +9,7 @@ public class Weapon : MonoBehaviour
     public Transform weaponEdge;
     public Transform weaponHandle;
     public Transform leftHandPos;
+    public WeaponPart[] secondaryParts;
 
     [HideInInspector]
     public WeaponData weaponData;
@@ -35,6 +36,7 @@ public class Weapon : MonoBehaviour
             }
             currentSkinTransf = Instantiate(currentWeaponSkinRecolor.skinRecolorPrefab,transform).transform;
             weaponSkin = currentSkinTransf.GetComponent<WeaponSkin>();
+            secondaryParts = weaponSkin.secondaryParts;
             exito = true;
         }
 

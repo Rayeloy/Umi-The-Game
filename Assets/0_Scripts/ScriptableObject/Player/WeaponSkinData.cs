@@ -81,6 +81,8 @@ public struct WeaponOffsets
 {
     public Vector3 rHandPositionOffset;
     public Vector3 rHandRotationOffset;
+    public Vector3 lHandPositionOffset;
+    public Vector3 lHandRotationOffset;
     public Vector3 backPositionOffset;
     public Vector3 backRotationOffset;
 }

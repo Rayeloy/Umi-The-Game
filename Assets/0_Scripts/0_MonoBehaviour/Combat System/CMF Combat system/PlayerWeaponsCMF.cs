@@ -198,24 +198,28 @@ public class PlayerWeaponsCMF : MonoBehaviour
         else
         {
             currentWeapon.weaponData = currentWeaponData;
-            AttatchWeaponToHand();
             ChangeWeaponSkin(myWeaponSkinData.skinName, myWeaponSkinRecolor.skinRecolorName);
+            AttatchWeaponToHand();
         }
     }
 
     public void AttatchWeaponToHand()
     {
         currentWeapObject.SetParent(myPlayerMovement.myPlayerModel.rightHand);
+        //GameObject weapon = Instantiate(myWeaponSkin.skinRecolors[(int)team].skinRecolorPrefab, myPlayerModel.rightHand);
+        //WeaponOffsets myWeaponOffsets = myWeaponSkin.GetWeaponOffsets(bodyType);
+        currentWeapObject.localPosition = myWeaponSkinOffsets.rHandPositionOffset;
+        currentWeapObject.localRotation = Quaternion.Euler(myWeaponSkinOffsets.rHandRotationOffset);
         switch (currentWeaponData.weaponType)
         {
             case WeaponType.QTip:
             case WeaponType.Hammer:
-                //GameObject weapon = Instantiate(myWeaponSkin.skinRecolors[(int)team].skinRecolorPrefab, myPlayerModel.rightHand);
-                //WeaponOffsets myWeaponOffsets = myWeaponSkin.GetWeaponOffsets(bodyType);
-                currentWeapObject.localPosition = myWeaponSkinOffsets.rHandPositionOffset;
-                currentWeapObject.localRotation = Quaternion.Euler(myWeaponSkinOffsets.rHandRotationOffset);
                 break;
             case WeaponType.Boxing_gloves:
+                WeaponPart secondGlove = currentWeapon.secondaryParts[0];
+                secondGlove.gO.transform.SetParent(myPlayerMovement.myPlayerModel.leftHand);
+                secondGlove.gO.transform.localPosition = secondGlove.weaponOffsets.lHandPositionOffset;
+                secondGlove.gO.transform.localRotation = Quaternion.Euler(secondGlove.weaponOffsets.lHandRotationOffset);
                 break;
         }
     }
@@ -237,6 +241,9 @@ public class PlayerWeaponsCMF : MonoBehaviour
                 currentWeapObject.localRotation = Quaternion.Euler(myWeaponSkinOffsets.backRotationOffset);
                 break;
             case WeaponType.Boxing_gloves:
+                currentWeapObject.localPosition = myWeaponSkinOffsets.backPositionOffset;
+                currentWeapObject.localRotation = Quaternion.Euler(myWeaponSkinOffsets.backRotationOffset);
+                //Second glove position as well
                 break;
         }
     }
